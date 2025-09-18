@@ -1,0 +1,49 @@
+# Unity generated
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+
+# Cache
+UserSettings/
+Assets/AssetStoreTools*
+
+# Visual Studio / Rider
+.vscode/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Builds
+*.apk
+*.aab
+*.xcodeproj
+*.xcworkspace
+*.ipa
+
+# Crash and profiling
+*.stackdump
+*.crash
+*.dmp
+*.heap
+*.memory
+
+# Other
+sysinfo.txt
