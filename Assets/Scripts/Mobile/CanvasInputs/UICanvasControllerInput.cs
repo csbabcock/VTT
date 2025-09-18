@@ -4,9 +4,7 @@ namespace VTT
 {
     public class UICanvasControllerInput : MonoBehaviour
     {
-
-        [Header("Output")]
-        public StarterAssetsInputs starterAssetsInputs;
+        [Header("Output")] public StarterAssetsInputs starterAssetsInputs;
 
         public void VirtualMoveInput(Vector2 virtualMoveDirection)
         {
@@ -27,7 +25,5 @@ namespace VTT
         {
             starterAssetsInputs.SprintInput(virtualSprintState);
         }
-        
     }
-
 }
