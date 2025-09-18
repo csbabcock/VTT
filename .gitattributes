@@ -1,5 +1,19 @@
-* text=auto
-*.cs text eol=lf
-*.shader text eol=lf
-*.json text eol=lf
-*.meta text eol=lf
+# Scripts and shaders (force LF)
+*.cs      text eol=lf
+*.shader  text eol=lf
+*.cginc   text eol=lf
+*.hlsl    text eol=lf
+
+# Unity metadata and settings (force LF)
+*.meta    text eol=lf
+*.unity   text eol=lf
+*.prefab  text eol=lf
+*.asset   text eol=lf
+*.json    text eol=lf
+
+# Images/binary (no conversion)
+*.png     binary
+*.jpg     binary
+*.psd     binary
+*.fbx     binary
+*.dll     binary
