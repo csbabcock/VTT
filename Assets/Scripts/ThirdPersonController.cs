@@ -124,12 +124,7 @@ namespace VTT
         {
             // get a reference to our main camera
             if (_mainCamera == null) _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-        }
-
-        private void Start()
-        {
-            _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-
+            
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
@@ -138,6 +133,11 @@ namespace VTT
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
+        }
+
+        private void Start()
+        {
+            _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
             AssignAnimationIDs();
 
@@ -347,13 +347,14 @@ namespace VTT
 
         private void OnFootstep(AnimationEvent animationEvent)
         {
-            if (animationEvent.animatorClipInfo.weight > 0.5f)
-                if (FootstepAudioClips.Length > 0)
-                {
-                    var index = Random.Range(0, FootstepAudioClips.Length);
-                    AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center),
-                        FootstepAudioVolume);
-                }
+            if (animationEvent.animatorClipInfo.weight <= 0.5f) return;
+            if (FootstepAudioClips == null || FootstepAudioClips.Length == 0) return;
+
+            var clip = FootstepAudioClips[Random.Range(0, FootstepAudioClips.Length)];
+            if (clip == null) return;
+
+            var pos = (_controller != null) ? transform.TransformPoint(_controller.center) : transform.position;
+            AudioSource.PlayClipAtPoint(clip, pos, FootstepAudioVolume);
         }
 
         private void OnLand(AnimationEvent animationEvent)
