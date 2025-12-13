@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2854614339647494548}
   - component: {fileID: 6701286033206102030}
   m_Layer: 5
-  m_Name: UI_Canvas_StarterAssetsInputs_TouchZones
+  m_Name: UI_Canvas_PlayerInput_TouchZones
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -117,7 +117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a300d010f57451488aa99000126fbd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  starterAssetsInputs: {fileID: 0}
+  playerInputs: {fileID: 0}
 --- !u!114 &6701286033206102030
 MonoBehaviour:
   m_ObjectHideFlags: 0

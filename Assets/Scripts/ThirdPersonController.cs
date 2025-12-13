@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
  */
 
-namespace StarterAssets
+namespace GameCore
 {
     public enum PerspectiveMode
     {
@@ -136,7 +136,7 @@ namespace StarterAssets
 #endif
         private Animator _animator;
         private CharacterController _controller;
-        private StarterAssetsInputs _input;
+        private PlayerInputs _input;
         private GameObject _mainCamera;
 
         private const float _threshold = 0.01f;
@@ -180,11 +180,17 @@ namespace StarterAssets
             
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
-            _input = GetComponent<StarterAssetsInputs>();
+            _input = GetComponent<PlayerInputs>();
+            
+            if (_input == null)
+            {
+                Debug.LogError("PlayerInputs component is missing! Please add the PlayerInputs component to the same GameObject.");
+            }
+            
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
 #else
-			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
+			Debug.LogError( "Player controller package is missing dependencies.");
 #endif
 
             AssignAnimationIDs();
@@ -263,6 +269,8 @@ namespace StarterAssets
 
         private void CameraRotation()
         {
+            if (_input == null) return;
+            
             if (CurrentPerspective == PerspectiveMode.FirstPerson)
             {
                 // First-person camera rotation
@@ -321,6 +329,8 @@ namespace StarterAssets
 
         private void Move()
         {
+            if (_input == null) return;
+            
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
 
@@ -420,6 +430,8 @@ namespace StarterAssets
 
         private void JumpAndGravity()
         {
+            if (_input == null) return;
+            
             if (Grounded)
             {
                 // reset the fall timeout timer
@@ -530,6 +542,8 @@ namespace StarterAssets
 
         private void CheckPerspectiveToggle()
         {
+            if (_input == null) return;
+            
             // Check for perspective toggle input
 #if ENABLE_INPUT_SYSTEM
             if (Keyboard.current != null && Keyboard.current[TogglePerspectiveKey].wasPressedThisFrame)
