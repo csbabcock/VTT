@@ -9,7 +9,7 @@ namespace GameCore
 #if ENABLE_INPUT_SYSTEM 
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public class ThirdPersonController : MonoBehaviour
+    public class PlayerController : MonoBehaviour
     {
         [Header("Perspective")]
         [Tooltip("Current perspective mode")]
