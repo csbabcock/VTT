@@ -1,19 +1,10 @@
-﻿ using UnityEngine;
+﻿using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
 
-/* Note: animations are called via the controller for both the character and capsule using animator null checks
- */
-
 namespace GameCore
 {
-    public enum PerspectiveMode
-    {
-        ThirdPerson,
-        FirstPerson
-    }
-
     [RequireComponent(typeof(CharacterController))]
 #if ENABLE_INPUT_SYSTEM 
     [RequireComponent(typeof(PlayerInput))]
@@ -97,118 +88,167 @@ namespace GameCore
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
-        // cinemachine
-        private float _cinemachineTargetYaw;
-        private float _cinemachineTargetPitch;
-
-        // first-person camera
-        private Camera _firstPersonCamera;
-        private float _currentSprintOffset = 0f;
-
-        // player
-        private float _speed;
-        private float _animationBlend;
-        private float _targetRotation = 0.0f;
-        private float _rotationVelocity;
-        private float _verticalVelocity;
-        private float _terminalVelocity = 53.0f;
-
-        // timeout deltatime
-        private float _jumpTimeoutDelta;
-        private float _fallTimeoutDelta;
-
-        // animation IDs
-        private int _animIDSpeed;
-        private int _animIDGrounded;
-        private int _animIDJump;
-        private int _animIDFreeFall;
-        private int _animIDMotionSpeed;
+        // Component references
+        private CharacterController _controller;
+        private PlayerInputs _input;
+        private GameObject _mainCamera;
+        private Camera _mainCameraComponent;
+        private Animator _animator;
+        private bool _hasAnimator;
 
 #if ENABLE_INPUT_SYSTEM 
         private PlayerInput _playerInput;
 #endif
-        private Animator _animator;
-        private CharacterController _controller;
-        private PlayerInputs _input;
-        private GameObject _mainCamera;
+
+        // Handler components (SOLID - Dependency Inversion)
+        private IGroundedChecker _groundedChecker;
+        private IMovementHandler _movementHandler;
+        private IJumpHandler _jumpHandler;
+        private ICameraController _cameraController;
+        private IAnimationHandler _animationHandler;
+        private IAudioHandler _audioHandler;
+        private IPerspectiveManager _perspectiveManager;
+
+        private FirstPersonCameraController _firstPersonCameraController;
+        private ThirdPersonCameraController _thirdPersonCameraController;
 
         private const float _threshold = 0.01f;
-
-        private bool _hasAnimator;
 
         private bool IsCurrentDeviceMouse
         {
             get
             {
 #if ENABLE_INPUT_SYSTEM
-                return _playerInput.currentControlScheme == "KeyboardMouse";
+                return _playerInput != null && _playerInput.currentControlScheme == "KeyboardMouse";
 #else
-				return false;
+                return false;
 #endif
             }
         }
 
-
         private void Awake()
         {
-            // get a reference to our main camera
-            if (_mainCamera == null)
-            {
-                _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-            }
-
-            // get camera component for first-person mode
+            _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             if (_mainCamera != null)
             {
-                _firstPersonCamera = _mainCamera.GetComponent<Camera>();
+                _mainCameraComponent = _mainCamera.GetComponent<Camera>();
             }
         }
 
         private void Start()
         {
-            if (CinemachineCameraTarget != null)
-            {
-                _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-            }
-            
+            InitializeComponents();
+            InitializeHandlers();
+            SubscribeToEvents();
+        }
+
+        private void InitializeComponents()
+        {
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<PlayerInputs>();
-            
+
             if (_input == null)
             {
                 Debug.LogError("PlayerInputs component is missing! Please add the PlayerInputs component to the same GameObject.");
             }
-            else
-            {
-                // Subscribe to perspective toggle event
-#if ENABLE_INPUT_SYSTEM
-                _input.OnTogglePerspective += TogglePerspective;
-#endif
-            }
-            
+
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
-#else
-			Debug.LogError( "Player controller package is missing dependencies.");
 #endif
+        }
 
-            AssignAnimationIDs();
+        private void InitializeHandlers()
+        {
+            // Initialize grounded checker
+            _groundedChecker = new GroundedChecker(
+                transform,
+                GroundedOffset,
+                GroundedRadius,
+                GroundLayers
+            );
 
-            // reset our timeouts on start
-            _jumpTimeoutDelta = JumpTimeout;
-            _fallTimeoutDelta = FallTimeout;
+            // Initialize movement handler
+            _movementHandler = new MovementHandler(
+                _controller,
+                transform,
+                _mainCameraComponent,
+                CurrentPerspective,
+                MoveSpeed,
+                SprintSpeed,
+                RotationSmoothTime,
+                SpeedChangeRate
+            );
 
-            // Auto-detect Cinemachine virtual camera if not set
-            // Note: This requires Cinemachine package. If you get compilation errors, 
-            // manually assign the CinemachineVirtualCamera field in the inspector.
+            // Initialize jump handler
+            _jumpHandler = new JumpHandler(
+                JumpHeight,
+                Gravity,
+                JumpTimeout,
+                FallTimeout
+            );
+
+            // Initialize camera controllers
+            bool isMouseDevice = IsCurrentDeviceMouse;
+            _firstPersonCameraController = new FirstPersonCameraController(
+                transform,
+                _mainCameraComponent,
+                FirstPersonCameraHeight,
+                FirstPersonSprintForwardOffset,
+                SprintOffsetSmoothing,
+                TopClamp,
+                BottomClamp,
+                CameraAngleOverride,
+                isMouseDevice,
+                _threshold
+            );
+
+            _thirdPersonCameraController = new ThirdPersonCameraController(
+                CinemachineCameraTarget,
+                TopClamp,
+                BottomClamp,
+                CameraAngleOverride,
+                isMouseDevice,
+                _threshold
+            );
+
+            _cameraController = CurrentPerspective == PerspectiveMode.FirstPerson
+                ? (ICameraController)_firstPersonCameraController
+                : _thirdPersonCameraController;
+
+            // Initialize animation handler
+            _animationHandler = new AnimationHandler(_animator);
+            _animationHandler.Initialize();
+
+            // Initialize audio handler
+            _audioHandler = new AudioHandler(
+                _controller,
+                LandingAudioClip,
+                FootstepAudioClips,
+                FootstepAudioVolume
+            );
+
+            // Initialize perspective manager
+            _perspectiveManager = new PerspectiveManager(
+                transform,
+                CinemachineCameraTarget,
+                CinemachineVirtualCamera,
+                _mainCameraComponent,
+                CurrentPerspective
+            );
+            _perspectiveManager.Initialize();
+
+            // Auto-detect Cinemachine virtual camera
+            AutoDetectCinemachineCamera();
+        }
+
+        private void AutoDetectCinemachineCamera()
+        {
             if (CinemachineVirtualCamera == null && _mainCamera != null)
             {
-                // Try to find CinemachineBrain component (Cinemachine package)
                 var cinemachineBrain = _mainCamera.GetComponent("CinemachineBrain");
                 if (cinemachineBrain != null)
                 {
-                    // Get the active virtual camera using reflection to avoid compile-time dependency
                     var brainType = cinemachineBrain.GetType();
                     var activeVCamProperty = brainType.GetProperty("ActiveVirtualCamera");
                     if (activeVCamProperty != null)
@@ -221,297 +261,216 @@ namespace GameCore
                     }
                 }
             }
-
-            // Initialize perspective mode
-            UpdatePerspectiveMode();
         }
 
-        private void Update()
+        private void SubscribeToEvents()
         {
-            _hasAnimator = TryGetComponent(out _animator);
-
-            JumpAndGravity();
-            GroundedCheck();
-            Move();
+            if (_input != null)
+            {
+#if ENABLE_INPUT_SYSTEM
+                _input.OnTogglePerspective += OnTogglePerspective;
+                Debug.Log("Subscribed to OnTogglePerspective event");
+#endif
+            }
+            else
+            {
+                Debug.LogWarning("PlayerInputs is null, cannot subscribe to events!");
+            }
         }
 
         private void OnDestroy()
         {
-            // Unsubscribe from events
             if (_input != null)
             {
 #if ENABLE_INPUT_SYSTEM
-                _input.OnTogglePerspective -= TogglePerspective;
+                _input.OnTogglePerspective -= OnTogglePerspective;
 #endif
+            }
+        }
+
+        private void Update()
+        {
+            if (_input == null) return;
+
+            _hasAnimator = TryGetComponent(out _animator);
+
+            // Update grounded state
+            _groundedChecker.CheckGrounded();
+            Grounded = _groundedChecker.IsGrounded;
+
+            // Process jump and gravity
+            _jumpHandler.ProcessJump(_input.jump, Grounded);
+
+            // Process movement
+            _movementHandler.ProcessMovement(_input.move, _input.sprint, _input.analogMovement);
+            _movementHandler.ApplyMovementWithVerticalVelocity(_jumpHandler.VerticalVelocity);
+
+            // Update camera controller based on perspective
+            UpdateCameraController();
+
+            // Update animations
+            if (_animationHandler != null)
+            {
+                var jumpHandler = _jumpHandler as JumpHandler;
+                bool isJumping = jumpHandler != null && jumpHandler.IsJumping;
+                bool isFalling = jumpHandler != null && jumpHandler.IsFalling;
+                
+                _animationHandler.UpdateAnimations(
+                    _movementHandler.AnimationBlend,
+                    _input.analogMovement ? _input.move.magnitude : 1f,
+                    Grounded,
+                    isJumping,
+                    isFalling
+                );
             }
         }
 
         private void LateUpdate()
         {
-            CameraRotation();
-        }
-
-        private void AssignAnimationIDs()
-        {
-            _animIDSpeed = Animator.StringToHash("Speed");
-            _animIDGrounded = Animator.StringToHash("Grounded");
-            _animIDJump = Animator.StringToHash("Jump");
-            _animIDFreeFall = Animator.StringToHash("FreeFall");
-            _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-        }
-
-        private void GroundedCheck()
-        {
-            // set sphere position, with offset
-            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
-                transform.position.z);
-            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
-                QueryTriggerInteraction.Ignore);
-
-            // update animator if using character
-            if (_hasAnimator)
-            {
-                _animator.SetBool(_animIDGrounded, Grounded);
-            }
-        }
-
-        private void CameraRotation()
-        {
             if (_input == null) return;
-            
+
+            // Process camera rotation
+            _cameraController.ProcessRotation(_input.look, LockCameraPosition);
+            _cameraController.UpdateCamera();
+
+            // Update movement handler with camera yaw for first-person
             if (CurrentPerspective == PerspectiveMode.FirstPerson)
             {
-                // First-person camera rotation
-                if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+                _movementHandler.SetYaw(_cameraController.Yaw);
+                
+                // Update sprint offset for first-person camera
+                if (_firstPersonCameraController != null)
                 {
-                    //Don't multiply mouse input by Time.deltaTime;
-                    float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-
-                    _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
-                    _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+                    _firstPersonCameraController.UpdateSprintOffset(
+                        _input.sprint,
+                        _input.move != Vector2.zero
+                    );
                 }
-
-                // clamp our rotations so our values are limited 360 degrees
-                _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-                _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
-                // Rotate the player horizontally (yaw)
-                transform.rotation = Quaternion.Euler(0.0f, _cinemachineTargetYaw, 0.0f);
-
-                // Smoothly interpolate sprint forward offset
-                float targetSprintOffset = (_input.sprint && _input.move != Vector2.zero) 
-                    ? FirstPersonSprintForwardOffset 
-                    : 0f;
-                _currentSprintOffset = Mathf.Lerp(_currentSprintOffset, targetSprintOffset, 
-                    Time.deltaTime * SprintOffsetSmoothing);
-
-                // Rotate the camera vertically (pitch) - position camera at eye level
-                // Move camera forward when sprinting to prevent head clipping
-                Vector3 cameraPosition = transform.position + Vector3.up * FirstPersonCameraHeight + 
-                    transform.forward * _currentSprintOffset;
-                _mainCamera.transform.position = cameraPosition;
-                _mainCamera.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
-                    _cinemachineTargetYaw, 0.0f);
-            }
-            else
-            {
-                // Third-person camera rotation (original behavior)
-                if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
-                {
-                    //Don't multiply mouse input by Time.deltaTime;
-                    float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-
-                    _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
-                    _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
-                }
-
-                // clamp our rotations so our values are limited 360 degrees
-                _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-                _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
-                // Cinemachine will follow this target
-                CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
-                    _cinemachineTargetYaw, 0.0f);
             }
         }
 
-        private void Move()
+        private void UpdateCameraController()
         {
-            if (_input == null) return;
-            
-            // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
-
-            // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
-
-            // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is no input, set the target speed to 0
-            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
-
-            // a reference to the players current horizontal velocity
-            float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-
-            float speedOffset = 0.1f;
-            float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
-
-            // accelerate or decelerate to target speed
-            if (currentHorizontalSpeed < targetSpeed - speedOffset ||
-                currentHorizontalSpeed > targetSpeed + speedOffset)
+            if (_perspectiveManager.CurrentPerspective != CurrentPerspective)
             {
-                // creates curved result rather than a linear one giving a more organic speed change
-                // note T in Lerp is clamped, so we don't need to clamp our speed
-                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                    Time.deltaTime * SpeedChangeRate);
-
-                // round speed to 3 decimal places
-                _speed = Mathf.Round(_speed * 1000f) / 1000f;
-            }
-            else
-            {
-                _speed = targetSpeed;
-            }
-
-            _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-            if (_animationBlend < 0.01f) _animationBlend = 0f;
-
-            // normalise input direction
-            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-
-            // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is a move input rotate player when the player is moving
-            if (_input.move != Vector2.zero)
-            {
+                CurrentPerspective = _perspectiveManager.CurrentPerspective;
+                
+                // Switch camera controller and sync rotation
                 if (CurrentPerspective == PerspectiveMode.FirstPerson)
                 {
-                    // In first-person, movement is relative to camera forward direction
-                    // Player rotation is already handled in CameraRotation, so we just calculate movement direction
-                    _targetRotation = _cinemachineTargetYaw;
+                    if (_firstPersonCameraController == null)
+                    {
+                        _firstPersonCameraController = new FirstPersonCameraController(
+                            transform,
+                            _mainCameraComponent,
+                            FirstPersonCameraHeight,
+                            FirstPersonSprintForwardOffset,
+                            SprintOffsetSmoothing,
+                            TopClamp,
+                            BottomClamp,
+                            CameraAngleOverride,
+                            IsCurrentDeviceMouse,
+                            _threshold
+                        );
+                    }
+                    
+                    _firstPersonCameraController.SetYaw(_cameraController.Yaw);
+                    _firstPersonCameraController.SetPitch(_cameraController.Pitch);
+                    _cameraController = _firstPersonCameraController;
                 }
                 else
                 {
-                    // Third-person: rotate player to face movement direction relative to camera
-                    _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                      _mainCamera.transform.eulerAngles.y;
-                    float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                        RotationSmoothTime);
-
-                    // rotate to face input direction relative to camera position
-                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                    if (_thirdPersonCameraController == null)
+                    {
+                        _thirdPersonCameraController = new ThirdPersonCameraController(
+                            CinemachineCameraTarget,
+                            TopClamp,
+                            BottomClamp,
+                            CameraAngleOverride,
+                            IsCurrentDeviceMouse,
+                            _threshold
+                        );
+                    }
+                    
+                    _thirdPersonCameraController.SetYaw(_cameraController.Yaw);
+                    _thirdPersonCameraController.SetPitch(_cameraController.Pitch);
+                    _cameraController = _thirdPersonCameraController;
                 }
             }
+        }
 
-
-            Vector3 targetDirection;
+        private void OnTogglePerspective()
+        {
+            Debug.Log($"OnTogglePerspective called! Current: {CurrentPerspective}");
+            _perspectiveManager.TogglePerspective();
+            CurrentPerspective = _perspectiveManager.CurrentPerspective;
+            Debug.Log($"Perspective toggled to: {CurrentPerspective}");
             
+            // Immediately switch camera controller
+            SwitchCameraController();
+            
+            // Update movement handler perspective mode
+            UpdateMovementHandlerPerspective();
+        }
+
+        private void SwitchCameraController()
+        {
+            // Sync camera rotation when switching
             if (CurrentPerspective == PerspectiveMode.FirstPerson)
             {
-                // In first-person, move relative to camera forward direction
-                Vector3 forward = _mainCamera.transform.forward;
-                Vector3 right = _mainCamera.transform.right;
+                if (_firstPersonCameraController == null)
+                {
+                    _firstPersonCameraController = new FirstPersonCameraController(
+                        transform,
+                        _mainCameraComponent,
+                        FirstPersonCameraHeight,
+                        FirstPersonSprintForwardOffset,
+                        SprintOffsetSmoothing,
+                        TopClamp,
+                        BottomClamp,
+                        CameraAngleOverride,
+                        IsCurrentDeviceMouse,
+                        _threshold
+                    );
+                }
                 
-                // Project forward and right vectors onto the horizontal plane
-                forward.y = 0f;
-                right.y = 0f;
-                forward.Normalize();
-                right.Normalize();
-                
-                // Calculate movement direction based on input
-                targetDirection = forward * inputDirection.z + right * inputDirection.x;
+                _firstPersonCameraController.SetYaw(_cameraController.Yaw);
+                _firstPersonCameraController.SetPitch(_cameraController.Pitch);
+                _cameraController = _firstPersonCameraController;
             }
             else
             {
-                // Third-person: use the calculated target rotation
-                targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-            }
-
-            // move the player
-            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                             new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
-
-            // update animator if using character
-            if (_hasAnimator)
-            {
-                _animator.SetFloat(_animIDSpeed, _animationBlend);
-                _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-            }
-        }
-
-        private void JumpAndGravity()
-        {
-            if (_input == null) return;
-            
-            if (Grounded)
-            {
-                // reset the fall timeout timer
-                _fallTimeoutDelta = FallTimeout;
-
-                // update animator if using character
-                if (_hasAnimator)
+                if (_thirdPersonCameraController == null)
                 {
-                    _animator.SetBool(_animIDJump, false);
-                    _animator.SetBool(_animIDFreeFall, false);
+                    _thirdPersonCameraController = new ThirdPersonCameraController(
+                        CinemachineCameraTarget,
+                        TopClamp,
+                        BottomClamp,
+                        CameraAngleOverride,
+                        IsCurrentDeviceMouse,
+                        _threshold
+                    );
                 }
-
-                // stop our velocity dropping infinitely when grounded
-                if (_verticalVelocity < 0.0f)
-                {
-                    _verticalVelocity = -2f;
-                }
-
-                // Jump
-                if (_input.jump && _jumpTimeoutDelta <= 0.0f)
-                {
-                    // the square root of H * -2 * G = how much velocity needed to reach desired height
-                    _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-
-                    // update animator if using character
-                    if (_hasAnimator)
-                    {
-                        _animator.SetBool(_animIDJump, true);
-                    }
-                }
-
-                // jump timeout
-                if (_jumpTimeoutDelta >= 0.0f)
-                {
-                    _jumpTimeoutDelta -= Time.deltaTime;
-                }
-            }
-            else
-            {
-                // reset the jump timeout timer
-                _jumpTimeoutDelta = JumpTimeout;
-
-                // fall timeout
-                if (_fallTimeoutDelta >= 0.0f)
-                {
-                    _fallTimeoutDelta -= Time.deltaTime;
-                }
-                else
-                {
-                    // update animator if using character
-                    if (_hasAnimator)
-                    {
-                        _animator.SetBool(_animIDFreeFall, true);
-                    }
-                }
-
-                // if we are not grounded, do not jump
-                _input.jump = false;
-            }
-
-            // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-            if (_verticalVelocity < _terminalVelocity)
-            {
-                _verticalVelocity += Gravity * Time.deltaTime;
+                
+                _thirdPersonCameraController.SetYaw(_cameraController.Yaw);
+                _thirdPersonCameraController.SetPitch(_cameraController.Pitch);
+                _cameraController = _thirdPersonCameraController;
             }
         }
 
-        private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
+        private void UpdateMovementHandlerPerspective()
         {
-            if (lfAngle < -360f) lfAngle += 360f;
-            if (lfAngle > 360f) lfAngle -= 360f;
-            return Mathf.Clamp(lfAngle, lfMin, lfMax);
+            // Recreate movement handler with new perspective mode
+            _movementHandler = new MovementHandler(
+                _controller,
+                transform,
+                _mainCameraComponent,
+                CurrentPerspective,
+                MoveSpeed,
+                SprintSpeed,
+                RotationSmoothTime,
+                SpeedChangeRate
+            );
         }
 
         private void OnDrawGizmosSelected()
@@ -519,24 +478,18 @@ namespace GameCore
             Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
             Color transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
 
-            if (Grounded) Gizmos.color = transparentGreen;
-            else Gizmos.color = transparentRed;
-
-            // when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
+            Gizmos.color = Grounded ? transparentGreen : transparentRed;
             Gizmos.DrawSphere(
                 new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
-                GroundedRadius);
+                GroundedRadius
+            );
         }
 
         private void OnFootstep(AnimationEvent animationEvent)
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
-                if (FootstepAudioClips.Length > 0)
-                {
-                    var index = Random.Range(0, FootstepAudioClips.Length);
-                    AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
-                }
+                _audioHandler?.PlayFootstep();
             }
         }
 
@@ -544,75 +497,7 @@ namespace GameCore
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
-                AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
-            }
-        }
-
-
-        /// <summary>
-        /// Toggles between first-person and third-person perspective
-        /// </summary>
-        public void TogglePerspective()
-        {
-            CurrentPerspective = CurrentPerspective == PerspectiveMode.ThirdPerson 
-                ? PerspectiveMode.FirstPerson 
-                : PerspectiveMode.ThirdPerson;
-
-            UpdatePerspectiveMode();
-        }
-
-        /// <summary>
-        /// Updates camera and Cinemachine settings based on current perspective mode
-        /// </summary>
-        private void UpdatePerspectiveMode()
-        {
-            // Sync camera rotation when switching
-            if (CurrentPerspective == PerspectiveMode.FirstPerson)
-            {
-                // When switching to first-person, sync the yaw with current player rotation
-                _cinemachineTargetYaw = transform.eulerAngles.y;
-                
-                // Get current camera pitch
-                if (_mainCamera != null)
-                {
-                    _cinemachineTargetPitch = _mainCamera.transform.eulerAngles.x;
-                    // Clamp pitch
-                    if (_cinemachineTargetPitch > 180f)
-                        _cinemachineTargetPitch -= 360f;
-                }
-
-                // Disable Cinemachine virtual camera if available
-                if (CinemachineVirtualCamera != null)
-                {
-                    CinemachineVirtualCamera.enabled = false;
-                }
-            }
-            else
-            {
-                // When switching to third-person, sync Cinemachine target with current camera
-                if (CinemachineCameraTarget != null)
-                {
-                    _cinemachineTargetYaw = CinemachineCameraTarget.transform.eulerAngles.y;
-                    _cinemachineTargetPitch = CinemachineCameraTarget.transform.eulerAngles.x;
-                    
-                    // Clamp pitch
-                    if (_cinemachineTargetPitch > 180f)
-                        _cinemachineTargetPitch -= 360f;
-                }
-                else if (_mainCamera != null)
-                {
-                    // Fallback: use main camera rotation
-                    _cinemachineTargetYaw = _mainCamera.transform.eulerAngles.y;
-                    _cinemachineTargetPitch = _mainCamera.transform.eulerAngles.x;
-                    if (_cinemachineTargetPitch > 180f)
-                        _cinemachineTargetPitch -= 360f;
-                }
-
-                // Enable Cinemachine virtual camera if available
-                if (CinemachineVirtualCamera != null)
-                {
-                    CinemachineVirtualCamera.enabled = true;
-                }
+                _audioHandler?.PlayLanding();
             }
         }
     }
