@@ -18,11 +18,8 @@ namespace GameCore
         [Tooltip("Height offset for first-person camera (eye level)")]
         public float FirstPersonCameraHeight = 1.6f;
 
-        [Tooltip("Forward offset for first-person camera when sprinting (prevents head clipping)")]
-        public float FirstPersonSprintForwardOffset = 0.15f;
-
-        [Tooltip("How fast the camera moves forward/back when starting/stopping sprint")]
-        public float SprintOffsetSmoothing = 5.0f;
+        [Tooltip("Forward offset for first-person camera (pushes camera forward from player center)")]
+        public float FirstPersonForwardOffset = 0.0f;
 
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
@@ -194,8 +191,7 @@ namespace GameCore
                 transform,
                 _mainCameraComponent,
                 FirstPersonCameraHeight,
-                FirstPersonSprintForwardOffset,
-                SprintOffsetSmoothing,
+                FirstPersonForwardOffset,
                 TopClamp,
                 BottomClamp,
                 CameraAngleOverride,
@@ -329,13 +325,10 @@ namespace GameCore
             {
                 _movementHandler.SetYaw(_cameraController.Yaw);
                 
-                // Update sprint offset for first-person camera
+                // Sync forward offset from Inspector so changes apply immediately
                 if (_firstPersonCameraController != null)
                 {
-                    _firstPersonCameraController.UpdateSprintOffset(
-                        _input.sprint,
-                        _input.move != Vector2.zero
-                    );
+                    _firstPersonCameraController.UpdateForwardOffset(FirstPersonForwardOffset);
                 }
             }
         }
@@ -365,8 +358,7 @@ namespace GameCore
                         transform,
                         _mainCameraComponent,
                         FirstPersonCameraHeight,
-                        FirstPersonSprintForwardOffset,
-                        SprintOffsetSmoothing,
+                        FirstPersonForwardOffset,
                         TopClamp,
                         BottomClamp,
                         CameraAngleOverride,

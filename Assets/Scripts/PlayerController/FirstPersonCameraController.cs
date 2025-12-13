@@ -10,8 +10,7 @@ namespace GameCore
         private readonly Transform _playerTransform;
         private readonly Camera _mainCamera;
         private readonly float _cameraHeight;
-        private readonly float _sprintForwardOffset;
-        private readonly float _sprintOffsetSmoothing;
+        private float _forwardOffset; // Not readonly so it can be updated at runtime
         private readonly float _topClamp;
         private readonly float _bottomClamp;
         private readonly float _cameraAngleOverride;
@@ -20,7 +19,6 @@ namespace GameCore
 
         private float _yaw;
         private float _pitch;
-        private float _currentSprintOffset;
 
         public float Yaw => _yaw;
         public float Pitch => _pitch;
@@ -29,8 +27,7 @@ namespace GameCore
             Transform playerTransform,
             Camera mainCamera,
             float cameraHeight,
-            float sprintForwardOffset,
-            float sprintOffsetSmoothing,
+            float forwardOffset,
             float topClamp,
             float bottomClamp,
             float cameraAngleOverride,
@@ -40,8 +37,7 @@ namespace GameCore
             _playerTransform = playerTransform;
             _mainCamera = mainCamera;
             _cameraHeight = cameraHeight;
-            _sprintForwardOffset = sprintForwardOffset;
-            _sprintOffsetSmoothing = sprintOffsetSmoothing;
+            _forwardOffset = forwardOffset;
             _topClamp = topClamp;
             _bottomClamp = bottomClamp;
             _cameraAngleOverride = cameraAngleOverride;
@@ -76,7 +72,7 @@ namespace GameCore
             if (_mainCamera == null) return;
 
             Vector3 cameraPosition = _playerTransform.position + Vector3.up * _cameraHeight +
-                _playerTransform.forward * _currentSprintOffset;
+                _playerTransform.forward * _forwardOffset;
             _mainCamera.transform.position = cameraPosition;
             _mainCamera.transform.rotation = Quaternion.Euler(
                 _pitch + _cameraAngleOverride,
@@ -85,14 +81,9 @@ namespace GameCore
             );
         }
 
-        public void UpdateSprintOffset(bool isSprinting, bool isMoving)
+        public void UpdateForwardOffset(float forwardOffset)
         {
-            float targetOffset = (isSprinting && isMoving) ? _sprintForwardOffset : 0f;
-            _currentSprintOffset = Mathf.Lerp(
-                _currentSprintOffset,
-                targetOffset,
-                Time.deltaTime * _sprintOffsetSmoothing
-            );
+            _forwardOffset = forwardOffset;
         }
 
         public void SetYaw(float yaw)
