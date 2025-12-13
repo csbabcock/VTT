@@ -33,13 +33,6 @@ namespace GameCore
         [Tooltip("How fast the camera moves forward/back when starting/stopping sprint")]
         public float SprintOffsetSmoothing = 5.0f;
 
-        [Tooltip("Key to toggle between first-person and third-person (V key by default)")]
-#if ENABLE_INPUT_SYSTEM
-        public Key TogglePerspectiveKey = Key.V;
-#else
-        public KeyCode TogglePerspectiveKey = KeyCode.V;
-#endif
-
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
@@ -186,6 +179,13 @@ namespace GameCore
             {
                 Debug.LogError("PlayerInputs component is missing! Please add the PlayerInputs component to the same GameObject.");
             }
+            else
+            {
+                // Subscribe to perspective toggle event
+#if ENABLE_INPUT_SYSTEM
+                _input.OnTogglePerspective += TogglePerspective;
+#endif
+            }
             
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
@@ -230,12 +230,20 @@ namespace GameCore
         {
             _hasAnimator = TryGetComponent(out _animator);
 
-            // Check for perspective toggle input
-            CheckPerspectiveToggle();
-
             JumpAndGravity();
             GroundedCheck();
             Move();
+        }
+
+        private void OnDestroy()
+        {
+            // Unsubscribe from events
+            if (_input != null)
+            {
+#if ENABLE_INPUT_SYSTEM
+                _input.OnTogglePerspective -= TogglePerspective;
+#endif
+            }
         }
 
         private void LateUpdate()
@@ -540,23 +548,6 @@ namespace GameCore
             }
         }
 
-        private void CheckPerspectiveToggle()
-        {
-            if (_input == null) return;
-            
-            // Check for perspective toggle input
-#if ENABLE_INPUT_SYSTEM
-            if (Keyboard.current != null && Keyboard.current[TogglePerspectiveKey].wasPressedThisFrame)
-            {
-                TogglePerspective();
-            }
-#else
-            if (Input.GetKeyDown(TogglePerspectiveKey))
-            {
-                TogglePerspective();
-            }
-#endif
-        }
 
         /// <summary>
         /// Toggles between first-person and third-person perspective

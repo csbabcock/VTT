@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 namespace GameCore
 {
+	[RequireComponent(typeof(PlayerInput))]
 	public class PlayerInputs : MonoBehaviour
 	{
 		[Header("Character Input Values")]
@@ -21,31 +22,154 @@ namespace GameCore
 		public bool cursorInputForLook = true;
 
 #if ENABLE_INPUT_SYSTEM
-		public void OnMove(InputValue value)
+		private PlayerInput _playerInput;
+		private InputActionMap _playerActionMap;
+		private InputAction _moveAction;
+		private InputAction _lookAction;
+		private InputAction _jumpAction;
+		private InputAction _sprintAction;
+		private InputAction _togglePerspectiveAction;
+
+		// Events for action callbacks
+		public System.Action OnTogglePerspective;
+
+		private void Awake()
 		{
-			MoveInput(value.Get<Vector2>());
+			_playerInput = GetComponent<PlayerInput>();
+			if (_playerInput == null)
+			{
+				Debug.LogError("PlayerInput component is missing! Please add the PlayerInput component to the same GameObject.");
+				return;
+			}
+
+			// Get the Player action map
+			_playerActionMap = _playerInput.actions.FindActionMap("Player");
+			if (_playerActionMap == null)
+			{
+				Debug.LogError("Player action map not found in Input Actions!");
+				return;
+			}
+
+			// Get individual actions
+			_moveAction = _playerActionMap.FindAction("Move");
+			_lookAction = _playerActionMap.FindAction("Look");
+			_jumpAction = _playerActionMap.FindAction("Jump");
+			_sprintAction = _playerActionMap.FindAction("Sprint");
+			_togglePerspectiveAction = _playerActionMap.FindAction("TogglePerspective");
+
+			// Subscribe to action events
+			if (_moveAction != null)
+				_moveAction.performed += OnMovePerformed;
+			
+			if (_lookAction != null)
+				_lookAction.performed += OnLookPerformed;
+			
+			if (_jumpAction != null)
+			{
+				_jumpAction.performed += OnJumpPerformed;
+				_jumpAction.canceled += OnJumpCanceled;
+			}
+			
+			if (_sprintAction != null)
+			{
+				_sprintAction.performed += OnSprintPerformed;
+				_sprintAction.canceled += OnSprintCanceled;
+			}
+
+			if (_togglePerspectiveAction != null)
+				_togglePerspectiveAction.performed += OnTogglePerspectivePerformed;
 		}
 
-		public void OnLook(InputValue value)
+		private void OnEnable()
 		{
-			if(cursorInputForLook)
+			// Enable the action map
+			_playerActionMap?.Enable();
+		}
+
+		private void OnDisable()
+		{
+			// Disable the action map
+			_playerActionMap?.Disable();
+		}
+
+		private void OnDestroy()
+		{
+			// Unsubscribe from action events
+			if (_moveAction != null)
+				_moveAction.performed -= OnMovePerformed;
+			
+			if (_lookAction != null)
+				_lookAction.performed -= OnLookPerformed;
+			
+			if (_jumpAction != null)
 			{
-				LookInput(value.Get<Vector2>());
+				_jumpAction.performed -= OnJumpPerformed;
+				_jumpAction.canceled -= OnJumpCanceled;
+			}
+			
+			if (_sprintAction != null)
+			{
+				_sprintAction.performed -= OnSprintPerformed;
+				_sprintAction.canceled -= OnSprintCanceled;
+			}
+
+			if (_togglePerspectiveAction != null)
+				_togglePerspectiveAction.performed -= OnTogglePerspectivePerformed;
+		}
+
+		private void Update()
+		{
+			// Read continuous input values (for analog movement and look)
+			if (_moveAction != null)
+			{
+				move = _moveAction.ReadValue<Vector2>();
+			}
+
+			if (_lookAction != null && cursorInputForLook)
+			{
+				look = _lookAction.ReadValue<Vector2>();
 			}
 		}
 
-		public void OnJump(InputValue value)
+		private void OnMovePerformed(InputAction.CallbackContext context)
 		{
-			JumpInput(value.isPressed);
+			move = context.ReadValue<Vector2>();
 		}
 
-		public void OnSprint(InputValue value)
+		private void OnLookPerformed(InputAction.CallbackContext context)
 		{
-			SprintInput(value.isPressed);
+			if (cursorInputForLook)
+			{
+				look = context.ReadValue<Vector2>();
+			}
 		}
-#endif
 
+		private void OnJumpPerformed(InputAction.CallbackContext context)
+		{
+			jump = true;
+		}
 
+		private void OnJumpCanceled(InputAction.CallbackContext context)
+		{
+			jump = false;
+		}
+
+		private void OnSprintPerformed(InputAction.CallbackContext context)
+		{
+			sprint = true;
+		}
+
+		private void OnSprintCanceled(InputAction.CallbackContext context)
+		{
+			sprint = false;
+		}
+
+		private void OnTogglePerspectivePerformed(InputAction.CallbackContext context)
+		{
+			OnTogglePerspective?.Invoke();
+		}
+
+		// Public methods for external input (mobile UI, etc.)
 		public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
@@ -65,6 +189,7 @@ namespace GameCore
 		{
 			sprint = newSprintState;
 		}
+#endif
 
 		private void OnApplicationFocus(bool hasFocus)
 		{
