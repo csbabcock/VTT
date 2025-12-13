@@ -80,11 +80,6 @@ namespace GameCore
 			{
 				_togglePerspectiveAction.performed += OnTogglePerspectivePerformed;
 				_togglePerspectiveAction.Enable();
-				Debug.Log("TogglePerspective action found and subscribed!");
-			}
-			else
-			{
-				Debug.LogError("TogglePerspective action not found in Player action map!");
 			}
 		}
 
@@ -141,7 +136,6 @@ namespace GameCore
 			// Fallback: Check if toggle perspective button was pressed this frame
 			if (_togglePerspectiveAction != null && _togglePerspectiveAction.WasPressedThisFrame())
 			{
-				Debug.Log("TogglePerspective detected via WasPressedThisFrame!");
 				OnTogglePerspective?.Invoke();
 			}
 		}
@@ -181,7 +175,6 @@ namespace GameCore
 
 		private void OnTogglePerspectivePerformed(InputAction.CallbackContext context)
 		{
-			Debug.Log("TogglePerspective action triggered!");
 			OnTogglePerspective?.Invoke();
 		}
 

@@ -12,6 +12,9 @@ namespace GameCore
         private readonly float _groundedOffset;
         private readonly float _groundedRadius;
 
+        // Cached vector to avoid allocation
+        private Vector3 _cachedSpherePosition = Vector3.zero;
+
         public bool IsGrounded { get; private set; }
 
         public GroundedChecker(Transform transform, float groundedOffset, float groundedRadius, LayerMask groundLayers)
@@ -24,14 +27,15 @@ namespace GameCore
 
         public void CheckGrounded()
         {
-            Vector3 spherePosition = new Vector3(
+            // Reuse cached vector to avoid allocation
+            _cachedSpherePosition.Set(
                 _transform.position.x,
                 _transform.position.y - _groundedOffset,
                 _transform.position.z
             );
             
             IsGrounded = Physics.CheckSphere(
-                spherePosition,
+                _cachedSpherePosition,
                 _groundedRadius,
                 _groundLayers,
                 QueryTriggerInteraction.Ignore

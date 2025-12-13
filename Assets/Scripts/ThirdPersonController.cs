@@ -269,12 +269,7 @@ namespace GameCore
             {
 #if ENABLE_INPUT_SYSTEM
                 _input.OnTogglePerspective += OnTogglePerspective;
-                Debug.Log("Subscribed to OnTogglePerspective event");
 #endif
-            }
-            else
-            {
-                Debug.LogWarning("PlayerInputs is null, cannot subscribe to events!");
             }
         }
 
@@ -292,8 +287,6 @@ namespace GameCore
         {
             if (_input == null) return;
 
-            _hasAnimator = TryGetComponent(out _animator);
-
             // Update grounded state
             _groundedChecker.CheckGrounded();
             Grounded = _groundedChecker.IsGrounded;
@@ -305,15 +298,13 @@ namespace GameCore
             _movementHandler.ProcessMovement(_input.move, _input.sprint, _input.analogMovement);
             _movementHandler.ApplyMovementWithVerticalVelocity(_jumpHandler.VerticalVelocity);
 
-            // Update camera controller based on perspective
-            UpdateCameraController();
-
             // Update animations
-            if (_animationHandler != null)
+            if (_hasAnimator && _animationHandler != null)
             {
-                var jumpHandler = _jumpHandler as JumpHandler;
-                bool isJumping = jumpHandler != null && jumpHandler.IsJumping;
-                bool isFalling = jumpHandler != null && jumpHandler.IsFalling;
+                // Cache jump handler cast to avoid repeated casting
+                JumpHandler jumpHandler = _jumpHandler as JumpHandler;
+                bool isJumping = jumpHandler?.IsJumping ?? false;
+                bool isFalling = jumpHandler?.IsFalling ?? false;
                 
                 _animationHandler.UpdateAnimations(
                     _movementHandler.AnimationBlend,
@@ -349,62 +340,12 @@ namespace GameCore
             }
         }
 
-        private void UpdateCameraController()
-        {
-            if (_perspectiveManager.CurrentPerspective != CurrentPerspective)
-            {
-                CurrentPerspective = _perspectiveManager.CurrentPerspective;
-                
-                // Switch camera controller and sync rotation
-                if (CurrentPerspective == PerspectiveMode.FirstPerson)
-                {
-                    if (_firstPersonCameraController == null)
-                    {
-                        _firstPersonCameraController = new FirstPersonCameraController(
-                            transform,
-                            _mainCameraComponent,
-                            FirstPersonCameraHeight,
-                            FirstPersonSprintForwardOffset,
-                            SprintOffsetSmoothing,
-                            TopClamp,
-                            BottomClamp,
-                            CameraAngleOverride,
-                            IsCurrentDeviceMouse,
-                            _threshold
-                        );
-                    }
-                    
-                    _firstPersonCameraController.SetYaw(_cameraController.Yaw);
-                    _firstPersonCameraController.SetPitch(_cameraController.Pitch);
-                    _cameraController = _firstPersonCameraController;
-                }
-                else
-                {
-                    if (_thirdPersonCameraController == null)
-                    {
-                        _thirdPersonCameraController = new ThirdPersonCameraController(
-                            CinemachineCameraTarget,
-                            TopClamp,
-                            BottomClamp,
-                            CameraAngleOverride,
-                            IsCurrentDeviceMouse,
-                            _threshold
-                        );
-                    }
-                    
-                    _thirdPersonCameraController.SetYaw(_cameraController.Yaw);
-                    _thirdPersonCameraController.SetPitch(_cameraController.Pitch);
-                    _cameraController = _thirdPersonCameraController;
-                }
-            }
-        }
+        // Removed - camera controller switching is now handled in OnTogglePerspective
 
         private void OnTogglePerspective()
         {
-            Debug.Log($"OnTogglePerspective called! Current: {CurrentPerspective}");
             _perspectiveManager.TogglePerspective();
             CurrentPerspective = _perspectiveManager.CurrentPerspective;
-            Debug.Log($"Perspective toggled to: {CurrentPerspective}");
             
             // Immediately switch camera controller
             SwitchCameraController();
