@@ -8,12 +8,38 @@ using UnityEngine.InputSystem;
 
 namespace StarterAssets
 {
+    public enum PerspectiveMode
+    {
+        ThirdPerson,
+        FirstPerson
+    }
+
     [RequireComponent(typeof(CharacterController))]
 #if ENABLE_INPUT_SYSTEM 
     [RequireComponent(typeof(PlayerInput))]
 #endif
     public class ThirdPersonController : MonoBehaviour
     {
+        [Header("Perspective")]
+        [Tooltip("Current perspective mode")]
+        public PerspectiveMode CurrentPerspective = PerspectiveMode.ThirdPerson;
+
+        [Tooltip("Height offset for first-person camera (eye level)")]
+        public float FirstPersonCameraHeight = 1.6f;
+
+        [Tooltip("Forward offset for first-person camera when sprinting (prevents head clipping)")]
+        public float FirstPersonSprintForwardOffset = 0.15f;
+
+        [Tooltip("How fast the camera moves forward/back when starting/stopping sprint")]
+        public float SprintOffsetSmoothing = 5.0f;
+
+        [Tooltip("Key to toggle between first-person and third-person (V key by default)")]
+#if ENABLE_INPUT_SYSTEM
+        public Key TogglePerspectiveKey = Key.V;
+#else
+        public KeyCode TogglePerspectiveKey = KeyCode.V;
+#endif
+
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
@@ -63,6 +89,9 @@ namespace StarterAssets
         [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
         public GameObject CinemachineCameraTarget;
 
+        [Tooltip("Optional: Cinemachine Virtual Camera to disable in first-person mode (leave null to auto-detect)")]
+        public MonoBehaviour CinemachineVirtualCamera;
+
         [Tooltip("How far in degrees can you move the camera up")]
         public float TopClamp = 70.0f;
 
@@ -78,6 +107,10 @@ namespace StarterAssets
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
+
+        // first-person camera
+        private Camera _firstPersonCamera;
+        private float _currentSprintOffset = 0f;
 
         // player
         private float _speed;
@@ -130,11 +163,20 @@ namespace StarterAssets
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             }
+
+            // get camera component for first-person mode
+            if (_mainCamera != null)
+            {
+                _firstPersonCamera = _mainCamera.GetComponent<Camera>();
+            }
         }
 
         private void Start()
         {
-            _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
+            if (CinemachineCameraTarget != null)
+            {
+                _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
+            }
             
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
@@ -150,11 +192,40 @@ namespace StarterAssets
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+
+            // Auto-detect Cinemachine virtual camera if not set
+            // Note: This requires Cinemachine package. If you get compilation errors, 
+            // manually assign the CinemachineVirtualCamera field in the inspector.
+            if (CinemachineVirtualCamera == null && _mainCamera != null)
+            {
+                // Try to find CinemachineBrain component (Cinemachine package)
+                var cinemachineBrain = _mainCamera.GetComponent("CinemachineBrain");
+                if (cinemachineBrain != null)
+                {
+                    // Get the active virtual camera using reflection to avoid compile-time dependency
+                    var brainType = cinemachineBrain.GetType();
+                    var activeVCamProperty = brainType.GetProperty("ActiveVirtualCamera");
+                    if (activeVCamProperty != null)
+                    {
+                        var activeVCam = activeVCamProperty.GetValue(cinemachineBrain);
+                        if (activeVCam != null)
+                        {
+                            CinemachineVirtualCamera = activeVCam as MonoBehaviour;
+                        }
+                    }
+                }
+            }
+
+            // Initialize perspective mode
+            UpdatePerspectiveMode();
         }
 
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
+
+            // Check for perspective toggle input
+            CheckPerspectiveToggle();
 
             JumpAndGravity();
             GroundedCheck();
@@ -192,23 +263,60 @@ namespace StarterAssets
 
         private void CameraRotation()
         {
-            // if there is an input and camera position is not fixed
-            if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+            if (CurrentPerspective == PerspectiveMode.FirstPerson)
             {
-                //Don't multiply mouse input by Time.deltaTime;
-                float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
+                // First-person camera rotation
+                if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+                {
+                    //Don't multiply mouse input by Time.deltaTime;
+                    float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
-                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+                    _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
+                    _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+                }
+
+                // clamp our rotations so our values are limited 360 degrees
+                _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+                _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+
+                // Rotate the player horizontally (yaw)
+                transform.rotation = Quaternion.Euler(0.0f, _cinemachineTargetYaw, 0.0f);
+
+                // Smoothly interpolate sprint forward offset
+                float targetSprintOffset = (_input.sprint && _input.move != Vector2.zero) 
+                    ? FirstPersonSprintForwardOffset 
+                    : 0f;
+                _currentSprintOffset = Mathf.Lerp(_currentSprintOffset, targetSprintOffset, 
+                    Time.deltaTime * SprintOffsetSmoothing);
+
+                // Rotate the camera vertically (pitch) - position camera at eye level
+                // Move camera forward when sprinting to prevent head clipping
+                Vector3 cameraPosition = transform.position + Vector3.up * FirstPersonCameraHeight + 
+                    transform.forward * _currentSprintOffset;
+                _mainCamera.transform.position = cameraPosition;
+                _mainCamera.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
+                    _cinemachineTargetYaw, 0.0f);
             }
+            else
+            {
+                // Third-person camera rotation (original behavior)
+                if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+                {
+                    //Don't multiply mouse input by Time.deltaTime;
+                    float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-            // clamp our rotations so our values are limited 360 degrees
-            _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+                    _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
+                    _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+                }
 
-            // Cinemachine will follow this target
-            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
-                _cinemachineTargetYaw, 0.0f);
+                // clamp our rotations so our values are limited 360 degrees
+                _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+                _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+
+                // Cinemachine will follow this target
+                CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
+                    _cinemachineTargetYaw, 0.0f);
+            }
         }
 
         private void Move()
@@ -255,17 +363,48 @@ namespace StarterAssets
             // if there is a move input rotate player when the player is moving
             if (_input.move != Vector2.zero)
             {
-                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                  _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                    RotationSmoothTime);
+                if (CurrentPerspective == PerspectiveMode.FirstPerson)
+                {
+                    // In first-person, movement is relative to camera forward direction
+                    // Player rotation is already handled in CameraRotation, so we just calculate movement direction
+                    _targetRotation = _cinemachineTargetYaw;
+                }
+                else
+                {
+                    // Third-person: rotate player to face movement direction relative to camera
+                    _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                                      _mainCamera.transform.eulerAngles.y;
+                    float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+                        RotationSmoothTime);
 
-                // rotate to face input direction relative to camera position
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                    // rotate to face input direction relative to camera position
+                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                }
             }
 
 
-            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            Vector3 targetDirection;
+            
+            if (CurrentPerspective == PerspectiveMode.FirstPerson)
+            {
+                // In first-person, move relative to camera forward direction
+                Vector3 forward = _mainCamera.transform.forward;
+                Vector3 right = _mainCamera.transform.right;
+                
+                // Project forward and right vectors onto the horizontal plane
+                forward.y = 0f;
+                right.y = 0f;
+                forward.Normalize();
+                right.Normalize();
+                
+                // Calculate movement direction based on input
+                targetDirection = forward * inputDirection.z + right * inputDirection.x;
+            }
+            else
+            {
+                // Third-person: use the calculated target rotation
+                targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            }
 
             // move the player
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
@@ -386,6 +525,89 @@ namespace StarterAssets
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+            }
+        }
+
+        private void CheckPerspectiveToggle()
+        {
+            // Check for perspective toggle input
+#if ENABLE_INPUT_SYSTEM
+            if (Keyboard.current != null && Keyboard.current[TogglePerspectiveKey].wasPressedThisFrame)
+            {
+                TogglePerspective();
+            }
+#else
+            if (Input.GetKeyDown(TogglePerspectiveKey))
+            {
+                TogglePerspective();
+            }
+#endif
+        }
+
+        /// <summary>
+        /// Toggles between first-person and third-person perspective
+        /// </summary>
+        public void TogglePerspective()
+        {
+            CurrentPerspective = CurrentPerspective == PerspectiveMode.ThirdPerson 
+                ? PerspectiveMode.FirstPerson 
+                : PerspectiveMode.ThirdPerson;
+
+            UpdatePerspectiveMode();
+        }
+
+        /// <summary>
+        /// Updates camera and Cinemachine settings based on current perspective mode
+        /// </summary>
+        private void UpdatePerspectiveMode()
+        {
+            // Sync camera rotation when switching
+            if (CurrentPerspective == PerspectiveMode.FirstPerson)
+            {
+                // When switching to first-person, sync the yaw with current player rotation
+                _cinemachineTargetYaw = transform.eulerAngles.y;
+                
+                // Get current camera pitch
+                if (_mainCamera != null)
+                {
+                    _cinemachineTargetPitch = _mainCamera.transform.eulerAngles.x;
+                    // Clamp pitch
+                    if (_cinemachineTargetPitch > 180f)
+                        _cinemachineTargetPitch -= 360f;
+                }
+
+                // Disable Cinemachine virtual camera if available
+                if (CinemachineVirtualCamera != null)
+                {
+                    CinemachineVirtualCamera.enabled = false;
+                }
+            }
+            else
+            {
+                // When switching to third-person, sync Cinemachine target with current camera
+                if (CinemachineCameraTarget != null)
+                {
+                    _cinemachineTargetYaw = CinemachineCameraTarget.transform.eulerAngles.y;
+                    _cinemachineTargetPitch = CinemachineCameraTarget.transform.eulerAngles.x;
+                    
+                    // Clamp pitch
+                    if (_cinemachineTargetPitch > 180f)
+                        _cinemachineTargetPitch -= 360f;
+                }
+                else if (_mainCamera != null)
+                {
+                    // Fallback: use main camera rotation
+                    _cinemachineTargetYaw = _mainCamera.transform.eulerAngles.y;
+                    _cinemachineTargetPitch = _mainCamera.transform.eulerAngles.x;
+                    if (_cinemachineTargetPitch > 180f)
+                        _cinemachineTargetPitch -= 360f;
+                }
+
+                // Enable Cinemachine virtual camera if available
+                if (CinemachineVirtualCamera != null)
+                {
+                    CinemachineVirtualCamera.enabled = true;
+                }
             }
         }
     }
