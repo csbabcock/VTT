@@ -8,9 +8,9 @@ namespace GameCore
     public class ThirdPersonCameraController : ICameraController
     {
         private readonly GameObject _cinemachineCameraTarget;
-        private readonly float _topClamp;
-        private readonly float _bottomClamp;
-        private readonly float _cameraAngleOverride;
+        private float _topClamp;
+        private float _bottomClamp;
+        private float _cameraAngleOverride;
         private readonly bool _isMouseDevice;
         private readonly float _threshold;
 
@@ -75,6 +75,13 @@ namespace GameCore
         public void SetPitch(float pitch)
         {
             _pitch = pitch;
+        }
+
+        public void UpdateClampValues(float topClamp, float bottomClamp, float cameraAngleOverride)
+        {
+            _topClamp = topClamp;
+            _bottomClamp = bottomClamp;
+            _cameraAngleOverride = cameraAngleOverride;
         }
 
         private static float ClampAngle(float angle, float min, float max)

@@ -15,11 +15,21 @@ namespace GameCore
         [Tooltip("Current perspective mode")]
         public PerspectiveMode CurrentPerspective = PerspectiveMode.ThirdPerson;
 
-        [Tooltip("Height offset for first-person camera (eye level)")]
-        public float FirstPersonCameraHeight = 1.6f;
-
-        [Tooltip("Forward offset for first-person camera (pushes camera forward from player center)")]
+        [Tooltip("Forward offset for first-person camera (pushes camera slightly forward from the head/anchor)")]
         public float FirstPersonForwardOffset = 0.0f;
+
+        [Header("First Person Camera")]
+        [Tooltip("Radius of the first-person camera collision sphere (independent of CharacterController radius).")]
+        public float FirstPersonCameraRadius = 0.2f;
+
+        [Tooltip("Layers the first-person camera collides with to avoid seeing through walls and level geometry.")]
+        public LayerMask FirstPersonCameraCollisionLayers;
+
+        [Tooltip("Optional head bone; if assigned, the first-person camera will follow this bone's transform (position/rotation).")]
+        public Transform FirstPersonHeadBone;
+
+        [Tooltip("Distance in front of the head/camera at which forward movement is stopped in first-person to prevent clipping.")]
+        public float FirstPersonWallStopDistance = 0.1f;
 
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
@@ -190,13 +200,15 @@ namespace GameCore
             _firstPersonCameraController = new FirstPersonCameraController(
                 transform,
                 _mainCameraComponent,
-                FirstPersonCameraHeight,
                 FirstPersonForwardOffset,
                 TopClamp,
                 BottomClamp,
                 CameraAngleOverride,
                 isMouseDevice,
-                _threshold
+                _threshold,
+                FirstPersonCameraRadius,
+                FirstPersonCameraCollisionLayers,
+                FirstPersonHeadBone
             );
 
             _thirdPersonCameraController = new ThirdPersonCameraController(
@@ -291,7 +303,33 @@ namespace GameCore
             _jumpHandler.ProcessJump(_input.jump, Grounded);
 
             // Process movement
-            _movementHandler.ProcessMovement(_input.move, _input.sprint, _input.analogMovement);
+            Vector2 moveInput = _input.move;
+            if (CurrentPerspective == PerspectiveMode.FirstPerson && moveInput.y > 0.0f)
+            {
+                // Prevent forward movement in first-person when a wall is directly in front of the head/camera.
+                Vector3 anchorPosition;
+                if (FirstPersonHeadBone != null)
+                {
+                    anchorPosition = FirstPersonHeadBone.position;
+                }
+                else
+                {
+                    float headHeight = _controller != null ? _controller.height * 0.9f : 1.6f;
+                    anchorPosition = transform.position + Vector3.up * headHeight;
+                }
+
+                float checkDistance = FirstPersonWallStopDistance + FirstPersonForwardOffset + 0.01f;
+                if (checkDistance > 0.0f && FirstPersonCameraCollisionLayers != 0)
+                {
+                    if (Physics.Raycast(anchorPosition, transform.forward, checkDistance, FirstPersonCameraCollisionLayers, QueryTriggerInteraction.Ignore))
+                    {
+                        // Block forward component of movement when very near a wall.
+                        moveInput.y = 0.0f;
+                    }
+                }
+            }
+
+            _movementHandler.ProcessMovement(moveInput, _input.sprint, _input.analogMovement);
             _movementHandler.ApplyMovementWithVerticalVelocity(_jumpHandler.VerticalVelocity);
 
             // Update animations
@@ -315,6 +353,16 @@ namespace GameCore
         private void LateUpdate()
         {
             if (_input == null) return;
+
+            // Always sync camera clamp values from Inspector so changes take effect at runtime.
+            if (_firstPersonCameraController != null)
+            {
+                _firstPersonCameraController.UpdateClampValues(TopClamp, BottomClamp, CameraAngleOverride);
+            }
+            if (_thirdPersonCameraController != null)
+            {
+                _thirdPersonCameraController.UpdateClampValues(TopClamp, BottomClamp, CameraAngleOverride);
+            }
 
             // Process camera rotation
             _cameraController.ProcessRotation(_input.look, LockCameraPosition);
@@ -357,13 +405,15 @@ namespace GameCore
                     _firstPersonCameraController = new FirstPersonCameraController(
                         transform,
                         _mainCameraComponent,
-                        FirstPersonCameraHeight,
                         FirstPersonForwardOffset,
                         TopClamp,
                         BottomClamp,
                         CameraAngleOverride,
                         IsCurrentDeviceMouse,
-                        _threshold
+                        _threshold,
+                        FirstPersonCameraRadius,
+                        FirstPersonCameraCollisionLayers,
+                        FirstPersonHeadBone
                     );
                 }
                 
@@ -405,6 +455,7 @@ namespace GameCore
                 SpeedChangeRate
             );
         }
+
 
         private void OnDrawGizmosSelected()
         {
