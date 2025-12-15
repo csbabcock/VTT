@@ -335,17 +335,12 @@ namespace GameCore
             // Update animations
             if (_hasAnimator && _animationHandler != null)
             {
-                // Cache jump handler cast to avoid repeated casting
-                JumpHandler jumpHandler = _jumpHandler as JumpHandler;
-                bool isJumping = jumpHandler?.IsJumping ?? false;
-                bool isFalling = jumpHandler?.IsFalling ?? false;
-                
                 _animationHandler.UpdateAnimations(
                     _movementHandler.AnimationBlend,
                     _input.analogMovement ? _input.move.magnitude : 1f,
                     Grounded,
-                    isJumping,
-                    isFalling
+                    _jumpHandler.IsJumping,
+                    _jumpHandler.IsFalling
                 );
             }
         }
