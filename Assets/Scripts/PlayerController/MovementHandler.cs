@@ -28,6 +28,7 @@ namespace GameCore
         private Vector3 _tempMovement = Vector3.zero;
         private Vector3 _tempForward = Vector3.zero;
         private Vector3 _tempRight = Vector3.zero;
+        private Vector3 _lastMoveDirection = Vector3.zero;
 
         public float CurrentSpeed => _speed;
         public float AnimationBlend => _animationBlend;
@@ -59,12 +60,26 @@ namespace GameCore
 
         public void ProcessMovement(Vector2 moveInput, bool isSprinting, bool analogMovement)
         {
-            float targetSpeed = isSprinting ? _sprintSpeed : _moveSpeed;
-            if (moveInput == Vector2.zero) targetSpeed = 0.0f;
+            bool hasInput = moveInput != Vector2.zero;
 
-            // Reuse cached vector to avoid allocation
+            // Reuse cached vector to avoid allocation and get current horizontal speed
             _tempVector3.Set(_controller.velocity.x, 0.0f, _controller.velocity.z);
             float currentHorizontalSpeed = _tempVector3.magnitude;
+
+            float targetSpeed = isSprinting ? _sprintSpeed : _moveSpeed;
+            if (moveInput == Vector2.zero)
+            {
+                // Preserve momentum while airborne, but stop when idle on the ground.
+                if (_controller.isGrounded)
+                {
+                    targetSpeed = 0.0f;
+                }
+                else
+                {
+                    targetSpeed = currentHorizontalSpeed;
+                }
+            }
+
             float speedOffset = 0.1f;
             float inputMagnitude = analogMovement ? moveInput.magnitude : 1f;
 
@@ -87,7 +102,9 @@ namespace GameCore
             _tempInputDirection.Set(moveInput.x, 0.0f, moveInput.y);
             _tempInputDirection.Normalize();
 
-            if (moveInput != Vector2.zero)
+            Vector3 targetDirection;
+
+            if (hasInput)
             {
                 if (_perspectiveMode == PerspectiveMode.FirstPerson)
                 {
@@ -101,9 +118,23 @@ namespace GameCore
                         _rotationSmoothTime);
                     _transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
                 }
+
+                targetDirection = CalculateMovementDirection(_tempInputDirection);
+                if (targetDirection.sqrMagnitude > 0.0001f)
+                {
+                    _lastMoveDirection = targetDirection;
+                }
+            }
+            else if (!_controller.isGrounded && _lastMoveDirection.sqrMagnitude > 0.0001f)
+            {
+                // In the air with no input – keep moving in the last horizontal direction.
+                targetDirection = _lastMoveDirection;
+            }
+            else
+            {
+                targetDirection = Vector3.zero;
             }
 
-            Vector3 targetDirection = CalculateMovementDirection(_tempInputDirection);
             // Store movement for later application with vertical velocity
             _pendingMovement = targetDirection.normalized * (_speed * Time.deltaTime);
         }

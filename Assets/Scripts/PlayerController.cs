@@ -297,7 +297,18 @@ namespace GameCore
 
             // Update grounded state
             _groundedChecker.CheckGrounded();
-            Grounded = _groundedChecker.IsGrounded;
+            bool probedGrounded = _groundedChecker.IsGrounded;
+
+            // If our probe sphere is touching something but the CharacterController
+            // itself is not actually grounded, treat the player as airborne for
+            // jump / gravity. This prevents the "slow slide" when barely touching
+            // an edge or wall while falling.
+            if (probedGrounded && !_controller.isGrounded)
+            {
+                probedGrounded = false;
+            }
+
+            Grounded = probedGrounded;
 
             // Process jump and gravity
             _jumpHandler.ProcessJump(_input.jump, Grounded);
