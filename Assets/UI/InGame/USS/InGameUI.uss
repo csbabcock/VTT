@@ -1,0 +1,289 @@
+@import url("../../Shared/Styles/DiegeticTheme.uss");
+
+/* Root container for in-game HUD */
+.hud-root {
+    flex-grow: 1;
+    background-color: rgba(0, 0, 0, 0); /* transparent over gameplay */
+}
+
+/* Generic small diegetic panel (top/bottom corners, etc.) */
+.hud-panel {
+    background-color: rgba(0, 0, 0, 0.45);
+    border-radius: var(--vtt-radius-medium);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    padding-left: var(--vtt-spacing-medium);
+    padding-right: var(--vtt-spacing-medium);
+    padding-top: var(--vtt-spacing-small);
+    padding-bottom: var(--vtt-spacing-small);
+}
+
+/* Container for a horizontal bar (health, stamina, etc.) */
+.hud-bar-container {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+.hud-bar-label {
+    color: var(--vtt-text-muted);
+    font-size: var(--vtt-font-size-body);
+    margin-right: var(--vtt-spacing-small);
+}
+
+.hud-bar {
+    flex-grow: 1;
+    height: 10px;
+    background-color: #15181d;
+    border-radius: var(--vtt-radius-small);
+    overflow: hidden;
+}
+
+.hud-bar-fill {
+    height: 100%;
+    width: 100%; /* you can override with inline styles from code */
+    background-color: var(--vtt-accent-primary);
+}
+
+.hud-bar-fill.secondary {
+    background-color: var(--vtt-accent-secondary);
+}
+
+.hud-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: var(--vtt-spacing-small);
+}
+
+.hud-text-main {
+    color: var(--vtt-text-main);
+    font-size: var(--vtt-font-size-body);
+}
+
+.hud-text-muted {
+    color: var(--vtt-text-muted);
+    font-size: var(--vtt-font-size-body);
+}
+
+/* Character sheet overlay inspired by diegetic panels */
+.charsheet-panel {
+    position: absolute;
+    right: 48px;
+    top: 72px;
+    width: 460px;
+    min-height: 540px;
+    border-radius: var(--vtt-radius-large);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: var(--vtt-bg-panel);
+    padding-left: var(--vtt-spacing-large);
+    padding-right: var(--vtt-spacing-large);
+    padding-top: var(--vtt-spacing-large);
+    padding-bottom: var(--vtt-spacing-large);
+}
+
+.charsheet-title {
+    color: var(--vtt-text-main);
+    font-size: var(--vtt-font-size-title);
+    -unity-font-style: bold;
+    margin-bottom: var(--vtt-spacing-large);
+}
+
+.charsheet-main {
+    flex-direction: row;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.charsheet-column {
+    flex-direction: column;
+}
+
+.charsheet-portrait-slot {
+    width: 120px;
+    height: 150px;
+    border-radius: var(--vtt-radius-medium);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: rgba(0, 0, 0, 0.3);
+    margin-bottom: var(--vtt-spacing-medium);
+}
+
+.charsheet-core-stats {
+    flex-direction: column;
+}
+
+.charsheet-text-main {
+    color: var(--vtt-text-main);
+    font-size: var(--vtt-font-size-body);
+}
+
+.charsheet-text-muted {
+    color: var(--vtt-text-muted);
+    font-size: var(--vtt-font-size-body);
+}
+
+.ability-scores-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.ability-scores-title {
+    margin-bottom: var(--vtt-spacing-large);
+    -unity-text-align: middle-center;
+}
+
+.ability-scores {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 280px;
+}
+
+.charsheet-ability {
+    color: var(--vtt-text-main);
+    font-size: var(--vtt-font-size-body);
+    margin-bottom: 2px;
+}
+
+.charsheet-inventory-grid {
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.charsheet-toggle-button {
+    position: absolute;
+    right: 40px;
+    top: 16px;
+}
+
+.charsheet-pages-container {
+    flex-grow: 1;
+    position: relative;
+}
+
+.charsheet-page {
+    width: 100%;
+    height: 100%;
+}
+
+.charsheet-ability-button {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: var(--vtt-radius-medium);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    color: var(--vtt-text-main);
+    font-size: var(--vtt-font-size-body);
+    padding-left: var(--vtt-spacing-medium);
+    padding-right: var(--vtt-spacing-medium);
+    padding-top: var(--vtt-spacing-small);
+    padding-bottom: var(--vtt-spacing-small);
+    margin-bottom: var(--vtt-spacing-small);
+    justify-content: center;
+    -unity-font-style: normal;
+    -unity-text-align: middle-center;
+}
+
+.charsheet-ability-button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--vtt-accent-primary);
+}
+
+.skills-list {
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.charsheet-skill-button {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: var(--vtt-radius-medium);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    color: var(--vtt-text-main);
+    font-size: var(--vtt-font-size-body);
+    padding-left: var(--vtt-spacing-medium);
+    padding-right: var(--vtt-spacing-medium);
+    padding-top: var(--vtt-spacing-small);
+    padding-bottom: var(--vtt-spacing-small);
+    margin-bottom: var(--vtt-spacing-small);
+    justify-content: flex-start;
+    -unity-font-style: normal;
+}
+
+.charsheet-skill-button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--vtt-accent-primary);
+}
+
+/* Character Info Page */
+.character-info-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.character-info-title {
+    margin-bottom: var(--vtt-spacing-large);
+    -unity-text-align: middle-center;
+}
+
+.character-info-list {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 320px;
+}
+
+.character-info-item {
+    width: 100%;
+    padding-top: var(--vtt-spacing-small);
+    padding-bottom: var(--vtt-spacing-small);
+    margin-bottom: var(--vtt-spacing-small);
+    -unity-text-align: middle-left;
+}
+
+/* Skills Page */
+.skills-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    flex-grow: 1;
+    width: 100%;
+    padding-left: var(--vtt-spacing-large);
+    padding-right: var(--vtt-spacing-large);
+}
+
+.skills-title {
+    margin-bottom: var(--vtt-spacing-large);
+    -unity-text-align: middle-center;
+}
+
+/* Actions Page */
+.actions-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.actions-title {
+    margin-bottom: var(--vtt-spacing-large);
+    -unity-text-align: middle-center;
+}
+
+.actions-list {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 320px;
+}
+

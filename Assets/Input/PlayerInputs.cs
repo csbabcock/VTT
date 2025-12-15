@@ -198,6 +198,26 @@ namespace GameCore
 		{
 			sprint = newSprintState;
 		}
+
+		/// <summary>
+		/// Enable or disable player input. Useful for pausing input during UI interactions.
+		/// </summary>
+		public void SetInputEnabled(bool enabled)
+		{
+			if (enabled)
+			{
+				_playerActionMap?.Enable();
+			}
+			else
+			{
+				_playerActionMap?.Disable();
+				// Clear current input values when disabled
+				move = Vector2.zero;
+				look = Vector2.zero;
+				jump = false;
+				sprint = false;
+			}
+		}
 #endif
 
 		private void OnApplicationFocus(bool hasFocus)

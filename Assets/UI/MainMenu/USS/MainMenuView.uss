@@ -1,0 +1,36 @@
+@import url("../../Shared/Styles/DiegeticTheme.uss");
+
+.menu-root {
+    flex-grow: 1;
+    background-color: var(--vtt-bg-color);
+}
+
+.menu-background {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.55);
+}
+
+.menu-panel {
+    width: 360px;
+    height: auto;
+    align-self: center;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding-left: var(--vtt-spacing-large);
+    padding-right: var(--vtt-spacing-large);
+    padding-top: var(--vtt-spacing-large);
+    padding-bottom: var(--vtt-spacing-large);
+    border-radius: var(--vtt-radius-large);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: var(--vtt-bg-panel);
+}
+
+.menu-buttons-container {
+    flex-direction: column;
+}
+

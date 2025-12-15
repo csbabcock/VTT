@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="root" class="menu-root">
+        <ui:VisualElement name="background" class="menu-background" />
+
+        <ui:VisualElement name="panel" class="menu-panel diegetic-panel">
+            <ui:Label name="title-label" text="VTT" class="menu-title" />
+
+            <ui:VisualElement name="buttons-container" class="menu-buttons-container">
+                <ui:Button name="start-button" class="menu-button primary" text="Start Game" />
+                <ui:Button name="settings-button" class="menu-button secondary" text="Settings" />
+                <ui:Button name="quit-button" class="menu-button secondary" text="Quit" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
+

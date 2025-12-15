@@ -1,0 +1,88 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <!-- Root HUD layer over gameplay -->
+    <ui:VisualElement name="root" class="hud-root">
+        <!-- Top‑right toggle button for the sheet -->
+        <ui:Button name="character-sheet-button"
+                   class="charsheet-toggle-button menu-button secondary"
+                   text="Character" />
+
+        <!-- Character sheet panel; initially hidden by InGameUIView -->
+        <ui:VisualElement name="character-sheet-panel" class="charsheet-panel diegetic-panel">
+            <!-- Title -->
+            <ui:Label name="charsheet-title"
+                      text="Character"
+                      class="charsheet-title" />
+
+            <!-- Main content: pages container -->
+            <ui:VisualElement name="charsheet-pages-container" class="charsheet-pages-container">
+                <!-- PAGE 0: Character Info -->
+                <ui:VisualElement name="charsheet-page-0" class="charsheet-page">
+                    <ui:VisualElement name="character-info-container" class="character-info-container">
+                        <ui:Label text="Character Info" class="charsheet-text-main character-info-title" />
+                        <ui:VisualElement name="character-info-list" class="character-info-list">
+                            <ui:Label text="Name: Arlen" class="charsheet-text-main character-info-item" />
+                            <ui:Label text="Race: Human" class="charsheet-text-main character-info-item" />
+                            <ui:Label text="Class: Fighter" class="charsheet-text-main character-info-item" />
+                            <ui:Label text="Level: 3" class="charsheet-text-main character-info-item" />
+                            <ui:Label text="Background: Soldier" class="charsheet-text-muted character-info-item" />
+                            <ui:Label text="Alignment: Neutral Good" class="charsheet-text-muted character-info-item" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- PAGE 1: Ability Scores -->
+                <ui:VisualElement name="charsheet-page-1" class="charsheet-page">
+                    <ui:VisualElement name="ability-scores-container" class="ability-scores-container">
+                        <ui:Label text="Ability Scores" class="charsheet-text-main ability-scores-title" />
+                        <ui:VisualElement name="ability-scores" class="ability-scores">
+                            <ui:Button name="ability-str" class="charsheet-ability-button" text="STR 16 (+3)" />
+                            <ui:Button name="ability-dex" class="charsheet-ability-button" text="DEX 14 (+2)" />
+                            <ui:Button name="ability-con" class="charsheet-ability-button" text="CON 14 (+2)" />
+                            <ui:Button name="ability-int" class="charsheet-ability-button" text="INT 10 (+0)" />
+                            <ui:Button name="ability-wis" class="charsheet-ability-button" text="WIS 12 (+1)" />
+                            <ui:Button name="ability-cha" class="charsheet-ability-button" text="CHA 8 (-1)" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- PAGE 2: Skills -->
+                <ui:VisualElement name="charsheet-page-2" class="charsheet-page">
+                    <ui:VisualElement name="skills-container" class="skills-container">
+                        <ui:Label text="Skills" class="charsheet-text-main skills-title" />
+                        <ui:VisualElement name="skills-list" class="skills-list">
+                            <ui:Button name="skill-acrobatics" class="charsheet-skill-button" text="Acrobatics (DEX) +2" />
+                            <ui:Button name="skill-animal-handling" class="charsheet-skill-button" text="Animal Handling (WIS) +1" />
+                            <ui:Button name="skill-arcana" class="charsheet-skill-button" text="Arcana (INT) +0" />
+                            <ui:Button name="skill-athletics" class="charsheet-skill-button" text="Athletics (STR) +3" />
+                            <ui:Button name="skill-deception" class="charsheet-skill-button" text="Deception (CHA) -1" />
+                            <ui:Button name="skill-history" class="charsheet-skill-button" text="History (INT) +0" />
+                            <ui:Button name="skill-insight" class="charsheet-skill-button" text="Insight (WIS) +1" />
+                            <ui:Button name="skill-intimidation" class="charsheet-skill-button" text="Intimidation (CHA) -1" />
+                            <ui:Button name="skill-investigation" class="charsheet-skill-button" text="Investigation (INT) +0" />
+                            <ui:Button name="skill-medicine" class="charsheet-skill-button" text="Medicine (WIS) +1" />
+                            <ui:Button name="skill-nature" class="charsheet-skill-button" text="Nature (INT) +0" />
+                            <ui:Button name="skill-perception" class="charsheet-skill-button" text="Perception (WIS) +1" />
+                            <ui:Button name="skill-performance" class="charsheet-skill-button" text="Performance (CHA) -1" />
+                            <ui:Button name="skill-persuasion" class="charsheet-skill-button" text="Persuasion (CHA) -1" />
+                            <ui:Button name="skill-religion" class="charsheet-skill-button" text="Religion (INT) +0" />
+                            <ui:Button name="skill-sleight-of-hand" class="charsheet-skill-button" text="Sleight of Hand (DEX) +2" />
+                            <ui:Button name="skill-stealth" class="charsheet-skill-button" text="Stealth (DEX) +2" />
+                            <ui:Button name="skill-survival" class="charsheet-skill-button" text="Survival (WIS) +1" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- PAGE 3: Actions -->
+                <ui:VisualElement name="charsheet-page-3" class="charsheet-page">
+                    <ui:VisualElement name="actions-container" class="actions-container">
+                        <ui:Label text="Actions" class="charsheet-text-main actions-title" />
+                        <ui:VisualElement name="actions-list" class="actions-list">
+                            <!-- Placeholder for actions - will be populated later -->
+                            <ui:Label text="Actions will appear here" class="charsheet-text-muted" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

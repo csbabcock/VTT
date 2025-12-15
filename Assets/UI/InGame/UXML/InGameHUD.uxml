@@ -1,0 +1,71 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="root" class="hud-root">
+
+        <!-- Top-left: example small HUD panel (placeholder for future HP/AC etc.) -->
+        <ui:VisualElement name="primary-hud-panel" class="hud-panel">
+            <ui:Label name="hud-placeholder-label" text="HUD" class="hud-text-muted" />
+        </ui:VisualElement>
+
+        <!-- Top-right: button to open character sheet -->
+        <ui:Button name="character-sheet-button" class="hud-panel charsheet-toggle-button" text="Character" />
+
+        <!-- Center-right: diegetic character sheet / inventory panel -->
+        <ui:VisualElement name="character-sheet-panel" class="charsheet-panel diegetic-panel">
+            <ui:Label name="charsheet-title" text="Character" class="charsheet-title" />
+
+            <ui:VisualElement name="charsheet-main" class="charsheet-main">
+                <!-- Left column: portrait + core stats -->
+                <ui:VisualElement name="charsheet-left" class="charsheet-column">
+                    <ui:VisualElement name="portrait-slot" class="charsheet-portrait-slot" />
+
+                    <ui:VisualElement name="charsheet-core-stats" class="charsheet-core-stats">
+                        <ui:Label text="Level 1" class="charsheet-text-main" />
+                        <ui:Label text="Class" class="charsheet-text-muted" />
+                        <ui:Label text="Race" class="charsheet-text-muted" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- Right column: 5e-style ability scores and skills/inventory summary -->
+                <ui:VisualElement name="charsheet-right" class="charsheet-column">
+                    <ui:VisualElement name="ability-scores" class="ability-scores">
+                        <ui:Label text="STR 10" class="charsheet-ability" />
+                        <ui:Label text="DEX 10" class="charsheet-ability" />
+                        <ui:Label text="CON 10" class="charsheet-ability" />
+                        <ui:Label text="INT 10" class="charsheet-ability" />
+                        <ui:Label text="WIS 10" class="charsheet-ability" />
+                        <ui:Label text="CHA 10" class="charsheet-ability" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement name="inventory-grid" class="charsheet-inventory-grid inventory-grid">
+                        <!-- Placeholder 5e inventory-style slots -->
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
+

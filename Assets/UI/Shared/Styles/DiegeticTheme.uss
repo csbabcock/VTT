@@ -1,0 +1,128 @@
+:root {
+    /* Warm, desert-evening style palette suitable for diegetic HUDs. */
+    --vtt-bg-color: #050608;
+    --vtt-bg-panel: rgba(12, 12, 16, 0.35);
+    --vtt-accent-primary: #f8d58a;
+    --vtt-accent-secondary: #c3e0f5;
+    --vtt-text-main: #f7f3e6;
+    --vtt-text-muted: #a9a9a9;
+    --vtt-border-color: rgba(255, 255, 255, 0.22);
+    --vtt-shadow-color: rgba(0, 0, 0, 0.80);
+    --vtt-radius-small: 6px;
+    --vtt-radius-medium: 12px;
+    --vtt-radius-large: 24px;
+    --vtt-spacing-small: 6px;
+    --vtt-spacing-medium: 12px;
+    --vtt-spacing-large: 20px;
+    --vtt-font-size-title: 28px;
+    --vtt-font-size-body: 14px;
+}
+
+/* Generic glass-like diegetic panel used by menus, character sheets, inventory, etc. */
+.diegetic-panel {
+    background-color: var(--vtt-bg-panel);
+    border-radius: var(--vtt-radius-large);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.02);
+}
+
+.menu-button {
+    background-color: transparent;
+    border-radius: var(--vtt-radius-medium);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    color: var(--vtt-text-main);
+    -unity-font-style: normal;
+    font-size: var(--vtt-font-size-body);
+    padding-left: var(--vtt-spacing-large);
+    padding-right: var(--vtt-spacing-large);
+    padding-top: var(--vtt-spacing-small);
+    padding-bottom: var(--vtt-spacing-small);
+    margin-bottom: var(--vtt-spacing-small);
+    justify-content: center;
+}
+
+.menu-button.primary {
+    background-color: var(--vtt-accent-primary);
+    color: #000000;
+}
+
+.menu-button.secondary {
+    background-color: rgba(0, 0, 0, 0.0);
+    color: var(--vtt-text-main);
+}
+
+.menu-button:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.menu-button.primary:hover {
+    background-color: #ffe199;
+}
+
+.menu-title {
+    color: var(--vtt-text-main);
+    font-size: var(--vtt-font-size-title);
+    -unity-font-style: bold;
+    margin-bottom: var(--vtt-spacing-large);
+}
+
+.menu-text-muted {
+    color: var(--vtt-text-muted);
+    font-size: var(--vtt-font-size-body);
+}
+
+/* Inventory-style grid helpers (shared by any UXML that wants that “floating inventory” look). */
+.inventory-panel {
+    border-radius: var(--vtt-radius-large);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: var(--vtt-bg-panel);
+    padding-left: var(--vtt-spacing-large);
+    padding-right: var(--vtt-spacing-large);
+    padding-top: var(--vtt-spacing-large);
+    padding-bottom: var(--vtt-spacing-large);
+}
+
+.inventory-title {
+    color: var(--vtt-text-main);
+    font-size: var(--vtt-font-size-title);
+    -unity-font-style: bold;
+    margin-bottom: var(--vtt-spacing-large);
+    -unity-text-align: middle-center;
+}
+
+.inventory-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.inventory-slot {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--vtt-radius-medium);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: rgba(0, 0, 0, 0.25);
+    margin-right: var(--vtt-spacing-medium);
+    margin-bottom: var(--vtt-spacing-medium);
+    justify-content: center;
+    align-items: center;
+}
+
+.inventory-slot-icon {
+    width: 28px;
+    height: 28px;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--vtt-text-main);
+}
+
+.inventory-footer {
+    margin-top: var(--vtt-spacing-large);
+    color: var(--vtt-text-muted);
+    font-size: var(--vtt-font-size-body);
+    -unity-text-align: middle-center;
+}
+

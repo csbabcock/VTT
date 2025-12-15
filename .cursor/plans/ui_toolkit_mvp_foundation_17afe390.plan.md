@@ -4,40 +4,40 @@ overview: Set up UI Toolkit with MVP architecture following Unity best practices
 todos:
   - id: setup_packages
     content: Verify and add UI Toolkit packages (UI Builder if needed) to manifest.json
-    status: pending
+    status: completed
   - id: create_folder_structure
     content: Create organized UI folder structure (MainMenu, InGame, Shared, Scripts/Core)
-    status: pending
+    status: completed
   - id: create_core_interfaces
     content: Create core MVP interfaces (IUIModel, IUIView, IUIPresenter) following SOLID principles
-    status: pending
+    status: completed
   - id: create_scene_loader
     content: Implement SceneLoader service for scene management and transitions
-    status: pending
+    status: completed
   - id: implement_main_menu_model
     content: Create MainMenuModel with state management and events
-    status: pending
+    status: completed
   - id: create_main_menu_uxml
     content: Design MainMenuView.uxml with basic menu structure (extensible for future buttons)
-    status: pending
+    status: completed
   - id: create_main_menu_uss
     content: Create MainMenuView.uss with diegetic-inspired styling
-    status: pending
+    status: completed
   - id: implement_main_menu_view
     content: Create MainMenuView.cs component that binds to UI Toolkit and exposes events
-    status: pending
+    status: completed
   - id: implement_main_menu_presenter
     content: Create MainMenuPresenter that connects model, view, and handles scene loading
-    status: pending
+    status: completed
   - id: create_ingame_ui_foundation
     content: Create minimal InGame UI foundation (Model, View, Presenter) for future expansion
-    status: pending
+    status: completed
   - id: create_shared_styles
     content: Create DiegeticTheme.uss with base styling system for consistent UI
-    status: pending
+    status: completed
   - id: create_main_menu_scene
     content: Create MainMenu.unity scene with UI Document setup and configure Build Settings
-    status: pending
+    status: completed
 ---
 
 # UI Toolkit MVP Foundation Setup
@@ -159,35 +159,35 @@ Minimal MVP foundation for diegetic UI:
 
 1. **Core Interfaces**:
 
-                        - `Assets/UI/Scripts/Core/IUIModel.cs`
-                        - `Assets/UI/Scripts/Core/IUIView.cs`
-                        - `Assets/UI/Scripts/Core/IUIPresenter.cs`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/Scripts/Core/IUIModel.cs`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/Scripts/Core/IUIView.cs`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/Scripts/Core/IUIPresenter.cs`
 
 2. **Scene Management**:
 
-                        - `Assets/UI/Scripts/Core/SceneLoader.cs`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/Scripts/Core/SceneLoader.cs`
 
 3. **Main Menu**:
 
-                        - `Assets/UI/MainMenu/Models/MainMenuModel.cs`
-                        - `Assets/UI/MainMenu/Presenters/MainMenuPresenter.cs`
-                        - `Assets/UI/MainMenu/Views/MainMenuView.cs`
-                        - `Assets/UI/MainMenu/UXML/MainMenuView.uxml`
-                        - `Assets/UI/MainMenu/USS/MainMenuView.uss`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/MainMenu/Models/MainMenuModel.cs`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/MainMenu/Presenters/MainMenuPresenter.cs`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/MainMenu/Views/MainMenuView.cs`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/MainMenu/UXML/MainMenuView.uxml`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/MainMenu/USS/MainMenuView.uss`
 
 4. **In-Game UI Foundation**:
 
-                        - `Assets/UI/InGame/Models/InGameUIModel.cs`
-                        - `Assets/UI/InGame/Presenters/InGameUIPresenter.cs`
-                        - `Assets/UI/InGame/Views/InGameUIView.cs`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/InGame/Models/InGameUIModel.cs`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/InGame/Presenters/InGameUIPresenter.cs`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/InGame/Views/InGameUIView.cs`
 
 5. **Shared Styles**:
 
-                        - `Assets/UI/Shared/Styles/DiegeticTheme.uss`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/UI/Shared/Styles/DiegeticTheme.uss`
 
 6. **Scene**:
 
-                        - `Assets/Scenes/MainMenu.unity`
+                                                                                                                                                                                                                                                                                                                                                                                                - `Assets/Scenes/MainMenu.unity`
 
 ## Design Considerations
 
