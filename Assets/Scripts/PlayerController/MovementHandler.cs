@@ -61,6 +61,7 @@ namespace GameCore
         public void ProcessMovement(Vector2 moveInput, bool isSprinting, bool analogMovement)
         {
             bool hasInput = moveInput != Vector2.zero;
+            bool isGrounded = _controller.isGrounded;
 
             // Reuse cached vector to avoid allocation and get current horizontal speed
             _tempVector3.Set(_controller.velocity.x, 0.0f, _controller.velocity.z);
@@ -70,7 +71,7 @@ namespace GameCore
             if (moveInput == Vector2.zero)
             {
                 // Preserve momentum while airborne, but stop when idle on the ground.
-                if (_controller.isGrounded)
+                if (isGrounded)
                 {
                     targetSpeed = 0.0f;
                 }
@@ -125,7 +126,7 @@ namespace GameCore
                     _lastMoveDirection = targetDirection;
                 }
             }
-            else if (!_controller.isGrounded && _lastMoveDirection.sqrMagnitude > 0.0001f)
+            else if (!isGrounded && _lastMoveDirection.sqrMagnitude > 0.0001f)
             {
                 // In the air with no input – keep moving in the last horizontal direction.
                 targetDirection = _lastMoveDirection;
