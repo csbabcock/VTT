@@ -1,6 +1,8 @@
 using GameCore.UI;
 using GameCore;
+using GameCore.UI.InGame.Services;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -74,9 +76,13 @@ namespace GameCore.UI.InGame
                 _playerInputs.SetInputEnabled(true);
             }
 
+            // Validate UI input system configuration
+            var uiDocument = _view.GetComponent<UIDocument>();
+            UIInputValidator.ValidateUIDocument(uiDocument);
+            UIInputValidator.ValidateInputSystem();
+
             _view.CharacterSheetToggleRequested += OnCharacterSheetToggleRequested;
-            _view.NextPageRequested += OnNextPageRequested;
-            _view.PreviousPageRequested += OnPreviousPageRequested;
+            _view.TabClicked += OnTabClicked;
             _view.AbilityScoreClicked += OnAbilityScoreClicked;
             _view.SkillClicked += OnSkillClicked;
             Model.StateChanged += OnModelStateChanged;
@@ -95,8 +101,7 @@ namespace GameCore.UI.InGame
             if (_view != null)
             {
                 _view.CharacterSheetToggleRequested -= OnCharacterSheetToggleRequested;
-                _view.NextPageRequested -= OnNextPageRequested;
-                _view.PreviousPageRequested -= OnPreviousPageRequested;
+                _view.TabClicked -= OnTabClicked;
                 _view.AbilityScoreClicked -= OnAbilityScoreClicked;
                 _view.SkillClicked -= OnSkillClicked;
             }
@@ -115,29 +120,40 @@ namespace GameCore.UI.InGame
                 return;
 
 #if ENABLE_INPUT_SYSTEM
-            var keyboard = Keyboard.current;
-            if (keyboard != null)
-            {
-                if (keyboard.tabKey.wasPressedThisFrame)
-                {
-                    ToggleCharacterSheet();
-                }
-
-                // Arrow key navigation when character sheet is open
-                if (Model.IsCharacterSheetOpen)
-                {
-                    if (keyboard.rightArrowKey.wasPressedThisFrame)
-                    {
-                        Model.NextPage();
-                    }
-                    else if (keyboard.leftArrowKey.wasPressedThisFrame)
-                    {
-                        Model.PreviousPage();
-                    }
-                }
-            }
+            HandleKeyboardInput();
 #endif
         }
+
+#if ENABLE_INPUT_SYSTEM
+        /// <summary>
+        /// Handles keyboard input for UI navigation.
+        /// </summary>
+        private void HandleKeyboardInput()
+        {
+            var keyboard = Keyboard.current;
+            if (keyboard == null)
+                return;
+
+            if (keyboard.tabKey.wasPressedThisFrame)
+            {
+                ToggleCharacterSheet();
+                return;
+            }
+
+            // Arrow key navigation when character sheet is open
+            if (Model.IsCharacterSheetOpen)
+            {
+                if (keyboard.rightArrowKey.wasPressedThisFrame)
+                {
+                    Model.NextTab();
+                }
+                else if (keyboard.leftArrowKey.wasPressedThisFrame)
+                {
+                    Model.PreviousTab();
+                }
+            }
+        }
+#endif
 
         private void OnCharacterSheetToggleRequested()
         {
@@ -151,35 +167,57 @@ namespace GameCore.UI.InGame
 
         private void OnModelStateChanged(InGameUIState state)
         {
+            UpdateCursorState(state.IsCharacterSheetOpen);
             _view.UpdateView(state);
-            
-            // Disable/enable player input based on character sheet visibility
-            if (_playerInputs != null)
+            UpdatePlayerInput(state.IsCharacterSheetOpen);
+        }
+
+        /// <summary>
+        /// Updates cursor lock state and visibility based on UI state.
+        /// </summary>
+        private void UpdateCursorState(bool isUIOpen)
+        {
+            if (isUIOpen)
             {
-                _playerInputs.SetInputEnabled(!state.IsCharacterSheetOpen);
+                UnityEngine.Cursor.lockState = CursorLockMode.None;
+                UnityEngine.Cursor.visible = true;
+            }
+            else
+            {
+                UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+                UnityEngine.Cursor.visible = false;
             }
         }
 
-        private void OnNextPageRequested()
+        /// <summary>
+        /// Updates player input enabled state based on UI visibility.
+        /// </summary>
+        private void UpdatePlayerInput(bool isUIOpen)
         {
-            Model.NextPage();
+            if (_playerInputs == null)
+            {
+                Debug.LogWarning("InGameUIPresenter: PlayerInputs is null! Input may not be disabled when UI is open.");
+                return;
+            }
+
+            _playerInputs.SetInputEnabled(!isUIOpen);
         }
 
-        private void OnPreviousPageRequested()
+        private void OnTabClicked(int tabIndex)
         {
-            Model.PreviousPage();
+            Model.SetTab(tabIndex);
         }
 
         private void OnAbilityScoreClicked(string abilityName)
         {
-            // Placeholder for future ability score logic
-            Debug.Log($"Ability score clicked: {abilityName}");
+            // TODO: Implement ability score interaction logic
+            // This will be handled by a future ability score system
         }
 
         private void OnSkillClicked(string skillName)
         {
-            // Placeholder for future skill logic
-            Debug.Log($"Skill clicked: {skillName}");
+            // TODO: Implement skill interaction logic
+            // This will be handled by a future skill system
         }
     }
 }

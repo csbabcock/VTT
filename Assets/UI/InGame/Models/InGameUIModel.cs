@@ -12,7 +12,7 @@ namespace GameCore.UI.InGame
     public struct InGameUIState
     {
         public bool IsCharacterSheetOpen;
-        public int CharacterSheetPageIndex; // 0 = character info, 1 = ability scores, 2 = skills, 3 = actions
+        public int CharacterSheetTabIndex; // 0 = Overview, 1 = Skills, 2 = Actions, 3 = Spells, 4 = Inventory, 5 = Features
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ namespace GameCore.UI.InGame
             State = new InGameUIState
             {
                 IsCharacterSheetOpen = false,
-                CharacterSheetPageIndex = 0
+                CharacterSheetTabIndex = 0 // Start on Overview tab
             };
         }
 
@@ -56,44 +56,44 @@ namespace GameCore.UI.InGame
             State = new InGameUIState
             {
                 IsCharacterSheetOpen = isOpen,
-                CharacterSheetPageIndex = State.CharacterSheetPageIndex
+                CharacterSheetTabIndex = State.CharacterSheetTabIndex
             };
 
             StateChanged?.Invoke(State);
         }
 
         /// <summary>
-        /// Navigate to the next character sheet page.
+        /// Navigate to the next character sheet tab.
         /// </summary>
-        public void NextPage()
+        public void NextTab()
         {
-            // Pages: 0 = character info, 1 = ability scores, 2 = skills, 3 = actions
-            int maxPage = 3;
-            int newPage = Mathf.Min(State.CharacterSheetPageIndex + 1, maxPage);
-            SetPage(newPage);
+            // Tabs: 0 = Overview, 1 = Skills, 2 = Actions, 3 = Spells, 4 = Inventory, 5 = Features
+            int maxTab = 5;
+            int newTab = Mathf.Min(State.CharacterSheetTabIndex + 1, maxTab);
+            SetTab(newTab);
         }
 
         /// <summary>
-        /// Navigate to the previous character sheet page.
+        /// Navigate to the previous character sheet tab.
         /// </summary>
-        public void PreviousPage()
+        public void PreviousTab()
         {
-            int newPage = Mathf.Max(State.CharacterSheetPageIndex - 1, 0);
-            SetPage(newPage);
+            int newTab = Mathf.Max(State.CharacterSheetTabIndex - 1, 0);
+            SetTab(newTab);
         }
 
         /// <summary>
-        /// Set the current character sheet page index.
+        /// Set the current character sheet tab index.
         /// </summary>
-        public void SetPage(int pageIndex)
+        public void SetTab(int tabIndex)
         {
-            if (State.CharacterSheetPageIndex == pageIndex)
+            if (State.CharacterSheetTabIndex == tabIndex)
                 return;
 
             State = new InGameUIState
             {
                 IsCharacterSheetOpen = State.IsCharacterSheetOpen,
-                CharacterSheetPageIndex = pageIndex
+                CharacterSheetTabIndex = tabIndex
             };
 
             StateChanged?.Invoke(State);

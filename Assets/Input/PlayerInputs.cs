@@ -20,6 +20,7 @@ namespace GameCore
 		[Header("Mouse Cursor Settings")]
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
+		private bool _cursorInputForLookOriginal;
 
 #if ENABLE_INPUT_SYSTEM
 		private PlayerInput _playerInput;
@@ -35,6 +36,8 @@ namespace GameCore
 
 		private void Awake()
 		{
+			_cursorInputForLookOriginal = cursorInputForLook;
+			
 			_playerInput = GetComponent<PlayerInput>();
 			if (_playerInput == null)
 			{
@@ -120,9 +123,22 @@ namespace GameCore
 				_togglePerspectiveAction.performed -= OnTogglePerspectivePerformed;
 		}
 
+		private bool _inputEnabled = true;
+
 		private void Update()
 		{
-			// Read continuous input values (for analog movement and look)
+			if (!_inputEnabled)
+				return;
+
+			ReadContinuousInput();
+		}
+
+		/// <summary>
+		/// Reads continuous input values for movement and look.
+		/// Separated for clarity and potential optimization.
+		/// </summary>
+		private void ReadContinuousInput()
+		{
 			if (_moveAction != null)
 			{
 				move = _moveAction.ReadValue<Vector2>();
@@ -133,7 +149,7 @@ namespace GameCore
 				look = _lookAction.ReadValue<Vector2>();
 			}
 
-			// Fallback: Check if toggle perspective button was pressed this frame
+			// Check if toggle perspective button was pressed this frame
 			if (_togglePerspectiveAction != null && _togglePerspectiveAction.WasPressedThisFrame())
 			{
 				OnTogglePerspective?.Invoke();
@@ -201,22 +217,59 @@ namespace GameCore
 
 		/// <summary>
 		/// Enable or disable player input. Useful for pausing input during UI interactions.
+		/// Note: We keep PlayerInput enabled but disable only movement actions to preserve
+		/// Input System functionality that UI Toolkit's InputSystemUIInputModule needs.
 		/// </summary>
 		public void SetInputEnabled(bool enabled)
 		{
+			_inputEnabled = enabled;
+
 			if (enabled)
 			{
-				_playerActionMap?.Enable();
+				EnablePlayerActions();
 			}
 			else
 			{
-				_playerActionMap?.Disable();
-				// Clear current input values when disabled
-				move = Vector2.zero;
-				look = Vector2.zero;
-				jump = false;
-				sprint = false;
+				DisablePlayerActions();
 			}
+		}
+
+		/// <summary>
+		/// Enables all player movement actions and restores cursor settings.
+		/// </summary>
+		private void EnablePlayerActions()
+		{
+			_moveAction?.Enable();
+			_lookAction?.Enable();
+			_jumpAction?.Enable();
+			_sprintAction?.Enable();
+			
+			cursorInputForLook = _cursorInputForLookOriginal;
+			
+			if (_playerInput != null && !_playerInput.enabled)
+			{
+				_playerInput.enabled = true;
+			}
+		}
+
+		/// <summary>
+		/// Disables player movement actions while keeping PlayerInput enabled for UI Toolkit.
+		/// Clears all input values to prevent residual movement.
+		/// </summary>
+		private void DisablePlayerActions()
+		{
+			_moveAction?.Disable();
+			_lookAction?.Disable();
+			_jumpAction?.Disable();
+			_sprintAction?.Disable();
+			
+			cursorInputForLook = false;
+			
+			// Clear current input values when disabled
+			move = Vector2.zero;
+			look = Vector2.zero;
+			jump = false;
+			sprint = false;
 		}
 #endif
 
