@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
+using PlayerInputComponent = UnityEngine.InputSystem.PlayerInput;
 #endif
 
 namespace GameCore
 {
     [RequireComponent(typeof(CharacterController))]
 #if ENABLE_INPUT_SYSTEM 
-    [RequireComponent(typeof(PlayerInput))]
+    [RequireComponent(typeof(PlayerInputComponent))]
 #endif
     public class PlayerController : MonoBehaviour
     {
@@ -104,7 +105,7 @@ namespace GameCore
         private bool _hasAnimator;
 
 #if ENABLE_INPUT_SYSTEM 
-        private PlayerInput _playerInput;
+        private PlayerInputComponent _playerInput;
 #endif
 
         // Handler components (SOLID - Dependency Inversion)
@@ -161,7 +162,7 @@ namespace GameCore
             }
 
 #if ENABLE_INPUT_SYSTEM 
-            _playerInput = GetComponent<PlayerInput>();
+            _playerInput = GetComponent<PlayerInputComponent>();
 #endif
         }
 

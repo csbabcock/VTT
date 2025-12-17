@@ -1,11 +1,12 @@
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using PlayerInputComponent = UnityEngine.InputSystem.PlayerInput;
 #endif
 
 namespace GameCore
 {
-	[RequireComponent(typeof(PlayerInput))]
+	[RequireComponent(typeof(PlayerInputComponent))]
 	public class PlayerInputs : MonoBehaviour
 	{
 		[Header("Character Input Values")]
@@ -23,7 +24,7 @@ namespace GameCore
 		private bool _cursorInputForLookOriginal;
 
 #if ENABLE_INPUT_SYSTEM
-		private PlayerInput _playerInput;
+		private PlayerInputComponent _playerInput;
 		private InputActionMap _playerActionMap;
 		private InputAction _moveAction;
 		private InputAction _lookAction;
@@ -38,7 +39,7 @@ namespace GameCore
 		{
 			_cursorInputForLookOriginal = cursorInputForLook;
 			
-			_playerInput = GetComponent<PlayerInput>();
+			_playerInput = GetComponent<PlayerInputComponent>();
 			if (_playerInput == null)
 			{
 				Debug.LogError("PlayerInput component is missing! Please add the PlayerInput component to the same GameObject.");
@@ -86,10 +87,43 @@ namespace GameCore
 			}
 		}
 
+		private void Start()
+		{
+			// When using project-wide actions asset, we need to manually ensure
+			// the Player action map is enabled (as per Unity's warning)
+			if (_playerActionMap != null && !_playerActionMap.enabled)
+			{
+				_playerActionMap.Enable();
+			}
+			
+			// Ensure all actions are enabled
+			_moveAction?.Enable();
+			_lookAction?.Enable();
+			_jumpAction?.Enable();
+			_sprintAction?.Enable();
+			
+			// Ensure cursor is locked and input is enabled
+			SetCursorState(cursorLocked);
+			// Always set to true for camera control when starting
+			cursorInputForLook = true;
+		}
+
 		private void OnEnable()
 		{
-			// Enable the action map
-			_playerActionMap?.Enable();
+			// Enable the action map and ensure all actions are enabled
+			if (_playerActionMap != null)
+			{
+				_playerActionMap.Enable();
+				// Explicitly enable all actions to ensure they work
+				_moveAction?.Enable();
+				_lookAction?.Enable();
+				_jumpAction?.Enable();
+				_sprintAction?.Enable();
+			}
+			
+			// Ensure cursor input for look is enabled
+			// Always set to true for camera control when component is enabled
+			cursorInputForLook = true;
 		}
 
 		private void OnDisable()
@@ -139,14 +173,19 @@ namespace GameCore
 		/// </summary>
 		private void ReadContinuousInput()
 		{
-			if (_moveAction != null)
+			if (_moveAction != null && _moveAction.enabled)
 			{
 				move = _moveAction.ReadValue<Vector2>();
 			}
 
-			if (_lookAction != null && cursorInputForLook)
+			if (_lookAction != null && _lookAction.enabled && cursorInputForLook)
 			{
 				look = _lookAction.ReadValue<Vector2>();
+			}
+			else
+			{
+				// Clear look input when cursor input is disabled
+				look = Vector2.zero;
 			}
 
 			// Check if toggle perspective button was pressed this frame
@@ -239,17 +278,30 @@ namespace GameCore
 		/// </summary>
 		private void EnablePlayerActions()
 		{
+			// Ensure PlayerInput component is enabled first
+			if (_playerInput != null && !_playerInput.enabled)
+			{
+				_playerInput.enabled = true;
+			}
+			
+			// Enable the entire action map first to ensure all actions are available
+			if (_playerActionMap != null)
+			{
+				if (!_playerActionMap.enabled)
+				{
+					_playerActionMap.Enable();
+				}
+			}
+			
+			// Then enable individual actions (they should already be enabled via the map, but ensure it)
 			_moveAction?.Enable();
 			_lookAction?.Enable();
 			_jumpAction?.Enable();
 			_sprintAction?.Enable();
 			
-			cursorInputForLook = _cursorInputForLookOriginal;
-			
-			if (_playerInput != null && !_playerInput.enabled)
-			{
-				_playerInput.enabled = true;
-			}
+			// Restore cursor input for look - this is critical for mouse camera control
+			// Always set to true when enabling player actions (camera control should be active)
+			cursorInputForLook = true;
 		}
 
 		/// <summary>

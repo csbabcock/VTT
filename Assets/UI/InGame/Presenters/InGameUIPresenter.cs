@@ -70,25 +70,25 @@ namespace GameCore.UI.InGame
             _view.Initialize();
             _view.Show();
 
-            // Ensure input is enabled initially (character sheet starts closed)
-            if (_playerInputs != null)
-            {
-                _playerInputs.SetInputEnabled(true);
-            }
-
             // Validate UI input system configuration
             var uiDocument = _view.GetComponent<UIDocument>();
             UIInputValidator.ValidateUIDocument(uiDocument);
             UIInputValidator.ValidateInputSystem();
 
-            _view.CharacterSheetToggleRequested += OnCharacterSheetToggleRequested;
             _view.TabClicked += OnTabClicked;
             _view.AbilityScoreClicked += OnAbilityScoreClicked;
             _view.SkillClicked += OnSkillClicked;
             Model.StateChanged += OnModelStateChanged;
 
             // Push initial state to the view so it starts in sync with the model.
+            // This will also configure input properly (UI starts closed, so input should be enabled)
             _view.UpdateView(Model.State);
+            
+            // Explicitly ensure input is enabled on startup (character sheet starts closed)
+            if (_playerInputs != null)
+            {
+                _playerInputs.SetInputEnabled(true);
+            }
 
             _initialized = true;
         }
@@ -100,7 +100,6 @@ namespace GameCore.UI.InGame
 
             if (_view != null)
             {
-                _view.CharacterSheetToggleRequested -= OnCharacterSheetToggleRequested;
                 _view.TabClicked -= OnTabClicked;
                 _view.AbilityScoreClicked -= OnAbilityScoreClicked;
                 _view.SkillClicked -= OnSkillClicked;
@@ -136,7 +135,7 @@ namespace GameCore.UI.InGame
 
             if (keyboard.tabKey.wasPressedThisFrame)
             {
-                ToggleCharacterSheet();
+                Model.ToggleCharacterSheet();
                 return;
             }
 
@@ -155,15 +154,6 @@ namespace GameCore.UI.InGame
         }
 #endif
 
-        private void OnCharacterSheetToggleRequested()
-        {
-            ToggleCharacterSheet();
-        }
-
-        private void ToggleCharacterSheet()
-        {
-            Model.ToggleCharacterSheet();
-        }
 
         private void OnModelStateChanged(InGameUIState state)
         {

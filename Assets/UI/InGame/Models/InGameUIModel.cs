@@ -12,7 +12,7 @@ namespace GameCore.UI.InGame
     public struct InGameUIState
     {
         public bool IsCharacterSheetOpen;
-        public int CharacterSheetTabIndex; // 0 = Overview, 1 = Skills, 2 = Actions, 3 = Spells, 4 = Inventory, 5 = Features
+        public int CharacterSheetTabIndex; // 0 = Overview, 1 = Skills, 2 = Actions, 3 = Spells, 4 = Inventory, 5 = Features, 6 = Rest
     }
 
     /// <summary>
@@ -67,8 +67,8 @@ namespace GameCore.UI.InGame
         /// </summary>
         public void NextTab()
         {
-            // Tabs: 0 = Overview, 1 = Skills, 2 = Actions, 3 = Spells, 4 = Inventory, 5 = Features
-            int maxTab = 5;
+            // Tabs: 0 = Overview, 1 = Skills, 2 = Actions, 3 = Spells, 4 = Inventory, 5 = Features, 6 = Rest
+            int maxTab = 6;
             int newTab = Mathf.Min(State.CharacterSheetTabIndex + 1, maxTab);
             SetTab(newTab);
         }

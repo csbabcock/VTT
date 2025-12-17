@@ -52,10 +52,16 @@ namespace GameCore.UI.InGame.Services
                 return false;
             }
 
-            // Ensure UI action map is enabled
+            // Verify UI action map is enabled
+            // NOTE: You should enable the UI action map in the Input Actions asset (PlayerInput.inputactions) 
+            // in the Unity Inspector. Select the asset, find the "UI" action map, and ensure it's enabled.
+            // This ensures UI Toolkit can receive mouse/pointer input.
             if (!uiActionMap.enabled)
             {
-                Debug.LogWarning("UIInputValidator: UI action map is disabled! Enabling it now...");
+                Debug.LogWarning($"UIInputValidator: UI action map in '{actionsAsset.name}' is disabled! " +
+                    "Please enable it in the Input Actions asset Inspector. " +
+                    "Select 'PlayerInput.inputactions' → Find 'UI' action map → Enable it. " +
+                    "Enabling it now as a fallback, but you should enable it in the asset to avoid this warning.");
                 uiActionMap.Enable();
             }
 
