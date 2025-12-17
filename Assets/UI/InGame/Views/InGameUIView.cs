@@ -11,9 +11,24 @@ namespace GameCore.UI.InGame
     [RequireComponent(typeof(UIDocument))]
     public class InGameUIView : MonoBehaviour, IUIView<InGameUIState>
     {
+        #region Constants
+        private const int TOTAL_TABS = 7;
+        private const int VISIBLE_TAB_COUNT = 4;
+        private const float DRAG_THRESHOLD = 10f;
+        private const float TAB_WIDTH = 100f;
+        private const float ANIMATION_DURATION = 0.3f;
+        private const float PANEL_OFFSCREEN_RIGHT = -568f;
+        private const float PANEL_ONSCREEN_RIGHT = 48f;
+        private const int DRAG_CLICK_DELAY_MS = 50;
+        #endregion
+
+        #region Serialized Fields
         [Header("Assets")]
         [Tooltip("USS stylesheet for this view. Drag InGameUI.uss here.")]
         [SerializeField] private StyleSheet _inGameStyleSheet;
+        #endregion
+
+        #region Private Fields
 
         private UIDocument _uiDocument;
         private VisualElement _root;
@@ -25,20 +40,23 @@ namespace GameCore.UI.InGame
         private VisualElement _tabsWrapper;
         private Button _tabNavLeft;
         private Button _tabNavRight;
-        private int _visibleTabCount = 4; // Number of tabs visible at once
-        private int _currentTabOffset = 0; // Current scroll offset
+        private int _currentTabOffset = 0;
         
         // Drag functionality
         private bool _isDragging = false;
         private float _dragStartX = 0f;
         private float _dragStartOffset = 0f;
-        private float _dragThreshold = 10f; // Minimum drag distance to trigger
         
         // Animation state
         private Coroutine _currentAnimation = null;
+        #endregion
+
+        #region Public Properties
 
         public VisualElement Root => _root;
+        #endregion
 
+        #region Events
         /// <summary>
         /// Fired when a tab button is clicked. Parameter is the tab index.
         /// </summary>
@@ -53,6 +71,9 @@ namespace GameCore.UI.InGame
         /// Fired when a skill button is clicked. Parameter is the skill name (e.g., "Acrobatics", "Athletics").
         /// </summary>
         public event System.Action<string> SkillClicked;
+        #endregion
+
+        #region Unity Lifecycle
 
         private void Awake()
         {
@@ -144,12 +165,12 @@ namespace GameCore.UI.InGame
                 _characterSheetPanel.pickingMode = PickingMode.Position;
                 // Start hidden and positioned off-screen
                 _characterSheetPanel.style.display = DisplayStyle.None;
-                _characterSheetPanel.style.right = -568f; // -520 (width) - 48 (offset)
+                _characterSheetPanel.style.right = PANEL_OFFSCREEN_RIGHT;
                 _characterSheetPanel.SetEnabled(false);
             }
 
-            // Find all character sheet tabs (0 = Overview, 1 = Skills, 2 = Actions, 3 = Spells, 4 = Inventory, 5 = Features, 6 = Rest)
-            _characterSheetTabs = new VisualElement[]
+            // Find all character sheet tabs
+            _characterSheetTabs = new VisualElement[TOTAL_TABS]
             {
                 _root.Q<VisualElement>("tab-overview-content"),
                 _root.Q<VisualElement>("tab-skills-content"),
@@ -161,7 +182,7 @@ namespace GameCore.UI.InGame
             };
 
             // Wire up tab buttons
-            _tabButtons = new Button[]
+            _tabButtons = new Button[TOTAL_TABS]
             {
                 _root.Q<Button>("tab-overview"),
                 _root.Q<Button>("tab-skills"),
@@ -256,16 +277,19 @@ namespace GameCore.UI.InGame
             if (_characterSheetPanel != null)
             {
                 _characterSheetPanel.style.display = DisplayStyle.None;
-                _characterSheetPanel.style.right = -520f - 48f; // Position off-screen to the right
+                _characterSheetPanel.style.right = PANEL_OFFSCREEN_RIGHT;
                 _characterSheetPanel.SetEnabled(false);
                 _characterSheetPanel.pickingMode = PickingMode.Ignore;
             }
         }
+        #endregion
+
+        #region IUIView Implementation
 
         /// <summary>
         /// Recursively enables picking mode on all interactive elements.
         /// </summary>
-        private void EnablePickingOnAllButtons(VisualElement element)
+        private static void EnablePickingOnAllButtons(VisualElement element)
         {
             if (element == null)
                 return;
@@ -301,7 +325,7 @@ namespace GameCore.UI.InGame
             {
                 _root.style.display = DisplayStyle.Flex;
                 _root.SetEnabled(true);
-                _root.pickingMode = PickingMode.Position; // Enable pointer events
+                _root.pickingMode = PickingMode.Position;
             }
         }
 
@@ -313,6 +337,9 @@ namespace GameCore.UI.InGame
                 _root.SetEnabled(false);
             }
         }
+        #endregion
+
+        #region View Updates
 
         /// <summary>
         /// Update the view based on the latest model state.
@@ -356,11 +383,11 @@ namespace GameCore.UI.InGame
                 _characterSheetPanel.pickingMode = PickingMode.Position;
                 
                 // Ensure it starts off-screen
-                _characterSheetPanel.style.right = -568f;
+                _characterSheetPanel.style.right = PANEL_OFFSCREEN_RIGHT;
                 _characterSheetPanel.MarkDirtyRepaint();
                 
                 // Start animation immediately
-                _currentAnimation = StartCoroutine(AnimateSlideInCoroutine(_characterSheetPanel, -568f, 48f));
+                _currentAnimation = StartCoroutine(AnimateSlideInCoroutine(_characterSheetPanel, PANEL_OFFSCREEN_RIGHT, PANEL_ONSCREEN_RIGHT));
                 
                 EnablePickingOnAllButtons(_characterSheetPanel);
             }
@@ -368,7 +395,7 @@ namespace GameCore.UI.InGame
             {
                 // Animate slide out to right
                 float currentRight = _characterSheetPanel.resolvedStyle.right;
-                _currentAnimation = StartCoroutine(AnimateSlideOutCoroutine(_characterSheetPanel, currentRight, -568f, () =>
+                _currentAnimation = StartCoroutine(AnimateSlideOutCoroutine(_characterSheetPanel, currentRight, PANEL_OFFSCREEN_RIGHT, () =>
                 {
                     _characterSheetPanel.style.display = DisplayStyle.None;
                     _characterSheetPanel.SetEnabled(false);
@@ -410,6 +437,9 @@ namespace GameCore.UI.InGame
             // Ensure active tab is visible in carousel
             EnsureTabVisible(tabIndex);
         }
+        #endregion
+
+        #region Carousel Navigation
 
         /// <summary>
         /// Ensures the specified tab is visible in the carousel by adjusting the offset.
@@ -421,10 +451,10 @@ namespace GameCore.UI.InGame
                 // Tab is to the left of visible area, scroll left
                 _currentTabOffset = tabIndex;
             }
-            else if (tabIndex >= _currentTabOffset + _visibleTabCount)
+            else if (tabIndex >= _currentTabOffset + VISIBLE_TAB_COUNT)
             {
                 // Tab is to the right of visible area, scroll right
-                _currentTabOffset = Mathf.Max(0, tabIndex - _visibleTabCount + 1);
+                _currentTabOffset = Mathf.Max(0, tabIndex - VISIBLE_TAB_COUNT + 1);
             }
 
             UpdateTabCarousel();
@@ -441,7 +471,7 @@ namespace GameCore.UI.InGame
             int totalTabs = _tabButtons.Length;
             
             // If we have fewer tabs than visible, show all and disable navigation
-            if (totalTabs <= _visibleTabCount)
+            if (totalTabs <= VISIBLE_TAB_COUNT)
             {
                 _tabNavLeft.SetEnabled(false);
                 _tabNavRight.SetEnabled(false);
@@ -469,15 +499,15 @@ namespace GameCore.UI.InGame
                     // Calculate if this tab should be visible (with wrap-around)
                     bool isVisible = false;
                     
-                    if (_currentTabOffset + _visibleTabCount <= totalTabs)
+                    if (_currentTabOffset + VISIBLE_TAB_COUNT <= totalTabs)
                     {
                         // Normal case - no wrap needed
-                        isVisible = i >= _currentTabOffset && i < _currentTabOffset + _visibleTabCount;
+                        isVisible = i >= _currentTabOffset && i < _currentTabOffset + VISIBLE_TAB_COUNT;
                     }
                     else
                     {
                         // Wrap around case
-                        int overflow = (_currentTabOffset + _visibleTabCount) - totalTabs;
+                        int overflow = (_currentTabOffset + VISIBLE_TAB_COUNT) - totalTabs;
                         isVisible = (i >= _currentTabOffset) || (i < overflow);
                     }
                     
@@ -486,6 +516,9 @@ namespace GameCore.UI.InGame
             }
         }
 
+        #endregion
+
+        #region Carousel Event Handlers
         /// <summary>
         /// Handles left navigation button click.
         /// </summary>
@@ -497,7 +530,7 @@ namespace GameCore.UI.InGame
             _currentTabOffset--;
             
             // Wrap around
-            int maxOffset = Mathf.Max(0, _tabButtons.Length - _visibleTabCount);
+            int maxOffset = Mathf.Max(0, _tabButtons.Length - VISIBLE_TAB_COUNT);
             if (_currentTabOffset < 0)
             {
                 _currentTabOffset = maxOffset;
@@ -517,7 +550,7 @@ namespace GameCore.UI.InGame
             _currentTabOffset++;
             
             // Wrap around
-            int maxOffset = Mathf.Max(0, _tabButtons.Length - _visibleTabCount);
+            int maxOffset = Mathf.Max(0, _tabButtons.Length - VISIBLE_TAB_COUNT);
             if (_currentTabOffset > maxOffset)
             {
                 _currentTabOffset = 0;
@@ -525,7 +558,9 @@ namespace GameCore.UI.InGame
             
             UpdateTabCarousel();
         }
+        #endregion
 
+        #region Drag Functionality
         /// <summary>
         /// Handles pointer down event for drag functionality.
         /// </summary>
@@ -549,15 +584,13 @@ namespace GameCore.UI.InGame
             float dragDistance = Mathf.Abs(deltaX);
 
             // Only start dragging if we've moved past the threshold
-            if (dragDistance > _dragThreshold)
+            if (dragDistance > DRAG_THRESHOLD)
             {
                 // Calculate how many tabs to scroll based on drag distance
-                // Assuming roughly 100px per tab
-                float tabWidth = 100f;
-                int tabsToScroll = Mathf.RoundToInt(deltaX / tabWidth);
+                int tabsToScroll = Mathf.RoundToInt(deltaX / TAB_WIDTH);
 
                 int newOffset = Mathf.RoundToInt(_dragStartOffset - tabsToScroll);
-                newOffset = Mathf.Clamp(newOffset, 0, Mathf.Max(0, _tabButtons.Length - _visibleTabCount));
+                newOffset = Mathf.Clamp(newOffset, 0, Mathf.Max(0, _tabButtons.Length - VISIBLE_TAB_COUNT));
 
                 if (newOffset != _currentTabOffset)
                 {
@@ -578,10 +611,13 @@ namespace GameCore.UI.InGame
                 _tabsWrapper.schedule.Execute(() =>
                 {
                     _isDragging = false;
-                }).ExecuteLater(50); // 50ms delay
+                }).ExecuteLater(DRAG_CLICK_DELAY_MS);
                 _tabsWrapper.ReleasePointer(evt.pointerId);
             }
         }
+        #endregion
+
+        #region Animations
 
         /// <summary>
         /// Handles pointer leave event to stop dragging.
@@ -599,13 +635,12 @@ namespace GameCore.UI.InGame
         /// </summary>
         private System.Collections.IEnumerator AnimateSlideInCoroutine(VisualElement element, float startRight, float endRight)
         {
-            float duration = 0.3f; // 300ms
             float elapsed = 0f;
 
-            while (elapsed < duration)
+            while (elapsed < ANIMATION_DURATION)
             {
                 elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / duration);
+                float t = Mathf.Clamp01(elapsed / ANIMATION_DURATION);
                 
                 // Ease out cubic for smooth animation
                 t = 1f - Mathf.Pow(1f - t, 3f);
@@ -633,13 +668,12 @@ namespace GameCore.UI.InGame
         /// </summary>
         private System.Collections.IEnumerator AnimateSlideOutCoroutine(VisualElement element, float startRight, float endRight, System.Action onComplete)
         {
-            float duration = 0.3f; // 300ms
             float elapsed = 0f;
 
-            while (elapsed < duration)
+            while (elapsed < ANIMATION_DURATION)
             {
                 elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / duration);
+                float t = Mathf.Clamp01(elapsed / ANIMATION_DURATION);
                 
                 // Ease in cubic for smooth animation
                 t = t * t * t;
@@ -661,7 +695,9 @@ namespace GameCore.UI.InGame
             _currentAnimation = null;
             onComplete?.Invoke();
         }
+        #endregion
 
+        #region Button Wiring
         /// <summary>
         /// Wires up an ability score button click event.
         /// </summary>
@@ -687,6 +723,10 @@ namespace GameCore.UI.InGame
                 button.clicked += () => SkillClicked?.Invoke(skillName);
             }
         }
+        #endregion
+
+        #region Helper Methods
+        // Helper methods are defined in the IUIView Implementation region above
+        #endregion
     }
 }
-

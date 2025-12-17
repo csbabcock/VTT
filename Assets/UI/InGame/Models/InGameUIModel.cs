@@ -21,6 +21,14 @@ namespace GameCore.UI.InGame
     /// </summary>
     public class InGameUIModel : IUIModel<InGameUIState>
     {
+        #region Constants
+        /// <summary>
+        /// Maximum tab index (0-based). Tabs: 0 = Overview, 1 = Skills, 2 = Actions, 3 = Spells, 4 = Inventory, 5 = Features, 6 = Rest
+        /// </summary>
+        public const int MAX_TAB_INDEX = 6;
+        #endregion
+
+        #region Properties
         /// <summary>
         /// Current state snapshot.
         /// </summary>
@@ -32,6 +40,7 @@ namespace GameCore.UI.InGame
         public event Action<InGameUIState> StateChanged;
 
         public bool IsCharacterSheetOpen => State.IsCharacterSheetOpen;
+        #endregion
 
         public InGameUIModel()
         {
@@ -67,9 +76,7 @@ namespace GameCore.UI.InGame
         /// </summary>
         public void NextTab()
         {
-            // Tabs: 0 = Overview, 1 = Skills, 2 = Actions, 3 = Spells, 4 = Inventory, 5 = Features, 6 = Rest
-            int maxTab = 6;
-            int newTab = Mathf.Min(State.CharacterSheetTabIndex + 1, maxTab);
+            int newTab = Mathf.Min(State.CharacterSheetTabIndex + 1, MAX_TAB_INDEX);
             SetTab(newTab);
         }
 

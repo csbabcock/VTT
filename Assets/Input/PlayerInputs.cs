@@ -6,9 +6,23 @@ using PlayerInputComponent = UnityEngine.InputSystem.PlayerInput;
 
 namespace GameCore
 {
+	/// <summary>
+	/// Handles player input using Unity's Input System.
+	/// Provides a clean interface for reading player input values and managing input state.
+	/// </summary>
 	[RequireComponent(typeof(PlayerInputComponent))]
 	public class PlayerInputs : MonoBehaviour
 	{
+		#region Constants
+		private const string PLAYER_ACTION_MAP_NAME = "Player";
+		private const string ACTION_MOVE = "Move";
+		private const string ACTION_LOOK = "Look";
+		private const string ACTION_JUMP = "Jump";
+		private const string ACTION_SPRINT = "Sprint";
+		private const string ACTION_TOGGLE_PERSPECTIVE = "TogglePerspective";
+		#endregion
+
+		#region Public Input Values
 		[Header("Character Input Values")]
 		public Vector2 move;
 		public Vector2 look;
@@ -21,9 +35,10 @@ namespace GameCore
 		[Header("Mouse Cursor Settings")]
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
-		private bool _cursorInputForLookOriginal;
+		#endregion
 
 #if ENABLE_INPUT_SYSTEM
+		#region Private Fields
 		private PlayerInputComponent _playerInput;
 		private InputActionMap _playerActionMap;
 		private InputAction _moveAction;
@@ -31,14 +46,65 @@ namespace GameCore
 		private InputAction _jumpAction;
 		private InputAction _sprintAction;
 		private InputAction _togglePerspectiveAction;
+		private bool _inputEnabled = true;
+		#endregion
 
-		// Events for action callbacks
+		#region Events
+		/// <summary>
+		/// Raised when the perspective toggle action is performed.
+		/// </summary>
 		public System.Action OnTogglePerspective;
+		#endregion
 
+		#region Unity Lifecycle
 		private void Awake()
 		{
-			_cursorInputForLookOriginal = cursorInputForLook;
-			
+			InitializeInputSystem();
+		}
+
+		private void Start()
+		{
+			EnableInputSystem();
+			SetCursorState(cursorLocked);
+			cursorInputForLook = true;
+		}
+
+		private void OnEnable()
+		{
+			EnableInputSystem();
+			cursorInputForLook = true;
+		}
+
+		private void OnDisable()
+		{
+			_playerActionMap?.Disable();
+		}
+
+		private void OnDestroy()
+		{
+			UnsubscribeFromActions();
+		}
+
+		private void Update()
+		{
+			if (!_inputEnabled)
+				return;
+
+			ReadContinuousInput();
+		}
+
+		private void OnApplicationFocus(bool hasFocus)
+		{
+			SetCursorState(cursorLocked);
+		}
+		#endregion
+
+		#region Input System Initialization
+		/// <summary>
+		/// Initializes the Input System components and finds all required actions.
+		/// </summary>
+		private void InitializeInputSystem()
+		{
 			_playerInput = GetComponent<PlayerInputComponent>();
 			if (_playerInput == null)
 			{
@@ -46,22 +112,28 @@ namespace GameCore
 				return;
 			}
 
-			// Get the Player action map
-			_playerActionMap = _playerInput.actions.FindActionMap("Player");
+			_playerActionMap = _playerInput.actions.FindActionMap(PLAYER_ACTION_MAP_NAME);
 			if (_playerActionMap == null)
 			{
-				Debug.LogError("Player action map not found in Input Actions!");
+				Debug.LogError($"Player action map '{PLAYER_ACTION_MAP_NAME}' not found in Input Actions!");
 				return;
 			}
 
 			// Get individual actions
-			_moveAction = _playerActionMap.FindAction("Move");
-			_lookAction = _playerActionMap.FindAction("Look");
-			_jumpAction = _playerActionMap.FindAction("Jump");
-			_sprintAction = _playerActionMap.FindAction("Sprint");
-			_togglePerspectiveAction = _playerActionMap.FindAction("TogglePerspective");
+			_moveAction = _playerActionMap.FindAction(ACTION_MOVE);
+			_lookAction = _playerActionMap.FindAction(ACTION_LOOK);
+			_jumpAction = _playerActionMap.FindAction(ACTION_JUMP);
+			_sprintAction = _playerActionMap.FindAction(ACTION_SPRINT);
+			_togglePerspectiveAction = _playerActionMap.FindAction(ACTION_TOGGLE_PERSPECTIVE);
 
-			// Subscribe to action events
+			SubscribeToActions();
+		}
+
+		/// <summary>
+		/// Subscribes to input action events.
+		/// </summary>
+		private void SubscribeToActions()
+		{
 			if (_moveAction != null)
 				_moveAction.performed += OnMovePerformed;
 			
@@ -87,54 +159,11 @@ namespace GameCore
 			}
 		}
 
-		private void Start()
+		/// <summary>
+		/// Unsubscribes from input action events.
+		/// </summary>
+		private void UnsubscribeFromActions()
 		{
-			// When using project-wide actions asset, we need to manually ensure
-			// the Player action map is enabled (as per Unity's warning)
-			if (_playerActionMap != null && !_playerActionMap.enabled)
-			{
-				_playerActionMap.Enable();
-			}
-			
-			// Ensure all actions are enabled
-			_moveAction?.Enable();
-			_lookAction?.Enable();
-			_jumpAction?.Enable();
-			_sprintAction?.Enable();
-			
-			// Ensure cursor is locked and input is enabled
-			SetCursorState(cursorLocked);
-			// Always set to true for camera control when starting
-			cursorInputForLook = true;
-		}
-
-		private void OnEnable()
-		{
-			// Enable the action map and ensure all actions are enabled
-			if (_playerActionMap != null)
-			{
-				_playerActionMap.Enable();
-				// Explicitly enable all actions to ensure they work
-				_moveAction?.Enable();
-				_lookAction?.Enable();
-				_jumpAction?.Enable();
-				_sprintAction?.Enable();
-			}
-			
-			// Ensure cursor input for look is enabled
-			// Always set to true for camera control when component is enabled
-			cursorInputForLook = true;
-		}
-
-		private void OnDisable()
-		{
-			// Disable the action map
-			_playerActionMap?.Disable();
-		}
-
-		private void OnDestroy()
-		{
-			// Unsubscribe from action events
 			if (_moveAction != null)
 				_moveAction.performed -= OnMovePerformed;
 			
@@ -157,19 +186,26 @@ namespace GameCore
 				_togglePerspectiveAction.performed -= OnTogglePerspectivePerformed;
 		}
 
-		private bool _inputEnabled = true;
-
-		private void Update()
+		/// <summary>
+		/// Enables the Input System action map and all actions.
+		/// </summary>
+		private void EnableInputSystem()
 		{
-			if (!_inputEnabled)
-				return;
-
-			ReadContinuousInput();
+			if (_playerActionMap != null && !_playerActionMap.enabled)
+			{
+				_playerActionMap.Enable();
+			}
+			
+			_moveAction?.Enable();
+			_lookAction?.Enable();
+			_jumpAction?.Enable();
+			_sprintAction?.Enable();
 		}
+		#endregion
 
+		#region Input Reading
 		/// <summary>
 		/// Reads continuous input values for movement and look.
-		/// Separated for clarity and potential optimization.
 		/// </summary>
 		private void ReadContinuousInput()
 		{
@@ -194,7 +230,9 @@ namespace GameCore
 				OnTogglePerspective?.Invoke();
 			}
 		}
+		#endregion
 
+		#region Action Event Handlers
 		private void OnMovePerformed(InputAction.CallbackContext context)
 		{
 			move = context.ReadValue<Vector2>();
@@ -232,28 +270,43 @@ namespace GameCore
 		{
 			OnTogglePerspective?.Invoke();
 		}
+		#endregion
 
-		// Public methods for external input (mobile UI, etc.)
+		#region Public Input Methods
+		/// <summary>
+		/// Sets the move input value. Useful for external input sources (e.g., mobile UI).
+		/// </summary>
 		public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
 		} 
 
+		/// <summary>
+		/// Sets the look input value. Useful for external input sources (e.g., mobile UI).
+		/// </summary>
 		public void LookInput(Vector2 newLookDirection)
 		{
 			look = newLookDirection;
 		}
 
+		/// <summary>
+		/// Sets the jump input state. Useful for external input sources (e.g., mobile UI).
+		/// </summary>
 		public void JumpInput(bool newJumpState)
 		{
 			jump = newJumpState;
 		}
 
+		/// <summary>
+		/// Sets the sprint input state. Useful for external input sources (e.g., mobile UI).
+		/// </summary>
 		public void SprintInput(bool newSprintState)
 		{
 			sprint = newSprintState;
 		}
+		#endregion
 
+		#region Input State Management
 		/// <summary>
 		/// Enable or disable player input. Useful for pausing input during UI interactions.
 		/// Note: We keep PlayerInput enabled but disable only movement actions to preserve
@@ -285,12 +338,9 @@ namespace GameCore
 			}
 			
 			// Enable the entire action map first to ensure all actions are available
-			if (_playerActionMap != null)
+			if (_playerActionMap != null && !_playerActionMap.enabled)
 			{
-				if (!_playerActionMap.enabled)
-				{
-					_playerActionMap.Enable();
-				}
+				_playerActionMap.Enable();
 			}
 			
 			// Then enable individual actions (they should already be enabled via the map, but ensure it)
@@ -300,7 +350,6 @@ namespace GameCore
 			_sprintAction?.Enable();
 			
 			// Restore cursor input for look - this is critical for mouse camera control
-			// Always set to true when enabling player actions (camera control should be active)
 			cursorInputForLook = true;
 		}
 
@@ -323,17 +372,18 @@ namespace GameCore
 			jump = false;
 			sprint = false;
 		}
+		#endregion
 #endif
 
-		private void OnApplicationFocus(bool hasFocus)
-		{
-			SetCursorState(cursorLocked);
-		}
-
+		#region Cursor Management
+		/// <summary>
+		/// Sets the cursor lock state.
+		/// </summary>
 		private void SetCursorState(bool newState)
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
 		}
+		#endregion
 	}
 	
 }

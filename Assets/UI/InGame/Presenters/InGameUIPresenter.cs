@@ -11,21 +11,30 @@ using UnityEngine.InputSystem;
 namespace GameCore.UI.InGame
 {
     /// <summary>
-    /// Minimal presenter for in-game UI.
-    /// Currently just wires the model and view; ready to grow with diegetic HUD logic.
+    /// Presenter for in-game UI following the MVP pattern.
+    /// Coordinates between the model and view, handles input, and manages player input state.
     /// </summary>
     [DisallowMultipleComponent]
     public class InGameUIPresenter : MonoBehaviour, IUIPresenter<InGameUIModel, InGameUIView>
     {
+        #region Serialized Fields
         [SerializeField] private InGameUIView _view;
         [Header("Input")]
         [Tooltip("PlayerInputs component to disable when character sheet is open. If not assigned, will search for it.")]
         [SerializeField] private PlayerInputs _playerInputs;
+        #endregion
+
+        #region Properties
 
         public InGameUIModel Model { get; private set; }
         public InGameUIView View => _view;
+        #endregion
 
+        #region Private Fields
         private bool _initialized;
+        #endregion
+
+        #region Unity Lifecycle
 
         private void Awake()
         {
@@ -112,7 +121,9 @@ namespace GameCore.UI.InGame
 
             _initialized = false;
         }
+        #endregion
 
+        #region Input Handling
         private void Update()
         {
             if (!_initialized)
@@ -153,15 +164,18 @@ namespace GameCore.UI.InGame
             }
         }
 #endif
+        #endregion
 
-
+        #region Model Event Handlers
         private void OnModelStateChanged(InGameUIState state)
         {
             UpdateCursorState(state.IsCharacterSheetOpen);
             _view.UpdateView(state);
             UpdatePlayerInput(state.IsCharacterSheetOpen);
         }
+        #endregion
 
+        #region UI State Management
         /// <summary>
         /// Updates cursor lock state and visibility based on UI state.
         /// </summary>
@@ -192,7 +206,9 @@ namespace GameCore.UI.InGame
 
             _playerInputs.SetInputEnabled(!isUIOpen);
         }
+        #endregion
 
+        #region View Event Handlers
         private void OnTabClicked(int tabIndex)
         {
             Model.SetTab(tabIndex);
@@ -209,6 +225,7 @@ namespace GameCore.UI.InGame
             // TODO: Implement skill interaction logic
             // This will be handled by a future skill system
         }
+        #endregion
     }
 }
 
