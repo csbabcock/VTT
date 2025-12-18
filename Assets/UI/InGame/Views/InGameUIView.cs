@@ -1157,9 +1157,5 @@ namespace GameCore.UI.InGame
         }
 
         #endregion
-
-        #region Helper Methods
-        // Helper methods are defined in the IUIView Implementation region above
-        #endregion
     }
 }

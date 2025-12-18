@@ -25,7 +25,6 @@ namespace GameCore.UI.InGame.Services
     /// </summary>
     public class GameLogService
     {
-
         /// <summary>
         /// Formats a roll result into a structured log entry.
         /// </summary>

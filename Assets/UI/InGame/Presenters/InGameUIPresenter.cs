@@ -57,6 +57,10 @@ namespace GameCore.UI.InGame
             Model = new InGameUIModel();
             
             // Initialize services
+            // NOTE: Services are instantiated directly here. For a larger project, consider using
+            // dependency injection (e.g., Zenject, VContainer) to improve testability and follow
+            // Dependency Inversion Principle. For now, direct instantiation is acceptable as these
+            // are stateless services with no external dependencies.
             _diceRollService = new DiceRollService();
             _gameLogService = new GameLogService();
             _characterData = new CharacterData();
@@ -289,36 +293,16 @@ namespace GameCore.UI.InGame
 
         private void OnAttackClicked(string weaponName)
         {
-            // Parse weapon data from the button text or use defaults
-            // For now, hardcode based on weapon name
-            int attackBonus = 0;
-            int damageDice = 1;
-            int damageDieType = 8;
-            int damageModifier = 0;
-
-            switch (weaponName)
-            {
-                case "Longsword":
-                    attackBonus = 5; // +3 STR + 2 proficiency
-                    damageDice = 1;
-                    damageDieType = 8;
-                    damageModifier = 3; // +3 STR
-                    break;
-                case "Shortbow":
-                    attackBonus = 4; // +2 DEX + 2 proficiency
-                    damageDice = 1;
-                    damageDieType = 6;
-                    damageModifier = 2; // +2 DEX
-                    break;
-            }
+            // Get weapon data from model (calculates bonuses based on character stats)
+            var weaponData = WeaponData.GetWeaponData(weaponName, _characterData);
 
             var (attackRoll, damageRoll) = _diceRollService.RollAttack(
                 _characterData.CharacterName,
-                weaponName,
-                attackBonus,
-                damageDice,
-                damageDieType,
-                damageModifier
+                weaponData.WeaponName,
+                weaponData.AttackBonus,
+                weaponData.DamageDice,
+                weaponData.DamageDieType,
+                weaponData.DamageModifier
             );
 
             var formatted = _gameLogService.FormatAttackRoll(attackRoll, damageRoll);
