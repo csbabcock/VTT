@@ -1026,21 +1026,32 @@ namespace GameCore.UI.InGame
             logEntries.Add(card);
 
             // Auto-scroll to bottom to show new entry
+            // Register callback on content container to ensure layout is updated before scrolling
             var scrollView = _root.Q<ScrollView>("game-log-content");
             if (scrollView != null)
             {
-                scrollView.schedule.Execute(() =>
+                var contentContainer = scrollView.contentContainer;
+                
+                // Register a one-time callback for when the content container's geometry changes
+                void ScrollToBottom(GeometryChangedEvent evt)
                 {
-                    float maxScroll = scrollView.contentContainer.layout.height - scrollView.contentViewport.layout.height;
+                    contentContainer.UnregisterCallback<GeometryChangedEvent>(ScrollToBottom);
+                    
+                    // Calculate scroll position after layout is updated
+                    float contentHeight = contentContainer.layout.height;
+                    float viewportHeight = scrollView.contentViewport.layout.height;
+                    float maxScroll = contentHeight - viewportHeight;
+                    
                     if (maxScroll > 0)
                     {
                         scrollView.scrollOffset = new Vector2(0, maxScroll);
                     }
-                    else
-                    {
-                        scrollView.scrollOffset = new Vector2(0, 0);
-                    }
-                }).ExecuteLater(1);
+                }
+                
+                // Register on content container so we know when the new entry's layout is calculated
+                contentContainer.RegisterCallback<GeometryChangedEvent>(ScrollToBottom);
+                // Force a layout update to trigger the callback
+                contentContainer.MarkDirtyRepaint();
             }
 
             // Limit log entries to prevent performance issues (keep last 100 entries)

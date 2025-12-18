@@ -31,6 +31,7 @@
     background-color: rgba(12, 12, 16, 0.85);
     padding: 0;
     flex-direction: column;
+    overflow: hidden; /* Clip content to border-radius to prevent grey corners */
 }
 
 .charsheet-title {
@@ -529,6 +530,7 @@
     background-color: rgba(12, 12, 16, 0.85);
     padding: 0;
     flex-direction: column;
+    overflow: hidden; /* Clip content to border-radius to prevent grey corners */
 }
 
 .game-log-header {
