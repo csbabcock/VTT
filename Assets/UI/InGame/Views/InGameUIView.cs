@@ -1,4 +1,6 @@
 using GameCore.UI;
+using GameCore.UI.InGame.Services;
+using GameCore.UI.InGame.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -33,6 +35,7 @@ namespace GameCore.UI.InGame
         private UIDocument _uiDocument;
         private VisualElement _root;
         private VisualElement _characterSheetPanel;
+        private VisualElement _gameLogPanel;
         private VisualElement[] _characterSheetTabs;
         private Button[] _tabButtons;
         private System.Action[] _tabButtonHandlers;
@@ -42,10 +45,18 @@ namespace GameCore.UI.InGame
         private Button _tabNavRight;
         private int _currentTabOffset = 0;
         
-        // Drag functionality
+        // Drag functionality for tabs
         private bool _isDragging = false;
         private float _dragStartX = 0f;
         private float _dragStartOffset = 0f;
+        
+        // Game log height preference (for saved height, no interactive resizing)
+        private const string GAME_LOG_HEIGHT_PREF = "GameLogHeight";
+        private const string GAME_LOG_HEIGHT_VERSION = "GameLogHeightVersion";
+        private const int GAME_LOG_HEIGHT_VERSION_NUM = 2; // Increment when default changes
+        private const float DEFAULT_GAME_LOG_HEIGHT = 600f;
+        private const float OLD_DEFAULT_GAME_LOG_HEIGHT = 300f;
+        private const float SCREEN_EDGE_BUFFER = 5f; // Buffer from screen edges
         
         // Animation state
         private Coroutine _currentAnimation = null;
@@ -71,6 +82,26 @@ namespace GameCore.UI.InGame
         /// Fired when a skill button is clicked. Parameter is the skill name (e.g., "Acrobatics", "Athletics").
         /// </summary>
         public event System.Action<string> SkillClicked;
+
+        /// <summary>
+        /// Fired when an action button is clicked. Parameter is the action name (e.g., "Attack", "Dash").
+        /// </summary>
+        public event System.Action<string> ActionClicked;
+
+        /// <summary>
+        /// Fired when an attack button is clicked. Parameter is the attack name (e.g., "Longsword", "Shortbow").
+        /// </summary>
+        public event System.Action<string> AttackClicked;
+
+        /// <summary>
+        /// Fired when a feature button is clicked. Parameter is the feature name.
+        /// </summary>
+        public event System.Action<string> FeatureClicked;
+
+        /// <summary>
+        /// Fired when a rest button is clicked. Parameter is the rest type ("Short Rest" or "Long Rest").
+        /// </summary>
+        public event System.Action<string> RestClicked;
         #endregion
 
         #region Unity Lifecycle
@@ -169,6 +200,62 @@ namespace GameCore.UI.InGame
                 _characterSheetPanel.SetEnabled(false);
             }
 
+            _gameLogPanel = _root.Q<VisualElement>("game-log-panel");
+
+            // Ensure game log panel can receive pointer events and starts hidden
+            if (_gameLogPanel != null)
+            {
+                _gameLogPanel.pickingMode = PickingMode.Position;
+                // Start hidden and positioned off-screen
+                _gameLogPanel.style.display = DisplayStyle.None;
+                _gameLogPanel.style.right = PANEL_OFFSCREEN_RIGHT;
+                _gameLogPanel.SetEnabled(false);
+                
+                // Load saved height preference
+                // Check version to see if we need to migrate from old default
+                int savedVersion = UnityEngine.PlayerPrefs.GetInt(GAME_LOG_HEIGHT_VERSION, 0);
+                float savedHeight;
+                
+                if (savedVersion < GAME_LOG_HEIGHT_VERSION_NUM)
+                {
+                    // Version mismatch - migrate to new default
+                    // If saved value is the old default or close to it (within 50px), update to new default
+                    if (UnityEngine.PlayerPrefs.HasKey(GAME_LOG_HEIGHT_PREF))
+                    {
+                        float oldHeight = UnityEngine.PlayerPrefs.GetFloat(GAME_LOG_HEIGHT_PREF);
+                        if (Mathf.Abs(oldHeight - OLD_DEFAULT_GAME_LOG_HEIGHT) < 50f)
+                        {
+                            // Was using old default, migrate to new default
+                            savedHeight = DEFAULT_GAME_LOG_HEIGHT;
+                        }
+                        else
+                        {
+                            // User had custom height, keep it
+                            savedHeight = oldHeight;
+                        }
+                    }
+                    else
+                    {
+                        // No saved preference, use new default
+                        savedHeight = DEFAULT_GAME_LOG_HEIGHT;
+                    }
+                    
+                    // Save migrated values
+                    UnityEngine.PlayerPrefs.SetFloat(GAME_LOG_HEIGHT_PREF, savedHeight);
+                    UnityEngine.PlayerPrefs.SetInt(GAME_LOG_HEIGHT_VERSION, GAME_LOG_HEIGHT_VERSION_NUM);
+                    UnityEngine.PlayerPrefs.Save();
+                }
+                else
+                {
+                    // Version is current, just load the saved height
+                    savedHeight = UnityEngine.PlayerPrefs.GetFloat(GAME_LOG_HEIGHT_PREF, DEFAULT_GAME_LOG_HEIGHT);
+                }
+                
+                // Clamp to screen bounds
+                savedHeight = ClampGameLogHeightToScreen(savedHeight);
+                _gameLogPanel.style.height = savedHeight;
+            }
+
             // Find all character sheet tabs
             _characterSheetTabs = new VisualElement[TOTAL_TABS]
             {
@@ -240,6 +327,30 @@ namespace GameCore.UI.InGame
             WireSkillButton("skill-stealth", "Stealth");
             WireSkillButton("skill-survival", "Survival");
 
+            // Wire up action buttons
+            WireActionButton("action-attack", "Attack");
+            WireActionButton("action-dash", "Dash");
+            WireActionButton("action-disengage", "Disengage");
+            WireActionButton("action-dodge", "Dodge");
+            WireActionButton("action-help", "Help");
+            WireActionButton("action-hide", "Hide");
+            WireActionButton("action-ready", "Ready");
+            WireActionButton("action-search", "Search");
+            WireActionButton("action-use-object", "Use Object");
+
+            // Wire up attack buttons
+            WireAttackButton("attack-longsword", "Longsword");
+            WireAttackButton("attack-shortbow", "Shortbow");
+
+            // Wire up feature buttons
+            WireFeatureButton("feature-fighting-style", "Fighting Style: Defense");
+            WireFeatureButton("feature-second-wind", "Second Wind");
+            WireFeatureButton("feature-action-surge", "Action Surge");
+
+            // Wire up rest buttons
+            WireRestButton("short-rest-button", "Short Rest");
+            WireRestButton("long-rest-button", "Long Rest");
+
             // Wire up carousel navigation
             _tabsContainer = _root.Q<VisualElement>("charsheet-tabs-container");
             _tabsWrapper = _root.Q<VisualElement>("charsheet-tabs-wrapper");
@@ -280,6 +391,15 @@ namespace GameCore.UI.InGame
                 _characterSheetPanel.style.right = PANEL_OFFSCREEN_RIGHT;
                 _characterSheetPanel.SetEnabled(false);
                 _characterSheetPanel.pickingMode = PickingMode.Ignore;
+            }
+
+            // Start with game log hidden by default and positioned off-screen
+            if (_gameLogPanel != null)
+            {
+                _gameLogPanel.style.display = DisplayStyle.None;
+                _gameLogPanel.style.right = PANEL_OFFSCREEN_RIGHT;
+                _gameLogPanel.SetEnabled(false);
+                _gameLogPanel.pickingMode = PickingMode.Ignore;
             }
         }
         #endregion
@@ -390,6 +510,32 @@ namespace GameCore.UI.InGame
                 _currentAnimation = StartCoroutine(AnimateSlideInCoroutine(_characterSheetPanel, PANEL_OFFSCREEN_RIGHT, PANEL_ONSCREEN_RIGHT));
                 
                 EnablePickingOnAllButtons(_characterSheetPanel);
+                
+                // Ensure character sheet fits on screen
+                ClampCharacterSheetToScreen();
+
+                // Also show game log panel
+                if (_gameLogPanel != null)
+                {
+                    _gameLogPanel.style.display = DisplayStyle.Flex;
+                    _gameLogPanel.SetEnabled(true);
+                    _gameLogPanel.pickingMode = PickingMode.Position;
+                    _gameLogPanel.style.right = PANEL_OFFSCREEN_RIGHT;
+                    
+                    // Ensure game log height fits on screen
+                    float currentHeight = _gameLogPanel.resolvedStyle.height;
+                    float clampedHeight = ClampGameLogHeightToScreen(currentHeight);
+                    if (clampedHeight != currentHeight)
+                    {
+                        _gameLogPanel.style.height = clampedHeight;
+                    }
+                    
+                    // Re-enable picking on buttons after showing
+                    EnablePickingOnAllButtons(_gameLogPanel);
+                    
+                    _gameLogPanel.MarkDirtyRepaint();
+                    StartCoroutine(AnimateSlideInCoroutine(_gameLogPanel, PANEL_OFFSCREEN_RIGHT, PANEL_ONSCREEN_RIGHT));
+                }
             }
             else
             {
@@ -402,6 +548,18 @@ namespace GameCore.UI.InGame
                     _characterSheetPanel.pickingMode = PickingMode.Ignore;
                     _currentAnimation = null;
                 }));
+
+                // Also hide game log panel
+                if (_gameLogPanel != null)
+                {
+                    float gameLogCurrentRight = _gameLogPanel.resolvedStyle.right;
+                    StartCoroutine(AnimateSlideOutCoroutine(_gameLogPanel, gameLogCurrentRight, PANEL_OFFSCREEN_RIGHT, () =>
+                    {
+                        _gameLogPanel.style.display = DisplayStyle.None;
+                        _gameLogPanel.SetEnabled(false);
+                        _gameLogPanel.pickingMode = PickingMode.Ignore;
+                    }));
+                }
             }
         }
 
@@ -723,6 +881,281 @@ namespace GameCore.UI.InGame
                 button.clicked += () => SkillClicked?.Invoke(skillName);
             }
         }
+
+        /// <summary>
+        /// Wires up an action button click event.
+        /// </summary>
+        private void WireActionButton(string buttonName, string actionName)
+        {
+            var button = _root.Q<Button>(buttonName);
+            if (button != null)
+            {
+                button.pickingMode = PickingMode.Position;
+                button.clicked += () => ActionClicked?.Invoke(actionName);
+            }
+        }
+
+        /// <summary>
+        /// Wires up an attack button click event.
+        /// </summary>
+        private void WireAttackButton(string buttonName, string attackName)
+        {
+            var button = _root.Q<Button>(buttonName);
+            if (button != null)
+            {
+                button.pickingMode = PickingMode.Position;
+                button.clicked += () => AttackClicked?.Invoke(attackName);
+            }
+        }
+
+        /// <summary>
+        /// Wires up a feature button click event.
+        /// </summary>
+        private void WireFeatureButton(string buttonName, string featureName)
+        {
+            var button = _root.Q<Button>(buttonName);
+            if (button != null)
+            {
+                button.pickingMode = PickingMode.Position;
+                button.clicked += () => FeatureClicked?.Invoke(featureName);
+            }
+        }
+
+        /// <summary>
+        /// Wires up a rest button click event.
+        /// </summary>
+        private void WireRestButton(string buttonName, string restType)
+        {
+            var button = _root.Q<Button>(buttonName);
+            if (button != null)
+            {
+                button.pickingMode = PickingMode.Position;
+                button.clicked += () => RestClicked?.Invoke(restType);
+            }
+        }
+        #endregion
+
+        #region Game Log Methods
+
+        /// <summary>
+        /// Adds a new entry to the game log using structured data.
+        /// </summary>
+        /// <param name="entry">The formatted log entry data.</param>
+        public void AddLogEntry(FormattedLogEntry entry)
+        {
+            if (_gameLogPanel == null)
+            {
+                Debug.LogWarning("InGameUIView: Game log panel is null!");
+                return;
+            }
+
+            var logEntries = _root.Q<VisualElement>("game-log-entries");
+            if (logEntries == null)
+            {
+                Debug.LogWarning("InGameUIView: Game log entries container is null!");
+                return;
+            }
+
+            // Create card container
+            var card = new VisualElement();
+            card.AddToClassList("game-log-card");
+            card.AddToClassList(entry.CssClass);
+            card.pickingMode = PickingMode.Ignore;
+
+            // Main content area
+            var mainContent = new VisualElement();
+            mainContent.AddToClassList("game-log-main-content");
+
+            // Character name
+            if (!string.IsNullOrEmpty(entry.CharacterName))
+            {
+                var characterNameLabel = new Label(entry.CharacterName);
+                characterNameLabel.AddToClassList("game-log-character-name");
+                mainContent.Add(characterNameLabel);
+            }
+
+            // Action type and sub-action on one line
+            var actionRow = new VisualElement();
+            actionRow.AddToClassList("game-log-action-row");
+            
+            var actionTypeLabel = new Label(entry.ActionType);
+            actionTypeLabel.AddToClassList("game-log-action-type");
+            actionRow.Add(actionTypeLabel);
+
+            if (!string.IsNullOrEmpty(entry.SubActionType))
+            {
+                var subActionLabel = new Label(entry.SubActionType);
+                subActionLabel.AddToClassList("game-log-sub-action");
+                subActionLabel.AddToClassList($"sub-action-{entry.CssClass.Replace("log-", "")}");
+                actionRow.Add(subActionLabel);
+            }
+
+            mainContent.Add(actionRow);
+
+            // Formula on its own line (if available)
+            if (!string.IsNullOrEmpty(entry.DiceFormula))
+            {
+                var formulaLabel = new Label(entry.DiceFormula);
+                formulaLabel.AddToClassList("game-log-dice-formula");
+                mainContent.Add(formulaLabel);
+            }
+
+            // Dice breakdown on its own line (if available)
+            if (!string.IsNullOrEmpty(entry.DiceBreakdown))
+            {
+                var diceBreakdownLabel = new Label(entry.DiceBreakdown);
+                diceBreakdownLabel.AddToClassList("game-log-dice-breakdown");
+                mainContent.Add(diceBreakdownLabel);
+            }
+
+            // Result (large number) on its own line
+            if (entry.Result.HasValue)
+            {
+                var resultLabel = new Label(entry.Result.Value.ToString());
+                resultLabel.AddToClassList("game-log-result");
+                mainContent.Add(resultLabel);
+            }
+
+            // Timestamp
+            var timestamp = System.DateTime.Now.ToString("h:mm tt");
+            var timestampLabel = new Label(timestamp);
+            timestampLabel.AddToClassList("game-log-timestamp");
+            mainContent.Add(timestampLabel);
+
+            card.Add(mainContent);
+            logEntries.Add(card);
+
+            // Auto-scroll to bottom to show new entry
+            var scrollView = _root.Q<ScrollView>("game-log-content");
+            if (scrollView != null)
+            {
+                scrollView.schedule.Execute(() =>
+                {
+                    float maxScroll = scrollView.contentContainer.layout.height - scrollView.contentViewport.layout.height;
+                    if (maxScroll > 0)
+                    {
+                        scrollView.scrollOffset = new Vector2(0, maxScroll);
+                    }
+                    else
+                    {
+                        scrollView.scrollOffset = new Vector2(0, 0);
+                    }
+                }).ExecuteLater(1);
+            }
+
+            // Limit log entries to prevent performance issues (keep last 100 entries)
+            const int maxEntries = 100;
+            while (logEntries.childCount > maxEntries)
+            {
+                var firstChild = logEntries[0];
+                logEntries.Remove(firstChild);
+            }
+        }
+
+        /// <summary>
+        /// Legacy method for simple text entries (for system messages, etc.).
+        /// </summary>
+        public void AddLogEntry(string message, string cssClass = "game-log-entry")
+        {
+            var entry = new FormattedLogEntry
+            {
+                CharacterName = "System",
+                ActionType = "",
+                SubActionType = "",
+                DiceFormula = "",
+                DiceBreakdown = "",
+                Result = null,
+                CssClass = cssClass,
+                FullMessage = message
+            };
+            AddLogEntry(entry);
+        }
+
+        /// <summary>
+        /// Clears all entries from the game log.
+        /// </summary>
+        public void ClearLog()
+        {
+            if (_gameLogPanel == null)
+            {
+                Debug.LogWarning("InGameUIView: Game log panel is null!");
+                return;
+            }
+
+            var logEntries = _root.Q<VisualElement>("game-log-entries");
+            if (logEntries != null)
+            {
+                logEntries.Clear();
+            }
+        }
+
+        #endregion
+
+        #region Screen Bounds Helpers
+
+        /// <summary>
+        /// Clamps the game log height to ensure it doesn't go off-screen.
+        /// </summary>
+        private float ClampGameLogHeightToScreen(float height)
+        {
+            if (_gameLogPanel == null || _root == null)
+                return height;
+
+            // Get screen resolution
+            float screenHeight = Screen.height;
+
+            // Get panel position (top) - game log is positioned dynamically based on character sheet
+            float panelTop = _gameLogPanel.resolvedStyle.top;
+            if (float.IsNaN(panelTop) || panelTop <= 0)
+            {
+                // Calculate based on character sheet position if not set
+                if (_characterSheetPanel != null)
+                {
+                    float charSheetTop = _characterSheetPanel.resolvedStyle.top;
+                    float charSheetHeight = _characterSheetPanel.resolvedStyle.height;
+                    if (!float.IsNaN(charSheetTop) && !float.IsNaN(charSheetHeight))
+                    {
+                        panelTop = charSheetTop + charSheetHeight + 10f; // 10px spacing
+                    }
+                    else
+                    {
+                        panelTop = 815f; // Fallback (5px + 800px + 10px)
+                    }
+                }
+                else
+                {
+                    panelTop = 815f; // Fallback
+                }
+            }
+
+            // Calculate maximum height based on screen bounds
+            // Panel top + height should not exceed screen height - buffer
+            float maxHeightFromScreen = screenHeight - panelTop - SCREEN_EDGE_BUFFER;
+            
+            // Return the minimum of requested height and screen-constrained height
+            return Mathf.Min(height, maxHeightFromScreen);
+        }
+
+        /// <summary>
+        /// Ensures the character sheet panel doesn't go off-screen vertically.
+        /// </summary>
+        private void ClampCharacterSheetToScreen()
+        {
+            if (_characterSheetPanel == null)
+                return;
+
+            float screenHeight = Screen.height;
+            float panelTop = SCREEN_EDGE_BUFFER; // Character sheet top position (5px from top)
+            float currentHeight = _characterSheetPanel.resolvedStyle.height;
+            
+            // If panel height would go off-screen, clamp it
+            float maxHeight = screenHeight - panelTop - SCREEN_EDGE_BUFFER;
+            if (currentHeight > maxHeight)
+            {
+                _characterSheetPanel.style.height = maxHeight;
+            }
+        }
+
         #endregion
 
         #region Helper Methods

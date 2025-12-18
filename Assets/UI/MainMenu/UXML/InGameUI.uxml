@@ -183,5 +183,21 @@
                 </ui:VisualElement>
             </ui:ScrollView>
         </ui:VisualElement>
+
+        <!-- Game log panel; positioned underneath character sheet -->
+        <ui:VisualElement name="game-log-panel" class="game-log-panel diegetic-panel">
+            <!-- Header -->
+            <ui:VisualElement name="game-log-header" class="game-log-header">
+                <ui:Label text="Game Log" class="game-log-title" />
+            </ui:VisualElement>
+
+            <!-- Scrollable log content -->
+            <ui:ScrollView name="game-log-content" class="game-log-content">
+                <ui:VisualElement name="game-log-entries" class="game-log-entries">
+                    <!-- Log entries will be added dynamically -->
+                    <ui:Label text="[System] Game log initialized" class="game-log-entry log-system" />
+                </ui:VisualElement>
+            </ui:ScrollView>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

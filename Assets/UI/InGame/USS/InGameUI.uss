@@ -22,7 +22,7 @@
 .charsheet-panel {
     position: absolute;
     right: -568px; /* Start off-screen: -520px (width) - 48px (offset) */
-    top: 72px;
+    top: 5px; /* Same distance from top edge as game log spacing */
     width: 520px;
     height: 800px;
     border-radius: var(--vtt-radius-large);
@@ -512,4 +512,267 @@
     background-color: rgba(255, 255, 255, 0.05);
     border-color: var(--vtt-accent-primary);
     scale: 1.05;
+}
+
+/* Game Log Panel */
+.game-log-panel {
+    position: absolute;
+    right: -568px; /* Start off-screen: -520px (width) - 48px (offset) */
+    top: 815px; /* Positioned directly underneath character sheet (5px + 800px + 10px spacing) */
+    width: 520px;
+    height: 600px;
+    min-height: 200px;
+    max-height: 800px;
+    border-radius: var(--vtt-radius-large);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: rgba(12, 12, 16, 0.85);
+    padding: 0;
+    flex-direction: column;
+}
+
+.game-log-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--vtt-spacing-medium) var(--vtt-spacing-large);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--vtt-border-color);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.game-log-title {
+    color: var(--vtt-text-main);
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.game-log-content {
+    flex-grow: 1;
+    overflow: scroll;
+    min-height: 0;
+    padding: 0;
+}
+
+.game-log-entries {
+    flex-direction: column;
+    padding: var(--vtt-spacing-medium);
+}
+
+.game-log-entries > * {
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+/* Card-style log entry */
+.game-log-card {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: var(--vtt-radius-medium);
+    border-width: 1px;
+    border-color: rgba(195, 224, 245, 0.3);
+    padding: 0;
+    margin-bottom: var(--vtt-spacing-small);
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Main content area */
+.game-log-main-content {
+    flex-grow: 1;
+    flex-direction: column;
+    min-width: 0;
+    padding: var(--vtt-spacing-medium);
+    padding-top: 0;
+}
+
+/* Character name - header style */
+.game-log-character-name {
+    color: var(--vtt-text-main);
+    font-size: 14px;
+    -unity-font-style: bold;
+    margin-top: 0;
+    margin-bottom: 6px;
+    padding: var(--vtt-spacing-small) var(--vtt-spacing-medium);
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 0;
+    border-top-left-radius: var(--vtt-radius-medium);
+    border-top-right-radius: var(--vtt-radius-medium);
+    border-width: 0;
+    border-bottom-width: 1px;
+    border-color: var(--vtt-border-color);
+}
+
+.game-log-main-content > * {
+    margin-bottom: 4px;
+}
+
+.game-log-main-content > .game-log-timestamp {
+    margin-bottom: 0;
+}
+
+/* Action row */
+.game-log-action-row {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.game-log-action-row > * {
+    margin-right: var(--vtt-spacing-small);
+}
+
+.game-log-action-row > .game-log-sub-action {
+    margin-right: 0;
+}
+
+.game-log-action-type {
+    color: var(--vtt-text-main);
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.game-log-sub-action {
+    font-size: 14px;
+    -unity-font-style: bold;
+    padding-left: var(--vtt-spacing-small);
+    padding-right: var(--vtt-spacing-small);
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-radius: 4px;
+}
+
+/* Sub-action colors */
+.game-log-sub-action.sub-action-ability-check,
+.game-log-sub-action.sub-action-skill {
+    color: #d4a5f5;
+    background-color: rgba(212, 165, 245, 0.15);
+}
+
+.game-log-sub-action.sub-action-attack,
+.game-log-sub-action.sub-action-roll {
+    color: #ffb366;
+    background-color: rgba(255, 179, 102, 0.15);
+}
+
+.game-log-sub-action.sub-action-rest {
+    color: #4ade80;
+    background-color: rgba(74, 222, 128, 0.15);
+}
+
+/* Dice row */
+.game-log-dice-row {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.game-log-dice-row > * {
+    margin-right: var(--vtt-spacing-small);
+}
+
+.game-log-dice-row > .game-log-dice-formula {
+    margin-right: 0;
+}
+
+.game-log-dice-breakdown {
+    color: var(--vtt-text-main);
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+.game-log-dice-formula {
+    color: var(--vtt-text-muted);
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+/* Result number */
+.game-log-result {
+    color: var(--vtt-text-main);
+    font-size: 32px;
+    -unity-font-style: bold;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+/* Timestamp */
+.game-log-timestamp {
+    color: var(--vtt-text-muted);
+    font-size: 11px;
+    align-self: flex-end;
+    margin-top: auto;
+}
+
+/* Legacy simple entry (for system messages) */
+.game-log-entry {
+    color: var(--vtt-text-main);
+    font-size: 16px;
+    margin-bottom: var(--vtt-spacing-small);
+    white-space: normal;
+    overflow: hidden;
+}
+
+/* Card border colors by type */
+.game-log-card.log-ability-check {
+    border-color: rgba(195, 224, 245, 0.4);
+}
+
+.game-log-card.log-skill {
+    border-color: rgba(168, 230, 207, 0.4);
+}
+
+.game-log-card.log-attack {
+    border-color: rgba(255, 179, 102, 0.4);
+}
+
+.game-log-card.log-attack-critical {
+    border-color: rgba(74, 222, 128, 0.6);
+    border-width: 2px;
+}
+
+.game-log-card.log-attack-miss,
+.game-log-card.log-roll-critical-miss {
+    border-color: rgba(239, 68, 68, 0.6);
+    border-width: 2px;
+}
+
+.game-log-card.log-combat-action {
+    border-color: rgba(248, 213, 138, 0.4);
+}
+
+.game-log-card.log-rest {
+    border-color: rgba(212, 165, 245, 0.4);
+}
+
+.game-log-card.log-roll-critical {
+    border-color: rgba(74, 222, 128, 0.6);
+    border-width: 2px;
+}
+
+/* Result number colors */
+.game-log-card.log-ability-check .game-log-result {
+    color: #c3e0f5;
+}
+
+.game-log-card.log-skill .game-log-result {
+    color: #a8e6cf;
+}
+
+.game-log-card.log-attack .game-log-result {
+    color: #ffb366;
+}
+
+.game-log-card.log-attack-critical .game-log-result,
+.game-log-card.log-roll-critical .game-log-result {
+    color: #4ade80;
+}
+
+.game-log-card.log-attack-miss .game-log-result,
+.game-log-card.log-roll-critical-miss .game-log-result {
+    color: #ef4444;
+}
+
+/* Legacy simple entry styles (for system messages) */
+.game-log-entry.log-system {
+    color: var(--vtt-text-muted);
+    font-size: 14px;
 }

@@ -1,8 +1,10 @@
 using GameCore.UI;
 using GameCore;
 using GameCore.UI.InGame.Services;
+using GameCore.UI.InGame.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -32,6 +34,9 @@ namespace GameCore.UI.InGame
 
         #region Private Fields
         private bool _initialized;
+        private DiceRollService _diceRollService;
+        private GameLogService _gameLogService;
+        private CharacterData _characterData;
         #endregion
 
         #region Unity Lifecycle
@@ -50,6 +55,11 @@ namespace GameCore.UI.InGame
             }
 
             Model = new InGameUIModel();
+            
+            // Initialize services
+            _diceRollService = new DiceRollService();
+            _gameLogService = new GameLogService();
+            _characterData = new CharacterData();
         }
 
         private void OnEnable()
@@ -87,6 +97,10 @@ namespace GameCore.UI.InGame
             _view.TabClicked += OnTabClicked;
             _view.AbilityScoreClicked += OnAbilityScoreClicked;
             _view.SkillClicked += OnSkillClicked;
+            _view.ActionClicked += OnActionClicked;
+            _view.AttackClicked += OnAttackClicked;
+            _view.FeatureClicked += OnFeatureClicked;
+            _view.RestClicked += OnRestClicked;
             Model.StateChanged += OnModelStateChanged;
 
             // Push initial state to the view so it starts in sync with the model.
@@ -112,6 +126,10 @@ namespace GameCore.UI.InGame
                 _view.TabClicked -= OnTabClicked;
                 _view.AbilityScoreClicked -= OnAbilityScoreClicked;
                 _view.SkillClicked -= OnSkillClicked;
+                _view.ActionClicked -= OnActionClicked;
+                _view.AttackClicked -= OnAttackClicked;
+                _view.FeatureClicked -= OnFeatureClicked;
+                _view.RestClicked -= OnRestClicked;
             }
 
             if (Model != null)
@@ -216,14 +234,109 @@ namespace GameCore.UI.InGame
 
         private void OnAbilityScoreClicked(string abilityName)
         {
-            // TODO: Implement ability score interaction logic
-            // This will be handled by a future ability score system
+            int modifier = _characterData.GetAbilityModifier(abilityName);
+            var rollResult = _diceRollService.RollD20Check(
+                _characterData.CharacterName,
+                $"{abilityName} Check",
+                modifier,
+                new List<ModifierBreakdown>
+                {
+                    new ModifierBreakdown { Source = abilityName, Value = modifier }
+                }
+            );
+
+            var formatted = _gameLogService.FormatRollResult(rollResult);
+            _view.AddLogEntry(formatted);
         }
 
         private void OnSkillClicked(string skillName)
         {
-            // TODO: Implement skill interaction logic
-            // This will be handled by a future skill system
+            string abilityName = CharacterData.GetSkillAbility(skillName);
+            int modifier = _characterData.GetSkillModifier(skillName, abilityName);
+            bool isProficient = _characterData.ProficientSkills.Contains(skillName);
+
+            var breakdowns = new List<ModifierBreakdown>
+            {
+                new ModifierBreakdown { Source = abilityName, Value = _characterData.GetAbilityModifier(abilityName) }
+            };
+
+            if (isProficient)
+            {
+                breakdowns.Add(new ModifierBreakdown 
+                { 
+                    Source = "Proficiency", 
+                    Value = _characterData.ProficiencyBonus 
+                });
+            }
+
+            var rollResult = _diceRollService.RollD20Check(
+                _characterData.CharacterName,
+                skillName,
+                modifier,
+                breakdowns
+            );
+
+            var formatted = _gameLogService.FormatRollResult(rollResult);
+            _view.AddLogEntry(formatted);
+        }
+
+        private void OnActionClicked(string actionName)
+        {
+            // Log the action (non-dice actions)
+            var formatted = _gameLogService.FormatAction(_characterData.CharacterName, actionName);
+            _view.AddLogEntry(formatted);
+        }
+
+        private void OnAttackClicked(string weaponName)
+        {
+            // Parse weapon data from the button text or use defaults
+            // For now, hardcode based on weapon name
+            int attackBonus = 0;
+            int damageDice = 1;
+            int damageDieType = 8;
+            int damageModifier = 0;
+
+            switch (weaponName)
+            {
+                case "Longsword":
+                    attackBonus = 5; // +3 STR + 2 proficiency
+                    damageDice = 1;
+                    damageDieType = 8;
+                    damageModifier = 3; // +3 STR
+                    break;
+                case "Shortbow":
+                    attackBonus = 4; // +2 DEX + 2 proficiency
+                    damageDice = 1;
+                    damageDieType = 6;
+                    damageModifier = 2; // +2 DEX
+                    break;
+            }
+
+            var (attackRoll, damageRoll) = _diceRollService.RollAttack(
+                _characterData.CharacterName,
+                weaponName,
+                attackBonus,
+                damageDice,
+                damageDieType,
+                damageModifier
+            );
+
+            var formatted = _gameLogService.FormatAttackRoll(attackRoll, damageRoll);
+            _view.AddLogEntry(formatted);
+        }
+
+        private void OnFeatureClicked(string featureName)
+        {
+            // Log feature usage (non-dice actions for now)
+            var formatted = _gameLogService.FormatAction(_characterData.CharacterName, $"Used: {featureName}");
+            _view.AddLogEntry(formatted);
+        }
+
+        private void OnRestClicked(string restType)
+        {
+            // Log rest action
+            var formatted = _gameLogService.FormatAction(_characterData.CharacterName, restType);
+            _view.AddLogEntry(formatted);
         }
         #endregion
     }
