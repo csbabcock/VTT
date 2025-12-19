@@ -327,6 +327,7 @@
 /* Skills Tab */
 .skills-list {
     flex-direction: column;
+    margin-bottom: var(--vtt-spacing-large);
 }
 
 .skills-list > * {
@@ -344,8 +345,11 @@
     padding: var(--vtt-spacing-small) var(--vtt-spacing-medium);
     margin-bottom: var(--vtt-spacing-small);
     justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
     transition-duration: 0.2s;
     transition-property: scale, background-color, border-color;
+    min-height: 32px;
 }
 
 .charsheet-skill-button:hover {
@@ -355,8 +359,49 @@
 }
 
 .charsheet-skill-button.proficient {
-    border-color: var(--vtt-accent-primary);
-    background-color: rgba(248, 213, 138, 0.1);
+    border-color: var(--vtt-border-color);
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Skill icon - solid circle for proficient skills only */
+.skill-icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--vtt-text-main);
+    margin-right: var(--vtt-spacing-medium);
+    flex-shrink: 0;
+}
+
+/* Spacer for non-proficient skills to align with proficient skills */
+.skill-icon-spacer {
+    width: 12px;
+    height: 12px;
+    margin-right: var(--vtt-spacing-medium);
+    flex-shrink: 0;
+}
+
+.skill-ability {
+    color: var(--vtt-text-main);
+    font-size: 14px;
+    min-width: 40px;
+    margin-right: var(--vtt-spacing-medium);
+    flex-shrink: 0;
+}
+
+.skill-name {
+    color: var(--vtt-text-main);
+    font-size: 16px;
+    flex-grow: 1;
+    margin-right: var(--vtt-spacing-medium);
+}
+
+.skill-modifier {
+    color: var(--vtt-text-main);
+    font-size: 16px;
+    flex-shrink: 0;
+    -unity-text-align: middle-right;
+    min-width: 40px;
 }
 
 /* Actions Tab */

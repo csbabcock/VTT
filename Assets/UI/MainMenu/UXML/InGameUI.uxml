@@ -73,24 +73,114 @@
                 <ui:VisualElement name="tab-skills-content" class="charsheet-tab-panel">
                     <ui:Label text="Skills" class="section-title" />
                     <ui:VisualElement name="skills-list" class="skills-list">
-                        <ui:Button name="skill-acrobatics" class="charsheet-skill-button" text="Acrobatics (DEX) +2" />
-                        <ui:Button name="skill-animal-handling" class="charsheet-skill-button" text="Animal Handling (WIS) +1" />
-                        <ui:Button name="skill-arcana" class="charsheet-skill-button" text="Arcana (INT) +0" />
-                        <ui:Button name="skill-athletics" class="charsheet-skill-button proficient" text="Athletics (STR) +5 ⭐" />
-                        <ui:Button name="skill-deception" class="charsheet-skill-button" text="Deception (CHA) -1" />
-                        <ui:Button name="skill-history" class="charsheet-skill-button" text="History (INT) +0" />
-                        <ui:Button name="skill-insight" class="charsheet-skill-button" text="Insight (WIS) +1" />
-                        <ui:Button name="skill-intimidation" class="charsheet-skill-button" text="Intimidation (CHA) -1" />
-                        <ui:Button name="skill-investigation" class="charsheet-skill-button" text="Investigation (INT) +0" />
-                        <ui:Button name="skill-medicine" class="charsheet-skill-button" text="Medicine (WIS) +1" />
-                        <ui:Button name="skill-nature" class="charsheet-skill-button" text="Nature (INT) +0" />
-                        <ui:Button name="skill-perception" class="charsheet-skill-button" text="Perception (WIS) +1" />
-                        <ui:Button name="skill-performance" class="charsheet-skill-button" text="Performance (CHA) -1" />
-                        <ui:Button name="skill-persuasion" class="charsheet-skill-button" text="Persuasion (CHA) -1" />
-                        <ui:Button name="skill-religion" class="charsheet-skill-button" text="Religion (INT) +0" />
-                        <ui:Button name="skill-sleight-of-hand" class="charsheet-skill-button" text="Sleight of Hand (DEX) +2" />
-                        <ui:Button name="skill-stealth" class="charsheet-skill-button" text="Stealth (DEX) +2" />
-                        <ui:Button name="skill-survival" class="charsheet-skill-button" text="Survival (WIS) +1" />
+                        <ui:Button name="skill-acrobatics" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="DEX" class="skill-ability" />
+                            <ui:Label text="Acrobatics" class="skill-name" />
+                            <ui:Label text="+6" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-animal-handling" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="WIS" class="skill-ability" />
+                            <ui:Label text="Animal Handling" class="skill-name" />
+                            <ui:Label text="+2" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-arcana" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="INT" class="skill-ability" />
+                            <ui:Label text="Arcana" class="skill-name" />
+                            <ui:Label text="+2" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-athletics" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="STR" class="skill-ability" />
+                            <ui:Label text="Athletics" class="skill-name" />
+                            <ui:Label text="+0" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-deception" class="charsheet-skill-button proficient">
+                            <ui:VisualElement class="skill-icon" />
+                            <ui:Label text="CHA" class="skill-ability" />
+                            <ui:Label text="Deception" class="skill-name" />
+                            <ui:Label text="+10" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-history" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="INT" class="skill-ability" />
+                            <ui:Label text="History" class="skill-name" />
+                            <ui:Label text="+0" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-insight" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="WIS" class="skill-ability" />
+                            <ui:Label text="Insight" class="skill-name" />
+                            <ui:Label text="+4" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-intimidation" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="CHA" class="skill-ability" />
+                            <ui:Label text="Intimidation" class="skill-name" />
+                            <ui:Label text="+7" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-investigation" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="INT" class="skill-ability" />
+                            <ui:Label text="Investigation" class="skill-name" />
+                            <ui:Label text="+0" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-medicine" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="WIS" class="skill-ability" />
+                            <ui:Label text="Medicine" class="skill-name" />
+                            <ui:Label text="+4" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-nature" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="INT" class="skill-ability" />
+                            <ui:Label text="Nature" class="skill-name" />
+                            <ui:Label text="+0" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-perception" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="WIS" class="skill-ability" />
+                            <ui:Label text="Perception" class="skill-name" />
+                            <ui:Label text="+2" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-performance" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="CHA" class="skill-ability" />
+                            <ui:Label text="Performance" class="skill-name" />
+                            <ui:Label text="+7" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-persuasion" class="charsheet-skill-button proficient">
+                            <ui:VisualElement class="skill-icon" />
+                            <ui:Label text="CHA" class="skill-ability" />
+                            <ui:Label text="Persuasion" class="skill-name" />
+                            <ui:Label text="+10" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-religion" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="INT" class="skill-ability" />
+                            <ui:Label text="Religion" class="skill-name" />
+                            <ui:Label text="+0" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-sleight-of-hand" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="DEX" class="skill-ability" />
+                            <ui:Label text="Sleight of Hand" class="skill-name" />
+                            <ui:Label text="+6" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-stealth" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="DEX" class="skill-ability" />
+                            <ui:Label text="Stealth" class="skill-name" />
+                            <ui:Label text="+6" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-survival" class="charsheet-skill-button skill-last">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="WIS" class="skill-ability" />
+                            <ui:Label text="Survival" class="skill-name" />
+                            <ui:Label text="+2" class="skill-modifier" />
+                        </ui:Button>
                     </ui:VisualElement>
                 </ui:VisualElement>
 
