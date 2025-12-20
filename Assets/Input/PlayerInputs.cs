@@ -20,6 +20,7 @@ namespace GameCore
 		private const string ACTION_JUMP = "Jump";
 		private const string ACTION_SPRINT = "Sprint";
 		private const string ACTION_TOGGLE_PERSPECTIVE = "TogglePerspective";
+		private const string ACTION_TOGGLE_ENCOUNTER_MODE = "ToggleEncounterMode";
 		#endregion
 
 		#region Public Input Values
@@ -46,6 +47,7 @@ namespace GameCore
 		private InputAction _jumpAction;
 		private InputAction _sprintAction;
 		private InputAction _togglePerspectiveAction;
+		private InputAction _toggleEncounterModeAction;
 		private bool _inputEnabled = true;
 		#endregion
 
@@ -54,6 +56,11 @@ namespace GameCore
 		/// Raised when the perspective toggle action is performed.
 		/// </summary>
 		public System.Action OnTogglePerspective;
+
+		/// <summary>
+		/// Raised when the encounter mode toggle action is performed.
+		/// </summary>
+		public System.Action OnToggleEncounterMode;
 		#endregion
 
 		#region Unity Lifecycle
@@ -125,6 +132,7 @@ namespace GameCore
 			_jumpAction = _playerActionMap.FindAction(ACTION_JUMP);
 			_sprintAction = _playerActionMap.FindAction(ACTION_SPRINT);
 			_togglePerspectiveAction = _playerActionMap.FindAction(ACTION_TOGGLE_PERSPECTIVE);
+			_toggleEncounterModeAction = _playerActionMap.FindAction(ACTION_TOGGLE_ENCOUNTER_MODE);
 
 			SubscribeToActions();
 		}
@@ -157,6 +165,12 @@ namespace GameCore
 				_togglePerspectiveAction.performed += OnTogglePerspectivePerformed;
 				_togglePerspectiveAction.Enable();
 			}
+
+			if (_toggleEncounterModeAction != null)
+			{
+				_toggleEncounterModeAction.performed += OnToggleEncounterModePerformed;
+				_toggleEncounterModeAction.Enable();
+			}
 		}
 
 		/// <summary>
@@ -184,6 +198,9 @@ namespace GameCore
 
 			if (_togglePerspectiveAction != null)
 				_togglePerspectiveAction.performed -= OnTogglePerspectivePerformed;
+
+			if (_toggleEncounterModeAction != null)
+				_toggleEncounterModeAction.performed -= OnToggleEncounterModePerformed;
 		}
 
 		/// <summary>
@@ -229,6 +246,12 @@ namespace GameCore
 			{
 				OnTogglePerspective?.Invoke();
 			}
+
+			// Check if toggle encounter mode button was pressed this frame
+			if (_toggleEncounterModeAction != null && _toggleEncounterModeAction.WasPressedThisFrame())
+			{
+				OnToggleEncounterMode?.Invoke();
+			}
 		}
 		#endregion
 
@@ -269,6 +292,11 @@ namespace GameCore
 		private void OnTogglePerspectivePerformed(InputAction.CallbackContext context)
 		{
 			OnTogglePerspective?.Invoke();
+		}
+
+		private void OnToggleEncounterModePerformed(InputAction.CallbackContext context)
+		{
+			OnToggleEncounterMode?.Invoke();
 		}
 		#endregion
 

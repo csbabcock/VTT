@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using GameCore.EncounterMode;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 using PlayerInputComponent = UnityEngine.InputSystem.PlayerInput;
@@ -15,6 +16,10 @@ namespace GameCore
         [Header("Perspective")]
         [Tooltip("Current perspective mode")]
         public PerspectiveMode CurrentPerspective = PerspectiveMode.ThirdPerson;
+
+        [Header("Movement")]
+        [Tooltip("Current movement mode")]
+        public MovementMode CurrentMovementMode = MovementMode.Normal;
 
         [Tooltip("Forward offset for first-person camera (pushes camera slightly forward from the head/anchor)")]
         public float FirstPersonForwardOffset = 0.0f;
@@ -116,6 +121,7 @@ namespace GameCore
         private IAnimationHandler _animationHandler;
         private IAudioHandler _audioHandler;
         private IPerspectiveManager _perspectiveManager;
+        private IEncounterModeManager _encounterModeManager;
 
         private FirstPersonCameraController _firstPersonCameraController;
         private ThirdPersonCameraController _thirdPersonCameraController;
@@ -247,6 +253,13 @@ namespace GameCore
             );
             _perspectiveManager.Initialize();
 
+            // Find encounter mode manager
+            var encounterModeManagerObj = FindFirstObjectByType<EncounterModeManager>();
+            if (encounterModeManagerObj != null)
+            {
+                _encounterModeManager = encounterModeManagerObj;
+            }
+
             // Auto-detect Cinemachine virtual camera
             AutoDetectCinemachineCamera();
         }
@@ -278,6 +291,7 @@ namespace GameCore
             {
 #if ENABLE_INPUT_SYSTEM
                 _input.OnTogglePerspective += OnTogglePerspective;
+                _input.OnToggleEncounterMode += OnToggleEncounterMode;
 #endif
             }
         }
@@ -288,6 +302,7 @@ namespace GameCore
             {
 #if ENABLE_INPUT_SYSTEM
                 _input.OnTogglePerspective -= OnTogglePerspective;
+                _input.OnToggleEncounterMode -= OnToggleEncounterMode;
 #endif
             }
         }
@@ -314,8 +329,12 @@ namespace GameCore
             // Process jump and gravity
             _jumpHandler.ProcessJump(_input.jump, Grounded);
 
-            // Process movement
-            Vector2 moveInput = _input.move;
+            // Process movement only if not in encounter mode
+            Vector2 moveInput = Vector2.zero;
+            if (CurrentMovementMode == MovementMode.Normal)
+            {
+                moveInput = _input.move;
+            }
             if (CurrentPerspective == PerspectiveMode.FirstPerson && moveInput.y > 0.0f)
             {
                 // Prevent forward movement in first-person when a wall is directly in front of the head/camera.
@@ -461,6 +480,17 @@ namespace GameCore
                 RotationSmoothTime,
                 SpeedChangeRate
             );
+        }
+
+        private void OnToggleEncounterMode()
+        {
+            if (_encounterModeManager != null)
+            {
+                _encounterModeManager.ToggleEncounterMode();
+                CurrentMovementMode = _encounterModeManager.IsEncounterModeActive 
+                    ? MovementMode.Encounter 
+                    : MovementMode.Normal;
+            }
         }
 
 
