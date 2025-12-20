@@ -22,11 +22,13 @@ namespace GameCore.EncounterMode.Grid
         }
 
         /// <summary>
-        /// Gets the center position of this cell.
+        /// Gets the world position at the specified elevation level.
         /// </summary>
-        public Vector3 GetCenterPosition()
+        public Vector3 GetPositionAtElevation(float cellSize, int elevationLevel)
         {
-            return WorldPosition;
+            Vector3 pos = WorldPosition;
+            pos.y += elevationLevel * cellSize;
+            return pos;
         }
     }
 }

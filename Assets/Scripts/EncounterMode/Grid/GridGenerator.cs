@@ -13,6 +13,9 @@ namespace GameCore.EncounterMode.Grid
         private int _gridHeight;
         private float _cellSize;
         private Vector3 _gridOrigin;
+        private Vector3 _bottomLeft; // Cached for performance
+        private float _gridWidthWorld; // Cached for performance
+        private float _gridHeightWorld; // Cached for performance
 
         public GridCell[,] Grid => _grid;
         public float CellSize => _cellSize;
@@ -30,10 +33,10 @@ namespace GameCore.EncounterMode.Grid
 
             _grid = new GridCell[width, height];
 
-            // Calculate the bottom-left corner of the grid
-            float gridWidthWorld = width * cellSize;
-            float gridHeightWorld = height * cellSize;
-            Vector3 bottomLeft = origin - new Vector3(gridWidthWorld * 0.5f, 0, gridHeightWorld * 0.5f);
+            // Calculate and cache the bottom-left corner of the grid
+            _gridWidthWorld = width * cellSize;
+            _gridHeightWorld = height * cellSize;
+            _bottomLeft = origin - new Vector3(_gridWidthWorld * 0.5f, 0, _gridHeightWorld * 0.5f);
 
             // Generate cells
             for (int x = 0; x < width; x++)
@@ -41,7 +44,7 @@ namespace GameCore.EncounterMode.Grid
                 for (int z = 0; z < height; z++)
                 {
                     // Calculate cell center position
-                    Vector3 cellPosition = bottomLeft + new Vector3(
+                    Vector3 cellPosition = _bottomLeft + new Vector3(
                         x * cellSize + cellSize * 0.5f,
                         0,
                         z * cellSize + cellSize * 0.5f
@@ -77,12 +80,8 @@ namespace GameCore.EncounterMode.Grid
             if (_grid == null)
                 return null;
 
-            // Calculate grid coordinates from world position
-            float gridWidthWorld = _gridWidth * _cellSize;
-            float gridHeightWorld = _gridHeight * _cellSize;
-            Vector3 bottomLeft = _gridOrigin - new Vector3(gridWidthWorld * 0.5f, 0, gridHeightWorld * 0.5f);
-
-            Vector3 localPos = worldPos - bottomLeft;
+            // Use cached bottom-left position
+            Vector3 localPos = worldPos - _bottomLeft;
             int x = Mathf.FloorToInt(localPos.x / _cellSize);
             int z = Mathf.FloorToInt(localPos.z / _cellSize);
 

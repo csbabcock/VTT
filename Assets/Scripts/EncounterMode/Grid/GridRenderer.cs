@@ -37,22 +37,7 @@ namespace GameCore.EncounterMode.Grid
             // Create default material if none assigned
             if (GridLineMaterial == null)
             {
-                // Try to use a simple unlit shader that works in URP
-                Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-                if (shader == null)
-                {
-                    shader = Shader.Find("Unlit/Color");
-                }
-                if (shader == null)
-                {
-                    shader = Shader.Find("Sprites/Default");
-                }
-                
-                if (shader != null)
-                {
-                    GridLineMaterial = new Material(shader);
-                    GridLineMaterial.color = GridLineColor;
-                }
+                GridLineMaterial = MaterialHelper.CreateMaterial(GridLineColor, false);
             }
         }
 
@@ -88,7 +73,17 @@ namespace GameCore.EncounterMode.Grid
                 return;
             }
 
-            DrawGrid();
+            // Draw grid if not already drawn
+            if (_lineRenderers == null || _lineRenderers.Length == 0 || 
+                (_lineRenderers[0] != null && !_lineRenderers[0].gameObject.activeSelf))
+            {
+                DrawGrid();
+            }
+            else
+            {
+                // Show existing lines
+                ShowGridLines();
+            }
         }
 
         private void DrawGrid()
@@ -181,10 +176,9 @@ namespace GameCore.EncounterMode.Grid
             else
             {
                 // Fallback: create a simple material
-                Material fallbackMaterial = new Material(Shader.Find("Unlit/Color"));
+                Material fallbackMaterial = MaterialHelper.CreateMaterial(GridLineColor, false);
                 if (fallbackMaterial != null)
                 {
-                    fallbackMaterial.color = GridLineColor;
                     lr.material = fallbackMaterial;
                 }
             }
@@ -207,6 +201,7 @@ namespace GameCore.EncounterMode.Grid
 
         private void HideGridLines()
         {
+            // Hide lines by deactivating GameObjects (faster than destroying/recreating)
             if (_lineRenderers != null)
             {
                 foreach (var lr in _lineRenderers)
@@ -214,6 +209,21 @@ namespace GameCore.EncounterMode.Grid
                     if (lr != null && lr.gameObject != null)
                     {
                         lr.gameObject.SetActive(false);
+                    }
+                }
+            }
+        }
+
+        private void ShowGridLines()
+        {
+            // Show lines by activating GameObjects
+            if (_lineRenderers != null)
+            {
+                foreach (var lr in _lineRenderers)
+                {
+                    if (lr != null && lr.gameObject != null)
+                    {
+                        lr.gameObject.SetActive(true);
                     }
                 }
             }

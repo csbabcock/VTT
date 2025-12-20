@@ -27,6 +27,8 @@ namespace GameCore.EncounterMode.Grid
         private IGridGenerator _gridGenerator;
         private LineRenderer[] _columnLines;
         private GameObject _selectedElevationIndicator;
+        private GridCell _lastHoveredCell; // Cache to avoid unnecessary redraws
+        private int _lastMaxElevation; // Cache to detect changes
 
         private void Awake()
         {
@@ -59,15 +61,24 @@ namespace GameCore.EncounterMode.Grid
         private void UpdateColumnVisualization()
         {
             GridCell hoveredCell = _gridSelector.HoveredCell;
+            int maxElevation = _gridSelector.MaxElevation;
 
-            if (hoveredCell != null && _gridSelector.MaxElevation > 0)
+            // Only redraw if cell or max elevation changed
+            if (hoveredCell != null && maxElevation > 0)
             {
-                DrawColumn(hoveredCell);
+                if (hoveredCell != _lastHoveredCell || maxElevation != _lastMaxElevation)
+                {
+                    DrawColumn(hoveredCell);
+                    _lastHoveredCell = hoveredCell;
+                    _lastMaxElevation = maxElevation;
+                }
                 UpdateSelectedElevationIndicator(hoveredCell);
             }
             else
             {
                 ClearColumn();
+                _lastHoveredCell = null;
+                _lastMaxElevation = 0;
             }
         }
 
@@ -164,17 +175,10 @@ namespace GameCore.EncounterMode.Grid
             }
             else
             {
-                // Create default material
-                Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-                if (shader == null)
-                    shader = Shader.Find("Unlit/Color");
-                if (shader == null)
-                    shader = Shader.Find("Sprites/Default");
-
-                if (shader != null)
+                // Create default material using helper
+                Material newMaterial = MaterialHelper.CreateMaterial(ColumnLineColor, false);
+                if (newMaterial != null)
                 {
-                    Material newMaterial = new Material(shader);
-                    newMaterial.color = ColumnLineColor;
                     lr.material = newMaterial;
                 }
             }
@@ -223,48 +227,9 @@ namespace GameCore.EncounterMode.Grid
                 Renderer renderer = _selectedElevationIndicator.GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    // Try URP Unlit shader first (best for transparency)
-                    Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-                    if (shader == null)
-                        shader = Shader.Find("Unlit/Transparent");
-                    if (shader == null)
-                        shader = Shader.Find("Unlit/Color");
-                    if (shader == null)
-                        shader = Shader.Find("Sprites/Default");
-
-                    if (shader != null)
+                    Material newMaterial = MaterialHelper.CreateMaterial(SelectedElevationColor, true);
+                    if (newMaterial != null)
                     {
-                        Material newMaterial = new Material(shader);
-                        newMaterial.color = SelectedElevationColor;
-                        
-                        // Set render queue to Transparent for proper blending
-                        newMaterial.renderQueue = 3000; // Transparent queue
-                        
-                        // URP Unlit shader transparency settings
-                        if (newMaterial.HasProperty("_Surface"))
-                            newMaterial.SetFloat("_Surface", 1); // Transparent surface
-                        if (newMaterial.HasProperty("_Blend"))
-                            newMaterial.SetFloat("_Blend", 0); // Alpha blend
-                        if (newMaterial.HasProperty("_SrcBlend"))
-                            newMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                        if (newMaterial.HasProperty("_DstBlend"))
-                            newMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                        if (newMaterial.HasProperty("_ZWrite"))
-                            newMaterial.SetInt("_ZWrite", 0); // Disable depth write for transparency
-                        
-                        // Standard shader transparency mode
-                        if (newMaterial.HasProperty("_Mode"))
-                        {
-                            newMaterial.SetFloat("_Mode", 3); // Transparent mode
-                            newMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                            newMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                            newMaterial.SetInt("_ZWrite", 0);
-                            newMaterial.DisableKeyword("_ALPHATEST_ON");
-                            newMaterial.EnableKeyword("_ALPHABLEND_ON");
-                            newMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                            newMaterial.renderQueue = 3000;
-                        }
-                        
                         renderer.material = newMaterial;
                     }
                 }
@@ -310,6 +275,14 @@ namespace GameCore.EncounterMode.Grid
             {
                 _selectedElevationIndicator.SetActive(false);
             }
+        }
+
+        private void OnDisable()
+        {
+            // Clear column when component is disabled
+            ClearColumn();
+            _lastHoveredCell = null;
+            _lastMaxElevation = 0;
         }
 
         private void OnDestroy()

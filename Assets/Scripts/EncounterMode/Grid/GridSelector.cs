@@ -25,6 +25,9 @@ namespace GameCore.EncounterMode.Grid
         private GridCell _selectedCell;
         private GridCell _hoveredCell;
         private int _selectedElevation = 0; // Current selected elevation level (0 = ground)
+#if ENABLE_INPUT_SYSTEM
+        private UnityEngine.InputSystem.Mouse _mouse; // Cached mouse reference
+#endif
 
         public GridCell SelectedCell => _selectedCell;
         public GridCell HoveredCell => _hoveredCell;
@@ -47,6 +50,11 @@ namespace GameCore.EncounterMode.Grid
                 if (SelectionCamera == null)
                     SelectionCamera = FindFirstObjectByType<Camera>();
             }
+
+#if ENABLE_INPUT_SYSTEM
+            // Cache mouse reference for performance
+            _mouse = UnityEngine.InputSystem.Mouse.current;
+#endif
         }
 
         private void Update()
@@ -76,9 +84,9 @@ namespace GameCore.EncounterMode.Grid
             // Get mouse position
             Vector2 mousePosition;
 #if ENABLE_INPUT_SYSTEM
-            if (Mouse.current != null)
+            if (_mouse != null)
             {
-                mousePosition = Mouse.current.position.ReadValue();
+                mousePosition = _mouse.position.ReadValue();
             }
             else
             {
@@ -99,9 +107,9 @@ namespace GameCore.EncounterMode.Grid
             // Handle mouse wheel for elevation selection
             float scrollDelta = 0f;
 #if ENABLE_INPUT_SYSTEM
-            if (Mouse.current != null)
+            if (_mouse != null)
             {
-                scrollDelta = Mouse.current.scroll.ReadValue().y;
+                scrollDelta = _mouse.scroll.ReadValue().y;
             }
 #else
             scrollDelta = Input.mouseScrollDelta.y;
@@ -133,7 +141,7 @@ namespace GameCore.EncounterMode.Grid
             // Handle mouse click to select
             bool mouseClicked = false;
 #if ENABLE_INPUT_SYSTEM
-            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+            if (_mouse != null && _mouse.leftButton.wasPressedThisFrame)
             {
                 mouseClicked = true;
             }
@@ -206,24 +214,10 @@ namespace GameCore.EncounterMode.Grid
                 return ray.GetPoint(distance);
             }
 
-            // Fallback: project to plane using camera's forward direction
-            // This handles edge cases where ray doesn't hit the plane
+            // Fallback: if ray doesn't intersect (camera looking away from plane),
+            // return a point on the plane directly below the camera
             Vector3 cameraPos = SelectionCamera.transform.position;
-            Vector3 cameraForward = SelectionCamera.transform.forward;
-            
-            // Calculate distance along camera forward to reach plane
-            float yDiff = planeY - cameraPos.y;
-            if (Mathf.Abs(cameraForward.y) > 0.001f)
-            {
-                float t = yDiff / cameraForward.y;
-                Vector3 point = cameraPos + cameraForward * t;
-                
-                // Project to screen center if needed
-                return point;
-            }
-
-            // Last resort: return grid origin
-            return new Vector3(0, planeY, 0);
+            return new Vector3(cameraPos.x, planeY, cameraPos.z);
         }
     }
 }

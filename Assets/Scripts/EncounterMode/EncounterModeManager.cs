@@ -137,11 +137,12 @@ namespace GameCore.EncounterMode
 
         /// <summary>
         /// Initializes the encounter mode system.
+        /// Called after grid generation in Start().
         /// </summary>
         public void Initialize()
         {
-            // Grid is generated in Start()
-            // This method exists for interface compliance
+            // Grid is generated in Start() before this is called
+            // Additional initialization can be added here if needed
         }
 
         /// <summary>

@@ -142,17 +142,10 @@ namespace GameCore.EncounterMode.Grid
                 }
                 else
                 {
-                    // Create a simple unlit material
-                    Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-                    if (shader == null)
-                        shader = Shader.Find("Unlit/Color");
-                    if (shader == null)
-                        shader = Shader.Find("Sprites/Default");
-
-                    if (shader != null)
+                    // Create a simple unlit material using helper
+                    Material newMaterial = MaterialHelper.CreateMaterial(color, false);
+                    if (newMaterial != null)
                     {
-                        Material newMaterial = new Material(shader);
-                        newMaterial.color = color;
                         renderer.material = newMaterial;
                     }
                 }
