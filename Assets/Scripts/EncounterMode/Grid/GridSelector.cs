@@ -34,6 +34,14 @@ namespace GameCore.EncounterMode.Grid
         public int SelectedElevation => _selectedElevation;
         int IGridSelector.MaxElevation => MaxElevation;
 
+        #region Events
+        /// <summary>
+        /// Raised when a grid cell is selected (clicked).
+        /// Parameters: selected cell, elevation level
+        /// </summary>
+        public System.Action<GridCell, int> OnCellSelected;
+        #endregion
+
         private void Awake()
         {
             // Find grid generator
@@ -168,6 +176,9 @@ namespace GameCore.EncounterMode.Grid
                 _selectedCell = _hoveredCell;
                 // Ensure selected cell has the elevation level
                 _selectedCell.ElevationLevel = _selectedElevation;
+                
+                // Raise event for movement system
+                OnCellSelected?.Invoke(_selectedCell, _selectedElevation);
             }
         }
 

@@ -116,6 +116,7 @@ namespace GameCore
         // Handler components (SOLID - Dependency Inversion)
         private IGroundedChecker _groundedChecker;
         private IMovementHandler _movementHandler;
+        private IEncounterMovementHandler _encounterMovementHandler;
         private IJumpHandler _jumpHandler;
         private ICameraController _cameraController;
         private IAnimationHandler _animationHandler;
@@ -258,6 +259,19 @@ namespace GameCore
             if (encounterModeManagerObj != null)
             {
                 _encounterModeManager = encounterModeManagerObj;
+                
+                // Initialize encounter movement handler
+                var gridGenerator = encounterModeManagerObj.GridGenerator;
+                if (gridGenerator != null)
+                {
+                    _encounterMovementHandler = new EncounterMovementHandler(
+                        _controller,
+                        transform,
+                        gridGenerator,
+                        SprintSpeed,
+                        RotationSmoothTime
+                    );
+                }
             }
 
             // Auto-detect Cinemachine virtual camera
@@ -294,6 +308,15 @@ namespace GameCore
                 _input.OnToggleEncounterMode += OnToggleEncounterMode;
 #endif
             }
+
+            // Subscribe to grid selection events
+            if (_encounterModeManager != null && _encounterModeManager is EncounterModeManager manager)
+            {
+                if (manager.GridSelector != null)
+                {
+                    manager.GridSelector.OnCellSelected += OnGridCellSelected;
+                }
+            }
         }
 
         private void OnDestroy()
@@ -304,6 +327,15 @@ namespace GameCore
                 _input.OnTogglePerspective -= OnTogglePerspective;
                 _input.OnToggleEncounterMode -= OnToggleEncounterMode;
 #endif
+            }
+
+            // Unsubscribe from grid selection events
+            if (_encounterModeManager != null && _encounterModeManager is EncounterModeManager manager)
+            {
+                if (manager.GridSelector != null)
+                {
+                    manager.GridSelector.OnCellSelected -= OnGridCellSelected;
+                }
             }
         }
 
@@ -324,55 +356,95 @@ namespace GameCore
                 probedGrounded = false;
             }
 
-            Grounded = probedGrounded;
-
-            // Process jump and gravity
-            _jumpHandler.ProcessJump(_input.jump, Grounded);
-
-            // Process movement only if not in encounter mode
-            Vector2 moveInput = Vector2.zero;
-            if (CurrentMovementMode == MovementMode.Normal)
+            // In encounter mode, override grounded state when handler says we should be grounded
+            if (CurrentMovementMode == MovementMode.Encounter && _encounterMovementHandler != null)
             {
-                moveInput = _input.move;
-            }
-            if (CurrentPerspective == PerspectiveMode.FirstPerson && moveInput.y > 0.0f)
-            {
-                // Prevent forward movement in first-person when a wall is directly in front of the head/camera.
-                Vector3 anchorPosition;
-                if (FirstPersonHeadBone != null)
+                if (_encounterMovementHandler.ShouldBeGrounded)
                 {
-                    anchorPosition = FirstPersonHeadBone.position;
+                    Grounded = true;
                 }
                 else
                 {
-                    float headHeight = _controller != null ? _controller.height * 0.9f : 1.6f;
-                    anchorPosition = transform.position + Vector3.up * headHeight;
-                }
-
-                float checkDistance = FirstPersonWallStopDistance + FirstPersonForwardOffset + 0.01f;
-                if (checkDistance > 0.0f && FirstPersonCameraCollisionLayers != 0)
-                {
-                    if (Physics.Raycast(anchorPosition, transform.forward, checkDistance, FirstPersonCameraCollisionLayers, QueryTriggerInteraction.Ignore))
-                    {
-                        // Block forward component of movement when very near a wall.
-                        moveInput.y = 0.0f;
-                    }
+                    Grounded = probedGrounded;
                 }
             }
-
-            _movementHandler.ProcessMovement(moveInput, _input.sprint, _input.analogMovement);
-            _movementHandler.ApplyMovementWithVerticalVelocity(_jumpHandler.VerticalVelocity);
-
-            // Update animations
-            if (_hasAnimator && _animationHandler != null)
+            else
             {
-                _animationHandler.UpdateAnimations(
-                    _movementHandler.AnimationBlend,
-                    _input.analogMovement ? _input.move.magnitude : 1f,
-                    Grounded,
-                    _jumpHandler.IsJumping,
-                    _jumpHandler.IsFalling
-                );
+                Grounded = probedGrounded;
+            }
+
+            // Process jump and gravity (only allow jump input in normal mode)
+            bool jumpInput = CurrentMovementMode == MovementMode.Normal ? _input.jump : false;
+            _jumpHandler.ProcessJump(jumpInput, Grounded);
+
+            // Process movement based on mode
+            if (CurrentMovementMode == MovementMode.Encounter && _encounterMovementHandler != null)
+            {
+                // Encounter mode: use grid-based movement
+                // The encounter handler manages its own vertical velocity, so we pass 0 for verticalVelocity
+                // but it will calculate its own
+                _encounterMovementHandler.ProcessMovement(Grounded, 0f);
+
+                // Update animations using encounter movement handler
+                // In encounter mode, use only encounter movement handler states (not jump handler)
+                if (_hasAnimator && _animationHandler != null)
+                {
+                    _animationHandler.UpdateAnimations(
+                        _encounterMovementHandler.AnimationBlend,
+                        1f, // Motion speed is always 1.0 for encounter movement
+                        Grounded,
+                        _encounterMovementHandler.IsJumping,
+                        _encounterMovementHandler.IsFalling
+                    );
+                }
+            }
+            else
+            {
+                // Normal mode: use standard movement
+                Vector2 moveInput = Vector2.zero;
+                if (CurrentMovementMode == MovementMode.Normal)
+                {
+                    moveInput = _input.move;
+                }
+                if (CurrentPerspective == PerspectiveMode.FirstPerson && moveInput.y > 0.0f)
+                {
+                    // Prevent forward movement in first-person when a wall is directly in front of the head/camera.
+                    Vector3 anchorPosition;
+                    if (FirstPersonHeadBone != null)
+                    {
+                        anchorPosition = FirstPersonHeadBone.position;
+                    }
+                    else
+                    {
+                        float headHeight = _controller != null ? _controller.height * 0.9f : 1.6f;
+                        anchorPosition = transform.position + Vector3.up * headHeight;
+                    }
+
+                    float checkDistance = FirstPersonWallStopDistance + FirstPersonForwardOffset + 0.01f;
+                    if (checkDistance > 0.0f && FirstPersonCameraCollisionLayers != 0)
+                    {
+                        if (Physics.Raycast(anchorPosition, transform.forward, checkDistance, FirstPersonCameraCollisionLayers, QueryTriggerInteraction.Ignore))
+                        {
+                            // Block forward component of movement when very near a wall.
+                            moveInput.y = 0.0f;
+                        }
+                    }
+                }
+
+                _movementHandler.ProcessMovement(moveInput, _input.sprint, _input.analogMovement);
+                _movementHandler.ApplyMovementWithVerticalVelocity(_jumpHandler.VerticalVelocity);
+
+                // Update animations
+                if (_hasAnimator && _animationHandler != null)
+                {
+                    _animationHandler.UpdateAnimations(
+                        _movementHandler.AnimationBlend,
+                        _input.analogMovement ? _input.move.magnitude : 1f,
+                        Grounded,
+                        _jumpHandler.IsJumping,
+                        _jumpHandler.IsFalling
+                    );
+                }
             }
         }
 
@@ -490,6 +562,29 @@ namespace GameCore
                 CurrentMovementMode = _encounterModeManager.IsEncounterModeActive 
                     ? MovementMode.Encounter 
                     : MovementMode.Normal;
+
+                if (_encounterMovementHandler != null)
+                {
+                    if (CurrentMovementMode == MovementMode.Encounter)
+                    {
+                        // Entering encounter mode - cancel any existing movement and ensure grounded
+                        _encounterMovementHandler.CancelMovement();
+                    }
+                    else
+                    {
+                        // Exiting encounter mode - cancel movement
+                        // Don't snap position - let normal physics handle grounding
+                        _encounterMovementHandler.CancelMovement();
+                    }
+                }
+            }
+        }
+
+        private void OnGridCellSelected(GameCore.EncounterMode.Grid.GridCell cell, int elevation)
+        {
+            if (CurrentMovementMode == MovementMode.Encounter && _encounterMovementHandler != null)
+            {
+                _encounterMovementHandler.SetTargetCell(cell, elevation);
             }
         }
 
