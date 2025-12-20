@@ -36,12 +36,26 @@ namespace GameCore.EncounterMode
         [Tooltip("Grid renderer component")]
         public GridRenderer GridRenderer;
 
+        [Tooltip("Grid selector component")]
+        public GridSelector GridSelector;
+
+        [Tooltip("Grid selection visualizer component")]
+        public GridSelectionVisualizer GridSelectionVisualizer;
+
+        [Tooltip("Grid column visualizer component")]
+        public GridColumnVisualizer GridColumnVisualizer;
+
         [Tooltip("Player controller reference")]
         public PlayerController PlayerController;
+
+        [Header("Movement Settings")]
+        [Tooltip("Player's movement speed in feet (for calculating max elevation). Default: 30 feet = 6 cells")]
+        public int PlayerMovementSpeedFeet = 30;
 
         private PlayerInputs _playerInputs;
         private IGridGenerator _gridGenerator;
         private IGridRenderer _gridRenderer;
+        private IGridSelector _gridSelector;
 
         #region Events
         /// <summary>
@@ -59,6 +73,15 @@ namespace GameCore.EncounterMode
             if (GridRenderer == null)
                 GridRenderer = GetComponent<GridRenderer>();
 
+            if (GridSelector == null)
+                GridSelector = GetComponent<GridSelector>();
+
+            if (GridSelectionVisualizer == null)
+                GridSelectionVisualizer = GetComponent<GridSelectionVisualizer>();
+
+            if (GridColumnVisualizer == null)
+                GridColumnVisualizer = GetComponent<GridColumnVisualizer>();
+
             if (PlayerController == null)
                 PlayerController = FindFirstObjectByType<PlayerController>();
 
@@ -67,6 +90,7 @@ namespace GameCore.EncounterMode
             // Set interface references
             _gridGenerator = GridGenerator;
             _gridRenderer = GridRenderer;
+            _gridSelector = GridSelector;
         }
 
         private void Start()
@@ -87,6 +111,17 @@ namespace GameCore.EncounterMode
             if (_gridRenderer != null)
             {
                 _gridRenderer.SetVisible(false);
+            }
+
+            // Initially disable grid selection
+            if (GridSelector != null)
+            {
+                GridSelector.enabled = false;
+            }
+
+            if (GridSelectionVisualizer != null)
+            {
+                GridSelectionVisualizer.enabled = false;
             }
 
             Initialize();
@@ -136,6 +171,25 @@ namespace GameCore.EncounterMode
                 _gridRenderer.SetVisible(true);
             }
 
+            // Enable grid selection
+            if (GridSelector != null)
+            {
+                // Calculate max elevation based on movement speed (feet / 5 feet per cell)
+                int maxElevation = Mathf.FloorToInt(PlayerMovementSpeedFeet / 5f);
+                GridSelector.SetMaxElevation(maxElevation);
+                GridSelector.enabled = true;
+            }
+
+            if (GridSelectionVisualizer != null)
+            {
+                GridSelectionVisualizer.enabled = true;
+            }
+
+            if (GridColumnVisualizer != null)
+            {
+                GridColumnVisualizer.enabled = true;
+            }
+
             Debug.Log("Encounter mode enabled");
         }
 
@@ -145,6 +199,24 @@ namespace GameCore.EncounterMode
             if (_gridRenderer != null)
             {
                 _gridRenderer.SetVisible(false);
+            }
+
+            // Disable grid selection and clear state
+            if (GridSelector != null)
+            {
+                GridSelector.ClearSelection();
+                GridSelector.enabled = false;
+            }
+
+            if (GridSelectionVisualizer != null)
+            {
+                GridSelectionVisualizer.HideAllIndicators();
+                GridSelectionVisualizer.enabled = false;
+            }
+
+            if (GridColumnVisualizer != null)
+            {
+                GridColumnVisualizer.enabled = false;
             }
 
             Debug.Log("Encounter mode disabled");

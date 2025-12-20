@@ -119,6 +119,146 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &233035417
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 233035421}
+  - component: {fileID: 233035420}
+  - component: {fileID: 233035419}
+  - component: {fileID: 233035418}
+  - component: {fileID: 233035423}
+  - component: {fileID: 233035422}
+  - component: {fileID: 233035424}
+  m_Layer: 0
+  m_Name: EncounterModeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &233035418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233035417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b07e7db98fd7e24390bd9ed636d8156, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameCore.EncounterMode.Grid.GridRenderer
+  GridLineMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  GridLineColor: {r: 0.3160377, g: 1, b: 0.49681765, a: 0.31764707}
+  LineWidth: 0.05
+--- !u!114 &233035419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233035417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64955686b5d43b94b9f9156f3852845b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameCore.EncounterMode.Grid.GridGenerator
+--- !u!114 &233035420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233035417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b84221a59ca75cf4db9259a02fa9ebf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameCore.EncounterMode.EncounterModeManager
+  GridCellSize: 1.524
+  GridWidth: 30
+  GridHeight: 30
+  GridOriginPosition: {x: 0, y: 0, z: 0}
+  GroundLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  GridGenerator: {fileID: 233035419}
+  GridRenderer: {fileID: 233035418}
+  GridSelector: {fileID: 233035423}
+  GridSelectionVisualizer: {fileID: 233035422}
+  GridColumnVisualizer: {fileID: 233035424}
+  PlayerController: {fileID: 1837491554}
+  PlayerMovementSpeedFeet: 30
+--- !u!4 &233035421
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233035417}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &233035422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233035417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1ebb74e45c525543ba2ec0a27cce70e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameCore.EncounterMode.Grid.GridSelectionVisualizer
+  HoveredCellMaterial: {fileID: 0}
+  SelectedCellMaterial: {fileID: 0}
+  HoveredCellColor: {r: 0.3, g: 0.5, b: 1, a: 0.5}
+  SelectedCellColor: {r: 0.31764707, g: 1, b: 0.49803922, a: 0.31764707}
+  VisualHeightOffset: 0.02
+  IndicatorSize: 0.95
+--- !u!114 &233035423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233035417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fff2df23a957f2f47a1c4abf39035da8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameCore.EncounterMode.Grid.GridSelector
+  SelectionCamera: {fileID: 1197049346}
+  PlaneHeightOffset: 0
+  MaxElevation: 6
+--- !u!114 &233035424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233035417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e2543b7d1bc5e44e923a2377cbd824a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameCore.EncounterMode.Grid.GridColumnVisualizer
+  ColumnLineMaterial: {fileID: 0}
+  ColumnLineColor: {r: 0.31764707, g: 1, b: 0.49803922, a: 0.23529412}
+  SelectedElevationColor: {r: 0.31764707, g: 1, b: 0.49803922, a: 0.23529412}
+  LineWidth: 0.03
+  HeightOffset: 0.01
 --- !u!1 &542508511
 GameObject:
   m_ObjectHideFlags: 0
@@ -1106,6 +1246,17 @@ MonoBehaviour:
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
+--- !u!114 &1837491554 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4416926081852918490, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+  m_PrefabInstance: {fileID: 1762682258}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1837491545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26e54e5a728a9234ab24fcf1460ed8a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2114283753834967212
 GameObject:
   m_ObjectHideFlags: 0
@@ -1445,3 +1596,4 @@ SceneRoots:
   - {fileID: 1762682258}
   - {fileID: 746329221}
   - {fileID: 1280713462}
+  - {fileID: 233035421}

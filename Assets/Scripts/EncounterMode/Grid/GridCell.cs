@@ -12,6 +12,7 @@ namespace GameCore.EncounterMode.Grid
         public int Z { get; private set; }
         public Vector3 WorldPosition { get; private set; }
         public bool IsWalkable { get; set; } = true;
+        public int ElevationLevel { get; set; } = 0; // 0 = ground level, 1 = 5 feet up, etc.
 
         public GridCell(int x, int z, Vector3 worldPosition)
         {
