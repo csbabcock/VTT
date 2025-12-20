@@ -2,6 +2,7 @@ using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
+using GameCore.UI.InGame;
 
 namespace GameCore.EncounterMode.Grid
 {
@@ -16,6 +17,10 @@ namespace GameCore.EncounterMode.Grid
 
         [Tooltip("Plane height offset from grid origin (for elevation support)")]
         public float PlaneHeightOffset = 0f;
+
+        [Header("UI References")]
+        [Tooltip("In-game UI view reference (for checking if mouse is over character sheet)")]
+        public InGameUIView InGameUIView;
 
         [Header("Elevation Settings")]
         [Tooltip("Maximum elevation levels (based on movement speed). Each level = 1 cell height (5 feet)")]
@@ -59,6 +64,12 @@ namespace GameCore.EncounterMode.Grid
                     SelectionCamera = FindFirstObjectByType<Camera>();
             }
 
+            // Find InGameUIView if not assigned
+            if (InGameUIView == null)
+            {
+                InGameUIView = FindFirstObjectByType<InGameUIView>();
+            }
+
 #if ENABLE_INPUT_SYSTEM
             // Cache mouse reference for performance
             _mouse = UnityEngine.InputSystem.Mouse.current;
@@ -80,6 +91,57 @@ namespace GameCore.EncounterMode.Grid
             }
         }
 
+        private void LateUpdate()
+        {
+            // Process clicks in LateUpdate so UI has a chance to process events first
+            // This prevents grid clicks from firing when clicking on UI elements
+            if (enabled && _gridGenerator != null && SelectionCamera != null)
+            {
+                ProcessClickIfNotOverUI();
+            }
+        }
+
+        /// <summary>
+        /// Processes mouse clicks for grid selection, but only if mouse is not over UI.
+        /// Called in LateUpdate to ensure UI processes events first.
+        /// </summary>
+        private void ProcessClickIfNotOverUI()
+        {
+            // Check if mouse is over UI - if so, don't process clicks
+            bool isMouseOverUI = InGameUIView != null && InGameUIView.IsMouseOverCharacterSheet();
+            
+            if (isMouseOverUI)
+                return;
+
+            bool mouseClicked = false;
+#if ENABLE_INPUT_SYSTEM
+            if (_mouse != null && _mouse.leftButton.wasPressedThisFrame)
+            {
+                // Final check right before processing - UI might have captured the click
+                bool finalUICheck = InGameUIView != null && InGameUIView.IsMouseOverCharacterSheet();
+                if (!finalUICheck)
+                {
+                    mouseClicked = true;
+                }
+            }
+#else
+            if (Input.GetMouseButtonDown(0))
+            {
+                // Final check right before processing - UI might have captured the click
+                bool finalUICheck = InGameUIView != null && InGameUIView.IsMouseOverCharacterSheet();
+                if (!finalUICheck)
+                {
+                    mouseClicked = true;
+                }
+            }
+#endif
+
+            if (mouseClicked && _hoveredCell != null)
+            {
+                SelectHoveredCell();
+            }
+        }
+
         /// <summary>
         /// Updates the hovered cell based on mouse position.
         /// Should be called every frame when selection is active.
@@ -88,6 +150,17 @@ namespace GameCore.EncounterMode.Grid
         {
             if (_gridGenerator == null || SelectionCamera == null)
                 return;
+
+            // Check if mouse is over character sheet UI - if so, don't process grid input
+            // But allow grid selection when character sheet is open but mouse is not over it
+            bool isMouseOverUI = InGameUIView != null && InGameUIView.IsMouseOverCharacterSheet();
+            
+            if (isMouseOverUI)
+            {
+                // Clear hovered cell when mouse is over UI to prevent column visualizer from showing
+                _hoveredCell = null;
+                return;
+            }
 
             // Get mouse position
             Vector2 mousePosition;
@@ -112,7 +185,7 @@ namespace GameCore.EncounterMode.Grid
             // Get cell at projected position (ground level)
             GridCell groundCell = _gridGenerator.GetCellAtWorldPosition(worldPos);
             
-            // Handle mouse wheel for elevation selection
+            // Handle mouse wheel for elevation selection (only if not over UI)
             float scrollDelta = 0f;
 #if ENABLE_INPUT_SYSTEM
             if (_mouse != null)
@@ -146,24 +219,8 @@ namespace GameCore.EncounterMode.Grid
                 _hoveredCell = null;
             }
 
-            // Handle mouse click to select
-            bool mouseClicked = false;
-#if ENABLE_INPUT_SYSTEM
-            if (_mouse != null && _mouse.leftButton.wasPressedThisFrame)
-            {
-                mouseClicked = true;
-            }
-#else
-            if (Input.GetMouseButtonDown(0))
-            {
-                mouseClicked = true;
-            }
-#endif
-
-            if (mouseClicked && _hoveredCell != null)
-            {
-                SelectHoveredCell();
-            }
+            // Note: Mouse clicks are now processed in LateUpdate() to ensure UI processes events first
+            // This prevents grid clicks from firing when clicking on UI elements
         }
 
         /// <summary>
@@ -171,6 +228,12 @@ namespace GameCore.EncounterMode.Grid
         /// </summary>
         public void SelectHoveredCell()
         {
+            // Final safety check - don't allow selection if mouse is over UI
+            if (InGameUIView != null && InGameUIView.IsMouseOverCharacterSheet())
+            {
+                return;
+            }
+
             if (_hoveredCell != null)
             {
                 _selectedCell = _hoveredCell;

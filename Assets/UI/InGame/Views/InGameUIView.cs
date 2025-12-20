@@ -3,6 +3,9 @@ using GameCore.UI.InGame.Services;
 using GameCore.UI.InGame.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace GameCore.UI.InGame
 {
@@ -65,6 +68,96 @@ namespace GameCore.UI.InGame
         #region Public Properties
 
         public VisualElement Root => _root;
+
+        /// <summary>
+        /// Checks if the character sheet is currently open/visible.
+        /// </summary>
+        public bool IsCharacterSheetOpen()
+        {
+            if (_characterSheetPanel == null)
+                return false;
+
+            return _characterSheetPanel.style.display == DisplayStyle.Flex;
+        }
+
+        /// <summary>
+        /// Checks if the mouse is currently over the character sheet panel.
+        /// Uses multiple detection methods for reliability.
+        /// </summary>
+        public bool IsMouseOverCharacterSheet()
+        {
+            // First check if character sheet is open - if not, mouse can't be over it
+            if (!IsCharacterSheetOpen())
+                return false;
+
+            if (_uiDocument == null || _characterSheetPanel == null)
+                return false;
+
+            // Get mouse position
+            Vector2 mousePosition;
+#if ENABLE_INPUT_SYSTEM
+            var mouse = UnityEngine.InputSystem.Mouse.current;
+            if (mouse == null)
+                return false;
+            mousePosition = mouse.position.ReadValue();
+#else
+            mousePosition = Input.mousePosition;
+#endif
+
+            // Get the panel
+            var panel = _uiDocument.rootVisualElement.panel;
+            if (panel == null)
+                return false;
+
+            // Method 1: Use Panel.Pick to check if mouse is over the character sheet
+            // Panel.Pick uses screen coordinates directly
+            var pickedElement = panel.Pick(mousePosition);
+            if (pickedElement != null)
+            {
+                // Check if the picked element is within the character sheet panel hierarchy
+                // Also verify the element can receive pointer events
+                VisualElement current = pickedElement;
+                while (current != null)
+                {
+                    if (current == _characterSheetPanel)
+                    {
+                        // Verify the panel can actually receive events
+                        if (current.pickingMode != PickingMode.Ignore && 
+                            current.enabledInHierarchy &&
+                            current.resolvedStyle.display == DisplayStyle.Flex)
+                        {
+                            return true;
+                        }
+                    }
+                    current = current.parent;
+                }
+            }
+
+            // Method 2: Check if mouse position is within the character sheet panel's world bounds
+            // UI Toolkit worldBound is in panel space (top-left origin)
+            Rect panelRect = _characterSheetPanel.worldBound;
+            
+            // Convert screen coordinates to panel space
+            // Panel space uses top-left origin, screen uses bottom-left
+            float screenHeight = Screen.height;
+            Vector2 panelSpacePos = new Vector2(
+                mousePosition.x,
+                screenHeight - mousePosition.y
+            );
+
+            if (panelRect.Contains(panelSpacePos))
+            {
+                // Additional check: verify the element is actually visible and enabled
+                if (_characterSheetPanel.resolvedStyle.display == DisplayStyle.Flex &&
+                    _characterSheetPanel.enabledInHierarchy &&
+                    _characterSheetPanel.pickingMode != PickingMode.Ignore)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
         #endregion
 
         #region Events

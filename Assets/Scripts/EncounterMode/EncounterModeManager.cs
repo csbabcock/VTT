@@ -1,5 +1,6 @@
 using UnityEngine;
 using GameCore.EncounterMode.Grid;
+using GameCore.UI.InGame;
 
 namespace GameCore.EncounterMode
 {
@@ -48,6 +49,9 @@ namespace GameCore.EncounterMode
         [Tooltip("Player controller reference")]
         public PlayerController PlayerController;
 
+        [Tooltip("In-game UI presenter reference (for showing character sheet on encounter mode)")]
+        public InGameUIPresenter InGameUIPresenter;
+
         [Header("Movement Settings")]
         [Tooltip("Player's movement speed in feet (for calculating max elevation). Default: 30 feet = 6 cells")]
         public int PlayerMovementSpeedFeet = 30;
@@ -84,6 +88,9 @@ namespace GameCore.EncounterMode
 
             if (PlayerController == null)
                 PlayerController = FindFirstObjectByType<PlayerController>();
+
+            if (InGameUIPresenter == null)
+                InGameUIPresenter = FindFirstObjectByType<InGameUIPresenter>();
 
             _playerInputs = PlayerController?.GetComponent<PlayerInputs>();
 
@@ -189,6 +196,12 @@ namespace GameCore.EncounterMode
             if (GridColumnVisualizer != null)
             {
                 GridColumnVisualizer.enabled = true;
+            }
+
+            // Show character sheet by default when entering encounter mode
+            if (InGameUIPresenter != null && InGameUIPresenter.Model != null)
+            {
+                InGameUIPresenter.Model.SetCharacterSheetOpen(true);
             }
 
             Debug.Log("Encounter mode enabled");

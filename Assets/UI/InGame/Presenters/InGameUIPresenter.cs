@@ -151,6 +151,16 @@ namespace GameCore.UI.InGame
             if (!_initialized)
                 return;
 
+            // Update look input based on whether mouse is over UI
+            // This allows camera control when character sheet is open but mouse is not over it
+            if (Model != null && Model.IsCharacterSheetOpen && _playerInputs != null)
+            {
+                bool isMouseOverUI = _view != null && _view.IsMouseOverCharacterSheet();
+                // Only disable look input when mouse is actually over UI
+                // This ensures camera control works when character sheet is open but mouse is not over it
+                _playerInputs.cursorInputForLook = !isMouseOverUI;
+            }
+
 #if ENABLE_INPUT_SYSTEM
             HandleKeyboardInput();
 #endif
@@ -191,25 +201,38 @@ namespace GameCore.UI.InGame
         #region Model Event Handlers
         private void OnModelStateChanged(InGameUIState state)
         {
-            UpdateCursorState(state.IsCharacterSheetOpen);
             _view.UpdateView(state);
+            // Don't disable all input when character sheet opens - we want camera control to work
+            // Only disable movement input, not look input
             UpdatePlayerInput(state.IsCharacterSheetOpen);
+            UpdateCursorState(state.IsCharacterSheetOpen);
+            
+            // Restore cursor input for look when character sheet closes
+            if (!state.IsCharacterSheetOpen && _playerInputs != null)
+            {
+                _playerInputs.cursorInputForLook = true;
+            }
         }
         #endregion
 
         #region UI State Management
         /// <summary>
-        /// Updates cursor lock state and visibility based on UI state.
+        /// Updates cursor lock state and visibility based on character sheet state.
+        /// Shows cursor when sheet opens, hides it when sheet closes.
+        /// Uses Confined mode when open to allow camera control while cursor is visible.
         /// </summary>
-        private void UpdateCursorState(bool isUIOpen)
+        private void UpdateCursorState(bool isCharacterSheetOpen)
         {
-            if (isUIOpen)
+            if (isCharacterSheetOpen)
             {
-                UnityEngine.Cursor.lockState = CursorLockMode.None;
+                // Show cursor when character sheet opens
+                // Use Confined mode to allow camera control while cursor is visible
+                UnityEngine.Cursor.lockState = CursorLockMode.Confined;
                 UnityEngine.Cursor.visible = true;
             }
             else
             {
+                // Hide cursor when character sheet closes
                 UnityEngine.Cursor.lockState = CursorLockMode.Locked;
                 UnityEngine.Cursor.visible = false;
             }
@@ -217,6 +240,7 @@ namespace GameCore.UI.InGame
 
         /// <summary>
         /// Updates player input enabled state based on UI visibility.
+        /// In encounter mode, we keep look input enabled for camera control.
         /// </summary>
         private void UpdatePlayerInput(bool isUIOpen)
         {
@@ -226,7 +250,11 @@ namespace GameCore.UI.InGame
                 return;
             }
 
-            _playerInputs.SetInputEnabled(!isUIOpen);
+            // In encounter mode, we want camera control to work even when character sheet is open
+            // So we don't disable all input - we'll handle look input separately based on mouse position
+            // For now, keep input enabled so camera works
+            // Movement will be handled by encounter mode movement system anyway
+            _playerInputs.SetInputEnabled(true);
         }
         #endregion
 

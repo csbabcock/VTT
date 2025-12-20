@@ -1,4 +1,5 @@
 using UnityEngine;
+using GameCore.UI.InGame;
 
 namespace GameCore.EncounterMode.Grid
 {
@@ -23,6 +24,10 @@ namespace GameCore.EncounterMode.Grid
         [Tooltip("Height offset above grid cells")]
         public float HeightOffset = 0.01f;
 
+        [Header("UI References")]
+        [Tooltip("In-game UI view reference (for checking if character sheet is open)")]
+        public InGameUIView InGameUIView;
+
         private IGridSelector _gridSelector;
         private IGridGenerator _gridGenerator;
         private LineRenderer[] _columnLines;
@@ -45,6 +50,12 @@ namespace GameCore.EncounterMode.Grid
                 _gridGenerator = transform.parent.GetComponent<IGridGenerator>();
             if (_gridGenerator == null)
                 _gridGenerator = FindFirstObjectByType<GridGenerator>();
+
+            // Find InGameUIView if not assigned
+            if (InGameUIView == null)
+            {
+                InGameUIView = FindFirstObjectByType<InGameUIView>();
+            }
         }
 
         private void Update()
@@ -60,12 +71,30 @@ namespace GameCore.EncounterMode.Grid
 
         private void UpdateColumnVisualization()
         {
+            // Check if mouse is over character sheet UI - if so, clear the column
+            // But allow column visualization when character sheet is open but mouse is not over it
+            bool isMouseOverUI = InGameUIView != null && InGameUIView.IsMouseOverCharacterSheet();
+
+            if (isMouseOverUI)
+            {
+                // Clear column when mouse is over UI to prevent it from showing
+                if (_lastHoveredCell != null || _selectedElevationIndicator != null)
+                {
+                    ClearColumn();
+                    _lastHoveredCell = null;
+                    _lastMaxElevation = 0;
+                }
+                return;
+            }
+
             GridCell hoveredCell = _gridSelector.HoveredCell;
             int maxElevation = _gridSelector.MaxElevation;
 
-            // Only redraw if cell or max elevation changed
+            // Only show column if we have a valid hovered cell and max elevation
+            // If hoveredCell is null, clear the column immediately
             if (hoveredCell != null && maxElevation > 0)
             {
+                // Only redraw if cell or max elevation changed
                 if (hoveredCell != _lastHoveredCell || maxElevation != _lastMaxElevation)
                 {
                     DrawColumn(hoveredCell);
@@ -76,9 +105,14 @@ namespace GameCore.EncounterMode.Grid
             }
             else
             {
-                ClearColumn();
-                _lastHoveredCell = null;
-                _lastMaxElevation = 0;
+                // Clear column when no cell is hovered
+                // This ensures the column doesn't show at a default position
+                if (_lastHoveredCell != null || _selectedElevationIndicator != null)
+                {
+                    ClearColumn();
+                    _lastHoveredCell = null;
+                    _lastMaxElevation = 0;
+                }
             }
         }
 

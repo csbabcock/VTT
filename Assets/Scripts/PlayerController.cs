@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using GameCore.EncounterMode;
+using GameCore.UI.InGame;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 using PlayerInputComponent = UnityEngine.InputSystem.PlayerInput;
@@ -462,8 +463,20 @@ namespace GameCore
                 _thirdPersonCameraController.UpdateClampValues(TopClamp, BottomClamp, CameraAngleOverride);
             }
 
+            // Check if mouse is over UI - if so, lock camera to prevent rotation
+            bool shouldLockCamera = LockCameraPosition;
+            if (!shouldLockCamera)
+            {
+                // Check if mouse is over character sheet UI
+                var inGameUIView = FindFirstObjectByType<InGameUIView>();
+                if (inGameUIView != null && inGameUIView.IsMouseOverCharacterSheet())
+                {
+                    shouldLockCamera = true;
+                }
+            }
+
             // Process camera rotation
-            _cameraController.ProcessRotation(_input.look, LockCameraPosition);
+            _cameraController.ProcessRotation(_input.look, shouldLockCamera);
             _cameraController.UpdateCamera();
 
             // Update movement handler with camera yaw for first-person
