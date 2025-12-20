@@ -241,6 +241,18 @@ namespace GameCore
 				look = Vector2.zero;
 			}
 
+			// Read sprint state continuously (PassThrough actions don't reliably fire canceled events)
+			if (_sprintAction != null && _sprintAction.enabled)
+			{
+				// Read the current value of the sprint action (returns > 0.5f when pressed for button-like controls)
+				float sprintValue = _sprintAction.ReadValue<float>();
+				sprint = sprintValue > 0.5f;
+			}
+			else
+			{
+				sprint = false;
+			}
+
 			// Check if toggle perspective button was pressed this frame
 			if (_togglePerspectiveAction != null && _togglePerspectiveAction.WasPressedThisFrame())
 			{
