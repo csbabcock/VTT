@@ -188,16 +188,38 @@ namespace GameCore.UI.InGame
                 return;
             }
 
-            // Arrow key navigation when character sheet is open
+            // WASD and Arrow key navigation when character sheet is open
             if (Model.IsCharacterSheetOpen)
             {
-                if (keyboard.rightArrowKey.wasPressedThisFrame)
+                // Tab navigation: A/Left Arrow = previous tab, D/Right Arrow = next tab
+                bool navigateLeft = keyboard.aKey.wasPressedThisFrame || keyboard.leftArrowKey.wasPressedThisFrame;
+                bool navigateRight = keyboard.dKey.wasPressedThisFrame || keyboard.rightArrowKey.wasPressedThisFrame;
+                
+                if (navigateRight)
                 {
                     Model.NextTab();
                 }
-                else if (keyboard.leftArrowKey.wasPressedThisFrame)
+                else if (navigateLeft)
                 {
                     Model.PreviousTab();
+                }
+
+                // Scrolling: W/Up Arrow = scroll up, S/Down Arrow = scroll down
+                if (_view != null)
+                {
+                    const float scrollSpeed = 50f; // Pixels per key press
+                    
+                    bool scrollUp = keyboard.wKey.wasPressedThisFrame || keyboard.upArrowKey.wasPressedThisFrame;
+                    bool scrollDown = keyboard.sKey.wasPressedThisFrame || keyboard.downArrowKey.wasPressedThisFrame;
+                    
+                    if (scrollUp)
+                    {
+                        _view.ScrollTabContent(-scrollSpeed);
+                    }
+                    else if (scrollDown)
+                    {
+                        _view.ScrollTabContent(scrollSpeed);
+                    }
                 }
             }
         }
@@ -247,6 +269,7 @@ namespace GameCore.UI.InGame
         /// <summary>
         /// Updates player input enabled state based on UI visibility.
         /// In encounter mode, we keep look input enabled for camera control.
+        /// Movement input is handled by PlayerController which checks if character sheet is open.
         /// </summary>
         private void UpdatePlayerInput(bool isUIOpen)
         {
@@ -256,10 +279,9 @@ namespace GameCore.UI.InGame
                 return;
             }
 
-            // In encounter mode, we want camera control to work even when character sheet is open
-            // So we don't disable all input - we'll handle look input separately based on mouse position
-            // For now, keep input enabled so camera works
-            // Movement will be handled by encounter mode movement system anyway
+            // Keep input enabled so camera control and UI input still work
+            // PlayerController will check if character sheet is open and conditionally use movement input
+            // This follows SOLID principles - input system remains unchanged, PlayerController decides usage
             _playerInputs.SetInputEnabled(true);
         }
         #endregion

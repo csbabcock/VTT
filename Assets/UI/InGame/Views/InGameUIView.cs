@@ -39,6 +39,7 @@ namespace GameCore.UI.InGame
         private VisualElement _root;
         private VisualElement _characterSheetPanel;
         private VisualElement _gameLogPanel;
+        private ScrollView _characterSheetScrollView;
         private VisualElement[] _characterSheetTabs;
         private Button[] _tabButtons;
         private System.Action[] _tabButtonHandlers;
@@ -292,6 +293,9 @@ namespace GameCore.UI.InGame
                 _characterSheetPanel.style.right = PANEL_OFFSCREEN_RIGHT;
                 _characterSheetPanel.SetEnabled(false);
             }
+
+            // Get the ScrollView for tab content
+            _characterSheetScrollView = _root.Q<ScrollView>("charsheet-tab-content");
 
             _gameLogPanel = _root.Q<VisualElement>("game-log-panel");
 
@@ -1258,6 +1262,25 @@ namespace GameCore.UI.InGame
             {
                 _characterSheetPanel.style.height = maxHeight;
             }
+        }
+
+        /// <summary>
+        /// Scrolls the character sheet tab content up or down.
+        /// </summary>
+        /// <param name="scrollAmount">Positive value scrolls down, negative scrolls up.</param>
+        public void ScrollTabContent(float scrollAmount)
+        {
+            if (_characterSheetScrollView == null)
+                return;
+
+            Vector2 currentOffset = _characterSheetScrollView.scrollOffset;
+            float newY = currentOffset.y + scrollAmount;
+            
+            // Clamp to valid scroll range
+            float maxScroll = _characterSheetScrollView.contentContainer.layout.height - _characterSheetScrollView.contentViewport.layout.height;
+            newY = Mathf.Clamp(newY, 0f, Mathf.Max(0f, maxScroll));
+            
+            _characterSheetScrollView.scrollOffset = new Vector2(currentOffset.x, newY);
         }
 
         #endregion

@@ -405,7 +405,13 @@ namespace GameCore
                 Vector2 moveInput = Vector2.zero;
                 if (CurrentMovementMode == MovementMode.Normal)
                 {
-                    moveInput = _input.move;
+                    // Only use movement input if character sheet is not open
+                    // When character sheet is open, WASD is used for UI navigation
+                    if (!UIInteractionService.Instance.IsCharacterSheetOpen())
+                    {
+                        moveInput = _input.move;
+                    }
+                    // If character sheet is open, moveInput remains Vector2.zero
                 }
                 if (CurrentPerspective == PerspectiveMode.FirstPerson && moveInput.y > 0.0f)
                 {
