@@ -73,19 +73,29 @@ namespace GameCore.UI.InGame
 
         /// <summary>
         /// Navigate to the next character sheet tab.
+        /// Wraps around to the first tab when reaching the end.
         /// </summary>
         public void NextTab()
         {
-            int newTab = Mathf.Min(State.CharacterSheetTabIndex + 1, MAX_TAB_INDEX);
+            int newTab = State.CharacterSheetTabIndex + 1;
+            if (newTab > MAX_TAB_INDEX)
+            {
+                newTab = 0; // Wrap to first tab
+            }
             SetTab(newTab);
         }
 
         /// <summary>
         /// Navigate to the previous character sheet tab.
+        /// Wraps around to the last tab when reaching the beginning.
         /// </summary>
         public void PreviousTab()
         {
-            int newTab = Mathf.Max(State.CharacterSheetTabIndex - 1, 0);
+            int newTab = State.CharacterSheetTabIndex - 1;
+            if (newTab < 0)
+            {
+                newTab = MAX_TAB_INDEX; // Wrap to last tab
+            }
             SetTab(newTab);
         }
 
