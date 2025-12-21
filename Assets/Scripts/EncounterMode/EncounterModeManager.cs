@@ -233,6 +233,12 @@ namespace GameCore.EncounterMode
                 GridColumnVisualizer.enabled = false;
             }
 
+            // Close character sheet by default when exiting encounter mode
+            if (InGameUIPresenter != null && InGameUIPresenter.Model != null)
+            {
+                InGameUIPresenter.Model.SetCharacterSheetOpen(false);
+            }
+
             Debug.Log("Encounter mode disabled");
         }
     }

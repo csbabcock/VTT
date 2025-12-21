@@ -25,6 +25,9 @@ namespace GameCore.UI.InGame
         private const float PANEL_OFFSCREEN_RIGHT = -568f;
         private const float PANEL_ONSCREEN_RIGHT = 48f;
         private const int DRAG_CLICK_DELAY_MS = 50;
+        private const float VISIBILITY_DISTANCE_THRESHOLD = 100f; // Distance from on-screen position to consider visible
+        private const float INSTANT_CLOSE_DISTANCE_THRESHOLD = 50f; // Distance from off-screen to skip animation
+        private const float MIN_VISIBILITY_CHANGE_INTERVAL = 0.1f; // Minimum seconds between visibility changes
         #endregion
 
         #region Serialized Fields
@@ -64,6 +67,9 @@ namespace GameCore.UI.InGame
         
         // Animation state
         private Coroutine _currentAnimation = null;
+        private bool? _targetVisibilityState = null; // Track what state we're animating to (null = not animating)
+        private float _lastVisibilityChangeTime = 0f; // Track when we last changed visibility to prevent rapid toggling
+        private Coroutine _gameLogAnimation = null;
         #endregion
 
         #region Public Properties
@@ -564,13 +570,72 @@ namespace GameCore.UI.InGame
         /// <param name="state">Snapshot of the in-game UI state.</param>
         public void UpdateView(InGameUIState state)
         {
-            // Only update visibility if it changed
-            bool currentlyVisible = _characterSheetPanel != null && 
-                                   _characterSheetPanel.style.display == DisplayStyle.Flex;
+            // If we're already animating to the target state, don't re-trigger
+            // This prevents closing during opening animation
+            if (_targetVisibilityState.HasValue && _targetVisibilityState.Value == state.IsCharacterSheetOpen && _currentAnimation != null)
+            {
+                // Already animating to this state, just update tab
+                SetCharacterSheetTab(state.CharacterSheetTabIndex);
+                return;
+            }
             
+            // If we're animating toward visible, consider it visible to prevent auto-closing
+            bool currentlyVisible = false;
+            if (_characterSheetPanel != null)
+            {
+                // If animating toward visible, treat as visible
+                if (_targetVisibilityState == true && _currentAnimation != null)
+                {
+                    currentlyVisible = true;
+                }
+                else
+                {
+                    bool isDisplayed = _characterSheetPanel.resolvedStyle.display == DisplayStyle.Flex;
+                    if (isDisplayed)
+                    {
+                        // Check if panel is actually on-screen (within reasonable distance of on-screen position)
+                        float currentRight = _characterSheetPanel.resolvedStyle.right;
+                        if (!float.IsNaN(currentRight))
+                        {
+                            // Consider visible if within 100px of on-screen position (accounts for animation)
+                            float distanceFromOnScreen = Mathf.Abs(currentRight - PANEL_ONSCREEN_RIGHT);
+                            currentlyVisible = distanceFromOnScreen < 100f;
+                        }
+                        else
+                        {
+                            // If position is invalid but displayed, check style property as fallback
+                            float styleRight = _characterSheetPanel.style.right.value.value;
+                            if (!float.IsNaN(styleRight))
+                            {
+                                float distanceFromOnScreen = Mathf.Abs(styleRight - PANEL_ONSCREEN_RIGHT);
+                                currentlyVisible = distanceFromOnScreen < 100f;
+                            }
+                            else
+                            {
+                                // If both are invalid but displayed, assume it's visible (might be initializing)
+                                currentlyVisible = true;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Only update visibility if the state actually changed
+            // AND we're not already animating to that state
+            // AND enough time has passed since last change (prevents rapid toggling)
             if (state.IsCharacterSheetOpen != currentlyVisible)
             {
-                SetCharacterSheetVisible(state.IsCharacterSheetOpen);
+                float timeSinceLastChange = Time.time - _lastVisibilityChangeTime;
+                // Don't close if we're currently animating toward visible
+                // Also prevent rapid toggling (wait at least 0.1 seconds between changes)
+                bool shouldUpdate = !(state.IsCharacterSheetOpen == false && _targetVisibilityState == true && _currentAnimation != null);
+                shouldUpdate = shouldUpdate && (timeSinceLastChange > 0.1f || _targetVisibilityState == null);
+                
+                if (shouldUpdate)
+                {
+                    SetCharacterSheetVisible(state.IsCharacterSheetOpen);
+                    _lastVisibilityChangeTime = Time.time;
+                }
             }
             
             // Always update tab (no animation needed)
@@ -585,78 +650,217 @@ namespace GameCore.UI.InGame
                 return;
             }
 
-            // Stop any ongoing animation
+            // Stop any ongoing animation and capture current position
+            float currentRight = GetCurrentPanelPosition(_characterSheetPanel, isVisible);
             if (_currentAnimation != null)
             {
                 StopCoroutine(_currentAnimation);
                 _currentAnimation = null;
+                _targetVisibilityState = null; // Clear animation target when stopping
+                // Capture current position before starting new animation
+                currentRight = GetPanelRightPosition(_characterSheetPanel);
+                if (float.IsNaN(currentRight))
+                {
+                    currentRight = isVisible ? PANEL_OFFSCREEN_RIGHT : PANEL_ONSCREEN_RIGHT;
+                }
             }
 
             if (isVisible)
             {
+                // Mark that we're animating toward visible state
+                _targetVisibilityState = true;
+                
                 // Make it visible first
                 _characterSheetPanel.style.display = DisplayStyle.Flex;
                 _characterSheetPanel.SetEnabled(true);
                 _characterSheetPanel.pickingMode = PickingMode.Position;
                 
-                // Ensure it starts off-screen
-                _characterSheetPanel.style.right = PANEL_OFFSCREEN_RIGHT;
+                // Set starting position (use current if animating, otherwise start off-screen)
+                _characterSheetPanel.style.right = currentRight;
                 _characterSheetPanel.MarkDirtyRepaint();
-                
-                // Start animation immediately
-                _currentAnimation = StartCoroutine(AnimateSlideInCoroutine(_characterSheetPanel, PANEL_OFFSCREEN_RIGHT, PANEL_ONSCREEN_RIGHT));
                 
                 EnablePickingOnAllButtons(_characterSheetPanel);
                 
                 // Ensure character sheet fits on screen
                 ClampCharacterSheetToScreen();
 
-                // Also show game log panel
-                if (_gameLogPanel != null)
-                {
-                    _gameLogPanel.style.display = DisplayStyle.Flex;
-                    _gameLogPanel.SetEnabled(true);
-                    _gameLogPanel.pickingMode = PickingMode.Position;
-                    _gameLogPanel.style.right = PANEL_OFFSCREEN_RIGHT;
-                    
-                    // Ensure game log height fits on screen
-                    float currentHeight = _gameLogPanel.resolvedStyle.height;
-                    float clampedHeight = ClampGameLogHeightToScreen(currentHeight);
-                    if (clampedHeight != currentHeight)
-                    {
-                        _gameLogPanel.style.height = clampedHeight;
-                    }
-                    
-                    // Re-enable picking on buttons after showing
-                    EnablePickingOnAllButtons(_gameLogPanel);
-                    
-                    _gameLogPanel.MarkDirtyRepaint();
-                    StartCoroutine(AnimateSlideInCoroutine(_gameLogPanel, PANEL_OFFSCREEN_RIGHT, PANEL_ONSCREEN_RIGHT));
-                }
+                // Prepare and show game log panel
+                PrepareGameLogPanelForAnimation(true);
+                
+                // Start both animations simultaneously to keep them in sync
+                _currentAnimation = StartCoroutine(AnimateSlideInCoroutine(_characterSheetPanel, currentRight, PANEL_ONSCREEN_RIGHT));
+                StartGameLogAnimation(true);
             }
             else
             {
-                // Animate slide out to right
-                float currentRight = _characterSheetPanel.resolvedStyle.right;
-                _currentAnimation = StartCoroutine(AnimateSlideOutCoroutine(_characterSheetPanel, currentRight, PANEL_OFFSCREEN_RIGHT, () =>
+                // Mark that we're animating toward hidden state
+                _targetVisibilityState = false;
+                
+                // Check if panel is already mostly off-screen - if so, skip animation for instant close
+                float distanceToOffScreen = Mathf.Abs(currentRight - PANEL_OFFSCREEN_RIGHT);
+                bool shouldAnimate = distanceToOffScreen > INSTANT_CLOSE_DISTANCE_THRESHOLD;
+                
+                if (shouldAnimate)
                 {
+                    // Animate slide out to right from current position
+                    _currentAnimation = StartCoroutine(AnimateSlideOutCoroutine(_characterSheetPanel, currentRight, PANEL_OFFSCREEN_RIGHT, () =>
+                    {
+                        _characterSheetPanel.style.display = DisplayStyle.None;
+                        _characterSheetPanel.SetEnabled(false);
+                        _characterSheetPanel.pickingMode = PickingMode.Ignore;
+                        _currentAnimation = null;
+                    }));
+                }
+                else
+                {
+                    // Already mostly off-screen, close instantly
+                    _characterSheetPanel.style.right = PANEL_OFFSCREEN_RIGHT;
                     _characterSheetPanel.style.display = DisplayStyle.None;
                     _characterSheetPanel.SetEnabled(false);
                     _characterSheetPanel.pickingMode = PickingMode.Ignore;
                     _currentAnimation = null;
-                }));
+                }
 
-                // Also hide game log panel
-                if (_gameLogPanel != null)
+                // Hide game log panel
+                HideGameLogPanel();
+            }
+        }
+
+        /// <summary>
+        /// Gets the right position of a panel, with fallback to style property if resolvedStyle is invalid.
+        /// </summary>
+        private float GetPanelRightPosition(VisualElement panel)
+        {
+            float position = panel.resolvedStyle.right;
+            if (float.IsNaN(position))
+            {
+                position = panel.style.right.value.value;
+            }
+            return position;
+        }
+
+        /// <summary>
+        /// Gets the current panel position, with appropriate defaults based on visibility state.
+        /// </summary>
+        private float GetCurrentPanelPosition(VisualElement panel, bool targetVisible)
+        {
+            if (panel.resolvedStyle.display == DisplayStyle.Flex)
+            {
+                float position = GetPanelRightPosition(panel);
+                if (!float.IsNaN(position))
                 {
-                    float gameLogCurrentRight = _gameLogPanel.resolvedStyle.right;
-                    StartCoroutine(AnimateSlideOutCoroutine(_gameLogPanel, gameLogCurrentRight, PANEL_OFFSCREEN_RIGHT, () =>
+                    return position;
+                }
+            }
+            // Default based on target state
+            return targetVisible ? PANEL_OFFSCREEN_RIGHT : PANEL_ONSCREEN_RIGHT;
+        }
+
+        /// <summary>
+        /// Prepares the game log panel for animation (showing or hiding).
+        /// </summary>
+        private void PrepareGameLogPanelForAnimation(bool isVisible)
+        {
+            if (_gameLogPanel == null)
+                return;
+
+            // Stop any ongoing game log animation
+            if (_gameLogAnimation != null)
+            {
+                StopCoroutine(_gameLogAnimation);
+                _gameLogAnimation = null;
+            }
+
+            float gameLogCurrentRight = GetPanelRightPosition(_gameLogPanel);
+            if (float.IsNaN(gameLogCurrentRight))
+            {
+                gameLogCurrentRight = isVisible ? PANEL_OFFSCREEN_RIGHT : PANEL_ONSCREEN_RIGHT;
+            }
+
+            _gameLogPanel.style.display = DisplayStyle.Flex;
+            _gameLogPanel.SetEnabled(true);
+            _gameLogPanel.pickingMode = PickingMode.Position;
+            _gameLogPanel.style.right = gameLogCurrentRight;
+
+            if (isVisible)
+            {
+                // Ensure game log height fits on screen
+                float currentHeight = _gameLogPanel.resolvedStyle.height;
+                float clampedHeight = ClampGameLogHeightToScreen(currentHeight);
+                if (clampedHeight != currentHeight)
+                {
+                    _gameLogPanel.style.height = clampedHeight;
+                }
+
+                // Re-enable picking on buttons after showing
+                EnablePickingOnAllButtons(_gameLogPanel);
+            }
+
+            _gameLogPanel.MarkDirtyRepaint();
+        }
+
+        /// <summary>
+        /// Starts the game log panel animation (slide in or out).
+        /// </summary>
+        private void StartGameLogAnimation(bool slideIn)
+        {
+            if (_gameLogPanel == null)
+                return;
+
+            float gameLogStartRight = GetPanelRightPosition(_gameLogPanel);
+            if (float.IsNaN(gameLogStartRight))
+            {
+                gameLogStartRight = slideIn ? PANEL_OFFSCREEN_RIGHT : PANEL_ONSCREEN_RIGHT;
+            }
+
+            float targetRight = slideIn ? PANEL_ONSCREEN_RIGHT : PANEL_OFFSCREEN_RIGHT;
+            _gameLogAnimation = StartCoroutine(
+                slideIn 
+                    ? AnimateSlideInCoroutine(_gameLogPanel, gameLogStartRight, targetRight)
+                    : AnimateSlideOutCoroutine(_gameLogPanel, gameLogStartRight, targetRight, () =>
                     {
                         _gameLogPanel.style.display = DisplayStyle.None;
                         _gameLogPanel.SetEnabled(false);
                         _gameLogPanel.pickingMode = PickingMode.Ignore;
-                    }));
-                }
+                        _gameLogAnimation = null;
+                    })
+            );
+        }
+
+        /// <summary>
+        /// Hides the game log panel, with instant close if already mostly off-screen.
+        /// </summary>
+        private void HideGameLogPanel()
+        {
+            if (_gameLogPanel == null)
+                return;
+
+            // Stop any ongoing game log animation
+            if (_gameLogAnimation != null)
+            {
+                StopCoroutine(_gameLogAnimation);
+                _gameLogAnimation = null;
+            }
+
+            float gameLogCurrentRight = GetPanelRightPosition(_gameLogPanel);
+            if (float.IsNaN(gameLogCurrentRight))
+            {
+                gameLogCurrentRight = PANEL_ONSCREEN_RIGHT;
+            }
+
+            float gameLogDistanceToOffScreen = Mathf.Abs(gameLogCurrentRight - PANEL_OFFSCREEN_RIGHT);
+            if (gameLogDistanceToOffScreen > INSTANT_CLOSE_DISTANCE_THRESHOLD)
+            {
+                StartGameLogAnimation(false);
+            }
+            else
+            {
+                // Close instantly
+                _gameLogPanel.style.right = PANEL_OFFSCREEN_RIGHT;
+                _gameLogPanel.style.display = DisplayStyle.None;
+                _gameLogPanel.SetEnabled(false);
+                _gameLogPanel.pickingMode = PickingMode.Ignore;
+                _gameLogAnimation = null;
             }
         }
 
@@ -891,6 +1095,7 @@ namespace GameCore.UI.InGame
         private System.Collections.IEnumerator AnimateSlideInCoroutine(VisualElement element, float startRight, float endRight)
         {
             float elapsed = 0f;
+            bool isCharacterSheet = (element == _characterSheetPanel);
 
             while (elapsed < ANIMATION_DURATION)
             {
@@ -915,7 +1120,16 @@ namespace GameCore.UI.InGame
             // Ensure final position is set
             element.style.right = endRight;
             element.MarkDirtyRepaint();
-            _currentAnimation = null;
+            
+            if (isCharacterSheet)
+            {
+                _currentAnimation = null;
+                _targetVisibilityState = null; // Clear animation target when complete
+            }
+            else
+            {
+                _gameLogAnimation = null;
+            }
         }
 
         /// <summary>
@@ -924,6 +1138,7 @@ namespace GameCore.UI.InGame
         private System.Collections.IEnumerator AnimateSlideOutCoroutine(VisualElement element, float startRight, float endRight, System.Action onComplete)
         {
             float elapsed = 0f;
+            bool isCharacterSheet = (element == _characterSheetPanel);
 
             while (elapsed < ANIMATION_DURATION)
             {
@@ -947,7 +1162,14 @@ namespace GameCore.UI.InGame
             element.MarkDirtyRepaint();
             
             // Call completion callback
-            _currentAnimation = null;
+            if (isCharacterSheet)
+            {
+                _currentAnimation = null;
+            }
+            else
+            {
+                _gameLogAnimation = null;
+            }
             onComplete?.Invoke();
         }
         #endregion
