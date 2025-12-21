@@ -245,6 +245,19 @@ namespace GameCore.UI.InGame
                 bool navigateUp = keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed;
                 bool navigateDown = keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed;
                 
+                // If keyboard navigation is starting and no button is currently selected,
+                // check if mouse is hovering over a button and start from there
+                if ((navigateUp || navigateDown) && !_keyboardNavigationService.HasSelection)
+                {
+                    int hoveredIndex = _view.GetHoveredButtonIndex(Model.State.CharacterSheetTabIndex);
+                    if (hoveredIndex >= 0)
+                    {
+                        _keyboardNavigationService.SetSelectedButtonIndex(hoveredIndex);
+                        // Update view immediately to show the hovered button as selected
+                        _view.SetSelectedButtonIndex(Model.State.CharacterSheetTabIndex, hoveredIndex);
+                    }
+                }
+                
                 // Delegate button navigation to service
                 var buttons = _view.GetButtonsInTab(Model.State.CharacterSheetTabIndex);
                 int newSelectedIndex = _keyboardNavigationService.HandleButtonNavigation(

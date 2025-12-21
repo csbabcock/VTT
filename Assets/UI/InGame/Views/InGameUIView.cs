@@ -4,6 +4,7 @@ using GameCore.UI.InGame.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
+using System.Linq;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -1212,222 +1213,349 @@ namespace GameCore.UI.InGame
         #endregion
 
         #region Button Wiring
+
+        /// <summary>
+        /// Wires up all buttons with the given name across all tabs.
+        /// Follows DRY principle by centralizing the common wiring pattern.
+        /// </summary>
+        /// <param name="buttonName">The name of the buttons to wire up.</param>
+        /// <param name="onClick">The action to invoke when any of the buttons is clicked.</param>
+        private void WireButtons(string buttonName, System.Action onClick)
+        {
+            var buttons = _root.Query<Button>(buttonName).ToList();
+            foreach (var button in buttons)
+            {
+                if (button != null)
+                {
+                    button.pickingMode = PickingMode.Position;
+                    button.clicked += onClick;
+                }
+            }
+        }
+
         /// <summary>
         /// Wires up an ability score button click event.
+        /// Wires ALL buttons with this name across all tabs (not just the first one found).
         /// </summary>
         private void WireAbilityButton(string buttonName, string abilityName)
         {
-            var button = _root.Q<Button>(buttonName);
-            if (button != null)
-            {
-                button.pickingMode = PickingMode.Position;
-                button.clicked += () => AbilityScoreClicked?.Invoke(abilityName);
-            }
+            WireButtons(buttonName, () => AbilityScoreClicked?.Invoke(abilityName));
         }
 
         /// <summary>
         /// Wires up a skill button click event.
+        /// Wires ALL buttons with this name across all tabs (not just the first one found).
         /// </summary>
         private void WireSkillButton(string buttonName, string skillName)
         {
-            var button = _root.Q<Button>(buttonName);
-            if (button != null)
-            {
-                button.pickingMode = PickingMode.Position;
-                button.clicked += () => SkillClicked?.Invoke(skillName);
-            }
+            WireButtons(buttonName, () => SkillClicked?.Invoke(skillName));
         }
 
         /// <summary>
         /// Wires up an action button click event.
+        /// Wires ALL buttons with this name across all tabs (not just the first one found).
         /// </summary>
         private void WireActionButton(string buttonName, string actionName)
         {
-            var button = _root.Q<Button>(buttonName);
-            if (button != null)
-            {
-                button.pickingMode = PickingMode.Position;
-                button.clicked += () => ActionClicked?.Invoke(actionName);
-            }
+            WireButtons(buttonName, () => ActionClicked?.Invoke(actionName));
         }
 
         /// <summary>
         /// Wires up an attack button click event.
+        /// Wires ALL buttons with this name across all tabs (not just the first one found).
         /// </summary>
         private void WireAttackButton(string buttonName, string attackName)
         {
-            var button = _root.Q<Button>(buttonName);
-            if (button != null)
-            {
-                button.pickingMode = PickingMode.Position;
-                button.clicked += () => AttackClicked?.Invoke(attackName);
-            }
+            WireButtons(buttonName, () => AttackClicked?.Invoke(attackName));
         }
 
         /// <summary>
         /// Wires up a feature button click event.
+        /// Wires ALL buttons with this name across all tabs (not just the first one found).
         /// </summary>
         private void WireFeatureButton(string buttonName, string featureName)
         {
-            var button = _root.Q<Button>(buttonName);
-            if (button != null)
-            {
-                button.pickingMode = PickingMode.Position;
-                button.clicked += () => FeatureClicked?.Invoke(featureName);
-            }
+            WireButtons(buttonName, () => FeatureClicked?.Invoke(featureName));
         }
 
         /// <summary>
         /// Wires up a rest button click event.
+        /// Wires ALL buttons with this name across all tabs (not just the first one found).
         /// </summary>
         private void WireRestButton(string buttonName, string restType)
         {
-            var button = _root.Q<Button>(buttonName);
-            if (button != null)
-            {
-                button.pickingMode = PickingMode.Position;
-                button.clicked += () => RestClicked?.Invoke(restType);
-            }
+            WireButtons(buttonName, () => RestClicked?.Invoke(restType));
         }
         #endregion
 
         #region Game Log Methods
 
+        #region Constants
+        private const int MAX_LOG_ENTRIES = 100;
+        #endregion
+
         /// <summary>
         /// Adds a new entry to the game log using structured data.
+        /// Follows Single Responsibility Principle by delegating to focused helper methods.
         /// </summary>
         /// <param name="entry">The formatted log entry data.</param>
         public void AddLogEntry(FormattedLogEntry entry)
         {
+            if (!ValidateGameLogPanel())
+                return;
+
+            var logEntries = GetLogEntriesContainer();
+            if (logEntries == null)
+                return;
+
+            var card = CreateLogEntryCard(entry);
+            logEntries.Add(card);
+
+            ScrollToBottom();
+            EnforceLogEntryLimit(logEntries);
+        }
+
+        /// <summary>
+        /// Validates that the game log panel exists.
+        /// </summary>
+        private bool ValidateGameLogPanel()
+        {
             if (_gameLogPanel == null)
             {
                 Debug.LogWarning("InGameUIView: Game log panel is null!");
-                return;
+                return false;
             }
+            return true;
+        }
 
+        /// <summary>
+        /// Gets the log entries container, validating it exists.
+        /// </summary>
+        private VisualElement GetLogEntriesContainer()
+        {
             var logEntries = _root.Q<VisualElement>("game-log-entries");
             if (logEntries == null)
             {
                 Debug.LogWarning("InGameUIView: Game log entries container is null!");
-                return;
             }
+            return logEntries;
+        }
 
-            // Create card container
+        /// <summary>
+        /// Creates a complete log entry card with header and content.
+        /// Follows Single Responsibility Principle by delegating to focused methods.
+        /// </summary>
+        private VisualElement CreateLogEntryCard(FormattedLogEntry entry)
+        {
+            var card = CreateCardContainer(entry);
+            var cardHeader = CreateLogEntryHeader(entry, card);
+            var mainContent = CreateLogEntryContent(entry);
+
+            card.Add(cardHeader);
+            card.Add(mainContent);
+
+            return card;
+        }
+
+        /// <summary>
+        /// Creates the base card container element.
+        /// </summary>
+        private VisualElement CreateCardContainer(FormattedLogEntry entry)
+        {
             var card = new VisualElement();
             card.AddToClassList("game-log-card");
             card.AddToClassList(entry.CssClass);
             card.pickingMode = PickingMode.Ignore;
+            return card;
+        }
 
-            // Card header with character name and delete button
+        /// <summary>
+        /// Creates the log entry header with character name and delete button.
+        /// </summary>
+        private VisualElement CreateLogEntryHeader(FormattedLogEntry entry, VisualElement card)
+        {
             var cardHeader = new VisualElement();
             cardHeader.AddToClassList("game-log-card-header");
 
-            // Character name in header
             if (!string.IsNullOrEmpty(entry.CharacterName))
             {
-                var characterNameLabel = new Label(entry.CharacterName);
-                characterNameLabel.AddToClassList("game-log-character-name");
+                var characterNameLabel = CreateCharacterNameLabel(entry.CharacterName);
                 cardHeader.Add(characterNameLabel);
             }
 
-            // Delete button for this entry (in header)
+            var deleteButton = CreateDeleteButton(card);
+            cardHeader.Add(deleteButton);
+
+            return cardHeader;
+        }
+
+        /// <summary>
+        /// Creates a character name label for the log entry header.
+        /// </summary>
+        private Label CreateCharacterNameLabel(string characterName)
+        {
+            var label = new Label(characterName);
+            label.AddToClassList("game-log-character-name");
+            return label;
+        }
+
+        /// <summary>
+        /// Creates a delete button for a log entry card.
+        /// </summary>
+        private Button CreateDeleteButton(VisualElement card)
+        {
             var deleteButton = new Button();
             deleteButton.AddToClassList("game-log-delete-button");
             deleteButton.text = "×";
             deleteButton.tooltip = "Delete this entry";
             deleteButton.pickingMode = PickingMode.Position;
             deleteButton.clicked += () => LogEntryDeleteClicked?.Invoke(card);
-            cardHeader.Add(deleteButton);
+            return deleteButton;
+        }
 
-            // Main content area
+        /// <summary>
+        /// Creates the main content area of a log entry.
+        /// </summary>
+        private VisualElement CreateLogEntryContent(FormattedLogEntry entry)
+        {
             var mainContent = new VisualElement();
             mainContent.AddToClassList("game-log-main-content");
 
-            // Action type and sub-action on one line
+            var actionRow = CreateActionRow(entry);
+            mainContent.Add(actionRow);
+
+            if (!string.IsNullOrEmpty(entry.DiceFormula))
+            {
+                var formulaLabel = CreateFormulaLabel(entry.DiceFormula);
+                mainContent.Add(formulaLabel);
+            }
+
+            if (!string.IsNullOrEmpty(entry.DiceBreakdown))
+            {
+                var diceBreakdownLabel = CreateDiceBreakdownLabel(entry.DiceBreakdown);
+                mainContent.Add(diceBreakdownLabel);
+            }
+
+            if (entry.Result.HasValue)
+            {
+                var resultLabel = CreateResultLabel(entry.Result.Value);
+                mainContent.Add(resultLabel);
+            }
+
+            var timestampLabel = CreateTimestampLabel();
+            mainContent.Add(timestampLabel);
+
+            return mainContent;
+        }
+
+        /// <summary>
+        /// Creates the action row with action type and sub-action.
+        /// </summary>
+        private VisualElement CreateActionRow(FormattedLogEntry entry)
+        {
             var actionRow = new VisualElement();
             actionRow.AddToClassList("game-log-action-row");
-            
+
             var actionTypeLabel = new Label(entry.ActionType);
             actionTypeLabel.AddToClassList("game-log-action-type");
             actionRow.Add(actionTypeLabel);
 
             if (!string.IsNullOrEmpty(entry.SubActionType))
             {
-                var subActionLabel = new Label(entry.SubActionType);
-                subActionLabel.AddToClassList("game-log-sub-action");
-                subActionLabel.AddToClassList($"sub-action-{entry.CssClass.Replace("log-", "")}");
+                var subActionLabel = CreateSubActionLabel(entry.SubActionType, entry.CssClass);
                 actionRow.Add(subActionLabel);
             }
 
-            mainContent.Add(actionRow);
+            return actionRow;
+        }
 
-            // Formula on its own line (if available)
-            if (!string.IsNullOrEmpty(entry.DiceFormula))
-            {
-                var formulaLabel = new Label(entry.DiceFormula);
-                formulaLabel.AddToClassList("game-log-dice-formula");
-                mainContent.Add(formulaLabel);
-            }
+        /// <summary>
+        /// Creates a sub-action label with appropriate styling.
+        /// </summary>
+        private Label CreateSubActionLabel(string subActionType, string cssClass)
+        {
+            var subActionLabel = new Label(subActionType);
+            subActionLabel.AddToClassList("game-log-sub-action");
+            subActionLabel.AddToClassList($"sub-action-{cssClass.Replace("log-", "")}");
+            return subActionLabel;
+        }
 
-            // Dice breakdown on its own line (if available)
-            if (!string.IsNullOrEmpty(entry.DiceBreakdown))
-            {
-                var diceBreakdownLabel = new Label(entry.DiceBreakdown);
-                diceBreakdownLabel.AddToClassList("game-log-dice-breakdown");
-                mainContent.Add(diceBreakdownLabel);
-            }
+        /// <summary>
+        /// Creates a dice formula label.
+        /// </summary>
+        private Label CreateFormulaLabel(string diceFormula)
+        {
+            var formulaLabel = new Label(diceFormula);
+            formulaLabel.AddToClassList("game-log-dice-formula");
+            return formulaLabel;
+        }
 
-            // Result (large number) on its own line
-            if (entry.Result.HasValue)
-            {
-                var resultLabel = new Label(entry.Result.Value.ToString());
-                resultLabel.AddToClassList("game-log-result");
-                mainContent.Add(resultLabel);
-            }
+        /// <summary>
+        /// Creates a dice breakdown label.
+        /// </summary>
+        private Label CreateDiceBreakdownLabel(string diceBreakdown)
+        {
+            var diceBreakdownLabel = new Label(diceBreakdown);
+            diceBreakdownLabel.AddToClassList("game-log-dice-breakdown");
+            return diceBreakdownLabel;
+        }
 
-            // Timestamp
+        /// <summary>
+        /// Creates a result label with the roll result.
+        /// </summary>
+        private Label CreateResultLabel(int result)
+        {
+            var resultLabel = new Label(result.ToString());
+            resultLabel.AddToClassList("game-log-result");
+            return resultLabel;
+        }
+
+        /// <summary>
+        /// Creates a timestamp label with current time.
+        /// </summary>
+        private Label CreateTimestampLabel()
+        {
             var timestamp = System.DateTime.Now.ToString("h:mm tt");
             var timestampLabel = new Label(timestamp);
             timestampLabel.AddToClassList("game-log-timestamp");
-            mainContent.Add(timestampLabel);
+            return timestampLabel;
+        }
 
-            // Add header and main content to card
-            card.Add(cardHeader);
-            card.Add(mainContent);
-            logEntries.Add(card);
-
-            // Auto-scroll to bottom to show new entry
-            // Register callback on content container to ensure layout is updated before scrolling
+        /// <summary>
+        /// Scrolls the game log to the bottom to show the newest entry.
+        /// </summary>
+        private void ScrollToBottom()
+        {
             var scrollView = _root.Q<ScrollView>("game-log-content");
-            if (scrollView != null)
+            if (scrollView == null)
+                return;
+
+            var contentContainer = scrollView.contentContainer;
+
+            void ScrollToBottomCallback(GeometryChangedEvent evt)
             {
-                var contentContainer = scrollView.contentContainer;
-                
-                // Register a one-time callback for when the content container's geometry changes
-                void ScrollToBottom(GeometryChangedEvent evt)
+                contentContainer.UnregisterCallback<GeometryChangedEvent>(ScrollToBottomCallback);
+
+                float contentHeight = contentContainer.layout.height;
+                float viewportHeight = scrollView.contentViewport.layout.height;
+                float maxScroll = contentHeight - viewportHeight;
+
+                if (maxScroll > 0)
                 {
-                    contentContainer.UnregisterCallback<GeometryChangedEvent>(ScrollToBottom);
-                    
-                    // Calculate scroll position after layout is updated
-                    float contentHeight = contentContainer.layout.height;
-                    float viewportHeight = scrollView.contentViewport.layout.height;
-                    float maxScroll = contentHeight - viewportHeight;
-                    
-                    if (maxScroll > 0)
-                    {
-                        scrollView.scrollOffset = new Vector2(0, maxScroll);
-                    }
+                    scrollView.scrollOffset = new Vector2(0, maxScroll);
                 }
-                
-                // Register on content container so we know when the new entry's layout is calculated
-                contentContainer.RegisterCallback<GeometryChangedEvent>(ScrollToBottom);
-                // Force a layout update to trigger the callback
-                contentContainer.MarkDirtyRepaint();
             }
 
-            // Limit log entries to prevent performance issues (keep last 100 entries)
-            const int maxEntries = 100;
-            while (logEntries.childCount > maxEntries)
+            contentContainer.RegisterCallback<GeometryChangedEvent>(ScrollToBottomCallback);
+            contentContainer.MarkDirtyRepaint();
+        }
+
+        /// <summary>
+        /// Enforces the maximum number of log entries to prevent performance issues.
+        /// </summary>
+        private void EnforceLogEntryLimit(VisualElement logEntries)
+        {
+            while (logEntries.childCount > MAX_LOG_ENTRIES)
             {
                 var firstChild = logEntries[0];
                 logEntries.Remove(firstChild);
@@ -1512,6 +1640,65 @@ namespace GameCore.UI.InGame
             FindButtonsRecursive(currentTab, buttons);
             
             return buttons;
+        }
+
+        /// <summary>
+        /// Gets the index of the button currently under the mouse cursor.
+        /// Returns -1 if no button is hovered.
+        /// </summary>
+        public int GetHoveredButtonIndex(int tabIndex)
+        {
+            if (!IsCharacterSheetOpen() || _uiDocument == null)
+                return -1;
+
+            var buttons = GetButtonsInTab(tabIndex);
+            if (buttons.Count == 0)
+                return -1;
+
+            // Get mouse position
+            Vector2 mousePosition;
+#if ENABLE_INPUT_SYSTEM
+            var mouse = UnityEngine.InputSystem.Mouse.current;
+            if (mouse == null)
+                return -1;
+            mousePosition = mouse.position.ReadValue();
+#else
+            mousePosition = Input.mousePosition;
+#endif
+
+            // Get the panel
+            var panel = _uiDocument.rootVisualElement.panel;
+            if (panel == null)
+                return -1;
+
+            // Convert screen coordinates to panel space
+            float screenHeight = Screen.height;
+            Vector2 panelSpacePos = new Vector2(
+                mousePosition.x,
+                screenHeight - mousePosition.y
+            );
+
+            // Check each button to see if mouse is over it
+            for (int i = 0; i < buttons.Count; i++)
+            {
+                var button = buttons[i];
+                if (button == null || !button.enabledInHierarchy)
+                    continue;
+
+                // Check if button is visible
+                if (button.resolvedStyle.display == DisplayStyle.None ||
+                    button.resolvedStyle.visibility == Visibility.Hidden)
+                    continue;
+
+                // Check if mouse is within button bounds
+                Rect buttonRect = button.worldBound;
+                if (buttonRect.Contains(panelSpacePos))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         /// <summary>
