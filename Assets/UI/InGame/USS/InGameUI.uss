@@ -560,6 +560,28 @@
     scale: 1.05;
 }
 
+/* Keyboard Navigation - Selected Button Highlight */
+.keyboard-selected {
+    background-color: rgba(99, 102, 241, 0.3) !important; /* Indigo with transparency */
+    border-color: var(--vtt-accent-primary) !important;
+    border-width: 2px !important;
+    scale: 1.05; /* Same scale as hover effect for most buttons */
+}
+
+.keyboard-selected:hover {
+    background-color: rgba(99, 102, 241, 0.4) !important;
+}
+
+/* Ability score buttons use scale 1.1 on hover, so use that for keyboard selection too */
+.ability-score-button.keyboard-selected {
+    scale: 1.1;
+}
+
+/* Tab buttons use scale 1.1 on hover */
+.charsheet-tab.keyboard-selected {
+    scale: 1.1;
+}
+
 /* Game Log Panel */
 .game-log-panel {
     position: absolute;

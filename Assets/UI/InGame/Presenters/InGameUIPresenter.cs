@@ -38,6 +38,7 @@ namespace GameCore.UI.InGame
         private DiceRollService _diceRollService;
         private GameLogService _gameLogService;
         private CharacterData _characterData;
+        private KeyboardNavigationService _keyboardNavigationService;
         #endregion
 
         #region Unity Lifecycle
@@ -65,6 +66,7 @@ namespace GameCore.UI.InGame
             _diceRollService = new DiceRollService();
             _gameLogService = new GameLogService();
             _characterData = new CharacterData();
+            _keyboardNavigationService = new KeyboardNavigationService();
             
             // Initialize UI interaction service (centralized UI blocking logic)
             if (_view != null)
@@ -168,11 +170,33 @@ namespace GameCore.UI.InGame
             }
 
 #if ENABLE_INPUT_SYSTEM
+            HandleMouseMovement();
             HandleKeyboardInput();
 #endif
         }
 
 #if ENABLE_INPUT_SYSTEM
+        /// <summary>
+        /// Handles mouse movement to clear keyboard selection when mouse is used.
+        /// Delegates to KeyboardNavigationService to follow Single Responsibility Principle.
+        /// </summary>
+        private void HandleMouseMovement()
+        {
+            if (!Model.IsCharacterSheetOpen || _view == null || _keyboardNavigationService == null)
+                return;
+
+            bool isMouseOverUI = _view.IsMouseOverCharacterSheet();
+            bool selectionCleared = _keyboardNavigationService.HandleMouseMovement(
+                Model.IsCharacterSheetOpen, 
+                isMouseOverUI
+            );
+
+            if (selectionCleared)
+            {
+                _view.ClearButtonSelection(Model.State.CharacterSheetTabIndex);
+            }
+        }
+
         /// <summary>
         /// Handles keyboard input for UI navigation.
         /// </summary>
@@ -185,11 +209,16 @@ namespace GameCore.UI.InGame
             if (keyboard.tabKey.wasPressedThisFrame)
             {
                 Model.ToggleCharacterSheet();
+                // Reset button selection when closing
+                if (!Model.IsCharacterSheetOpen && _keyboardNavigationService != null)
+                {
+                    _keyboardNavigationService.Reset();
+                }
                 return;
             }
 
             // WASD and Arrow key navigation when character sheet is open
-            if (Model.IsCharacterSheetOpen)
+            if (Model.IsCharacterSheetOpen && _view != null && _keyboardNavigationService != null)
             {
                 // Tab navigation: A/Left Arrow = previous tab, D/Right Arrow = next tab
                 bool navigateLeft = keyboard.aKey.wasPressedThisFrame || keyboard.leftArrowKey.wasPressedThisFrame;
@@ -198,28 +227,50 @@ namespace GameCore.UI.InGame
                 if (navigateRight)
                 {
                     Model.NextTab();
+                    _keyboardNavigationService.Reset();
+                    _view.ClearButtonSelection(Model.State.CharacterSheetTabIndex);
                 }
                 else if (navigateLeft)
                 {
                     Model.PreviousTab();
+                    _keyboardNavigationService.Reset();
+                    _view.ClearButtonSelection(Model.State.CharacterSheetTabIndex);
                 }
 
-                // Scrolling: W/Up Arrow = scroll up, S/Down Arrow = scroll down
-                if (_view != null)
+                // Button navigation: W/Up Arrow = previous button, S/Down Arrow = next button
+                bool navigateUp = keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed;
+                bool navigateDown = keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed;
+                
+                // Delegate button navigation to service
+                var buttons = _view.GetButtonsInTab(Model.State.CharacterSheetTabIndex);
+                int newSelectedIndex = _keyboardNavigationService.HandleButtonNavigation(
+                    buttons.Count, 
+                    navigateUp, 
+                    navigateDown
+                );
+
+                // Update view if selection changed
+                if (newSelectedIndex >= 0)
                 {
-                    const float scrollSpeed = 50f; // Pixels per key press
-                    
-                    bool scrollUp = keyboard.wKey.wasPressedThisFrame || keyboard.upArrowKey.wasPressedThisFrame;
-                    bool scrollDown = keyboard.sKey.wasPressedThisFrame || keyboard.downArrowKey.wasPressedThisFrame;
-                    
-                    if (scrollUp)
+                    _view.SetSelectedButtonIndex(Model.State.CharacterSheetTabIndex, newSelectedIndex);
+                }
+
+                // Enter key: Activate selected button
+                if (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame)
+                {
+                    int selectedIndex = _keyboardNavigationService.SelectedButtonIndex;
+                    if (selectedIndex >= 0)
                     {
-                        _view.ScrollTabContent(-scrollSpeed);
+                        _view.ActivateSelectedButton(Model.State.CharacterSheetTabIndex, selectedIndex);
                     }
-                    else if (scrollDown)
-                    {
-                        _view.ScrollTabContent(scrollSpeed);
-                    }
+                }
+            }
+            else
+            {
+                // Reset key state when character sheet is closed
+                if (_keyboardNavigationService != null)
+                {
+                    _keyboardNavigationService.ResetKeyState();
                 }
             }
         }

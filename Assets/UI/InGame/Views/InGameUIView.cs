@@ -3,6 +3,7 @@ using GameCore.UI.InGame.Services;
 using GameCore.UI.InGame.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -696,6 +697,15 @@ namespace GameCore.UI.InGame
                 // Mark that we're animating toward hidden state
                 _targetVisibilityState = false;
                 
+                // Clear keyboard selection when closing
+                if (_characterSheetTabs != null)
+                {
+                    for (int i = 0; i < _characterSheetTabs.Length; i++)
+                    {
+                        ClearButtonSelection(i);
+                    }
+                }
+                
                 // Check if panel is already mostly off-screen - if so, skip animation for instant close
                 float distanceToOffScreen = Mathf.Abs(currentRight - PANEL_OFFSCREEN_RIGHT);
                 bool shouldAnimate = distanceToOffScreen > INSTANT_CLOSE_DISTANCE_THRESHOLD;
@@ -868,6 +878,15 @@ namespace GameCore.UI.InGame
         {
             if (_characterSheetTabs == null || _tabButtons == null)
                 return;
+
+            // Clear keyboard selection when changing tabs
+            for (int i = 0; i < _characterSheetTabs.Length; i++)
+            {
+                if (i != tabIndex && _characterSheetTabs[i] != null)
+                {
+                    ClearButtonSelection(i);
+                }
+            }
 
             // Show/hide tab content
             for (int i = 0; i < _characterSheetTabs.Length; i++)
@@ -1416,6 +1435,200 @@ namespace GameCore.UI.InGame
             if (logEntries != null)
             {
                 logEntries.Clear();
+            }
+        }
+
+        #endregion
+
+        #region Button Navigation
+
+        /// <summary>
+        /// Gets all focusable buttons in the specified tab content.
+        /// </summary>
+        public List<Button> GetButtonsInTab(int tabIndex)
+        {
+            var buttons = new List<Button>();
+            
+            if (_characterSheetTabs == null)
+                return buttons;
+
+            if (tabIndex < 0 || tabIndex >= _characterSheetTabs.Length)
+                return buttons;
+
+            var currentTab = _characterSheetTabs[tabIndex];
+            if (currentTab == null)
+                return buttons;
+
+            // Recursively find all buttons in the current tab
+            FindButtonsRecursive(currentTab, buttons);
+            
+            return buttons;
+        }
+
+        /// <summary>
+        /// Recursively finds all buttons in a visual element tree.
+        /// </summary>
+        private void FindButtonsRecursive(VisualElement element, List<Button> buttons)
+        {
+            if (element == null)
+                return;
+
+            // Skip elements that are not visible or enabled
+            if (element.resolvedStyle.display == DisplayStyle.None || 
+                !element.enabledInHierarchy ||
+                element.resolvedStyle.visibility == Visibility.Hidden)
+            {
+                return;
+            }
+
+            // Check if this element is a button
+            if (element is Button button)
+            {
+                // Exclude tab navigation buttons and tab buttons themselves
+                if (button != _tabNavLeft && button != _tabNavRight && 
+                    !IsTabButton(button) &&
+                    button.enabledInHierarchy &&
+                    element.resolvedStyle.display == DisplayStyle.Flex)
+                {
+                    buttons.Add(button);
+                }
+            }
+
+            // Recursively search children
+            foreach (var child in element.Children())
+            {
+                FindButtonsRecursive(child, buttons);
+            }
+        }
+
+        /// <summary>
+        /// Checks if a button is one of the tab buttons.
+        /// </summary>
+        private bool IsTabButton(Button button)
+        {
+            if (_tabButtons == null)
+                return false;
+
+            foreach (var tabButton in _tabButtons)
+            {
+                if (tabButton == button)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Sets the selected button index and updates visual feedback.
+        /// </summary>
+        public void SetSelectedButtonIndex(int tabIndex, int buttonIndex)
+        {
+            var buttons = GetButtonsInTab(tabIndex);
+            if (buttons.Count == 0)
+                return;
+
+            // Clamp index to valid range
+            buttonIndex = Mathf.Clamp(buttonIndex, 0, buttons.Count - 1);
+
+            // Remove highlight from all buttons in this tab
+            foreach (var button in buttons)
+            {
+                if (button != null)
+                {
+                    button.RemoveFromClassList("keyboard-selected");
+                }
+            }
+
+            // Add highlight to selected button
+            if (buttonIndex >= 0 && buttonIndex < buttons.Count && buttons[buttonIndex] != null)
+            {
+                buttons[buttonIndex].AddToClassList("keyboard-selected");
+                
+                // Scroll the button into view if needed
+                ScrollButtonIntoView(buttons[buttonIndex]);
+            }
+        }
+
+        /// <summary>
+        /// Scrolls a button into view within the scroll view.
+        /// </summary>
+        private void ScrollButtonIntoView(Button button)
+        {
+            if (_characterSheetScrollView == null || button == null)
+                return;
+
+            // Get the button's world position
+            Rect buttonRect = button.worldBound;
+            Rect scrollViewRect = _characterSheetScrollView.worldBound;
+
+            // Check if button is outside the visible area
+            if (buttonRect.yMin < scrollViewRect.yMin)
+            {
+                // Button is above visible area, scroll up
+                float scrollAmount = scrollViewRect.yMin - buttonRect.yMin + 10f; // 10px padding
+                ScrollTabContent(-scrollAmount);
+            }
+            else if (buttonRect.yMax > scrollViewRect.yMax)
+            {
+                // Button is below visible area, scroll down
+                float scrollAmount = buttonRect.yMax - scrollViewRect.yMax + 10f; // 10px padding
+                ScrollTabContent(scrollAmount);
+            }
+        }
+
+        /// <summary>
+        /// Gets the currently selected button and triggers its click event.
+        /// </summary>
+        public bool ActivateSelectedButton(int tabIndex, int buttonIndex)
+        {
+            var buttons = GetButtonsInTab(tabIndex);
+            if (buttonIndex < 0 || buttonIndex >= buttons.Count)
+                return false;
+
+            var button = buttons[buttonIndex];
+            if (button != null && button.enabledInHierarchy)
+            {
+                // Ensure button is focusable for keyboard navigation
+                if (!button.focusable)
+                {
+                    button.focusable = true;
+                }
+                
+                // Focus the button first (required for UI Toolkit keyboard navigation)
+                button.Focus();
+                
+                // Send a NavigationSubmitEvent which is the standard way to trigger button clicks via keyboard in UI Toolkit
+                using (var submitEvent = NavigationSubmitEvent.GetPooled())
+                {
+                    submitEvent.target = button;
+                    button.SendEvent(submitEvent);
+                }
+                
+                // Also try sending a ClickEvent as a fallback
+                // This simulates an actual mouse click
+                using (var clickEvent = ClickEvent.GetPooled())
+                {
+                    clickEvent.target = button;
+                    button.SendEvent(clickEvent);
+                }
+                
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Clears the keyboard selection highlight from all buttons in the specified tab.
+        /// </summary>
+        public void ClearButtonSelection(int tabIndex)
+        {
+            var buttons = GetButtonsInTab(tabIndex);
+            foreach (var button in buttons)
+            {
+                if (button != null)
+                {
+                    button.RemoveFromClassList("keyboard-selected");
+                }
             }
         }
 
