@@ -2,12 +2,13 @@ using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
-using GameCore.UI.InGame;
+using GameCore.EncounterMode.Services;
 
 namespace GameCore.EncounterMode.Grid
 {
     /// <summary>
     /// Handles grid cell selection using plane projection for accurate far-away detection.
+    /// Uses UIInteractionService to check UI blocking (follows DRY principle).
     /// </summary>
     public class GridSelector : MonoBehaviour, IGridSelector
     {
@@ -17,10 +18,6 @@ namespace GameCore.EncounterMode.Grid
 
         [Tooltip("Plane height offset from grid origin (for elevation support)")]
         public float PlaneHeightOffset = 0f;
-
-        [Header("UI References")]
-        [Tooltip("In-game UI view reference (for checking if mouse is over character sheet)")]
-        public InGameUIView InGameUIView;
 
         [Header("Elevation Settings")]
         [Tooltip("Maximum elevation levels (based on movement speed). Each level = 1 cell height (5 feet)")]
@@ -64,12 +61,6 @@ namespace GameCore.EncounterMode.Grid
                     SelectionCamera = FindFirstObjectByType<Camera>();
             }
 
-            // Find InGameUIView if not assigned
-            if (InGameUIView == null)
-            {
-                InGameUIView = FindFirstObjectByType<InGameUIView>();
-            }
-
 #if ENABLE_INPUT_SYSTEM
             // Cache mouse reference for performance
             _mouse = UnityEngine.InputSystem.Mouse.current;
@@ -108,9 +99,7 @@ namespace GameCore.EncounterMode.Grid
         private void ProcessClickIfNotOverUI()
         {
             // Check if mouse is over UI - if so, don't process clicks
-            bool isMouseOverUI = InGameUIView != null && InGameUIView.IsMouseOverCharacterSheet();
-            
-            if (isMouseOverUI)
+            if (UIInteractionService.Instance.ShouldBlockGridInput())
                 return;
 
             bool mouseClicked = false;
@@ -118,8 +107,7 @@ namespace GameCore.EncounterMode.Grid
             if (_mouse != null && _mouse.leftButton.wasPressedThisFrame)
             {
                 // Final check right before processing - UI might have captured the click
-                bool finalUICheck = InGameUIView != null && InGameUIView.IsMouseOverCharacterSheet();
-                if (!finalUICheck)
+                if (!UIInteractionService.Instance.ShouldBlockGridInput())
                 {
                     mouseClicked = true;
                 }
@@ -128,8 +116,7 @@ namespace GameCore.EncounterMode.Grid
             if (Input.GetMouseButtonDown(0))
             {
                 // Final check right before processing - UI might have captured the click
-                bool finalUICheck = InGameUIView != null && InGameUIView.IsMouseOverCharacterSheet();
-                if (!finalUICheck)
+                if (!UIInteractionService.Instance.ShouldBlockGridInput())
                 {
                     mouseClicked = true;
                 }
@@ -153,9 +140,7 @@ namespace GameCore.EncounterMode.Grid
 
             // Check if mouse is over character sheet UI - if so, don't process grid input
             // But allow grid selection when character sheet is open but mouse is not over it
-            bool isMouseOverUI = InGameUIView != null && InGameUIView.IsMouseOverCharacterSheet();
-            
-            if (isMouseOverUI)
+            if (UIInteractionService.Instance.ShouldBlockGridInput())
             {
                 // Clear hovered cell when mouse is over UI to prevent column visualizer from showing
                 _hoveredCell = null;
@@ -229,7 +214,7 @@ namespace GameCore.EncounterMode.Grid
         public void SelectHoveredCell()
         {
             // Final safety check - don't allow selection if mouse is over UI
-            if (InGameUIView != null && InGameUIView.IsMouseOverCharacterSheet())
+            if (UIInteractionService.Instance.ShouldBlockGridInput())
             {
                 return;
             }

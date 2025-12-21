@@ -2,6 +2,7 @@ using GameCore.UI;
 using GameCore;
 using GameCore.UI.InGame.Services;
 using GameCore.UI.InGame.Models;
+using GameCore.EncounterMode.Services;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
@@ -64,6 +65,12 @@ namespace GameCore.UI.InGame
             _diceRollService = new DiceRollService();
             _gameLogService = new GameLogService();
             _characterData = new CharacterData();
+            
+            // Initialize UI interaction service (centralized UI blocking logic)
+            if (_view != null)
+            {
+                UIInteractionService.Instance.Initialize(_view);
+            }
         }
 
         private void OnEnable()
@@ -155,10 +162,9 @@ namespace GameCore.UI.InGame
             // This allows camera control when character sheet is open but mouse is not over it
             if (Model != null && Model.IsCharacterSheetOpen && _playerInputs != null)
             {
-                bool isMouseOverUI = _view != null && _view.IsMouseOverCharacterSheet();
                 // Only disable look input when mouse is actually over UI
                 // This ensures camera control works when character sheet is open but mouse is not over it
-                _playerInputs.cursorInputForLook = !isMouseOverUI;
+                _playerInputs.cursorInputForLook = !UIInteractionService.Instance.ShouldBlockCameraInput();
             }
 
 #if ENABLE_INPUT_SYSTEM

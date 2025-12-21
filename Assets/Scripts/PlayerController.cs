@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using GameCore.EncounterMode;
-using GameCore.UI.InGame;
+using GameCore.EncounterMode.Services;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 using PlayerInputComponent = UnityEngine.InputSystem.PlayerInput;
@@ -467,12 +467,8 @@ namespace GameCore
             bool shouldLockCamera = LockCameraPosition;
             if (!shouldLockCamera)
             {
-                // Check if mouse is over character sheet UI
-                var inGameUIView = FindFirstObjectByType<InGameUIView>();
-                if (inGameUIView != null && inGameUIView.IsMouseOverCharacterSheet())
-                {
-                    shouldLockCamera = true;
-                }
+                // Check if mouse is over character sheet UI using centralized service
+                shouldLockCamera = UIInteractionService.Instance.ShouldBlockCameraInput();
             }
 
             // Process camera rotation
