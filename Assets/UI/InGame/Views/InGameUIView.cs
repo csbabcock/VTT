@@ -203,6 +203,16 @@ namespace GameCore.UI.InGame
         /// Fired when a rest button is clicked. Parameter is the rest type ("Short Rest" or "Long Rest").
         /// </summary>
         public event System.Action<string> RestClicked;
+
+        /// <summary>
+        /// Fired when the clear log button is clicked.
+        /// </summary>
+        public event System.Action ClearLogClicked;
+
+        /// <summary>
+        /// Fired when a log entry delete button is clicked. Parameter is the log entry card element.
+        /// </summary>
+        public event System.Action<VisualElement> LogEntryDeleteClicked;
         #endregion
 
         #region Unity Lifecycle
@@ -454,6 +464,14 @@ namespace GameCore.UI.InGame
             // Wire up rest buttons
             WireRestButton("short-rest-button", "Short Rest");
             WireRestButton("long-rest-button", "Long Rest");
+
+            // Wire up game log clear button
+            var clearLogButton = _root.Q<Button>("game-log-clear-button");
+            if (clearLogButton != null)
+            {
+                clearLogButton.pickingMode = PickingMode.Position;
+                clearLogButton.clicked += () => ClearLogClicked?.Invoke();
+            }
 
             // Wire up carousel navigation
             _tabsContainer = _root.Q<VisualElement>("charsheet-tabs-container");
@@ -1300,17 +1318,30 @@ namespace GameCore.UI.InGame
             card.AddToClassList(entry.CssClass);
             card.pickingMode = PickingMode.Ignore;
 
-            // Main content area
-            var mainContent = new VisualElement();
-            mainContent.AddToClassList("game-log-main-content");
+            // Card header with character name and delete button
+            var cardHeader = new VisualElement();
+            cardHeader.AddToClassList("game-log-card-header");
 
-            // Character name
+            // Character name in header
             if (!string.IsNullOrEmpty(entry.CharacterName))
             {
                 var characterNameLabel = new Label(entry.CharacterName);
                 characterNameLabel.AddToClassList("game-log-character-name");
-                mainContent.Add(characterNameLabel);
+                cardHeader.Add(characterNameLabel);
             }
+
+            // Delete button for this entry (in header)
+            var deleteButton = new Button();
+            deleteButton.AddToClassList("game-log-delete-button");
+            deleteButton.text = "×";
+            deleteButton.tooltip = "Delete this entry";
+            deleteButton.pickingMode = PickingMode.Position;
+            deleteButton.clicked += () => LogEntryDeleteClicked?.Invoke(card);
+            cardHeader.Add(deleteButton);
+
+            // Main content area
+            var mainContent = new VisualElement();
+            mainContent.AddToClassList("game-log-main-content");
 
             // Action type and sub-action on one line
             var actionRow = new VisualElement();
@@ -1360,6 +1391,8 @@ namespace GameCore.UI.InGame
             timestampLabel.AddToClassList("game-log-timestamp");
             mainContent.Add(timestampLabel);
 
+            // Add header and main content to card
+            card.Add(cardHeader);
             card.Add(mainContent);
             logEntries.Add(card);
 
@@ -1435,6 +1468,22 @@ namespace GameCore.UI.InGame
             if (logEntries != null)
             {
                 logEntries.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Removes a specific log entry from the game log.
+        /// </summary>
+        /// <param name="entryCard">The log entry card element to remove.</param>
+        public void RemoveLogEntry(VisualElement entryCard)
+        {
+            if (entryCard == null)
+                return;
+
+            var logEntries = _root.Q<VisualElement>("game-log-entries");
+            if (logEntries != null && entryCard.parent == logEntries)
+            {
+                logEntries.Remove(entryCard);
             }
         }
 

@@ -616,6 +616,28 @@
     -unity-font-style: bold;
 }
 
+.game-log-clear-button {
+    background-color: rgba(239, 68, 68, 0.2);
+    border-width: 1px;
+    border-color: rgba(239, 68, 68, 0.4);
+    border-radius: var(--vtt-radius-small);
+    color: var(--vtt-text-main);
+    font-size: 12px;
+    padding-left: var(--vtt-spacing-small);
+    padding-right: var(--vtt-spacing-small);
+    padding-top: 4px;
+    padding-bottom: 4px;
+    min-width: 50px;
+    transition-duration: 0.2s;
+    transition-property: background-color, border-color;
+}
+
+.game-log-clear-button:hover {
+    background-color: rgba(239, 68, 68, 0.4);
+    border-color: rgba(239, 68, 68, 0.7);
+    color: #ffffff;
+}
+
 .game-log-content {
     flex-grow: 1;
     overflow: scroll;
@@ -644,6 +666,41 @@
     overflow: hidden;
 }
 
+.game-log-card-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--vtt-spacing-small) var(--vtt-spacing-medium);
+    padding-bottom: var(--vtt-spacing-small);
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(195, 224, 245, 0.1);
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.game-log-delete-button {
+    background-color: rgba(239, 68, 68, 0.2);
+    border-width: 1px;
+    border-color: rgba(239, 68, 68, 0.4);
+    border-radius: var(--vtt-radius-small);
+    color: var(--vtt-text-main);
+    font-size: 16px;
+    -unity-font-style: bold;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 0;
+    margin: 0;
+    transition-duration: 0.2s;
+    transition-property: background-color, border-color, color;
+}
+
+.game-log-delete-button:hover {
+    background-color: rgba(239, 68, 68, 0.4);
+    border-color: rgba(239, 68, 68, 0.7);
+    color: #ffffff;
+}
+
 /* Main content area */
 .game-log-main-content {
     flex-grow: 1;
@@ -658,16 +715,8 @@
     color: var(--vtt-text-main);
     font-size: 14px;
     -unity-font-style: bold;
-    margin-top: 0;
-    margin-bottom: 6px;
-    padding: var(--vtt-spacing-small) var(--vtt-spacing-medium);
-    background-color: rgba(0, 0, 0, 0.4);
-    border-radius: 0;
-    border-top-left-radius: var(--vtt-radius-medium);
-    border-top-right-radius: var(--vtt-radius-medium);
-    border-width: 0;
-    border-bottom-width: 1px;
-    border-color: var(--vtt-border-color);
+    margin: 0;
+    flex-grow: 1;
 }
 
 .game-log-main-content > * {

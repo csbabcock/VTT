@@ -56,8 +56,9 @@
 
             <!-- Tab Content Container - Single ScrollView for all content -->
             <ui:ScrollView name="charsheet-tab-content" class="charsheet-tab-content">
-                <!-- TAB 0: Overview - Ability Scores Only -->
+                <!-- TAB 0: Overview - All Content Combined -->
                 <ui:VisualElement name="tab-overview-content" class="charsheet-tab-panel active">
+                    <!-- Ability Scores -->
                     <ui:Label text="Ability Scores" class="section-title" />
                     <ui:VisualElement name="ability-grid" class="ability-grid">
                         <ui:Button name="ability-str" class="ability-score-button" text="STR 16 (+3)" />
@@ -66,6 +67,197 @@
                         <ui:Button name="ability-int" class="ability-score-button" text="INT 10 (+0)" />
                         <ui:Button name="ability-wis" class="ability-score-button" text="WIS 12 (+1)" />
                         <ui:Button name="ability-cha" class="ability-score-button" text="CHA 8 (-1)" />
+                    </ui:VisualElement>
+
+                    <!-- Skills -->
+                    <ui:Label text="Skills" class="section-title" />
+                    <ui:VisualElement name="skills-list" class="skills-list">
+                        <ui:Button name="skill-acrobatics" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="DEX" class="skill-ability" />
+                            <ui:Label text="Acrobatics" class="skill-name" />
+                            <ui:Label text="+6" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-animal-handling" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="WIS" class="skill-ability" />
+                            <ui:Label text="Animal Handling" class="skill-name" />
+                            <ui:Label text="+2" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-arcana" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="INT" class="skill-ability" />
+                            <ui:Label text="Arcana" class="skill-name" />
+                            <ui:Label text="+2" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-athletics" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="STR" class="skill-ability" />
+                            <ui:Label text="Athletics" class="skill-name" />
+                            <ui:Label text="+0" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-deception" class="charsheet-skill-button proficient">
+                            <ui:VisualElement class="skill-icon" />
+                            <ui:Label text="CHA" class="skill-ability" />
+                            <ui:Label text="Deception" class="skill-name" />
+                            <ui:Label text="+10" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-history" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="INT" class="skill-ability" />
+                            <ui:Label text="History" class="skill-name" />
+                            <ui:Label text="+0" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-insight" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="WIS" class="skill-ability" />
+                            <ui:Label text="Insight" class="skill-name" />
+                            <ui:Label text="+4" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-intimidation" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="CHA" class="skill-ability" />
+                            <ui:Label text="Intimidation" class="skill-name" />
+                            <ui:Label text="+7" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-investigation" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="INT" class="skill-ability" />
+                            <ui:Label text="Investigation" class="skill-name" />
+                            <ui:Label text="+0" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-medicine" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="WIS" class="skill-ability" />
+                            <ui:Label text="Medicine" class="skill-name" />
+                            <ui:Label text="+4" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-nature" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="INT" class="skill-ability" />
+                            <ui:Label text="Nature" class="skill-name" />
+                            <ui:Label text="+0" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-perception" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="WIS" class="skill-ability" />
+                            <ui:Label text="Perception" class="skill-name" />
+                            <ui:Label text="+2" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-performance" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="CHA" class="skill-ability" />
+                            <ui:Label text="Performance" class="skill-name" />
+                            <ui:Label text="+7" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-persuasion" class="charsheet-skill-button proficient">
+                            <ui:VisualElement class="skill-icon" />
+                            <ui:Label text="CHA" class="skill-ability" />
+                            <ui:Label text="Persuasion" class="skill-name" />
+                            <ui:Label text="+10" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-religion" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="INT" class="skill-ability" />
+                            <ui:Label text="Religion" class="skill-name" />
+                            <ui:Label text="+0" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-sleight-of-hand" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="DEX" class="skill-ability" />
+                            <ui:Label text="Sleight of Hand" class="skill-name" />
+                            <ui:Label text="+6" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-stealth" class="charsheet-skill-button">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="DEX" class="skill-ability" />
+                            <ui:Label text="Stealth" class="skill-name" />
+                            <ui:Label text="+6" class="skill-modifier" />
+                        </ui:Button>
+                        <ui:Button name="skill-survival" class="charsheet-skill-button skill-last">
+                            <ui:VisualElement class="skill-icon-spacer" />
+                            <ui:Label text="WIS" class="skill-ability" />
+                            <ui:Label text="Survival" class="skill-name" />
+                            <ui:Label text="+2" class="skill-modifier" />
+                        </ui:Button>
+                    </ui:VisualElement>
+
+                    <!-- Actions & Attacks -->
+                    <ui:Label text="Actions" class="section-title" />
+                    <ui:VisualElement name="actions-list" class="actions-list">
+                        <ui:Button name="action-attack" class="action-button" text="Attack" />
+                        <ui:Button name="action-dash" class="action-button" text="Dash" />
+                        <ui:Button name="action-disengage" class="action-button" text="Disengage" />
+                        <ui:Button name="action-dodge" class="action-button" text="Dodge" />
+                        <ui:Button name="action-help" class="action-button" text="Help" />
+                        <ui:Button name="action-hide" class="action-button" text="Hide" />
+                        <ui:Button name="action-ready" class="action-button" text="Ready" />
+                        <ui:Button name="action-search" class="action-button" text="Search" />
+                        <ui:Button name="action-use-object" class="action-button" text="Use Object" />
+                    </ui:VisualElement>
+
+                    <ui:Label text="Attacks" class="section-title" />
+                    <ui:VisualElement name="attacks-list" class="actions-list">
+                        <ui:Button name="attack-longsword" class="attack-button" text="Longsword +5 (1d8+3 slashing)" />
+                        <ui:Button name="attack-shortbow" class="attack-button" text="Shortbow +4 (1d6+2 piercing)" />
+                    </ui:VisualElement>
+
+                    <!-- Spells -->
+                    <ui:Label text="Spell Slots" class="section-title" />
+                    <ui:VisualElement name="spell-slots-list" class="spell-slots-list">
+                        <ui:Label text="No spell slots (non-spellcaster)" class="charsheet-text-muted" />
+                    </ui:VisualElement>
+
+                    <!-- Inventory -->
+                    <ui:Label text="Equipped" class="section-title" />
+                    <ui:VisualElement name="equipped-items" class="equipped-items">
+                        <ui:Button name="equipped-armor" class="equipment-button" text="Chain Mail (AC 16)" />
+                        <ui:Button name="equipped-weapon-1" class="equipment-button" text="Longsword" />
+                        <ui:Button name="equipped-weapon-2" class="equipment-button" text="Shortbow" />
+                    </ui:VisualElement>
+
+                    <ui:Label text="Carried Items" class="section-title" />
+                    <ui:VisualElement name="inventory-grid" class="inventory-grid">
+                        <!-- Placeholder inventory slots -->
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inventory-slot">
+                            <ui:VisualElement class="inventory-slot-icon" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <!-- Features -->
+                    <ui:Label text="Class Features" class="section-title" />
+                    <ui:VisualElement name="features-list" class="features-list">
+                        <ui:Button name="feature-fighting-style" class="feature-button" text="Fighting Style: Defense" />
+                        <ui:Button name="feature-second-wind" class="feature-button" text="Second Wind" />
+                        <ui:Button name="feature-action-surge" class="feature-button" text="Action Surge" />
+                    </ui:VisualElement>
+
+                    <!-- Rest -->
+                    <ui:Label text="Rest Options" class="section-title" />
+                    <ui:VisualElement name="rest-buttons-container" class="rest-buttons-container">
+                        <ui:Button name="short-rest-button" class="rest-button-large" text="Short Rest" />
+                        <ui:Button name="long-rest-button" class="rest-button-large" text="Long Rest" />
                     </ui:VisualElement>
                 </ui:VisualElement>
 
@@ -279,6 +471,7 @@
             <!-- Header -->
             <ui:VisualElement name="game-log-header" class="game-log-header">
                 <ui:Label text="Game Log" class="game-log-title" />
+                <ui:Button name="game-log-clear-button" class="game-log-clear-button" text="Clear" />
             </ui:VisualElement>
 
             <!-- Scrollable log content -->

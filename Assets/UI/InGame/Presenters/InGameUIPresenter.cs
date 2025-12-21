@@ -114,6 +114,8 @@ namespace GameCore.UI.InGame
             _view.AttackClicked += OnAttackClicked;
             _view.FeatureClicked += OnFeatureClicked;
             _view.RestClicked += OnRestClicked;
+            _view.ClearLogClicked += OnClearLogClicked;
+            _view.LogEntryDeleteClicked += OnLogEntryDeleteClicked;
             Model.StateChanged += OnModelStateChanged;
 
             // Push initial state to the view so it starts in sync with the model.
@@ -143,6 +145,8 @@ namespace GameCore.UI.InGame
                 _view.AttackClicked -= OnAttackClicked;
                 _view.FeatureClicked -= OnFeatureClicked;
                 _view.RestClicked -= OnRestClicked;
+                _view.ClearLogClicked -= OnClearLogClicked;
+                _view.LogEntryDeleteClicked -= OnLogEntryDeleteClicked;
             }
 
             if (Model != null)
@@ -428,6 +432,16 @@ namespace GameCore.UI.InGame
             // Log rest action
             var formatted = _gameLogService.FormatAction(_characterData.CharacterName, restType);
             _view.AddLogEntry(formatted);
+        }
+
+        private void OnClearLogClicked()
+        {
+            _view.ClearLog();
+        }
+
+        private void OnLogEntryDeleteClicked(UnityEngine.UIElements.VisualElement entryCard)
+        {
+            _view.RemoveLogEntry(entryCard);
         }
         #endregion
     }
