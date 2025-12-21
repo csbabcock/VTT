@@ -33,6 +33,7 @@ namespace GameCore.EncounterMode
         private Vector3 _tempVector3 = Vector3.zero;
         private Vector3 _tempDirection = Vector3.zero;
         private Vector3 _tempMovement = Vector3.zero;
+        private Vector3 _tempDirection3D = Vector3.zero; // Full 3D direction for diagonal movement
 
         public bool IsMoving => _hasTarget;
         public float CurrentSpeed => _speed;
@@ -105,8 +106,10 @@ namespace GameCore.EncounterMode
                 return;
             }
 
-            Vector3 horizontalMovement = CalculateHorizontalMovement(horizontalDistance);
-            CalculateVerticalVelocity(verticalDistance, currentPos, isGrounded);
+            // Calculate 3D diagonal direction for proportional movement
+            Vector3 diagonalDirection = CalculateDiagonalDirection(currentPos);
+            Vector3 horizontalMovement = CalculateHorizontalMovementFromDiagonal(horizontalDistance, diagonalDirection);
+            CalculateVerticalVelocityFromDiagonal(verticalDistance, currentPos, isGrounded, diagonalDirection);
             UpdateAnimationStates(verticalDistance);
             ApplyMovement(horizontalMovement);
         }
@@ -240,27 +243,64 @@ namespace GameCore.EncounterMode
             _isFalling = false;
         }
 
-        private Vector3 CalculateHorizontalMovement(float horizontalDistance)
+        /// <summary>
+        /// Calculates the full 3D direction vector from current position to target.
+        /// This enables diagonal movement by maintaining proportional horizontal and vertical components.
+        /// </summary>
+        private Vector3 CalculateDiagonalDirection(Vector3 currentPos)
         {
-            if (horizontalDistance > 0.01f)
+            _tempDirection3D.Set(
+                _targetPosition.x - currentPos.x,
+                _targetPosition.y - currentPos.y,
+                _targetPosition.z - currentPos.z
+            );
+            
+            float magnitude = _tempDirection3D.magnitude;
+            if (magnitude > 0.0001f)
             {
-                if (_tempVector3.sqrMagnitude > 0.0001f)
+                _tempDirection3D /= magnitude; // Normalize
+            }
+            else
+            {
+                _tempDirection3D = Vector3.zero;
+            }
+            
+            return _tempDirection3D;
+        }
+
+        /// <summary>
+        /// Calculates horizontal movement from the 3D diagonal direction.
+        /// This ensures horizontal and vertical movement are proportional for diagonal travel.
+        /// </summary>
+        private Vector3 CalculateHorizontalMovementFromDiagonal(float horizontalDistance, Vector3 diagonalDirection)
+        {
+            if (horizontalDistance > 0.01f && diagonalDirection.sqrMagnitude > 0.0001f)
+            {
+                // Extract horizontal direction from 3D direction (project to XZ plane)
+                _tempDirection.Set(diagonalDirection.x, 0f, diagonalDirection.z);
+                float horizontalMagnitude = _tempDirection.magnitude;
+                
+                if (horizontalMagnitude > 0.0001f)
                 {
-                    _tempDirection = _tempVector3.normalized;
+                    // Normalize horizontal direction for rotation
+                    Vector3 normalizedHorizontal = _tempDirection / horizontalMagnitude;
+                    _tempDirection = normalizedHorizontal;
+                    RotateTowardDirection();
+                    
+                    // For movement, use the horizontal component directly scaled by sprintSpeed
+                    // This maintains proportional movement: if dir is normalized, moving at speed s
+                    // means horizontal = (dir.x, 0, dir.z) * s * deltaTime
+                    _speed = _sprintSpeed;
+                    _animationBlend = _sprintSpeed;
+                    return new Vector3(diagonalDirection.x, 0f, diagonalDirection.z) * (_speed * Time.deltaTime);
                 }
                 else
                 {
                     _tempDirection = Vector3.zero;
+                    _speed = 0f;
+                    _animationBlend = 0f;
+                    return Vector3.zero;
                 }
-
-                if (_tempDirection.sqrMagnitude > 0.0001f)
-                {
-                    RotateTowardDirection();
-                }
-
-                _speed = _sprintSpeed;
-                _animationBlend = _sprintSpeed;
-                return _tempDirection * (_speed * Time.deltaTime);
             }
             else
             {
@@ -268,6 +308,17 @@ namespace GameCore.EncounterMode
                 _animationBlend = 0f;
                 return Vector3.zero;
             }
+        }
+
+        /// <summary>
+        /// Legacy method kept for backward compatibility. 
+        /// Now redirects to diagonal-based calculation.
+        /// </summary>
+        private Vector3 CalculateHorizontalMovement(float horizontalDistance)
+        {
+            Vector3 currentPos = _transform.position;
+            Vector3 diagonalDirection = CalculateDiagonalDirection(currentPos);
+            return CalculateHorizontalMovementFromDiagonal(horizontalDistance, diagonalDirection);
         }
 
         private void RotateTowardDirection()
@@ -282,7 +333,11 @@ namespace GameCore.EncounterMode
             _transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
         }
 
-        private void CalculateVerticalVelocity(float verticalDistance, Vector3 currentPos, bool isGrounded)
+        /// <summary>
+        /// Calculates vertical velocity from the 3D diagonal direction.
+        /// This ensures vertical movement matches horizontal movement proportionally for diagonal travel.
+        /// </summary>
+        private void CalculateVerticalVelocityFromDiagonal(float verticalDistance, Vector3 currentPos, bool isGrounded, Vector3 diagonalDirection)
         {
             float cellSize = _gridGenerator.CellSize;
             float significantVerticalThreshold = cellSize * EncounterMovementConstants.SIGNIFICANT_VERTICAL_THRESHOLD_MULTIPLIER;
@@ -297,21 +352,63 @@ namespace GameCore.EncounterMode
                 needsVerticalMovement = currentPos.y > _targetPosition.y;
             }
 
-            if (needsVerticalMovement)
+            if (needsVerticalMovement && diagonalDirection.sqrMagnitude > 0.0001f)
             {
-                CalculateVerticalVelocityForMovement(verticalDistance, cellSize);
+                // For diagonal movement, calculate vertical velocity to match the 3D direction proportion
+                // Since diagonalDirection is normalized, moving at speed s means:
+                // - Horizontal speed = s * sqrt(dir.x^2 + dir.z^2)
+                // - Vertical speed = s * dir.y
+                // This creates a direct diagonal line
+                float horizontalComponent = Mathf.Sqrt(diagonalDirection.x * diagonalDirection.x + diagonalDirection.z * diagonalDirection.z);
+                
+                if (horizontalComponent > 0.0001f)
+                {
+                    // Calculate target vertical velocity: dir.y * sprintSpeed
+                    // This ensures vertical movement matches horizontal movement proportionally
+                    float targetVerticalVelocity = diagonalDirection.y * _sprintSpeed;
+                    
+                    // Smooth the transition to avoid sudden jumps
+                    _verticalVelocity = Mathf.Lerp(
+                        _verticalVelocity,
+                        targetVerticalVelocity,
+                        Time.deltaTime * EncounterMovementConstants.VELOCITY_SMOOTHING
+                    );
+                    
+                    // Clamp to prevent overshooting
+                    float maxVerticalMove = Mathf.Abs(_verticalVelocity * Time.deltaTime);
+                    if (maxVerticalMove > Mathf.Abs(verticalDistance))
+                    {
+                        _verticalVelocity = verticalDistance / Time.deltaTime;
+                    }
+                }
+                else
+                {
+                    // Pure vertical movement (shouldn't happen in grid-based movement, but handle gracefully)
+                    CalculateVerticalVelocityForMovement(verticalDistance, cellSize);
+                }
             }
             else
             {
                 _verticalVelocity = 0f;
             }
             
-            // Force descent if needed
+            // Force descent if needed (for ground level targets)
             if (_targetElevation == 0 && currentPos.y > _targetPosition.y + 0.01f && isGrounded)
             {
                 float forceDescentSpeed = _sprintSpeed * EncounterMovementConstants.FORCE_DESCENT_SPEED_MULTIPLIER;
                 _verticalVelocity = -forceDescentSpeed;
             }
+        }
+
+        /// <summary>
+        /// Legacy method kept for backward compatibility.
+        /// Now redirects to diagonal-based calculation.
+        /// </summary>
+        private void CalculateVerticalVelocity(float verticalDistance, Vector3 currentPos, bool isGrounded)
+        {
+            Vector3 currentPosition = _transform.position;
+            Vector3 diagonalDirection = CalculateDiagonalDirection(currentPosition);
+            CalculateVerticalVelocityFromDiagonal(verticalDistance, currentPos, isGrounded, diagonalDirection);
         }
 
         private void CalculateVerticalVelocityForMovement(float verticalDistance, float cellSize)
