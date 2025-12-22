@@ -32,7 +32,8 @@
                     </ui:VisualElement>
                     <ui:VisualElement name="speed-container" class="stat-container">
                         <ui:Label text="Speed" class="stat-label" />
-                        <ui:Label name="speed-value" text="30 ft" class="stat-value" />
+                        <ui:Label name="speed-value" text="30 / 30 ft" class="stat-value" />
+                        <ui:Button name="move-button" class="move-button" text="Move" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>

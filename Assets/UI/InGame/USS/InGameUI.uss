@@ -135,6 +135,45 @@
     -unity-font-style: bold;
 }
 
+.move-button {
+    margin-top: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    min-width: 50px;
+    height: 24px;
+    background-color: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.5);
+    border-width: 1px;
+    border-radius: var(--vtt-radius-small);
+    color: var(--vtt-text-main);
+    transition-duration: 0.2s;
+    transition-property: background-color, border-color;
+}
+
+.move-button:hover {
+    background-color: rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.7);
+}
+
+.move-button-active {
+    background-color: rgba(239, 68, 68, 0.3) !important;
+    border-color: rgba(239, 68, 68, 0.7) !important;
+    -unity-font-style: bold;
+}
+
+.move-button-active:hover {
+    background-color: rgba(239, 68, 68, 0.4) !important;
+    border-color: rgba(239, 68, 68, 0.9) !important;
+}
+
+.movement-mode-active {
+    border-width: 2px;
+    border-color: rgba(59, 130, 246, 0.8);
+    border-radius: var(--vtt-radius-small);
+    padding: 2px;
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
 .hp-value {
     color: #4ade80; /* Green for HP */
     -unity-font-style: bold;

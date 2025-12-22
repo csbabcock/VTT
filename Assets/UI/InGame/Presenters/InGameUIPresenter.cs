@@ -3,6 +3,7 @@ using GameCore;
 using GameCore.UI.InGame.Services;
 using GameCore.UI.InGame.Models;
 using GameCore.EncounterMode.Services;
+using GameCore.EncounterMode;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
@@ -39,6 +40,7 @@ namespace GameCore.UI.InGame
         private GameLogService _gameLogService;
         private CharacterData _characterData;
         private KeyboardNavigationService _keyboardNavigationService;
+        private EncounterModeManager _encounterModeManager;
         #endregion
 
         #region Unity Lifecycle
@@ -55,6 +57,9 @@ namespace GameCore.UI.InGame
             {
                 _playerInputs = FindFirstObjectByType<PlayerInputs>();
             }
+
+            // Find EncounterModeManager
+            _encounterModeManager = FindFirstObjectByType<EncounterModeManager>();
 
             Model = new InGameUIModel();
             
@@ -116,6 +121,7 @@ namespace GameCore.UI.InGame
             _view.RestClicked += OnRestClicked;
             _view.ClearLogClicked += OnClearLogClicked;
             _view.LogEntryDeleteClicked += OnLogEntryDeleteClicked;
+            _view.MoveButtonClicked += OnMoveButtonClicked;
             Model.StateChanged += OnModelStateChanged;
 
             // Push initial state to the view so it starts in sync with the model.
@@ -147,6 +153,7 @@ namespace GameCore.UI.InGame
                 _view.RestClicked -= OnRestClicked;
                 _view.ClearLogClicked -= OnClearLogClicked;
                 _view.LogEntryDeleteClicked -= OnLogEntryDeleteClicked;
+                _view.MoveButtonClicked -= OnMoveButtonClicked;
             }
 
             if (Model != null)
@@ -413,6 +420,12 @@ namespace GameCore.UI.InGame
             // Log the action (non-dice actions)
             var formatted = _gameLogService.FormatAction(_characterData.CharacterName, actionName);
             _view.AddLogEntry(formatted);
+
+            // Handle Dash action - double movement speed
+            if (actionName == "Dash" && _encounterModeManager != null)
+            {
+                _encounterModeManager.SetDashActive(true);
+            }
         }
 
         private void OnAttackClicked(string weaponName)
@@ -455,6 +468,22 @@ namespace GameCore.UI.InGame
         private void OnLogEntryDeleteClicked(UnityEngine.UIElements.VisualElement entryCard)
         {
             _view.RemoveLogEntry(entryCard);
+        }
+
+        private void OnMoveButtonClicked()
+        {
+            if (_encounterModeManager == null || !_encounterModeManager.IsEncounterModeActive)
+                return;
+
+            // Toggle movement mode: if active, disable it; if not active, enable it
+            if (_encounterModeManager.IsMovementModeActive)
+            {
+                _encounterModeManager.DisableMovementMode();
+            }
+            else
+            {
+                _encounterModeManager.EnableGridSelection();
+            }
         }
         #endregion
     }

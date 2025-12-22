@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 #endif
 using GameCore.EncounterMode.Services;
+using GameCore.EncounterMode;
 
 namespace GameCore.EncounterMode.Grid
 {
@@ -192,12 +193,32 @@ namespace GameCore.EncounterMode.Grid
                 _selectedElevation = Mathf.Max(_selectedElevation - 1, 0);
             }
 
-            // Update hovered cell with elevation
+            // Update hovered cell with elevation, but only if it's reachable
             if (groundCell != null)
             {
-                _hoveredCell = groundCell;
-                // Set elevation level on the hovered cell
-                _hoveredCell.ElevationLevel = _selectedElevation;
+                // Check if cell is reachable (if EncounterModeManager is available and movement mode is active)
+                EncounterModeManager encounterManager = FindFirstObjectByType<EncounterModeManager>();
+                if (encounterManager != null && encounterManager.IsMovementModeActive)
+                {
+                    if (encounterManager.IsCellReachable(groundCell))
+                    {
+                        _hoveredCell = groundCell;
+                        // Set elevation level on the hovered cell
+                        _hoveredCell.ElevationLevel = _selectedElevation;
+                    }
+                    else
+                    {
+                        // Cell is not reachable, don't set as hovered
+                        _hoveredCell = null;
+                    }
+                }
+                else
+                {
+                    // Movement mode not active, allow normal hovering
+                    _hoveredCell = groundCell;
+                    // Set elevation level on the hovered cell
+                    _hoveredCell.ElevationLevel = _selectedElevation;
+                }
             }
             else
             {
@@ -221,6 +242,17 @@ namespace GameCore.EncounterMode.Grid
 
             if (_hoveredCell != null)
             {
+                // Check if cell is reachable (if EncounterModeManager is available)
+                EncounterModeManager encounterManager = FindFirstObjectByType<EncounterModeManager>();
+                if (encounterManager != null && encounterManager.IsMovementModeActive)
+                {
+                    if (!encounterManager.IsCellReachable(_hoveredCell))
+                    {
+                        // Cell is not reachable, don't allow selection
+                        return;
+                    }
+                }
+
                 _selectedCell = _hoveredCell;
                 // Ensure selected cell has the elevation level
                 _selectedCell.ElevationLevel = _selectedElevation;

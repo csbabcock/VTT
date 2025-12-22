@@ -221,6 +221,11 @@ namespace GameCore.UI.InGame
         /// Fired when a log entry delete button is clicked. Parameter is the log entry card element.
         /// </summary>
         public event System.Action<VisualElement> LogEntryDeleteClicked;
+
+        /// <summary>
+        /// Fired when the Move button is clicked.
+        /// </summary>
+        public event System.Action MoveButtonClicked;
         #endregion
 
         #region Unity Lifecycle
@@ -479,6 +484,14 @@ namespace GameCore.UI.InGame
             {
                 clearLogButton.pickingMode = PickingMode.Position;
                 clearLogButton.clicked += () => ClearLogClicked?.Invoke();
+            }
+
+            // Wire up Move button
+            var moveButton = _root.Q<Button>("move-button");
+            if (moveButton != null)
+            {
+                moveButton.pickingMode = PickingMode.Position;
+                moveButton.clicked += () => MoveButtonClicked?.Invoke();
             }
 
             // Wire up carousel navigation
@@ -1918,6 +1931,65 @@ namespace GameCore.UI.InGame
             }
         }
 
+        /// <summary>
+        /// Updates the speed display to show remaining movement.
+        /// </summary>
+        /// <param name="remainingFeet">Remaining movement in feet</param>
+        /// <param name="maxFeet">Maximum movement in feet</param>
+        public void UpdateSpeedDisplay(int remainingFeet, int maxFeet)
+        {
+            var speedLabel = _root?.Q<Label>("speed-value");
+            if (speedLabel != null)
+            {
+                speedLabel.text = $"{remainingFeet} / {maxFeet} ft";
+                
+                // Change color if movement is exhausted
+                if (remainingFeet <= 0)
+                {
+                    speedLabel.style.color = new StyleColor(new Color(0.8f, 0.2f, 0.2f)); // Red when exhausted
+                }
+                else
+                {
+                    speedLabel.style.color = StyleKeyword.Null; // Reset to default
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the movement button state (Move/Cancel) and adds visual indicator.
+        /// </summary>
+        /// <param name="isMovementModeActive">Whether movement mode is currently active</param>
+        public void UpdateMovementButtonState(bool isMovementModeActive)
+        {
+            var moveButton = _root?.Q<Button>("move-button");
+            if (moveButton != null)
+            {
+                if (isMovementModeActive)
+                {
+                    moveButton.text = "Cancel";
+                    moveButton.AddToClassList("move-button-active");
+                }
+                else
+                {
+                    moveButton.text = "Move";
+                    moveButton.RemoveFromClassList("move-button-active");
+                }
+            }
+
+            // Add visual indicator to speed container when in movement mode
+            var speedContainer = _root?.Q<VisualElement>("speed-container");
+            if (speedContainer != null)
+            {
+                if (isMovementModeActive)
+                {
+                    speedContainer.AddToClassList("movement-mode-active");
+                }
+                else
+                {
+                    speedContainer.RemoveFromClassList("movement-mode-active");
+                }
+            }
+        }
         #endregion
 
         #region Screen Bounds Helpers

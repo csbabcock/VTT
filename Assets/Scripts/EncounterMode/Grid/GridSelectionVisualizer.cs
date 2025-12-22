@@ -29,6 +29,7 @@ namespace GameCore.EncounterMode.Grid
 
         private IGridSelector _gridSelector;
         private IGridGenerator _gridGenerator;
+        private EncounterModeManager _encounterModeManager;
         private GameObject _hoveredIndicator;
         private GameObject _selectedIndicator;
 
@@ -47,6 +48,9 @@ namespace GameCore.EncounterMode.Grid
                 _gridGenerator = transform.parent.GetComponent<IGridGenerator>();
             if (_gridGenerator == null)
                 _gridGenerator = FindFirstObjectByType<GridGenerator>();
+
+            // Find encounter mode manager for reachability checks
+            _encounterModeManager = FindFirstObjectByType<EncounterModeManager>();
         }
 
         private void Update()
@@ -78,7 +82,14 @@ namespace GameCore.EncounterMode.Grid
         {
             GridCell hoveredCell = _gridSelector?.HoveredCell;
 
-            if (hoveredCell != null)
+            // Only show hover indicator if cell is reachable (when in movement mode)
+            bool shouldShowHover = hoveredCell != null;
+            if (shouldShowHover && _encounterModeManager != null && _encounterModeManager.IsMovementModeActive)
+            {
+                shouldShowHover = _encounterModeManager.IsCellReachable(hoveredCell);
+            }
+
+            if (shouldShowHover)
             {
                 if (_hoveredIndicator == null)
                 {

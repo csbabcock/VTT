@@ -1,5 +1,6 @@
 using UnityEngine;
 using GameCore.EncounterMode.Services;
+using GameCore.EncounterMode;
 
 namespace GameCore.EncounterMode.Grid
 {
@@ -27,6 +28,7 @@ namespace GameCore.EncounterMode.Grid
 
         private IGridSelector _gridSelector;
         private IGridGenerator _gridGenerator;
+        private EncounterModeManager _encounterModeManager;
         private LineRenderer[] _columnLines;
         private GameObject _selectedElevationIndicator;
         private GridCell _lastHoveredCell; // Cache to avoid unnecessary redraws
@@ -47,6 +49,9 @@ namespace GameCore.EncounterMode.Grid
                 _gridGenerator = transform.parent.GetComponent<IGridGenerator>();
             if (_gridGenerator == null)
                 _gridGenerator = FindFirstObjectByType<GridGenerator>();
+
+            // Find encounter mode manager for reachability checks
+            _encounterModeManager = FindFirstObjectByType<EncounterModeManager>();
         }
 
         private void Update()
@@ -79,9 +84,16 @@ namespace GameCore.EncounterMode.Grid
             GridCell hoveredCell = _gridSelector.HoveredCell;
             int maxElevation = _gridSelector.MaxElevation;
 
-            // Only show column if we have a valid hovered cell and max elevation
-            // If hoveredCell is null, clear the column immediately
-            if (hoveredCell != null && maxElevation > 0)
+            // Check if cell is reachable (when in movement mode)
+            bool isReachable = true;
+            if (hoveredCell != null && _encounterModeManager != null && _encounterModeManager.IsMovementModeActive)
+            {
+                isReachable = _encounterModeManager.IsCellReachable(hoveredCell);
+            }
+
+            // Only show column if we have a valid hovered cell, max elevation, and cell is reachable
+            // If hoveredCell is null or not reachable, clear the column immediately
+            if (hoveredCell != null && maxElevation > 0 && isReachable)
             {
                 // Only redraw if cell or max elevation changed
                 if (hoveredCell != _lastHoveredCell || maxElevation != _lastMaxElevation)
@@ -94,8 +106,8 @@ namespace GameCore.EncounterMode.Grid
             }
             else
             {
-                // Clear column when no cell is hovered
-                // This ensures the column doesn't show at a default position
+                // Clear column when no cell is hovered or cell is not reachable
+                // This ensures the column doesn't show at a default position or for unreachable cells
                 if (_lastHoveredCell != null || _selectedElevationIndicator != null)
                 {
                     ClearColumn();
