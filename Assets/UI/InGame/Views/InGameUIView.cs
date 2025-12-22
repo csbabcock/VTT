@@ -102,16 +102,10 @@ namespace GameCore.UI.InGame
             if (_uiDocument == null || _characterSheetPanel == null)
                 return false;
 
-            // Get mouse position
-            Vector2 mousePosition;
-#if ENABLE_INPUT_SYSTEM
-            var mouse = UnityEngine.InputSystem.Mouse.current;
-            if (mouse == null)
+            // Get mouse position in screen coordinates (needed for Panel.Pick)
+            Vector2? screenPosition = GetMouseScreenPosition();
+            if (!screenPosition.HasValue)
                 return false;
-            mousePosition = mouse.position.ReadValue();
-#else
-            mousePosition = Input.mousePosition;
-#endif
 
             // Get the panel
             var panel = _uiDocument.rootVisualElement.panel;
@@ -120,41 +114,54 @@ namespace GameCore.UI.InGame
 
             // Method 1: Use Panel.Pick to check if mouse is over the character sheet
             // Panel.Pick uses screen coordinates directly
-            var pickedElement = panel.Pick(mousePosition);
-            if (pickedElement != null)
-            {
-                // Check if the picked element is within the character sheet panel hierarchy
-                // Also verify the element can receive pointer events
-                VisualElement current = pickedElement;
-                while (current != null)
-                {
-                    if (current == _characterSheetPanel)
-                    {
-                        // Verify the panel can actually receive events
-                        if (current.pickingMode != PickingMode.Ignore && 
-                            current.enabledInHierarchy &&
-                            current.resolvedStyle.display == DisplayStyle.Flex)
-                        {
-                            return true;
-                        }
-                    }
-                    current = current.parent;
-                }
-            }
+            if (IsMouseOverPanelUsingPick(panel, screenPosition.Value))
+                return true;
 
             // Method 2: Check if mouse position is within the character sheet panel's world bounds
             // UI Toolkit worldBound is in panel space (top-left origin)
+            return IsMouseOverPanelUsingBounds(panelSpacePos: GetMousePositionInPanelSpace());
+        }
+
+        /// <summary>
+        /// Checks if mouse is over the character sheet panel using Panel.Pick method.
+        /// </summary>
+        private bool IsMouseOverPanelUsingPick(IPanel panel, Vector2 screenPosition)
+        {
+            var pickedElement = panel.Pick(screenPosition);
+            if (pickedElement == null)
+                return false;
+
+            // Check if the picked element is within the character sheet panel hierarchy
+            VisualElement current = pickedElement;
+            while (current != null)
+            {
+                if (current == _characterSheetPanel)
+                {
+                    // Verify the panel can actually receive events
+                    if (current.pickingMode != PickingMode.Ignore && 
+                        current.enabledInHierarchy &&
+                        current.resolvedStyle.display == DisplayStyle.Flex)
+                    {
+                        return true;
+                    }
+                }
+                current = current.parent;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if mouse is over the character sheet panel using bounds checking.
+        /// </summary>
+        private bool IsMouseOverPanelUsingBounds(Vector2? panelSpacePos)
+        {
+            if (!panelSpacePos.HasValue || _characterSheetPanel == null)
+                return false;
+
             Rect panelRect = _characterSheetPanel.worldBound;
             
-            // Convert screen coordinates to panel space
-            // Panel space uses top-left origin, screen uses bottom-left
-            float screenHeight = Screen.height;
-            Vector2 panelSpacePos = new Vector2(
-                mousePosition.x,
-                screenHeight - mousePosition.y
-            );
-
-            if (panelRect.Contains(panelSpacePos))
+            if (panelRect.Contains(panelSpacePos.Value))
             {
                 // Additional check: verify the element is actually visible and enabled
                 if (_characterSheetPanel.resolvedStyle.display == DisplayStyle.Flex &&
@@ -1645,6 +1652,7 @@ namespace GameCore.UI.InGame
         /// <summary>
         /// Gets the index of the button currently under the mouse cursor.
         /// Returns -1 if no button is hovered.
+        /// Follows Single Responsibility Principle by delegating to focused helper methods.
         /// </summary>
         public int GetHoveredButtonIndex(int tabIndex)
         {
@@ -1655,50 +1663,92 @@ namespace GameCore.UI.InGame
             if (buttons.Count == 0)
                 return -1;
 
-            // Get mouse position
-            Vector2 mousePosition;
+            Vector2? panelSpacePos = GetMousePositionInPanelSpace();
+            if (!panelSpacePos.HasValue)
+                return -1;
+
+            return FindButtonIndexAtPosition(buttons, panelSpacePos.Value);
+        }
+
+        /// <summary>
+        /// Gets the mouse position in panel space coordinates.
+        /// Returns null if mouse position cannot be determined.
+        /// </summary>
+        private Vector2? GetMousePositionInPanelSpace()
+        {
+            Vector2? screenPosition = GetMouseScreenPosition();
+            if (!screenPosition.HasValue)
+                return null;
+
+            // Convert screen coordinates to panel space
+            // Panel space uses top-left origin, screen uses bottom-left
+            float screenHeight = Screen.height;
+            return new Vector2(
+                screenPosition.Value.x,
+                screenHeight - screenPosition.Value.y
+            );
+        }
+
+        /// <summary>
+        /// Gets the current mouse position in screen coordinates.
+        /// Returns null if mouse is not available.
+        /// </summary>
+        private Vector2? GetMouseScreenPosition()
+        {
 #if ENABLE_INPUT_SYSTEM
             var mouse = UnityEngine.InputSystem.Mouse.current;
             if (mouse == null)
-                return -1;
-            mousePosition = mouse.position.ReadValue();
+                return null;
+            return mouse.position.ReadValue();
 #else
-            mousePosition = Input.mousePosition;
+            return Input.mousePosition;
 #endif
+        }
 
-            // Get the panel
-            var panel = _uiDocument.rootVisualElement.panel;
-            if (panel == null)
-                return -1;
-
-            // Convert screen coordinates to panel space
-            float screenHeight = Screen.height;
-            Vector2 panelSpacePos = new Vector2(
-                mousePosition.x,
-                screenHeight - mousePosition.y
-            );
-
-            // Check each button to see if mouse is over it
+        /// <summary>
+        /// Finds the index of the button at the given panel space position.
+        /// Returns -1 if no button is found at that position.
+        /// </summary>
+        private int FindButtonIndexAtPosition(List<Button> buttons, Vector2 panelSpacePos)
+        {
             for (int i = 0; i < buttons.Count; i++)
             {
                 var button = buttons[i];
-                if (button == null || !button.enabledInHierarchy)
+                if (!IsButtonHoverable(button))
                     continue;
 
-                // Check if button is visible
-                if (button.resolvedStyle.display == DisplayStyle.None ||
-                    button.resolvedStyle.visibility == Visibility.Hidden)
-                    continue;
-
-                // Check if mouse is within button bounds
-                Rect buttonRect = button.worldBound;
-                if (buttonRect.Contains(panelSpacePos))
+                if (IsPositionOverButton(button, panelSpacePos))
                 {
                     return i;
                 }
             }
 
             return -1;
+        }
+
+        /// <summary>
+        /// Checks if a button can be hovered (is not null, enabled, and visible).
+        /// </summary>
+        private bool IsButtonHoverable(Button button)
+        {
+            if (button == null || !button.enabledInHierarchy)
+                return false;
+
+            // Check if button is visible
+            if (button.resolvedStyle.display == DisplayStyle.None ||
+                button.resolvedStyle.visibility == Visibility.Hidden)
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if the given panel space position is over the button.
+        /// </summary>
+        private bool IsPositionOverButton(Button button, Vector2 panelSpacePos)
+        {
+            Rect buttonRect = button.worldBound;
+            return buttonRect.Contains(panelSpacePos);
         }
 
         /// <summary>
