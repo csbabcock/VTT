@@ -4,6 +4,8 @@ using GameCore.UI.InGame.Services;
 using GameCore.UI.InGame.Models;
 using GameCore.EncounterMode.Services;
 using GameCore.EncounterMode;
+using GameCore.PlayerData;
+using GameCore.PlayerData.Rulesets;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
@@ -38,7 +40,7 @@ namespace GameCore.UI.InGame
         private bool _initialized;
         private DiceRollService _diceRollService;
         private GameLogService _gameLogService;
-        private CharacterData _characterData;
+        private IPlayerDataService _playerDataService;
         private KeyboardNavigationService _keyboardNavigationService;
         private EncounterModeManager _encounterModeManager;
         #endregion
@@ -70,8 +72,11 @@ namespace GameCore.UI.InGame
             // are stateless services with no external dependencies.
             _diceRollService = new DiceRollService();
             _gameLogService = new GameLogService();
-            _characterData = new CharacterData();
+            _playerDataService = PlayerDataServiceLocator.Service;
             _keyboardNavigationService = new KeyboardNavigationService();
+            
+            // Subscribe to player data changes
+            _playerDataService.PlayerDataChanged += OnPlayerDataChanged;
             
             // Initialize UI interaction service (centralized UI blocking logic)
             if (_view != null)
@@ -128,6 +133,10 @@ namespace GameCore.UI.InGame
             // This will also configure input properly (UI starts closed, so input should be enabled)
             _view.UpdateView(Model.State);
             
+            // Load initial character data and update UI
+            var initialData = _playerDataService.GetPlayerData();
+            UpdateCharacterSheetUI(initialData);
+            
             // Explicitly ensure input is enabled on startup (character sheet starts closed)
             if (_playerInputs != null)
             {
@@ -159,6 +168,12 @@ namespace GameCore.UI.InGame
             if (Model != null)
             {
                 Model.StateChanged -= OnModelStateChanged;
+            }
+
+            // Unsubscribe from player data service
+            if (_playerDataService != null)
+            {
+                _playerDataService.PlayerDataChanged -= OnPlayerDataChanged;
             }
 
             _initialized = false;
@@ -305,6 +320,14 @@ namespace GameCore.UI.InGame
         private void OnModelStateChanged(InGameUIState state)
         {
             _view.UpdateView(state);
+            
+            // Refresh UI data when character sheet opens
+            if (state.IsCharacterSheetOpen)
+            {
+                // Small delay to ensure UI is fully visible before updating
+                StartCoroutine(RefreshUIAfterDelay(0.1f));
+            }
+            
             // Don't disable all input when character sheet opens - we want camera control to work
             // Only disable movement input, not look input
             UpdatePlayerInput(state.IsCharacterSheetOpen);
@@ -315,6 +338,17 @@ namespace GameCore.UI.InGame
             {
                 _playerInputs.cursorInputForLook = true;
             }
+        }
+
+        /// <summary>
+        /// Refreshes the UI after a short delay to ensure elements are visible.
+        /// </summary>
+        private System.Collections.IEnumerator RefreshUIAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            
+            var data = _playerDataService.GetPlayerData();
+            UpdateCharacterSheetUI(data);
         }
         #endregion
 
@@ -361,17 +395,66 @@ namespace GameCore.UI.InGame
         }
         #endregion
 
+        #region Player Data Event Handlers
+
+        /// <summary>
+        /// Called when player data changes. Updates UI to reflect new data.
+        /// </summary>
+        private void OnPlayerDataChanged(CharacterData data)
+        {
+            UpdateCharacterSheetUI(data);
+        }
+
+        /// <summary>
+        /// Updates the character sheet UI with current character data.
+        /// </summary>
+        private void UpdateCharacterSheetUI(CharacterData data)
+        {
+            if (_view == null || data == null)
+            {
+                Debug.LogWarning("InGameUIPresenter: Cannot update UI - view or data is null");
+                return;
+            }
+
+            var root = _view.Root;
+            if (root == null)
+            {
+                Debug.LogWarning("InGameUIPresenter: Cannot update UI - root element is null");
+                return;
+            }
+
+            Debug.Log($"InGameUIPresenter: Updating character sheet UI for {data.CharacterName}");
+
+            // Use refactored updater with ruleset-agnostic architecture
+            // Detect ruleset from service (defaults to DnD5e)
+            string rulesetId = "DnD5e";
+            if (_playerDataService is JsonPlayerDataService)
+            {
+                rulesetId = "DnD5e"; // Could be detected from JSON metadata in future
+            }
+
+            CharacterSheetUIUpdater.UpdateCharacterSheet(root, data, rulesetId);
+        }
+
+        #endregion
+
         #region View Event Handlers
         private void OnTabClicked(int tabIndex)
         {
             Model.SetTab(tabIndex);
+            
+            // Refresh UI when switching tabs to ensure all data is up to date
+            // This is especially important if buttons are in different tabs
+            var data = _playerDataService.GetPlayerData();
+            UpdateCharacterSheetUI(data);
         }
 
         private void OnAbilityScoreClicked(string abilityName)
         {
-            int modifier = _characterData.GetAbilityModifier(abilityName);
+            var characterData = _playerDataService.GetPlayerData();
+            int modifier = characterData.GetAbilityModifier(abilityName);
             var rollResult = _diceRollService.RollD20Check(
-                _characterData.CharacterName,
+                characterData.CharacterName,
                 $"{abilityName} Check",
                 modifier,
                 new List<ModifierBreakdown>
@@ -386,13 +469,14 @@ namespace GameCore.UI.InGame
 
         private void OnSkillClicked(string skillName)
         {
+            var characterData = _playerDataService.GetPlayerData();
             string abilityName = CharacterData.GetSkillAbility(skillName);
-            int modifier = _characterData.GetSkillModifier(skillName, abilityName);
-            bool isProficient = _characterData.ProficientSkills.Contains(skillName);
+            int modifier = characterData.GetSkillModifier(skillName, abilityName);
+            bool isProficient = characterData.ProficientSkills.Contains(skillName);
 
             var breakdowns = new List<ModifierBreakdown>
             {
-                new ModifierBreakdown { Source = abilityName, Value = _characterData.GetAbilityModifier(abilityName) }
+                new ModifierBreakdown { Source = abilityName, Value = characterData.GetAbilityModifier(abilityName) }
             };
 
             if (isProficient)
@@ -400,12 +484,12 @@ namespace GameCore.UI.InGame
                 breakdowns.Add(new ModifierBreakdown 
                 { 
                     Source = "Proficiency", 
-                    Value = _characterData.ProficiencyBonus 
+                    Value = characterData.ProficiencyBonus 
                 });
             }
 
             var rollResult = _diceRollService.RollD20Check(
-                _characterData.CharacterName,
+                characterData.CharacterName,
                 skillName,
                 modifier,
                 breakdowns
@@ -417,8 +501,9 @@ namespace GameCore.UI.InGame
 
         private void OnActionClicked(string actionName)
         {
+            var characterData = _playerDataService.GetPlayerData();
             // Log the action (non-dice actions)
-            var formatted = _gameLogService.FormatAction(_characterData.CharacterName, actionName);
+            var formatted = _gameLogService.FormatAction(characterData.CharacterName, actionName);
             _view.AddLogEntry(formatted);
 
             // Handle Dash action - double movement speed
@@ -430,11 +515,69 @@ namespace GameCore.UI.InGame
 
         private void OnAttackClicked(string weaponName)
         {
-            // Get weapon data from model (calculates bonuses based on character stats)
-            var weaponData = WeaponData.GetWeaponData(weaponName, _characterData);
+            // Get character name and weapon data using ruleset system
+            string characterName;
+            WeaponData weaponData;
+            
+            // Try to get D&D 5e character data for proper calculations
+            if (_playerDataService is JsonPlayerDataService jsonService)
+            {
+                var dnD5eData = jsonService.GetDnD5eCharacterData();
+                if (dnD5eData != null)
+                {
+                    // Use proper 5e weapon calculator through ruleset system
+                    characterName = dnD5eData.characterName;
+                    var calculator = RulesetCalculatorFactory.GetDefaultCalculator();
+                    var adapter = RulesetAdapterFactory.GetDefaultAdapter();
+                    weaponData = adapter.GetWeaponData(weaponName, dnD5eData, calculator);
+                }
+                else
+                {
+                    // Fallback: Use ruleset system with legacy CharacterData
+                    var characterData = _playerDataService.GetPlayerData();
+                    characterName = characterData.CharacterName;
+                    // Convert to DnD5eCharacterData for ruleset system
+                    var dnD5eFallback = new DnD5eCharacterData
+                    {
+                        characterName = characterData.CharacterName,
+                        strength = characterData.Strength,
+                        dexterity = characterData.Dexterity,
+                        constitution = characterData.Constitution,
+                        intelligence = characterData.Intelligence,
+                        wisdom = characterData.Wisdom,
+                        charisma = characterData.Charisma,
+                        level = 1, // Default level
+                        proficientWeapons = new List<string> { "Simple", "Martial" } // Assume basic proficiency
+                    };
+                    var calculator = RulesetCalculatorFactory.GetDefaultCalculator();
+                    var adapter = RulesetAdapterFactory.GetDefaultAdapter();
+                    weaponData = adapter.GetWeaponData(weaponName, dnD5eFallback, calculator);
+                }
+            }
+            else
+            {
+                // Legacy service - convert to DnD5eCharacterData for ruleset system
+                var characterData = _playerDataService.GetPlayerData();
+                characterName = characterData.CharacterName;
+                var dnD5eFallback = new DnD5eCharacterData
+                {
+                    characterName = characterData.CharacterName,
+                    strength = characterData.Strength,
+                    dexterity = characterData.Dexterity,
+                    constitution = characterData.Constitution,
+                    intelligence = characterData.Intelligence,
+                    wisdom = characterData.Wisdom,
+                    charisma = characterData.Charisma,
+                    level = 1, // Default level
+                    proficientWeapons = new List<string> { "Simple", "Martial" } // Assume basic proficiency
+                };
+                var calculator = RulesetCalculatorFactory.GetDefaultCalculator();
+                var adapter = RulesetAdapterFactory.GetDefaultAdapter();
+                weaponData = adapter.GetWeaponData(weaponName, dnD5eFallback, calculator);
+            }
 
             var (attackRoll, damageRoll) = _diceRollService.RollAttack(
-                _characterData.CharacterName,
+                characterName,
                 weaponData.WeaponName,
                 weaponData.AttackBonus,
                 weaponData.DamageDice,
@@ -448,15 +591,17 @@ namespace GameCore.UI.InGame
 
         private void OnFeatureClicked(string featureName)
         {
+            var characterData = _playerDataService.GetPlayerData();
             // Log feature usage (non-dice actions for now)
-            var formatted = _gameLogService.FormatAction(_characterData.CharacterName, $"Used: {featureName}");
+            var formatted = _gameLogService.FormatAction(characterData.CharacterName, $"Used: {featureName}");
             _view.AddLogEntry(formatted);
         }
 
         private void OnRestClicked(string restType)
         {
+            var characterData = _playerDataService.GetPlayerData();
             // Log rest action
-            var formatted = _gameLogService.FormatAction(_characterData.CharacterName, restType);
+            var formatted = _gameLogService.FormatAction(characterData.CharacterName, restType);
             _view.AddLogEntry(formatted);
         }
 

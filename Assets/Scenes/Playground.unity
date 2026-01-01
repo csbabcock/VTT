@@ -119,6 +119,55 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &43104504
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 43104506}
+  - component: {fileID: 43104505}
+  m_Layer: 0
+  m_Name: Player Data
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &43104505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 43104504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f340b654fe607f49b19709ff7931931, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameCore.PlayerData.PlayerDataServiceInitializer
+  _dataSource: 0
+  _jsonFilePath: Characters/ExampleCharacter.json
+  _playerDataAsset: {fileID: 0}
+  _initializeOnAwake: 1
+  _initializeOnStart: 0
+--- !u!4 &43104506
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 43104504}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &233035417
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,6 +183,7 @@ GameObject:
   - component: {fileID: 233035423}
   - component: {fileID: 233035422}
   - component: {fileID: 233035424}
+  - component: {fileID: 233035425}
   m_Layer: 0
   m_Name: EncounterModeManager
   m_TagString: Untagged
@@ -154,7 +204,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameCore.EncounterMode.Grid.GridRenderer
   GridLineMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
-  GridLineColor: {r: 0.3160377, g: 1, b: 0.49681765, a: 0.31764707}
+  GridLineColor: {r: 0.31764707, g: 1, b: 0.49803922, a: 0.3137255}
   LineWidth: 0.05
 --- !u!114 &233035419
 MonoBehaviour:
@@ -192,6 +242,7 @@ MonoBehaviour:
   GridSelector: {fileID: 233035423}
   GridSelectionVisualizer: {fileID: 233035422}
   GridColumnVisualizer: {fileID: 233035424}
+  GridReachableCellsVisualizer: {fileID: 233035425}
   PlayerController: {fileID: 1837491554}
   InGameUIPresenter: {fileID: 1280713459}
   PlayerMovementSpeedFeet: 30
@@ -224,8 +275,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameCore.EncounterMode.Grid.GridSelectionVisualizer
   HoveredCellMaterial: {fileID: 0}
   SelectedCellMaterial: {fileID: 0}
-  HoveredCellColor: {r: 0.3, g: 0.5, b: 1, a: 0.5}
-  SelectedCellColor: {r: 0.31764707, g: 1, b: 0.49803922, a: 0.31764707}
+  HoveredCellColor: {r: 0.3, g: 0.5, b: 1, a: 0.3137255}
+  SelectedCellColor: {r: 0.31764707, g: 1, b: 0.49803922, a: 0.3137255}
   VisualHeightOffset: 0.02
   IndicatorSize: 0.95
 --- !u!114 &233035423
@@ -256,10 +307,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameCore.EncounterMode.Grid.GridColumnVisualizer
   ColumnLineMaterial: {fileID: 0}
-  ColumnLineColor: {r: 0.31764707, g: 1, b: 0.49803922, a: 0.23529412}
-  SelectedElevationColor: {r: 0.31764707, g: 1, b: 0.49803922, a: 0.23529412}
+  ColumnLineColor: {r: 0.31764707, g: 1, b: 0.49803922, a: 0.3137255}
+  SelectedElevationColor: {r: 0.31764707, g: 1, b: 0.49803922, a: 0.3137255}
   LineWidth: 0.03
   HeightOffset: 0.01
+--- !u!114 &233035425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233035417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7444add32cb3d404185f4c0458b6ae17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameCore.EncounterMode.Grid.GridReachableCellsVisualizer
+  ReachableCellMaterial: {fileID: 0}
+  ReachableCellColor: {r: 0.31764707, g: 1, b: 0.49803922, a: 0.3137255}
+  VisualHeightOffset: 0.02
+  IndicatorSize: 0.95
 --- !u!1 &542508511
 GameObject:
   m_ObjectHideFlags: 0
@@ -1091,7 +1158,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4416926081852918490, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: TopClamp
-      value: 65
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 4416926081852918490, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: BottomClamp
@@ -1429,6 +1496,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 87247872013694825, guid: 09aade0ecefd01e4b8f7661acf64f5c2, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ac4cab7eb25eeaf418e021b96d7907b1, type: 2}
     - target: {fileID: 1678179932331761816, guid: 09aade0ecefd01e4b8f7661acf64f5c2, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -1598,3 +1669,4 @@ SceneRoots:
   - {fileID: 746329221}
   - {fileID: 1280713462}
   - {fileID: 233035421}
+  - {fileID: 43104506}

@@ -1,0 +1,60 @@
+{
+    "characterName": "tEST",
+    "level": 7,
+    "characterClass": "Fighter",
+    "subclass": "Champion",
+    "race": "Half-Elf",
+    "subrace": "",
+    "background": "Soldier",
+    "alignment": "Lawful Good",
+    "playerName": "",
+    "experiencePoints": 900,
+    "strength": 6,
+    "dexterity": 1,
+    "constitution": 4,
+    "intelligence": 1,
+    "wisdom": 12,
+    "charisma": 8,
+    "maxHitPoints": 28,
+    "currentHitPoints": 28,
+    "temporaryHitPoints": 0,
+    "armorClass": 16,
+    "initiative": 2,
+    "walkingSpeed": 30,
+    "flyingSpeed": 0,
+    "swimmingSpeed": 0,
+    "climbingSpeed": 0,
+    "hitDice": "3d10",
+    "hitDiceUsed": 0,
+    "proficientSavingThrows": [
+        "STR",
+        "CON"
+    ],
+    "_proficientSkillsStrings": [
+        "Athletics",
+        "Intimidation",
+        "Perception",
+        "Survival"
+    ],
+    "proficientArmor": [
+        "Light",
+        "Medium",
+        "Heavy",
+        "Shields"
+    ],
+    "proficientWeapons": [
+        "Simple",
+        "Martial"
+    ],
+    "proficientTools": [],
+    "languages": [
+        "Common",
+        "Orcish"
+    ],
+    "hasInspiration": false,
+    "exhaustionLevel": 0,
+    "conditions": [],
+    "deathSaveSuccesses": 0,
+    "deathSaveFailures": 0
+}
+
