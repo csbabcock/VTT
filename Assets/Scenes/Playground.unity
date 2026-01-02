@@ -148,11 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f340b654fe607f49b19709ff7931931, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameCore.PlayerData.PlayerDataServiceInitializer
-  _dataSource: 0
   _jsonFilePath: Characters/ExampleCharacter.json
-  _playerDataAsset: {fileID: 0}
-  _initializeOnAwake: 1
-  _initializeOnStart: 0
 --- !u!4 &43104506
 Transform:
   m_ObjectHideFlags: 0

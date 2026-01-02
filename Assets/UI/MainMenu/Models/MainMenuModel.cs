@@ -12,6 +12,7 @@ namespace GameCore.UI.MainMenu
         public bool IsInteractable;
         public string SelectedSceneName;
         public string[] AvailableScenes;
+        public string CurrentSection;
     }
 
     /// <summary>
@@ -38,7 +39,8 @@ namespace GameCore.UI.MainMenu
             {
                 IsInteractable = true,
                 SelectedSceneName = string.Empty,
-                AvailableScenes = new string[0]
+                AvailableScenes = new string[0],
+                CurrentSection = "host"
             };
         }
 
@@ -49,15 +51,10 @@ namespace GameCore.UI.MainMenu
 
             State = new MainMenuState
             {
-                IsInteractable = State.IsInteractable,
-                SelectedSceneName = State.SelectedSceneName,
-                AvailableScenes = State.AvailableScenes
-            };
-            State = new MainMenuState
-            {
                 IsInteractable = value,
                 SelectedSceneName = State.SelectedSceneName,
-                AvailableScenes = State.AvailableScenes
+                AvailableScenes = State.AvailableScenes,
+                CurrentSection = State.CurrentSection
             };
 
             StateChanged?.Invoke(State);
@@ -69,7 +66,8 @@ namespace GameCore.UI.MainMenu
             {
                 IsInteractable = State.IsInteractable,
                 SelectedSceneName = State.SelectedSceneName,
-                AvailableScenes = scenes ?? new string[0]
+                AvailableScenes = scenes ?? new string[0],
+                CurrentSection = State.CurrentSection
             };
 
             StateChanged?.Invoke(State);
@@ -77,14 +75,31 @@ namespace GameCore.UI.MainMenu
 
         public void SetSelectedScene(string sceneName)
         {
-            if (SelectedSceneName == sceneName)
+            if (State.SelectedSceneName == sceneName)
                 return;
 
             State = new MainMenuState
             {
                 IsInteractable = State.IsInteractable,
                 SelectedSceneName = sceneName ?? string.Empty,
-                AvailableScenes = State.AvailableScenes
+                AvailableScenes = State.AvailableScenes,
+                CurrentSection = State.CurrentSection
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        public void SetCurrentSection(string section)
+        {
+            if (State.CurrentSection == section)
+                return;
+
+            State = new MainMenuState
+            {
+                IsInteractable = State.IsInteractable,
+                SelectedSceneName = State.SelectedSceneName,
+                AvailableScenes = State.AvailableScenes,
+                CurrentSection = section ?? "map-selection"
             };
 
             StateChanged?.Invoke(State);

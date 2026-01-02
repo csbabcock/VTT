@@ -189,7 +189,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameCore.UI.MainMenu.MainMenuPresenter
   _view: {fileID: 96096475}
-  _levelSceneName: Playground
+  _availableScenes:
+  - Playground
 --- !u!114 &96096475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,7 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d83eddfa00b09c4c9bc871c15d366c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameCore.UI.MainMenu.MainMenuView
-  _mainMenuStyleSheet: {fileID: 7433441132597879392, guid: 6df95dd68c36dc94385a0e73eb404af4, type: 3}
+  _mainMenuStyleSheet: {fileID: 7433441132597879392, guid: d18d15f1da68f01429347d099ae25f64, type: 3}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using GameCore.UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace GameCore.UI.MainMenu
 {
@@ -15,8 +18,8 @@ namespace GameCore.UI.MainMenu
         [SerializeField] private MainMenuView _view;
 
         [Header("Scenes")]
-        [Tooltip("Name of the level scene to load when Start Game is pressed.")]
-        [SerializeField] private string _levelSceneName = "Playground";
+        [Tooltip("List of available scenes to select from. Leave empty to auto-populate from build settings.")]
+        [SerializeField] private string[] _availableScenes = new string[] { "Playground" };
 
         public MainMenuModel Model { get; private set; }
         public MainMenuView View => _view;
@@ -59,11 +62,15 @@ namespace GameCore.UI.MainMenu
 
             _view.Initialize();
 
-            _view.StartClicked += HandleStartClicked;
-            _view.SettingsClicked += HandleSettingsClicked;
+            _view.SceneSelected += HandleSceneSelected;
+            _view.LoadSceneClicked += HandleLoadSceneClicked;
+            _view.NavigationChanged += HandleNavigationChanged;
             _view.QuitClicked += HandleQuitClicked;
 
             Model.StateChanged += HandleModelStateChanged;
+
+            // Initialize available scenes
+            InitializeAvailableScenes();
 
             _view.Show();
             // Ensure the view starts in sync with the model.
@@ -79,8 +86,9 @@ namespace GameCore.UI.MainMenu
 
             if (_view != null)
             {
-                _view.StartClicked -= HandleStartClicked;
-                _view.SettingsClicked -= HandleSettingsClicked;
+                _view.SceneSelected -= HandleSceneSelected;
+                _view.LoadSceneClicked -= HandleLoadSceneClicked;
+                _view.NavigationChanged -= HandleNavigationChanged;
                 _view.QuitClicked -= HandleQuitClicked;
             }
 
@@ -92,23 +100,52 @@ namespace GameCore.UI.MainMenu
             _initialized = false;
         }
 
-        private void HandleStartClicked()
+        private void InitializeAvailableScenes()
         {
-            Model.SetInteractable(false);
-
-            if (string.IsNullOrWhiteSpace(_levelSceneName))
+            if (_availableScenes == null || _availableScenes.Length == 0)
             {
-                Debug.LogError("MainMenuPresenter: Level scene name is not set.");
+                // Auto-populate from build settings
+                List<string> sceneNames = new List<string>();
+                for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+                {
+                    string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+                    string sceneName = System.IO.Path.GetFileNameWithoutExtension(scenePath);
+                    // Exclude the main menu scene itself
+                    if (sceneName != "MainMenu")
+                    {
+                        sceneNames.Add(sceneName);
+                    }
+                }
+                Model.SetAvailableScenes(sceneNames.ToArray());
+            }
+            else
+            {
+                Model.SetAvailableScenes(_availableScenes);
+            }
+        }
+
+        private void HandleSceneSelected(string sceneName)
+        {
+            Model.SetSelectedScene(sceneName);
+        }
+
+        private void HandleLoadSceneClicked()
+        {
+            string selectedScene = Model.State.SelectedSceneName;
+            
+            if (string.IsNullOrWhiteSpace(selectedScene))
+            {
+                Debug.LogWarning("MainMenuPresenter: No scene selected.");
                 return;
             }
 
-            SceneLoader.LoadScene(_levelSceneName);
+            Model.SetInteractable(false);
+            SceneLoader.LoadScene(selectedScene);
         }
 
-        private void HandleSettingsClicked()
+        private void HandleNavigationChanged(string section)
         {
-            // Placeholder for future settings implementation.
-            Debug.Log("MainMenuPresenter: Settings clicked (not implemented yet).");
+            Model.SetCurrentSection(section);
         }
 
         private void HandleQuitClicked()
