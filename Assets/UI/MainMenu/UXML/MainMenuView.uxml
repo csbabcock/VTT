@@ -5,10 +5,21 @@
         <ui:VisualElement name="panel" class="menu-panel diegetic-panel">
             <ui:Label name="title-label" text="VTT" class="menu-title" />
 
+            <!-- Scene Selection Section -->
+            <ui:VisualElement name="scene-selection-section" class="menu-section">
+                <ui:Label text="Select Map" class="menu-section-title" />
+                <ui:ScrollView name="scene-list" class="menu-scene-list">
+                    <ui:VisualElement name="scene-list-container" class="menu-scene-list-container">
+                        <!-- Scene buttons will be added dynamically -->
+                    </ui:VisualElement>
+                </ui:ScrollView>
+            </ui:VisualElement>
+
+            <!-- Action Buttons -->
             <ui:VisualElement name="buttons-container" class="menu-buttons-container">
-                <ui:Button name="start-button" class="menu-button primary" text="Start Game" />
+                <ui:Button name="load-scene-button" class="menu-button primary" text="Load Map" />
                 <ui:Button name="settings-button" class="menu-button secondary" text="Settings" />
-                <ui:Button name="quit-button" class="menu-button secondary" text="Quit" />
+                <ui:Button name="quit-button" class="menu-button secondary" text="Exit" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

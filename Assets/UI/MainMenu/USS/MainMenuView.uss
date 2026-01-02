@@ -15,8 +15,9 @@
 }
 
 .menu-panel {
-    width: 360px;
+    width: 480px;
     height: auto;
+    max-height: 90%;
     align-self: center;
     justify-content: flex-start;
     align-items: stretch;
@@ -27,10 +28,75 @@
     border-radius: var(--vtt-radius-large);
     border-width: 1px;
     border-color: var(--vtt-border-color);
-    background-color: var(--vtt-bg-panel);
+    background-color: rgba(12, 12, 16, 0.85);
+}
+
+.menu-section {
+    flex-direction: column;
+    margin-bottom: var(--vtt-spacing-large);
+}
+
+.menu-section-title {
+    color: var(--vtt-text-main);
+    font-size: 18px;
+    -unity-font-style: bold;
+    margin-bottom: var(--vtt-spacing-medium);
+}
+
+.menu-scene-list {
+    max-height: 300px;
+    border-radius: var(--vtt-radius-medium);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: var(--vtt-spacing-small);
+}
+
+.menu-scene-list-container {
+    flex-direction: column;
+}
+
+.menu-scene-button {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: var(--vtt-radius-medium);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    color: var(--vtt-text-main);
+    font-size: 16px;
+    padding-left: var(--vtt-spacing-medium);
+    padding-right: var(--vtt-spacing-medium);
+    padding-top: var(--vtt-spacing-small);
+    padding-bottom: var(--vtt-spacing-small);
+    margin-bottom: var(--vtt-spacing-small);
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    transition-duration: 0.2s;
+    transition-property: scale, background-color, border-color;
+    min-height: 40px;
+}
+
+.menu-scene-button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--vtt-accent-primary);
+    scale: 1.02;
+}
+
+.menu-scene-button.selected {
+    background-color: rgba(248, 213, 138, 0.15);
+    border-color: var(--vtt-accent-primary);
+    border-width: 2px;
+    color: var(--vtt-text-main);
+    -unity-font-style: bold;
+}
+
+.menu-scene-button:disabled {
+    opacity: 0.5;
 }
 
 .menu-buttons-container {
     flex-direction: column;
+    margin-top: var(--vtt-spacing-large);
 }
 

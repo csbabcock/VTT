@@ -4,92 +4,42 @@ namespace GameCore.PlayerData
 {
     /// <summary>
     /// MonoBehaviour component that initializes the player data service.
-    /// Supports both JSON files and ScriptableObjects.
+    /// Loads character data from JSON files.
     /// 
     /// Usage:
-    /// 1. Create a JSON character file in StreamingAssets/Characters/ (recommended)
-    ///    OR create a PlayerData ScriptableObject asset
+    /// 1. Create a JSON character file in StreamingAssets/Characters/
     /// 2. Add this component to a GameObject in your scene
-    /// 3. Configure the data source in the Inspector
-    /// 4. The service will automatically use this data when the scene starts
+    /// 3. Enter the JSON file path (e.g., "Characters/MyCharacter.json")
+    /// 4. The service will automatically initialize on Awake
     /// </summary>
     public class PlayerDataServiceInitializer : MonoBehaviour
     {
-        public enum DataSourceType
-        {
-            JSON,
-            ScriptableObject,
-            Default
-        }
-
-        [Header("Data Source")]
-        [Tooltip("Where to load character data from")]
-        [SerializeField] private DataSourceType _dataSource = DataSourceType.JSON;
-
         [Header("JSON Configuration")]
-        [Tooltip("Path to JSON file relative to StreamingAssets (e.g., 'Characters/MyCharacter.json')")]
+        [Tooltip("Path to JSON file relative to StreamingAssets (e.g., 'Characters/MyCharacter.json'). Leave empty to use default character data.")]
         [SerializeField] private string _jsonFilePath = "Characters/ExampleCharacter.json";
-
-        [Header("ScriptableObject Configuration")]
-        [Tooltip("Character data asset to load. Only used if Data Source is ScriptableObject.")]
-        [SerializeField] private PlayerDataAsset _playerDataAsset;
-
-        [Header("Initialization")]
-        [Tooltip("Initialize on Awake (before other scripts). Recommended: true")]
-        [SerializeField] private bool _initializeOnAwake = true;
-
-        [Tooltip("Initialize on Start (after Awake). Use if other scripts need to initialize first.")]
-        [SerializeField] private bool _initializeOnStart = false;
 
         private void Awake()
         {
-            if (_initializeOnAwake)
-            {
-                InitializeService();
-            }
-        }
-
-        private void Start()
-        {
-            if (_initializeOnStart)
-            {
-                InitializeService();
-            }
+            InitializeService();
         }
 
         /// <summary>
-        /// Initializes the player data service based on the configured data source.
+        /// Initializes the player data service from JSON file or default values.
         /// Can be called manually if needed.
         /// </summary>
         public void InitializeService()
         {
-            IPlayerDataService service = null;
+            IPlayerDataService service;
 
-            switch (_dataSource)
+            if (!string.IsNullOrEmpty(_jsonFilePath))
             {
-                case DataSourceType.JSON:
-                    if (!string.IsNullOrEmpty(_jsonFilePath))
-                    {
-                        service = new JsonPlayerDataService(_jsonFilePath);
-                        Debug.Log($"PlayerDataService initialized from JSON: {_jsonFilePath}");
-                    }
-                    else
-                    {
-                        Debug.LogWarning("PlayerDataServiceInitializer: JSON file path is empty. Using default character data.");
-                        service = new LocalPlayerDataService();
-                    }
-                    break;
-
-                case DataSourceType.ScriptableObject:
-                    service = new LocalPlayerDataService(_playerDataAsset);
-                    Debug.Log($"PlayerDataService initialized from ScriptableObject: {( _playerDataAsset != null ? _playerDataAsset.name : "null")}");
-                    break;
-
-                case DataSourceType.Default:
-                default:
-                    service = new LocalPlayerDataService();
-                    Debug.Log("PlayerDataService initialized with default values");
-                    break;
+                service = new JsonPlayerDataService(_jsonFilePath);
+                Debug.Log($"PlayerDataService initialized from JSON: {_jsonFilePath}");
+            }
+            else
+            {
+                service = new LocalPlayerDataService();
+                Debug.Log("PlayerDataService initialized with default values");
             }
 
             // Set it as the service locator's service
@@ -111,26 +61,6 @@ namespace GameCore.PlayerData
         public void SetJsonFilePath(string filePath)
         {
             _jsonFilePath = filePath;
-            _dataSource = DataSourceType.JSON;
-            InitializeService();
-        }
-
-        /// <summary>
-        /// Gets the currently assigned player data asset.
-        /// </summary>
-        public PlayerDataAsset GetPlayerDataAsset()
-        {
-            return _playerDataAsset;
-        }
-
-        /// <summary>
-        /// Sets a new player data asset and reinitializes the service.
-        /// Useful for runtime character switching.
-        /// </summary>
-        public void SetPlayerDataAsset(PlayerDataAsset asset)
-        {
-            _playerDataAsset = asset;
-            _dataSource = DataSourceType.ScriptableObject;
             InitializeService();
         }
     }

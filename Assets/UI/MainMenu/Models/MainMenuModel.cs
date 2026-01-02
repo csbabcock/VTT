@@ -10,6 +10,8 @@ namespace GameCore.UI.MainMenu
     public struct MainMenuState
     {
         public bool IsInteractable;
+        public string SelectedSceneName;
+        public string[] AvailableScenes;
     }
 
     /// <summary>
@@ -34,7 +36,9 @@ namespace GameCore.UI.MainMenu
         {
             State = new MainMenuState
             {
-                IsInteractable = true
+                IsInteractable = true,
+                SelectedSceneName = string.Empty,
+                AvailableScenes = new string[0]
             };
         }
 
@@ -45,7 +49,42 @@ namespace GameCore.UI.MainMenu
 
             State = new MainMenuState
             {
-                IsInteractable = value
+                IsInteractable = State.IsInteractable,
+                SelectedSceneName = State.SelectedSceneName,
+                AvailableScenes = State.AvailableScenes
+            };
+            State = new MainMenuState
+            {
+                IsInteractable = value,
+                SelectedSceneName = State.SelectedSceneName,
+                AvailableScenes = State.AvailableScenes
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        public void SetAvailableScenes(string[] scenes)
+        {
+            State = new MainMenuState
+            {
+                IsInteractable = State.IsInteractable,
+                SelectedSceneName = State.SelectedSceneName,
+                AvailableScenes = scenes ?? new string[0]
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        public void SetSelectedScene(string sceneName)
+        {
+            if (SelectedSceneName == sceneName)
+                return;
+
+            State = new MainMenuState
+            {
+                IsInteractable = State.IsInteractable,
+                SelectedSceneName = sceneName ?? string.Empty,
+                AvailableScenes = State.AvailableScenes
             };
 
             StateChanged?.Invoke(State);
