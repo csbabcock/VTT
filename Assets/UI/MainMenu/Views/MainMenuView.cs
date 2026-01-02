@@ -43,6 +43,10 @@ namespace GameCore.UI.MainMenu
         private Button _navJoin;
         private Button _navSettings;
         
+        // Title Label and Version Label
+        private Label _titleLabel;
+        private Label _versionLabel;
+        
         // Content Panels
         private VisualElement _hostContent;
         private VisualElement _joinContent;
@@ -136,9 +140,14 @@ namespace GameCore.UI.MainMenu
             
             ApplyFontToElement(_root, _robotoRegular);
             ApplyFontToElement(_root.Q<Label>("title-label"), _robotoBold);
+            ApplyFontToElement(_versionLabel, _robotoRegular);
             ApplyFontToElement(_root.Q<Label>("selected-scene-name"), _robotoSemiBold);
             ApplyFontToElement(_root.Q<Label>(className: "menu-dialog-title"), _robotoBold);
             ApplyFontToElement(_root.Q<Label>(className: "menu-dialog-message"), _robotoRegular);
+            
+            // Apply fonts to header labels
+            ApplyFontToElements(_root.Query<Label>(className: "menu-content-header-title"), _robotoBold);
+            ApplyFontToElements(_root.Query<Label>(className: "menu-content-header-subtitle"), _robotoRegular);
             
             ApplyFontToElements(_root.Query<Button>(className: "menu-nav-item"), _robotoMedium);
             ApplyFontToElements(_root.Query<Button>(className: "menu-button-primary"), _robotoMedium);
@@ -161,9 +170,23 @@ namespace GameCore.UI.MainMenu
                 button.style.unityFont = new StyleFont(font);
             }
         }
+        
+        private void ApplyFontToElements(UQueryBuilder<Label> query, Font font)
+        {
+            if (font == null) return;
+            
+            foreach (var label in query.ToList())
+            {
+                label.style.unityFont = new StyleFont(font);
+            }
+        }
 
         private void QueryUIElements()
         {
+            // Title Label and Version Label
+            _titleLabel = _root.Q<Label>("title-label");
+            _versionLabel = _root.Q<Label>("version-label");
+            
             // Sidebar Navigation Items
             _navHost = _root.Q<Button>("nav-host");
             _navJoin = _root.Q<Button>("nav-join");
@@ -185,6 +208,25 @@ namespace GameCore.UI.MainMenu
             _exitConfirmationDialog = _root.Q<VisualElement>("exit-confirmation-dialog");
             _dialogCancelButton = _root.Q<Button>("dialog-no");
             _dialogConfirmButton = _root.Q<Button>("dialog-yes");
+            
+            // Setup version label text
+            SetupVersionLabel();
+        }
+        
+        private void SetupVersionLabel()
+        {
+            if (_versionLabel == null) return;
+            
+            // Get the version from Application.version (Unity's build settings)
+            string version = Application.version;
+            
+            // If version is empty, use a default
+            if (string.IsNullOrEmpty(version))
+            {
+                version = "1.0.0";
+            }
+            
+            _versionLabel.text = version;
         }
 
         private void SetupEventHandlers()

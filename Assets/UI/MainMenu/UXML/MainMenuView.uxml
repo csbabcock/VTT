@@ -4,6 +4,9 @@
         <!-- Background -->
         <ui:VisualElement name="background-gradient" class="menu-background-gradient" />
         
+        <!-- Version Label (Top Right) -->
+        <ui:Label name="version-label" class="menu-version-label-top-right" />
+        
         <!-- Main Container: Sidebar + Content Area -->
         <ui:VisualElement name="main-container" class="menu-main-container">
             <!-- LEFT SIDEBAR: Navigation Menu -->
@@ -23,8 +26,11 @@
             <ui:VisualElement name="content-area" class="menu-content-area">
                 <!-- Host Session Content -->
                 <ui:VisualElement name="host-content" class="menu-content-panel">
-                    <ui:Label text="HOST SESSION" class="menu-content-title" />
-                    <ui:Label text="Select a map to host" class="menu-content-subtitle" />
+                    <!-- Header Section -->
+                    <ui:VisualElement name="host-header" class="menu-content-header">
+                        <ui:Label text="HOST SESSION" class="menu-content-header-title" />
+                        <ui:Label text="Select a map to host" class="menu-content-header-subtitle" />
+                    </ui:VisualElement>
                     
                     <!-- Scene Selection Grid -->
                     <ui:ScrollView name="scene-grid-scroll" class="menu-scene-grid-scroll" mode="Vertical" show-horizontal-scroller="false" vertical-scroller-visibility="Auto">
@@ -41,14 +47,21 @@
                 
                 <!-- Join Session Content -->
                 <ui:VisualElement name="join-content" class="menu-content-panel" style="display: none;">
-                    <ui:Label text="JOIN SESSION" class="menu-content-title" />
-                    <ui:Label text="Enter session details to join" class="menu-content-subtitle" />
+                    <!-- Header Section -->
+                    <ui:VisualElement name="join-header" class="menu-content-header">
+                        <ui:Label text="JOIN SESSION" class="menu-content-header-title" />
+                        <ui:Label text="Enter session details to join" class="menu-content-header-subtitle" />
+                    </ui:VisualElement>
                     <ui:Label text="Join functionality coming soon..." class="menu-text-muted" />
                 </ui:VisualElement>
                 
                 <!-- Settings Content -->
                 <ui:VisualElement name="settings-content" class="menu-content-panel" style="display: none;">
-                    <ui:Label text="SETTINGS" class="menu-content-title" />
+                    <!-- Header Section -->
+                    <ui:VisualElement name="settings-header" class="menu-content-header">
+                        <ui:Label text="SETTINGS" class="menu-content-header-title" />
+                        <ui:Label text="Configure your game preferences" class="menu-content-header-subtitle" />
+                    </ui:VisualElement>
                     <ui:Label text="Settings menu coming soon..." class="menu-text-muted" />
                 </ui:VisualElement>
             </ui:VisualElement>
