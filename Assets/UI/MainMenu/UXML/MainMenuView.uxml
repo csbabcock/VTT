@@ -50,9 +50,23 @@
                     <!-- Header Section -->
                     <ui:VisualElement name="join-header" class="menu-content-header">
                         <ui:Label text="JOIN SESSION" class="menu-content-header-title" />
-                        <ui:Label text="Enter session details to join" class="menu-content-header-subtitle" />
+                        <ui:Label text="Select a character to join with" class="menu-content-header-subtitle" />
                     </ui:VisualElement>
-                    <ui:Label text="Join functionality coming soon..." class="menu-text-muted" />
+                    
+                    <!-- Character Selection Grid -->
+                    <ui:ScrollView name="character-grid-scroll" class="menu-scene-grid-scroll" mode="Vertical" show-horizontal-scroller="false" vertical-scroller-visibility="Auto">
+                        <ui:VisualElement name="character-grid-container" class="menu-scene-grid-container">
+                            <!-- Character cards will be added dynamically -->
+                        </ui:VisualElement>
+                    </ui:ScrollView>
+                    
+                    <ui:VisualElement name="join-actions" class="menu-actions-container">
+                        <ui:Label name="selected-character-name" text="No character selected" class="menu-selected-scene-name" />
+                        <ui:VisualElement name="join-buttons" class="menu-join-buttons">
+                            <ui:Button name="create-character-button" class="menu-button-secondary" text="Create New Character" />
+                            <ui:Button name="join-session-button" class="menu-button-primary" text="Join Session" enabled="false" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
                 </ui:VisualElement>
                 
                 <!-- Settings Content -->

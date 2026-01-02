@@ -462,6 +462,64 @@
     flex-shrink: 0;
 }
 
+.menu-button-secondary {
+    width: 100%;
+    max-width: 300px;
+    height: 48px;
+    min-height: 48px;
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--radius-sm);
+    border-width: 2px;
+    border-color: var(--color-border-default);
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    -unity-font-style: bold;
+    letter-spacing: -0.28px;
+    padding: 10px 16px;
+    justify-content: center;
+    align-items: center;
+    -unity-text-align: middle-center;
+    flex-shrink: 0;
+    
+    transition-duration: var(--transition-fast);
+    transition-property: opacity, border-color, background-color, scale;
+    transition-timing-function: ease-out;
+}
+
+.menu-button-secondary:hover {
+    opacity: 1;
+    border-color: var(--color-text-n3);
+    background-color: var(--color-bg-shade1);
+    color: var(--color-text-primary);
+    scale: 1.02;
+}
+
+.menu-button-secondary:active {
+    opacity: 0.9;
+    scale: 0.98;
+}
+
+.menu-join-buttons {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu-join-buttons > .menu-button-primary,
+.menu-join-buttons > .menu-button-secondary {
+    flex: 1;
+    max-width: none;
+}
+
+.menu-join-buttons > .menu-button-primary {
+    margin-left: var(--spacing-sm);
+}
+
+.menu-join-buttons > .menu-button-secondary {
+    margin-right: var(--spacing-sm);
+}
+
 
 /* ============================================
    UTILITY CLASSES

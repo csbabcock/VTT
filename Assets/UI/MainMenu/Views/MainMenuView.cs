@@ -58,6 +58,13 @@ namespace GameCore.UI.MainMenu
         private Label _selectedSceneNameLabel;
         private Button _loadSceneButton;
         
+        // Character Selection Elements (in Join Content)
+        private ScrollView _characterGridScroll;
+        private VisualElement _characterGridContainer;
+        private Label _selectedCharacterNameLabel;
+        private Button _createCharacterButton;
+        private Button _joinSessionButton;
+        
         // Exit Button and Confirmation Dialog
         private Button _exitButton;
         private VisualElement _exitConfirmationDialog;
@@ -77,6 +84,11 @@ namespace GameCore.UI.MainMenu
         public event Action LoadSceneClicked;
         public event Action QuitClicked;
         public event Action<string> NavigationChanged;
+        
+        // Character Selection Events
+        public event Action<string> CharacterSelected;
+        public event Action CreateCharacterClicked;
+        public event Action JoinSessionClicked;
 
         public VisualElement Root => _root;
 
@@ -203,6 +215,13 @@ namespace GameCore.UI.MainMenu
             _selectedSceneNameLabel = _root.Q<Label>("selected-scene-name");
             _loadSceneButton = _root.Q<Button>("load-scene-button");
             
+            // Character Selection (in Join Content)
+            _characterGridScroll = _root.Q<ScrollView>("character-grid-scroll");
+            _characterGridContainer = _root.Q<VisualElement>("character-grid-container");
+            _selectedCharacterNameLabel = _root.Q<Label>("selected-character-name");
+            _createCharacterButton = _root.Q<Button>("create-character-button");
+            _joinSessionButton = _root.Q<Button>("join-session-button");
+            
             // Exit Button and Confirmation Dialog
             _exitButton = _root.Q<Button>("exit-button");
             _exitConfirmationDialog = _root.Q<VisualElement>("exit-confirmation-dialog");
@@ -249,6 +268,13 @@ namespace GameCore.UI.MainMenu
             if (_loadSceneButton != null)
                 _loadSceneButton.clicked += OnLoadSceneClicked;
             
+            // Character Selection
+            if (_createCharacterButton != null)
+                _createCharacterButton.clicked += OnCreateCharacterClicked;
+            
+            if (_joinSessionButton != null)
+                _joinSessionButton.clicked += OnJoinSessionClicked;
+            
             // Exit Button - shows confirmation dialog
             if (_exitButton != null)
                 _exitButton.clicked += OnExitButtonClicked;
@@ -267,6 +293,8 @@ namespace GameCore.UI.MainMenu
             RegisterHoverEffect(_navJoin);
             RegisterHoverEffect(_navSettings);
             RegisterHoverEffect(_loadSceneButton);
+            RegisterHoverEffect(_createCharacterButton);
+            RegisterHoverEffect(_joinSessionButton);
             RegisterHoverEffect(_exitButton);
             RegisterHoverEffect(_dialogCancelButton);
             RegisterHoverEffect(_dialogConfirmButton);
@@ -292,6 +320,7 @@ namespace GameCore.UI.MainMenu
         {
             UnregisterEventHandlers();
             ClearSceneCards();
+            ClearCharacterCards();
         }
         
         private void UnregisterEventHandlers()
@@ -304,6 +333,18 @@ namespace GameCore.UI.MainMenu
             {
                 _loadSceneButton.clicked -= OnLoadSceneClicked;
                 UnregisterHoverEffect(_loadSceneButton);
+            }
+            
+            if (_createCharacterButton != null)
+            {
+                _createCharacterButton.clicked -= OnCreateCharacterClicked;
+                UnregisterHoverEffect(_createCharacterButton);
+            }
+            
+            if (_joinSessionButton != null)
+            {
+                _joinSessionButton.clicked -= OnJoinSessionClicked;
+                UnregisterHoverEffect(_joinSessionButton);
             }
             
             if (_exitButton != null)
@@ -362,6 +403,9 @@ namespace GameCore.UI.MainMenu
             UpdateSceneList(state.AvailableScenes, state.SelectedSceneName);
             UpdateLoadButton(state.SelectedSceneName);
             UpdateSelectedSceneDisplay(state.SelectedSceneName);
+            UpdateCharacterList(state.AvailableCharacterFileNames, state.SelectedCharacterFileName);
+            UpdateJoinButton(state.SelectedCharacterFileName);
+            UpdateSelectedCharacterDisplay(state.SelectedCharacterFileName);
         }
 
         private void UpdateNavigation(string currentSection)
@@ -543,6 +587,24 @@ namespace GameCore.UI.MainMenu
             PlayClickSound();
             SceneSelected?.Invoke(sceneName);
         }
+
+        private void OnCreateCharacterClicked()
+        {
+            PlayClickSound();
+            CreateCharacterClicked?.Invoke();
+        }
+
+        private void OnJoinSessionClicked()
+        {
+            PlayClickSound();
+            JoinSessionClicked?.Invoke();
+        }
+
+        private void OnCharacterCardClicked(string characterFileName)
+        {
+            PlayClickSound();
+            CharacterSelected?.Invoke(characterFileName);
+        }
         
         private Label CreateSceneCardLabel(string text, string className, Font font)
         {
@@ -572,6 +634,119 @@ namespace GameCore.UI.MainMenu
             if (_audioSource != null && _clickSound != null)
             {
                 _audioSource.PlayOneShot(_clickSound);
+            }
+        }
+
+        // ============================================
+        // CHARACTER SELECTION METHODS
+        // ============================================
+
+        private void UpdateCharacterList(string[] characterFileNames, string selectedCharacterFileName)
+        {
+            if (_characterGridContainer == null)
+                return;
+
+            bool needsRebuild = _characterGridContainer.childCount != (characterFileNames?.Length ?? 0);
+            
+            if (needsRebuild)
+            {
+                RebuildCharacterCards(characterFileNames);
+            }
+
+            UpdateCharacterCardSelection(characterFileNames, selectedCharacterFileName);
+        }
+
+        private void RebuildCharacterCards(string[] characterFileNames)
+        {
+            ClearCharacterCards();
+
+            if (characterFileNames == null || characterFileNames.Length == 0)
+                return;
+
+            // Load character data for display
+            foreach (string fileName in characterFileNames)
+            {
+                var fileInfo = GameCore.PlayerData.CharacterFileService.GetCharacterFile(fileName);
+                if (fileInfo != null)
+                {
+                    VisualElement characterCard = CreateCharacterCard(fileInfo);
+                    _characterGridContainer.Add(characterCard);
+                }
+            }
+        }
+
+        private VisualElement CreateCharacterCard(GameCore.PlayerData.CharacterFileService.CharacterFileInfo fileInfo)
+        {
+            VisualElement characterCard = new VisualElement();
+            characterCard.AddToClassList("menu-scene-card");
+            characterCard.name = $"character-card-{fileInfo.FileName}";
+            
+            string title = GameCore.PlayerData.CharacterFileService.GetCharacterDisplayName(fileInfo);
+            string subtitle = GameCore.PlayerData.CharacterFileService.GetCharacterCardSubtitle(fileInfo);
+            
+            characterCard.Add(CreateSceneCardLabel(title, "menu-scene-card-title", _robotoSemiBold));
+            characterCard.Add(CreateSceneCardLabel(subtitle, "menu-scene-card-subtitle", _robotoRegular));
+
+            characterCard.RegisterCallback<ClickEvent>(evt => OnCharacterCardClicked(fileInfo.FileName));
+            characterCard.RegisterCallback<MouseEnterEvent>(OnButtonHover);
+            
+            return characterCard;
+        }
+
+        private void UpdateCharacterCardSelection(string[] characterFileNames, string selectedCharacterFileName)
+        {
+            if (characterFileNames == null || _characterGridContainer == null)
+                return;
+
+            foreach (string fileName in characterFileNames)
+            {
+                VisualElement card = _characterGridContainer.Q<VisualElement>($"character-card-{fileName}");
+                if (card != null)
+                {
+                    if (fileName == selectedCharacterFileName)
+                        card.AddToClassList("selected");
+                    else
+                        card.RemoveFromClassList("selected");
+                }
+            }
+        }
+
+        private void ClearCharacterCards()
+        {
+            if (_characterGridContainer == null)
+                return;
+
+            _characterGridContainer.Clear();
+        }
+
+        private void UpdateJoinButton(string selectedCharacterFileName)
+        {
+            if (_joinSessionButton != null)
+            {
+                _joinSessionButton.SetEnabled(!string.IsNullOrEmpty(selectedCharacterFileName));
+            }
+        }
+
+        private void UpdateSelectedCharacterDisplay(string selectedCharacterFileName)
+        {
+            if (_selectedCharacterNameLabel == null)
+                return;
+
+            if (string.IsNullOrEmpty(selectedCharacterFileName))
+            {
+                _selectedCharacterNameLabel.text = "No character selected";
+                return;
+            }
+
+            var fileInfo = GameCore.PlayerData.CharacterFileService.GetCharacterFile(selectedCharacterFileName);
+            if (fileInfo != null)
+            {
+                string displayName = GameCore.PlayerData.CharacterFileService.GetCharacterDisplayName(fileInfo);
+                _selectedCharacterNameLabel.text = displayName.ToUpper();
+            }
+            else
+            {
+                _selectedCharacterNameLabel.text = "Unknown character";
             }
         }
 

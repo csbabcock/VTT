@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameCore.UI;
+using GameCore.PlayerData;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -66,6 +67,9 @@ namespace GameCore.UI.MainMenu
             _view.LoadSceneClicked += HandleLoadSceneClicked;
             _view.NavigationChanged += HandleNavigationChanged;
             _view.QuitClicked += HandleQuitClicked;
+            _view.CharacterSelected += HandleCharacterSelected;
+            _view.CreateCharacterClicked += HandleCreateCharacterClicked;
+            _view.JoinSessionClicked += HandleJoinSessionClicked;
 
             Model.StateChanged += HandleModelStateChanged;
 
@@ -90,6 +94,9 @@ namespace GameCore.UI.MainMenu
                 _view.LoadSceneClicked -= HandleLoadSceneClicked;
                 _view.NavigationChanged -= HandleNavigationChanged;
                 _view.QuitClicked -= HandleQuitClicked;
+                _view.CharacterSelected -= HandleCharacterSelected;
+                _view.CreateCharacterClicked -= HandleCreateCharacterClicked;
+                _view.JoinSessionClicked -= HandleJoinSessionClicked;
             }
 
             if (Model != null)
@@ -146,6 +153,12 @@ namespace GameCore.UI.MainMenu
         private void HandleNavigationChanged(string section)
         {
             Model.SetCurrentSection(section);
+            
+            // When switching to join section, load available characters
+            if (section == "join")
+            {
+                InitializeAvailableCharacters();
+            }
         }
 
         private void HandleQuitClicked()
@@ -160,6 +173,70 @@ namespace GameCore.UI.MainMenu
         private void HandleModelStateChanged(MainMenuState state)
         {
             _view.UpdateView(state);
+        }
+
+        private void InitializeAvailableCharacters()
+        {
+            try
+            {
+                var characterFiles = CharacterFileService.GetAllCharacterFiles();
+                string[] fileNames = characterFiles.Select(f => f.FileName).ToArray();
+                Model.SetAvailableCharacters(fileNames);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"MainMenuPresenter: Error loading characters: {ex.Message}");
+                Model.SetAvailableCharacters(new string[0]);
+            }
+        }
+
+        private void HandleCharacterSelected(string characterFileName)
+        {
+            Model.SetSelectedCharacter(characterFileName);
+        }
+
+        private void HandleCreateCharacterClicked()
+        {
+            // TODO: Open character creation UI/modal
+            // For now, just log that it was clicked
+            Debug.Log("MainMenuPresenter: Create Character clicked - Character creation UI not yet implemented");
+        }
+
+        private void HandleJoinSessionClicked()
+        {
+            string selectedCharacter = Model.State.SelectedCharacterFileName;
+            
+            if (string.IsNullOrWhiteSpace(selectedCharacter))
+            {
+                Debug.LogWarning("MainMenuPresenter: No character selected for join.");
+                return;
+            }
+
+            // Load the character data and initialize the player data service
+            var fileInfo = CharacterFileService.GetCharacterFile(selectedCharacter);
+            if (fileInfo == null)
+            {
+                Debug.LogError($"MainMenuPresenter: Character file not found: {selectedCharacter}");
+                return;
+            }
+
+            // Initialize the player data service with the selected character
+            // Use the relative path format that JsonPlayerDataService expects
+            string relativePath = $"Characters/{fileInfo.FileName}";
+            var playerDataService = new JsonPlayerDataService(relativePath);
+            PlayerDataServiceLocator.Service = playerDataService;
+
+            Debug.Log($"MainMenuPresenter: Loaded character {fileInfo.CharacterData?.characterName ?? selectedCharacter} for join session");
+
+            // TODO: Actually join a session (network connection, etc.)
+            // For now, we'll just load a scene similar to hosting
+            // In the future, this should connect to a server/host
+            Model.SetInteractable(false);
+            
+            // For now, load the same scene as hosting would
+            // In a real implementation, this would connect to a remote session
+            string defaultScene = Model.State.AvailableScenes?.FirstOrDefault() ?? "Playground";
+            SceneLoader.LoadScene(defaultScene);
         }
     }
 }

@@ -13,6 +13,10 @@ namespace GameCore.UI.MainMenu
         public string SelectedSceneName;
         public string[] AvailableScenes;
         public string CurrentSection;
+        
+        // Character selection for Join Session
+        public string SelectedCharacterFileName;
+        public string[] AvailableCharacterFileNames;
     }
 
     /// <summary>
@@ -40,7 +44,9 @@ namespace GameCore.UI.MainMenu
                 IsInteractable = true,
                 SelectedSceneName = string.Empty,
                 AvailableScenes = new string[0],
-                CurrentSection = "host"
+                CurrentSection = "host",
+                SelectedCharacterFileName = string.Empty,
+                AvailableCharacterFileNames = new string[0]
             };
         }
 
@@ -54,7 +60,9 @@ namespace GameCore.UI.MainMenu
                 IsInteractable = value,
                 SelectedSceneName = State.SelectedSceneName,
                 AvailableScenes = State.AvailableScenes,
-                CurrentSection = State.CurrentSection
+                CurrentSection = State.CurrentSection,
+                SelectedCharacterFileName = State.SelectedCharacterFileName,
+                AvailableCharacterFileNames = State.AvailableCharacterFileNames
             };
 
             StateChanged?.Invoke(State);
@@ -67,7 +75,9 @@ namespace GameCore.UI.MainMenu
                 IsInteractable = State.IsInteractable,
                 SelectedSceneName = State.SelectedSceneName,
                 AvailableScenes = scenes ?? new string[0],
-                CurrentSection = State.CurrentSection
+                CurrentSection = State.CurrentSection,
+                SelectedCharacterFileName = State.SelectedCharacterFileName,
+                AvailableCharacterFileNames = State.AvailableCharacterFileNames
             };
 
             StateChanged?.Invoke(State);
@@ -83,7 +93,9 @@ namespace GameCore.UI.MainMenu
                 IsInteractable = State.IsInteractable,
                 SelectedSceneName = sceneName ?? string.Empty,
                 AvailableScenes = State.AvailableScenes,
-                CurrentSection = State.CurrentSection
+                CurrentSection = State.CurrentSection,
+                SelectedCharacterFileName = State.SelectedCharacterFileName,
+                AvailableCharacterFileNames = State.AvailableCharacterFileNames
             };
 
             StateChanged?.Invoke(State);
@@ -99,7 +111,42 @@ namespace GameCore.UI.MainMenu
                 IsInteractable = State.IsInteractable,
                 SelectedSceneName = State.SelectedSceneName,
                 AvailableScenes = State.AvailableScenes,
-                CurrentSection = section ?? "map-selection"
+                CurrentSection = section ?? "map-selection",
+                SelectedCharacterFileName = State.SelectedCharacterFileName,
+                AvailableCharacterFileNames = State.AvailableCharacterFileNames
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        public void SetAvailableCharacters(string[] characterFileNames)
+        {
+            State = new MainMenuState
+            {
+                IsInteractable = State.IsInteractable,
+                SelectedSceneName = State.SelectedSceneName,
+                AvailableScenes = State.AvailableScenes,
+                CurrentSection = State.CurrentSection,
+                SelectedCharacterFileName = State.SelectedCharacterFileName,
+                AvailableCharacterFileNames = characterFileNames ?? new string[0]
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        public void SetSelectedCharacter(string characterFileName)
+        {
+            if (State.SelectedCharacterFileName == characterFileName)
+                return;
+
+            State = new MainMenuState
+            {
+                IsInteractable = State.IsInteractable,
+                SelectedSceneName = State.SelectedSceneName,
+                AvailableScenes = State.AvailableScenes,
+                CurrentSection = State.CurrentSection,
+                SelectedCharacterFileName = characterFileName ?? string.Empty,
+                AvailableCharacterFileNames = State.AvailableCharacterFileNames
             };
 
             StateChanged?.Invoke(State);
