@@ -1,17 +1,18 @@
 using GameCore.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.Collections.Generic;
 
 namespace GameCore.UI.MainMenu
 {
     /// <summary>
     /// View for character creation UI.
+    /// Follows MVP pattern - only handles UI display and user input, delegates logic to Presenter.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class CharacterCreationView : MonoBehaviour, IUIView<CharacterCreationState>
     {
         [Header("Assets")]
+        [Tooltip("Optional: USS stylesheet for this view. If not assigned, it will still work if referenced from the UXML.")]
         [SerializeField] private StyleSheet _characterCreationStyleSheet;
 
         private UIDocument _uiDocument;
@@ -26,7 +27,6 @@ namespace GameCore.UI.MainMenu
         private IntegerField[] _abilityInputs;
 
         // Detail panel
-        private VisualElement _detailPanel;
         private Label _detailName;
         private Label _detailType;
         private Label _detailContent;
@@ -38,15 +38,12 @@ namespace GameCore.UI.MainMenu
         private VisualElement _spellcastingStatsGrid;
         private VisualElement _physicalTraitsGrid;
 
-        // Proficiency panel
-        private VisualElement _proficiencyPanel;
-
         // Action buttons
         private Button _cancelButton;
         private Button _createButton;
         private Button _rollButton;
 
-        // Events
+        // Events - View only raises events, doesn't handle business logic
         public event System.Action<string> ClassSelected;
         public event System.Action<string> RaceSelected;
         public event System.Action<string> BackgroundSelected;
@@ -84,31 +81,15 @@ namespace GameCore.UI.MainMenu
                 return;
             }
 
-            // Add stylesheet if assigned - add to both UIDocument and root
-            if (_characterCreationStyleSheet != null)
+            // Add stylesheet if assigned
+            if (_characterCreationStyleSheet != null && !_root.styleSheets.Contains(_characterCreationStyleSheet))
             {
-                // Add to UIDocument stylesheets
-                if (_uiDocument != null && !_uiDocument.rootVisualElement.styleSheets.Contains(_characterCreationStyleSheet))
-                {
-                    _uiDocument.rootVisualElement.styleSheets.Add(_characterCreationStyleSheet);
-                }
-                
-                // Also add to root element
-                if (!_root.styleSheets.Contains(_characterCreationStyleSheet))
-                {
-                    _root.styleSheets.Add(_characterCreationStyleSheet);
-                }
-            }
-            else
-            {
-                Debug.LogWarning("CharacterCreationView: Stylesheet not assigned! Please assign CharacterCreationView.uss to the _characterCreationStyleSheet field in the inspector.");
+                _root.styleSheets.Add(_characterCreationStyleSheet);
             }
 
             QueryUIElements();
             SetupEventHandlers();
-            InitializeOptionCards();
-            InitializeAbilityStatRows();
-            InitializeCharacterStatItems();
+            InitializeUIElements();
         }
 
         private void QueryUIElements()
@@ -130,7 +111,6 @@ namespace GameCore.UI.MainMenu
             };
 
             // Detail panel
-            _detailPanel = _root.Q<VisualElement>("detail-panel");
             _detailName = _root.Q<Label>("detail-name");
             _detailType = _root.Q<Label>("detail-type");
             _detailContent = _root.Q<Label>("detail-content");
@@ -141,9 +121,6 @@ namespace GameCore.UI.MainMenu
             _characterStatsGrid = _root.Q<VisualElement>("character-stats-grid");
             _spellcastingStatsGrid = _root.Q<VisualElement>("spellcasting-stats-grid");
             _physicalTraitsGrid = _root.Q<VisualElement>("physical-traits-grid");
-
-            // Proficiency panel
-            _proficiencyPanel = _root.Q<VisualElement>("proficiency-panel");
 
             // Action buttons
             _cancelButton = _root.Q<Button>("cancel-button");
@@ -177,27 +154,28 @@ namespace GameCore.UI.MainMenu
                 _rollButton.clicked += () => RollAbilitiesClicked?.Invoke();
         }
 
-        private void InitializeOptionCards()
+        private void InitializeUIElements()
         {
-            // Initialize class buttons
-            string[] classes = { "Cleric", "Fighter", "Wizard", "Rogue", "Barbarian", "Ranger", "Bard", "Paladin", "Druid" };
-            foreach (string className in classes)
-            {
-                CreateOptionButton(_classButtonsContainer, className, () => ClassSelected?.Invoke(className));
-            }
+            // Initialize option buttons from data service
+            InitializeOptionButtons(_classButtonsContainer, CharacterCreationDataService.AvailableClasses, 
+                (name) => ClassSelected?.Invoke(name));
+            InitializeOptionButtons(_raceButtonsContainer, CharacterCreationDataService.AvailableRaces, 
+                (name) => RaceSelected?.Invoke(name));
+            InitializeOptionButtons(_backgroundButtonsContainer, CharacterCreationDataService.AvailableBackgrounds, 
+                (name) => BackgroundSelected?.Invoke(name));
 
-            // Initialize race buttons
-            string[] races = { "Hill Dwarf", "High Elf", "Human", "Dragonborn", "Half-Orc", "Tiefling", "Halfling", "Gnome", "Half-Elf" };
-            foreach (string raceName in races)
-            {
-                CreateOptionButton(_raceButtonsContainer, raceName, () => RaceSelected?.Invoke(raceName));
-            }
+            // Initialize stat display rows (created in UXML, just need to query labels)
+            InitializeAbilityStatRows();
+            InitializeCharacterStatItems();
+        }
 
-            // Initialize background buttons
-            string[] backgrounds = { "Acolyte", "Soldier", "Criminal", "Folk Hero", "Noble", "Sage" };
-            foreach (string bgName in backgrounds)
+        private void InitializeOptionButtons(VisualElement container, string[] options, System.Action<string> onClick)
+        {
+            if (container == null) return;
+
+            foreach (string optionName in options)
             {
-                CreateOptionButton(_backgroundButtonsContainer, bgName, () => BackgroundSelected?.Invoke(bgName));
+                CreateOptionButton(container, optionName, () => onClick(optionName));
             }
         }
 
@@ -209,7 +187,6 @@ namespace GameCore.UI.MainMenu
             button.AddToClassList("character-creation-option-button");
             button.name = $"option-{name.ToLower().Replace(" ", "-")}";
             button.text = name;
-
             button.clicked += () => onClick?.Invoke();
 
             parent.Add(button);
@@ -219,11 +196,15 @@ namespace GameCore.UI.MainMenu
         {
             if (_abilityScoresGrid == null) return;
 
-            string[] abilityNames = { "STR", "DEX", "CON", "INT", "WIS", "CHA" };
-            foreach (string abilityName in abilityNames)
+            // Create ability stat rows if they don't exist
+            if (_abilityScoresGrid.childCount == 0)
             {
-                VisualElement row = CreateAbilityStatRow(abilityName);
-                _abilityScoresGrid.Add(row);
+                string[] abilityNames = { "STR", "DEX", "CON", "INT", "WIS", "CHA" };
+                foreach (string abilityName in abilityNames)
+                {
+                    VisualElement row = CreateAbilityStatRow(abilityName);
+                    _abilityScoresGrid.Add(row);
+                }
             }
         }
 
@@ -270,20 +251,27 @@ namespace GameCore.UI.MainMenu
 
         private void InitializeCharacterStatItems()
         {
-            // Combat & Defense stats
-            CreateCharacterStatItem(_characterStatsGrid, "Hit Points", "10", "hp-value");
-            CreateCharacterStatItem(_characterStatsGrid, "Armor Class", "11", "ac-value");
-            CreateCharacterStatItem(_characterStatsGrid, "Initiative", "+1", "initiative-value");
-            CreateCharacterStatItem(_characterStatsGrid, "Proficiency", "+2", "proficiency-value");
+            // Create character stat items if they don't exist
+            if (_characterStatsGrid != null && _characterStatsGrid.childCount == 0)
+            {
+                CreateCharacterStatItem(_characterStatsGrid, "Hit Points", "10", "hp-value");
+                CreateCharacterStatItem(_characterStatsGrid, "Armor Class", "11", "ac-value");
+                CreateCharacterStatItem(_characterStatsGrid, "Initiative", "+1", "initiative-value");
+                CreateCharacterStatItem(_characterStatsGrid, "Proficiency", "+2", "proficiency-value");
+            }
 
-            // Spellcasting stats
-            CreateCharacterStatItem(_spellcastingStatsGrid, "Spell Save DC", "13", "spell-save-dc-value");
-            CreateCharacterStatItem(_spellcastingStatsGrid, "Spell Attack", "+5", "spell-attack-value");
+            if (_spellcastingStatsGrid != null && _spellcastingStatsGrid.childCount == 0)
+            {
+                CreateCharacterStatItem(_spellcastingStatsGrid, "Spell Save DC", "13", "spell-save-dc-value");
+                CreateCharacterStatItem(_spellcastingStatsGrid, "Spell Attack", "+5", "spell-attack-value");
+            }
 
-            // Physical traits
-            CreateCharacterStatItem(_physicalTraitsGrid, "Size", "Medium", "size-value");
-            CreateCharacterStatItem(_physicalTraitsGrid, "Speed", "25 ft", "speed-value");
-            CreateCharacterStatItem(_physicalTraitsGrid, "Darkvision", "60 ft", "darkvision-value");
+            if (_physicalTraitsGrid != null && _physicalTraitsGrid.childCount == 0)
+            {
+                CreateCharacterStatItem(_physicalTraitsGrid, "Size", "Medium", "size-value");
+                CreateCharacterStatItem(_physicalTraitsGrid, "Speed", "25 ft", "speed-value");
+                CreateCharacterStatItem(_physicalTraitsGrid, "Darkvision", "60 ft", "darkvision-value");
+            }
         }
 
         private void CreateCharacterStatItem(VisualElement parent, string label, string value, string valueName)
@@ -327,15 +315,11 @@ namespace GameCore.UI.MainMenu
         {
             if (_root == null) return;
 
-            // Update visibility - always respect the state
+            // Update visibility
             if (state.IsVisible)
-            {
                 Show();
-            }
             else
-            {
                 Hide();
-            }
 
             // Update selected options
             UpdateOptionSelection(_classButtonsContainer, state.SelectedClass);
@@ -353,23 +337,18 @@ namespace GameCore.UI.MainMenu
                     }
                 }
             }
-
-            // Update detail panel based on selection
-            UpdateDetailPanel(state);
-
-            // Update stats based on selections
-            UpdateCharacterStats(state);
         }
 
         private void UpdateOptionSelection(VisualElement container, string selectedName)
         {
-            if (container == null) return;
+            if (container == null || string.IsNullOrEmpty(selectedName)) return;
 
             foreach (VisualElement element in container.Children())
             {
                 if (element is Button button)
                 {
-                    if (button.name.Contains(selectedName?.ToLower().Replace(" ", "-") ?? ""))
+                    string normalizedName = selectedName.ToLower().Replace(" ", "-");
+                    if (button.name.Contains(normalizedName))
                     {
                         button.AddToClassList("selected");
                     }
@@ -381,70 +360,92 @@ namespace GameCore.UI.MainMenu
             }
         }
 
-        private void UpdateDetailPanel(CharacterCreationState state)
+        /// <summary>
+        /// Updates the detail panel with provided information.
+        /// Called by Presenter with calculated data.
+        /// </summary>
+        public void UpdateDetailPanel(string name, string type, string description, System.Collections.Generic.List<FeatureData> features)
         {
-            // Update detail panel based on what's selected (race takes priority, then class)
-            if (!string.IsNullOrEmpty(state.SelectedRace))
-            {
-                UpdateDetailPanelForRace(state.SelectedRace);
-            }
-            else if (!string.IsNullOrEmpty(state.SelectedClass))
-            {
-                UpdateDetailPanelForClass(state.SelectedClass);
-            }
-        }
-
-        private void UpdateDetailPanelForRace(string raceName)
-        {
-            if (_detailName != null) _detailName.text = raceName;
-            if (_detailType != null) _detailType.text = "Race";
-            if (_detailContent != null)
-            {
-                _detailContent.text = GetRaceDescription(raceName);
-            }
-            UpdateFeaturesForRace(raceName);
-        }
-
-        private void UpdateDetailPanelForClass(string className)
-        {
-            if (_detailName != null) _detailName.text = className;
-            if (_detailType != null) _detailType.text = "Class";
-            if (_detailContent != null)
-            {
-                _detailContent.text = GetClassDescription(className);
-            }
-            ClearFeatures();
-        }
-
-        private string GetRaceDescription(string raceName)
-        {
-            // Simplified descriptions - in a real implementation, this would come from a data source
-            switch (raceName)
-            {
-                case "Hill Dwarf":
-                    return "Hill dwarves are known for their keen senses, deep intuition, and remarkable resilience. Hardy and dependable, they have adapted to life in rugged mountainous terrain, developing exceptional fortitude and wisdom through generations of living in harmony with stone and earth.";
-                default:
-                    return $"Description for {raceName}.";
-            }
-        }
-
-        private string GetClassDescription(string className)
-        {
-            return $"Description for {className}.";
-        }
-
-        private void UpdateFeaturesForRace(string raceName)
-        {
-            if (_featuresSection == null) return;
+            if (_detailName != null) _detailName.text = name ?? string.Empty;
+            if (_detailType != null) _detailType.text = type ?? string.Empty;
+            if (_detailContent != null) _detailContent.text = description ?? string.Empty;
 
             ClearFeatures();
-
-            // Add features based on race
-            if (raceName == "Hill Dwarf")
+            if (features != null)
             {
-                AddFeature("Dwarven Resilience", "You have advantage on saving throws against poison, and you have resistance against poison damage.");
-                AddFeature("Dwarven Toughness", "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level.");
-                AddFeature("Stonecunning", "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check.");
+                foreach (var feature in features)
+                {
+                    AddFeature(feature.Name, feature.Description);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates ability score displays with calculated values.
+        /// Called by Presenter with calculated data.
+        /// </summary>
+        public void UpdateAbilityScoreDisplay(int index, int score, int modifier)
+        {
+            string[] abilityNames = { "str", "dex", "con", "int", "wis", "cha" };
+            if (index < 0 || index >= abilityNames.Length) return;
+
+            string abilityName = abilityNames[index];
+
+            // Update score display
+            Label scoreLabel = _root.Q<Label>($"ability-score-{abilityName}");
+            if (scoreLabel != null)
+            {
+                scoreLabel.text = score.ToString();
+                scoreLabel.RemoveFromClassList("increased");
+                scoreLabel.RemoveFromClassList("decreased");
+                scoreLabel.AddToClassList("neutral");
+            }
+
+            // Update modifier display
+            Label modLabel = _root.Q<Label>($"ability-mod-{abilityName}");
+            if (modLabel != null)
+            {
+                modLabel.text = modifier >= 0 ? $"+{modifier}" : modifier.ToString();
+                if (modifier < 0)
+                {
+                    modLabel.AddToClassList("negative");
+                }
+                else
+                {
+                    modLabel.RemoveFromClassList("negative");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates derived character stats display.
+        /// Called by Presenter with calculated data.
+        /// </summary>
+        public void UpdateDerivedStats(int hitPoints, int armorClass, int initiative, int proficiencyBonus, 
+            int? spellSaveDC = null, int? spellAttack = null)
+        {
+            UpdateStatLabel("hp-value", hitPoints.ToString());
+            UpdateStatLabel("ac-value", armorClass.ToString());
+            UpdateStatLabel("initiative-value", initiative >= 0 ? $"+{initiative}" : initiative.ToString());
+            UpdateStatLabel("proficiency-value", proficiencyBonus >= 0 ? $"+{proficiencyBonus}" : proficiencyBonus.ToString());
+
+            if (spellSaveDC.HasValue)
+            {
+                UpdateStatLabel("spell-save-dc-value", spellSaveDC.Value.ToString());
+            }
+
+            if (spellAttack.HasValue)
+            {
+                UpdateStatLabel("spell-attack-value", spellAttack.Value >= 0 ? $"+{spellAttack.Value}" : spellAttack.Value.ToString());
+            }
+        }
+
+        private void UpdateStatLabel(string labelName, string value)
+        {
+            Label label = _root.Q<Label>(labelName);
+            if (label != null)
+            {
+                label.text = value;
             }
         }
 
@@ -470,101 +471,6 @@ namespace GameCore.UI.MainMenu
         {
             if (_featuresSection == null) return;
             _featuresSection.Clear();
-        }
-
-        private void UpdateCharacterStats(CharacterCreationState state)
-        {
-            if (state.AbilityScores == null || state.AbilityScores.Length != 6) return;
-
-            string[] abilityNames = { "str", "dex", "con", "int", "wis", "cha" };
-            for (int i = 0; i < 6; i++)
-            {
-                int score = state.AbilityScores[i];
-                int modifier = CalculateModifier(score);
-
-                // Update score display
-                Label scoreLabel = _root.Q<Label>($"ability-score-{abilityNames[i]}");
-                if (scoreLabel != null)
-                {
-                    scoreLabel.text = score.ToString();
-                    scoreLabel.RemoveFromClassList("increased");
-                    scoreLabel.RemoveFromClassList("decreased");
-                    scoreLabel.AddToClassList("neutral");
-                }
-
-                // Update modifier display
-                Label modLabel = _root.Q<Label>($"ability-mod-{abilityNames[i]}");
-                if (modLabel != null)
-                {
-                    modLabel.text = modifier >= 0 ? $"+{modifier}" : modifier.ToString();
-                    // Add/remove negative class for styling
-                    if (modifier < 0)
-                    {
-                        modLabel.AddToClassList("negative");
-                    }
-                    else
-                    {
-                        modLabel.RemoveFromClassList("negative");
-                    }
-                }
-            }
-
-            // Update derived stats (simplified - would need class/race bonuses in real implementation)
-            UpdateDerivedStats(state);
-        }
-
-        private int CalculateModifier(int score)
-        {
-            return (score - 10) / 2;
-        }
-
-        private void UpdateDerivedStats(CharacterCreationState state)
-        {
-            // Simplified calculations - in a real implementation, these would consider class, race, and level
-            int conMod = CalculateModifier(state.AbilityScores[2]); // CON
-            int dexMod = CalculateModifier(state.AbilityScores[1]); // DEX
-            int wisMod = CalculateModifier(state.AbilityScores[4]); // WIS
-
-            // HP (simplified - would use class hit die)
-            Label hpLabel = _root.Q<Label>("hp-value");
-            if (hpLabel != null)
-            {
-                int hp = 8 + conMod; // Base 8 for cleric
-                hpLabel.text = hp.ToString();
-            }
-
-            // AC (simplified)
-            Label acLabel = _root.Q<Label>("ac-value");
-            if (acLabel != null)
-            {
-                int ac = 10 + dexMod;
-                acLabel.text = ac.ToString();
-            }
-
-            // Initiative
-            Label initLabel = _root.Q<Label>("initiative-value");
-            if (initLabel != null)
-            {
-                initLabel.text = dexMod >= 0 ? $"+{dexMod}" : dexMod.ToString();
-            }
-
-            // Spell Save DC (if spellcaster)
-            if (!string.IsNullOrEmpty(state.SelectedClass) && (state.SelectedClass == "Cleric" || state.SelectedClass == "Wizard"))
-            {
-                Label spellDCLabel = _root.Q<Label>("spell-save-dc-value");
-                if (spellDCLabel != null)
-                {
-                    int spellDC = 8 + 2 + wisMod; // 8 + proficiency + casting modifier
-                    spellDCLabel.text = spellDC.ToString();
-                }
-
-                Label spellAttackLabel = _root.Q<Label>("spell-attack-value");
-                if (spellAttackLabel != null)
-                {
-                    int spellAttack = 2 + wisMod; // proficiency + casting modifier
-                    spellAttackLabel.text = spellAttack >= 0 ? $"+{spellAttack}" : spellAttack.ToString();
-                }
-            }
         }
     }
 }
