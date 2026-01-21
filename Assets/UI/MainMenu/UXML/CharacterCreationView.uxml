@@ -1,0 +1,160 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MainMenu/USS/CharacterCreationView.uss?fileID=7433441132597879392&amp;guid=d50ded843bb59ba49b9028199398f790&amp;type=3#CharacterCreationView"/>
+    <ui:VisualElement name="root" class="character-creation-root">
+        <!-- Container with two-column layout -->
+        <ui:VisualElement name="container" class="character-creation-container">
+            <!-- Left Panel -->
+            <ui:VisualElement name="left-panel" class="character-creation-left-panel">
+                <!-- Main Content Area (Character Creation Options) -->
+                <ui:ScrollView name="main-content-scroll" class="character-creation-main-content-scroll" mode="Vertical">
+                    <ui:VisualElement name="main-content" class="character-creation-main-content">
+                        <ui:Label text="Character Creation" class="character-creation-title" />
+                        
+                        <!-- Step 1: Class -->
+                        <ui:VisualElement name="step-class" class="character-creation-section">
+                            <ui:VisualElement name="section-title" class="character-creation-section-title">
+                                <ui:VisualElement name="step-number" class="character-creation-step-number">
+                                    <ui:Label text="1" />
+                                </ui:VisualElement>
+                                <ui:Label text="Choose Your Class" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="class-buttons-container" class="character-creation-buttons-container">
+                                <!-- Class buttons will be added dynamically -->
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        
+                        <!-- Step 2: Race -->
+                        <ui:VisualElement name="step-race" class="character-creation-section">
+                            <ui:VisualElement name="section-title" class="character-creation-section-title">
+                                <ui:VisualElement name="step-number" class="character-creation-step-number">
+                                    <ui:Label text="2" />
+                                </ui:VisualElement>
+                                <ui:Label text="Choose Your Race" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="race-buttons-container" class="character-creation-buttons-container">
+                                <!-- Race buttons will be added dynamically -->
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        
+                        <!-- Step 3: Ability Scores -->
+                        <ui:VisualElement name="step-abilities" class="character-creation-section">
+                            <ui:VisualElement name="section-title" class="character-creation-section-title">
+                                <ui:VisualElement name="step-number" class="character-creation-step-number">
+                                    <ui:Label text="3" />
+                                </ui:VisualElement>
+                                <ui:Label text="Set Ability Scores" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="ability-input-grid" class="character-creation-ability-input">
+                                <ui:VisualElement name="ability-str-box" class="character-creation-ability-box">
+                                    <ui:Label text="STR" class="character-creation-ability-label" />
+                                    <ui:IntegerField name="ability-str-input" value="10" min="3" max="18" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="ability-dex-box" class="character-creation-ability-box">
+                                    <ui:Label text="DEX" class="character-creation-ability-label" />
+                                    <ui:IntegerField name="ability-dex-input" value="12" min="3" max="18" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="ability-con-box" class="character-creation-ability-box">
+                                    <ui:Label text="CON" class="character-creation-ability-label" />
+                                    <ui:IntegerField name="ability-con-input" value="13" min="3" max="18" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="ability-int-box" class="character-creation-ability-box">
+                                    <ui:Label text="INT" class="character-creation-ability-label" />
+                                    <ui:IntegerField name="ability-int-input" value="8" min="3" max="18" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="ability-wis-box" class="character-creation-ability-box">
+                                    <ui:Label text="WIS" class="character-creation-ability-label" />
+                                    <ui:IntegerField name="ability-wis-input" value="15" min="3" max="18" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="ability-cha-box" class="character-creation-ability-box">
+                                    <ui:Label text="CHA" class="character-creation-ability-label" />
+                                    <ui:IntegerField name="ability-cha-input" value="10" min="3" max="18" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:Button name="roll-abilities-button" class="character-creation-roll-button" text="Roll 4d6 Drop Lowest" />
+                        </ui:VisualElement>
+                        
+                        <!-- Step 4: Background -->
+                        <ui:VisualElement name="step-background" class="character-creation-section">
+                            <ui:VisualElement name="section-title" class="character-creation-section-title">
+                                <ui:VisualElement name="step-number" class="character-creation-step-number">
+                                    <ui:Label text="4" />
+                                </ui:VisualElement>
+                                <ui:Label text="Choose Background" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="background-buttons-container" class="character-creation-buttons-container">
+                                <!-- Background buttons will be added dynamically -->
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:ScrollView>
+                
+                <!-- Detail Panel (Moved to Bottom of Left Side) -->
+                <ui:ScrollView name="detail-panel-scroll" class="character-creation-detail-panel-scroll" mode="Vertical">
+                    <ui:VisualElement name="detail-panel" class="character-creation-detail-panel">
+                        <ui:Label text="Selection Details" class="character-creation-detail-title" />
+                        <ui:VisualElement name="detail-header" class="character-creation-detail-header">
+                            <ui:VisualElement name="detail-icon" class="character-creation-detail-icon">
+                                <ui:Label text="🏔️" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="detail-title" class="character-creation-detail-title-container">
+                                <ui:Label name="detail-name" text="Hill Dwarf" class="character-creation-detail-name" />
+                                <ui:Label name="detail-type" text="Race" class="character-creation-detail-type" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:ScrollView name="detail-content-scroll" class="character-creation-detail-content-scroll" mode="Vertical">
+                            <ui:Label name="detail-content" text="Hill dwarves are known for their keen senses..." class="character-creation-detail-content" />
+                            <ui:VisualElement name="features-section" class="character-creation-features-section">
+                                <ui:Label text="Special Features" class="character-creation-features-title" />
+                                <!-- Feature items will be added dynamically -->
+                            </ui:VisualElement>
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                </ui:ScrollView>
+            </ui:VisualElement>
+            
+            <!-- Right Panel -->
+            <ui:VisualElement name="right-panel" class="character-creation-right-panel">
+                <!-- Stats Panel -->
+                <ui:ScrollView name="stats-panel-scroll" class="character-creation-stats-panel-scroll" mode="Vertical">
+                    <ui:VisualElement name="stats-panel" class="character-creation-stats-panel">
+                        <ui:Label text="Character Stats" class="character-creation-stats-title" />
+                        
+                        <!-- Ability Scores in 2-Column Grid -->
+                        <ui:VisualElement name="ability-scores-grid" class="character-creation-ability-scores-grid">
+                            <!-- Ability stat rows will be added dynamically -->
+                        </ui:VisualElement>
+                        
+                        <ui:Label text="Combat &amp; Defense" class="character-creation-subtitle" />
+                        <ui:VisualElement name="character-stats-grid" class="character-creation-character-stats-grid">
+                            <!-- Character stat items will be added dynamically -->
+                        </ui:VisualElement>
+                        
+                        <ui:Label text="Spellcasting" class="character-creation-subtitle" />
+                        <ui:VisualElement name="spellcasting-stats-grid" class="character-creation-character-stats-grid">
+                            <!-- Spellcasting stat items will be added dynamically -->
+                        </ui:VisualElement>
+                        
+                        <ui:Label text="Physical Traits" class="character-creation-subtitle" />
+                        <ui:VisualElement name="physical-traits-grid" class="character-creation-character-stats-grid">
+                            <!-- Physical trait items will be added dynamically -->
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:ScrollView>
+                
+                <!-- Proficiency Panel -->
+                <ui:ScrollView name="proficiency-panel-scroll" class="character-creation-proficiency-panel-scroll" mode="Vertical">
+                    <ui:VisualElement name="proficiency-panel" class="character-creation-proficiency-panel">
+                        <ui:Label text="Proficiencies" class="character-creation-proficiency-title" />
+                        <!-- Proficiency categories will be added dynamically -->
+                    </ui:VisualElement>
+                </ui:ScrollView>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <!-- Action Buttons (Bottom Bar) -->
+        <ui:VisualElement name="action-buttons" class="character-creation-action-buttons">
+            <ui:Button name="cancel-button" class="character-creation-cancel-button" text="Cancel" />
+            <ui:Button name="create-button" class="character-creation-create-button" text="Create Character" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

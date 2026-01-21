@@ -1,94 +1,64 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <!-- Main Menu Root Container - Master-Detail Layout -->
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MainMenu/USS/MainMenuView.uss?fileID=7433441132597879392&amp;guid=d18d15f1da68f01429347d099ae25f64&amp;type=3#MainMenuView"/>
     <ui:VisualElement name="root" class="menu-root">
-        <!-- Background -->
-        <ui:VisualElement name="background-gradient" class="menu-background-gradient" />
-        
-        <!-- Version Label (Top Right) -->
-        <ui:Label name="version-label" class="menu-version-label-top-right" />
-        
-        <!-- Main Container: Sidebar + Content Area -->
+        <ui:VisualElement name="background-gradient" class="menu-background-gradient"/>
+        <ui:Label name="version-label" class="menu-version-label-top-right"/>
         <ui:VisualElement name="main-container" class="menu-main-container">
-            <!-- LEFT SIDEBAR: Navigation Menu -->
             <ui:VisualElement name="sidebar" class="menu-sidebar">
-                <ui:Label name="title-label" text="VTT" class="menu-sidebar-title" />
-                
-                <!-- Navigation Menu Items -->
+                <ui:Label name="title-label" text="VTT" class="menu-sidebar-title"/>
                 <ui:VisualElement name="nav-menu" class="menu-nav-menu">
-                    <ui:Button name="nav-host" class="menu-nav-item selected" text="Host Session" />
-                    <ui:Button name="nav-join" class="menu-nav-item" text="Join Session" />
-                    <ui:Button name="nav-settings" class="menu-nav-item" text="Settings" />
-                    <ui:Button name="exit-button" class="menu-nav-item menu-exit-button" text="Exit" />
+                    <ui:Button name="nav-host" text="Host Session" class="menu-nav-item selected"/>
+                    <ui:Button name="nav-join" text="Join Session" class="menu-nav-item"/>
+                    <ui:Button name="nav-settings" text="Settings" class="menu-nav-item"/>
+                    <ui:Button name="exit-button" text="Exit" class="menu-nav-item menu-exit-button"/>
                 </ui:VisualElement>
             </ui:VisualElement>
-            
-            <!-- RIGHT CONTENT AREA: Detail Panel -->
             <ui:VisualElement name="content-area" class="menu-content-area">
-                <!-- Host Session Content -->
                 <ui:VisualElement name="host-content" class="menu-content-panel">
-                    <!-- Header Section -->
                     <ui:VisualElement name="host-header" class="menu-content-header">
-                        <ui:Label text="HOST SESSION" class="menu-content-header-title" />
-                        <ui:Label text="Select a map to host" class="menu-content-header-subtitle" />
+                        <ui:Label text="HOST SESSION" class="menu-content-header-title"/>
+                        <ui:Label text="Select a map to host" class="menu-content-header-subtitle"/>
                     </ui:VisualElement>
-                    
-                    <!-- Scene Selection Grid -->
-                    <ui:ScrollView name="scene-grid-scroll" class="menu-scene-grid-scroll" mode="Vertical" show-horizontal-scroller="false" vertical-scroller-visibility="Auto">
-                        <ui:VisualElement name="scene-grid-container" class="menu-scene-grid-container">
-                            <!-- Scene cards will be added dynamically -->
-                        </ui:VisualElement>
+                    <ui:ScrollView name="scene-grid-scroll" mode="Vertical" show-horizontal-scroller="false" vertical-scroller-visibility="Auto" class="menu-scene-grid-scroll">
+                        <ui:VisualElement name="scene-grid-container" class="menu-scene-grid-container"/>
                     </ui:ScrollView>
-                    
                     <ui:VisualElement name="host-actions" class="menu-actions-container">
-                        <ui:Label name="selected-scene-name" text="No map selected" class="menu-selected-scene-name" />
-                        <ui:Button name="load-scene-button" class="menu-button-primary" text="Start Hosting" />
+                        <ui:Label name="selected-scene-name" text="No map selected" class="menu-selected-scene-name"/>
+                        <ui:Button name="load-scene-button" text="Start Hosting" class="menu-button-primary"/>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                
-                <!-- Join Session Content -->
                 <ui:VisualElement name="join-content" class="menu-content-panel" style="display: none;">
-                    <!-- Header Section -->
                     <ui:VisualElement name="join-header" class="menu-content-header">
-                        <ui:Label text="JOIN SESSION" class="menu-content-header-title" />
-                        <ui:Label text="Select a character to join with" class="menu-content-header-subtitle" />
+                        <ui:Label text="JOIN SESSION" class="menu-content-header-title"/>
+                        <ui:Label text="Select a character to join with" class="menu-content-header-subtitle"/>
                     </ui:VisualElement>
-                    
-                    <!-- Character Selection Grid -->
-                    <ui:ScrollView name="character-grid-scroll" class="menu-scene-grid-scroll" mode="Vertical" show-horizontal-scroller="false" vertical-scroller-visibility="Auto">
-                        <ui:VisualElement name="character-grid-container" class="menu-scene-grid-container">
-                            <!-- Character cards will be added dynamically -->
-                        </ui:VisualElement>
+                    <ui:ScrollView name="character-grid-scroll" mode="Vertical" show-horizontal-scroller="false" vertical-scroller-visibility="Auto" class="menu-scene-grid-scroll">
+                        <ui:VisualElement name="character-grid-container" class="menu-scene-grid-container"/>
                     </ui:ScrollView>
-                    
                     <ui:VisualElement name="join-actions" class="menu-actions-container">
-                        <ui:Label name="selected-character-name" text="No character selected" class="menu-selected-scene-name" />
+                        <ui:Label name="selected-character-name" text="No character selected" class="menu-selected-scene-name"/>
                         <ui:VisualElement name="join-buttons" class="menu-join-buttons">
-                            <ui:Button name="create-character-button" class="menu-button-secondary" text="Create New Character" />
-                            <ui:Button name="join-session-button" class="menu-button-primary" text="Join Session" enabled="false" />
+                            <ui:Button name="create-character-button" text="Create New Character" class="menu-button-secondary"/>
+                            <ui:Button name="join-session-button" text="Join Session" enabled="false" class="menu-button-primary"/>
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                
-                <!-- Settings Content -->
                 <ui:VisualElement name="settings-content" class="menu-content-panel" style="display: none;">
-                    <!-- Header Section -->
                     <ui:VisualElement name="settings-header" class="menu-content-header">
-                        <ui:Label text="SETTINGS" class="menu-content-header-title" />
-                        <ui:Label text="Configure your game preferences" class="menu-content-header-subtitle" />
+                        <ui:Label text="SETTINGS" class="menu-content-header-title"/>
+                        <ui:Label text="Configure your game preferences" class="menu-content-header-subtitle"/>
                     </ui:VisualElement>
-                    <ui:Label text="Settings menu coming soon..." class="menu-text-muted" />
+                    <ui:Label text="Settings menu coming soon..." class="menu-text-muted"/>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        
-        <!-- Exit Confirmation Dialog -->
         <ui:VisualElement name="exit-confirmation-dialog" class="menu-dialog-overlay" style="display: none;">
             <ui:VisualElement name="dialog-content" class="menu-dialog-content">
-                <ui:Label text="EXIT GAME" class="menu-dialog-title" />
-                <ui:Label text="Are you sure you want to exit?" class="menu-dialog-message" />
+                <ui:Label text="EXIT GAME" class="menu-dialog-title"/>
+                <ui:Label text="Are you sure you want to exit?" class="menu-dialog-message"/>
                 <ui:VisualElement name="dialog-buttons" class="menu-dialog-buttons">
-                    <ui:Button name="dialog-yes" class="menu-button-primary" text="YES" />
-                    <ui:Button name="dialog-no" class="menu-button-primary" text="NO" />
+                    <ui:Button name="dialog-yes" text="YES" class="menu-button-primary"/>
+                    <ui:Button name="dialog-no" text="NO" class="menu-button-primary"/>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

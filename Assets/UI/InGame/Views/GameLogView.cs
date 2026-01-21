@@ -59,8 +59,15 @@ namespace GameCore.UI.InGame
 
             // Configure game log panel
             _gameLogPanel.pickingMode = PickingMode.Position;
-            _gameLogPanel.style.display = DisplayStyle.None;
-            _gameLogPanel.SetEnabled(false);
+            
+            // Only hide and position off-screen during play mode
+            // In editor/preview, panel remains visible with default positioning from USS
+            if (Application.isPlaying)
+            {
+                _gameLogPanel.style.display = DisplayStyle.None;
+                _gameLogPanel.SetEnabled(false);
+                _gameLogPanel.AddToClassList("runtime-hidden");
+            }
 
             // Load saved height preference
             LoadGameLogHeight();
@@ -371,6 +378,12 @@ namespace GameCore.UI.InGame
                 gameLogCurrentRight = isVisible ? panelOffscreenRight : panelOnscreenRight;
             }
 
+            // Remove runtime-hidden class when showing
+            if (isVisible)
+            {
+                _gameLogPanel.RemoveFromClassList("runtime-hidden");
+            }
+
             _gameLogPanel.style.display = DisplayStyle.Flex;
             _gameLogPanel.SetEnabled(true);
             _gameLogPanel.pickingMode = PickingMode.Position;
@@ -412,6 +425,7 @@ namespace GameCore.UI.InGame
             {
                 _animationController.AnimateGameLogSlideOut(_gameLogPanel, gameLogCurrentRight, panelOffscreenRight, () =>
                 {
+                    _gameLogPanel.AddToClassList("runtime-hidden");
                     _gameLogPanel.style.display = DisplayStyle.None;
                     _gameLogPanel.SetEnabled(false);
                     _gameLogPanel.pickingMode = PickingMode.Ignore;
@@ -419,6 +433,7 @@ namespace GameCore.UI.InGame
             }
             else
             {
+                _gameLogPanel.AddToClassList("runtime-hidden");
                 _gameLogPanel.style.right = panelOffscreenRight;
                 _gameLogPanel.style.display = DisplayStyle.None;
                 _gameLogPanel.SetEnabled(false);

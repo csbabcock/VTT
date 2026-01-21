@@ -307,14 +307,21 @@ namespace GameCore.UI.InGame
 
             _characterSheetPanel = _root.Q<VisualElement>("character-sheet-panel");
 
-            // Ensure character sheet panel can receive pointer events and starts hidden
+            // Ensure character sheet panel can receive pointer events
+            // Only apply runtime positioning/hiding when in play mode (not in editor preview)
             if (_characterSheetPanel != null)
             {
                 _characterSheetPanel.pickingMode = PickingMode.Position;
-                // Start hidden and positioned off-screen
-                _characterSheetPanel.style.display = DisplayStyle.None;
-                _characterSheetPanel.style.right = PANEL_OFFSCREEN_RIGHT;
-                _characterSheetPanel.SetEnabled(false);
+                
+                // Only hide and position off-screen during play mode
+                // In editor/preview, panels remain visible with default positioning from USS
+                if (Application.isPlaying)
+                {
+                    _characterSheetPanel.style.display = DisplayStyle.None;
+                    _characterSheetPanel.style.right = PANEL_OFFSCREEN_RIGHT;
+                    _characterSheetPanel.SetEnabled(false);
+                    _characterSheetPanel.AddToClassList("runtime-hidden");
+                }
             }
 
             // Get the ScrollView for tab content
@@ -444,13 +451,14 @@ namespace GameCore.UI.InGame
             // Ensure all buttons in the character sheet can receive pointer events
             EnablePickingOnAllButtons(_root);
 
-            // Start with character sheet hidden by default and positioned off-screen
-            if (_characterSheetPanel != null)
+            // Start with character sheet hidden by default and positioned off-screen (only in play mode)
+            if (_characterSheetPanel != null && Application.isPlaying)
             {
                 _characterSheetPanel.style.display = DisplayStyle.None;
                 _characterSheetPanel.style.right = PANEL_OFFSCREEN_RIGHT;
                 _characterSheetPanel.SetEnabled(false);
                 _characterSheetPanel.pickingMode = PickingMode.Ignore;
+                _characterSheetPanel.AddToClassList("runtime-hidden");
             }
 
         }
@@ -643,6 +651,8 @@ namespace GameCore.UI.InGame
             {
                 _targetVisibilityState = true;
                 
+                // Remove runtime-hidden class and show panel
+                _characterSheetPanel.RemoveFromClassList("runtime-hidden");
                 _characterSheetPanel.style.display = DisplayStyle.Flex;
                 _characterSheetPanel.SetEnabled(true);
                 _characterSheetPanel.pickingMode = PickingMode.Position;
@@ -687,6 +697,7 @@ namespace GameCore.UI.InGame
                 {
                     _animationController.AnimateSlideOut(_characterSheetPanel, currentRight, PANEL_OFFSCREEN_RIGHT, () =>
                     {
+                        _characterSheetPanel.AddToClassList("runtime-hidden");
                         _characterSheetPanel.style.display = DisplayStyle.None;
                         _characterSheetPanel.SetEnabled(false);
                         _characterSheetPanel.pickingMode = PickingMode.Ignore;
@@ -695,6 +706,7 @@ namespace GameCore.UI.InGame
                 }
                 else
                 {
+                    _characterSheetPanel.AddToClassList("runtime-hidden");
                     _characterSheetPanel.style.right = PANEL_OFFSCREEN_RIGHT;
                     _characterSheetPanel.style.display = DisplayStyle.None;
                     _characterSheetPanel.SetEnabled(false);
@@ -755,8 +767,20 @@ namespace GameCore.UI.InGame
                 if (_characterSheetTabs[i] != null)
                 {
                     bool isActive = (i == tabIndex);
-                    _characterSheetTabs[i].style.display = isActive ? DisplayStyle.Flex : DisplayStyle.None;
-                    _characterSheetTabs[i].pickingMode = isActive ? PickingMode.Position : PickingMode.Ignore;
+                    
+                    // Use class-based approach for better editor preview support
+                    if (isActive)
+                    {
+                        _characterSheetTabs[i].AddToClassList("active");
+                        _characterSheetTabs[i].style.display = DisplayStyle.Flex;
+                        _characterSheetTabs[i].pickingMode = PickingMode.Position;
+                    }
+                    else
+                    {
+                        _characterSheetTabs[i].RemoveFromClassList("active");
+                        _characterSheetTabs[i].style.display = DisplayStyle.None;
+                        _characterSheetTabs[i].pickingMode = PickingMode.Ignore;
+                    }
                     
                     // Update tab button active state
                     if (_tabButtons[i] != null)

@@ -21,7 +21,7 @@
 /* Character sheet panel */
 .charsheet-panel {
     position: absolute;
-    right: -568px; /* Start off-screen: -520px (width) - 48px (offset) */
+    right: 48px; /* Default visible position for editor preview */
     top: 5px; /* Same distance from top edge as game log spacing */
     width: 520px;
     height: 800px;
@@ -32,6 +32,13 @@
     padding: 0;
     flex-direction: column;
     overflow: hidden; /* Clip content to border-radius to prevent grey corners */
+    display: flex; /* Visible by default for editor preview */
+}
+
+/* Runtime state: panel hidden off-screen (applied during play mode) */
+.charsheet-panel.runtime-hidden {
+    right: -568px; /* Off-screen position: -520px (width) - 48px (offset) */
+    display: none;
 }
 
 .charsheet-title {
@@ -309,14 +316,14 @@
 
 .charsheet-tab-panel {
     padding: var(--vtt-spacing-large);
-    display: none;
+    display: none; /* Hidden by default */
     flex-direction: column;
     min-height: 0;
     flex-shrink: 0;
 }
 
 .charsheet-tab-panel.active {
-    display: flex;
+    display: flex; /* Show active tab */
 }
 
 /* Section Titles */
@@ -624,7 +631,7 @@
 /* Game Log Panel */
 .game-log-panel {
     position: absolute;
-    right: -568px; /* Start off-screen: -520px (width) - 48px (offset) */
+    right: 48px; /* Default visible position for editor preview */
     top: 815px; /* Positioned directly underneath character sheet (5px + 800px + 10px spacing) */
     width: 520px;
     height: 600px;
@@ -637,6 +644,13 @@
     padding: 0;
     flex-direction: column;
     overflow: hidden; /* Clip content to border-radius to prevent grey corners */
+    display: flex; /* Visible by default for editor preview */
+}
+
+/* Runtime state: panel hidden off-screen (applied during play mode) */
+.game-log-panel.runtime-hidden {
+    right: -568px; /* Off-screen position: -520px (width) - 48px (offset) */
+    display: none;
 }
 
 .game-log-header {

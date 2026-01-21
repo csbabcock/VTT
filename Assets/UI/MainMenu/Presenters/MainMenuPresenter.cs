@@ -17,6 +17,7 @@ namespace GameCore.UI.MainMenu
     {
         [Header("References")]
         [SerializeField] private MainMenuView _view;
+        [SerializeField] private CharacterCreationPresenter _characterCreationPresenter;
 
         [Header("Scenes")]
         [Tooltip("List of available scenes to select from. Leave empty to auto-populate from build settings.")]
@@ -32,6 +33,16 @@ namespace GameCore.UI.MainMenu
             if (_view == null)
             {
                 _view = GetComponent<MainMenuView>();
+            }
+
+            // Try to find CharacterCreationPresenter if not assigned
+            if (_characterCreationPresenter == null)
+            {
+                _characterCreationPresenter = FindFirstObjectByType<CharacterCreationPresenter>();
+                if (_characterCreationPresenter == null)
+                {
+                    Debug.LogWarning("MainMenuPresenter: CharacterCreationPresenter not found. Make sure a GameObject with CharacterCreationPresenter component exists in the scene.");
+                }
             }
 
             Model = new MainMenuModel();
@@ -197,9 +208,17 @@ namespace GameCore.UI.MainMenu
 
         private void HandleCreateCharacterClicked()
         {
-            // TODO: Open character creation UI/modal
-            // For now, just log that it was clicked
-            Debug.Log("MainMenuPresenter: Create Character clicked - Character creation UI not yet implemented");
+            // Show character creation UI
+            if (_characterCreationPresenter != null)
+            {
+                _characterCreationPresenter.Show();
+                Debug.Log("MainMenuPresenter: Showing character creation UI");
+            }
+            else
+            {
+                Debug.LogWarning("MainMenuPresenter: CharacterCreationPresenter reference is missing. Cannot show character creation UI.");
+                Debug.LogWarning("MainMenuPresenter: Make sure to assign the CharacterCreationPresenter reference in the inspector.");
+            }
         }
 
         private void HandleJoinSessionClicked()
