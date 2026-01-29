@@ -18,10 +18,13 @@ namespace GameCore.UI.MainMenu
         private UIDocument _uiDocument;
         private VisualElement _root;
 
+        // Tab buttons
+        private Button[] _tabButtons;
+        private VisualElement[] _tabContents;
+
         // Option button containers
         private VisualElement _classButtonsContainer;
         private VisualElement _raceButtonsContainer;
-        private VisualElement _backgroundButtonsContainer;
 
         // Ability score inputs
         private IntegerField[] _abilityInputs;
@@ -94,21 +97,25 @@ namespace GameCore.UI.MainMenu
 
         private void QueryUIElements()
         {
+            // Tab buttons and content
+            _tabButtons = new Button[2]
+            {
+                _root.Q<Button>("tab-class"),
+                _root.Q<Button>("tab-race")
+            };
+
+            _tabContents = new VisualElement[2]
+            {
+                _root.Q<VisualElement>("tab-class-content"),
+                _root.Q<VisualElement>("tab-race-content")
+            };
+
             // Option button containers
             _classButtonsContainer = _root.Q<VisualElement>("class-buttons-container");
             _raceButtonsContainer = _root.Q<VisualElement>("race-buttons-container");
-            _backgroundButtonsContainer = _root.Q<VisualElement>("background-buttons-container");
 
-            // Ability inputs
-            _abilityInputs = new IntegerField[6]
-            {
-                _root.Q<IntegerField>("ability-str-input"),
-                _root.Q<IntegerField>("ability-dex-input"),
-                _root.Q<IntegerField>("ability-con-input"),
-                _root.Q<IntegerField>("ability-int-input"),
-                _root.Q<IntegerField>("ability-wis-input"),
-                _root.Q<IntegerField>("ability-cha-input")
-            };
+            // Ability inputs will be queried after they are created in InitializeAbilityStatRows
+            _abilityInputs = new IntegerField[6];
 
             // Detail panel
             _detailName = _root.Q<Label>("detail-name");
@@ -130,18 +137,18 @@ namespace GameCore.UI.MainMenu
 
         private void SetupEventHandlers()
         {
-            // Ability score inputs
-            for (int i = 0; i < _abilityInputs.Length; i++)
+            // Tab buttons
+            for (int i = 0; i < _tabButtons.Length; i++)
             {
-                int index = i; // Capture for closure
-                if (_abilityInputs[i] != null)
+                int tabIndex = i; // Capture for closure
+                if (_tabButtons[i] != null)
                 {
-                    _abilityInputs[i].RegisterValueChangedCallback(evt =>
-                    {
-                        AbilityScoreChanged?.Invoke(index, evt.newValue);
-                    });
+                    _tabButtons[i].clicked += () => SwitchTab(tabIndex);
                 }
             }
+
+            // Ability score input event handlers are set up in InitializeAbilityStatRows
+            // after the inputs are dynamically created
 
             // Action buttons
             if (_cancelButton != null)
@@ -154,6 +161,42 @@ namespace GameCore.UI.MainMenu
                 _rollButton.clicked += () => RollAbilitiesClicked?.Invoke();
         }
 
+        private void SwitchTab(int tabIndex)
+        {
+            if (tabIndex < 0 || tabIndex >= _tabButtons.Length || tabIndex >= _tabContents.Length)
+                return;
+
+            // Update tab buttons
+            for (int i = 0; i < _tabButtons.Length; i++)
+            {
+                if (_tabButtons[i] != null)
+                {
+                    if (i == tabIndex)
+                        _tabButtons[i].AddToClassList("active");
+                    else
+                        _tabButtons[i].RemoveFromClassList("active");
+                }
+            }
+
+            // Update tab content
+            for (int i = 0; i < _tabContents.Length; i++)
+            {
+                if (_tabContents[i] != null)
+                {
+                    if (i == tabIndex)
+                    {
+                        _tabContents[i].AddToClassList("active");
+                        _tabContents[i].style.display = DisplayStyle.Flex;
+                    }
+                    else
+                    {
+                        _tabContents[i].RemoveFromClassList("active");
+                        _tabContents[i].style.display = DisplayStyle.None;
+                    }
+                }
+            }
+        }
+
         private void InitializeUIElements()
         {
             // Initialize option buttons from data service
@@ -161,8 +204,6 @@ namespace GameCore.UI.MainMenu
                 (name) => ClassSelected?.Invoke(name));
             InitializeOptionButtons(_raceButtonsContainer, CharacterCreationDataService.AvailableRaces, 
                 (name) => RaceSelected?.Invoke(name));
-            InitializeOptionButtons(_backgroundButtonsContainer, CharacterCreationDataService.AvailableBackgrounds, 
-                (name) => BackgroundSelected?.Invoke(name));
 
             // Initialize stat display rows (created in UXML, just need to query labels)
             InitializeAbilityStatRows();
@@ -206,6 +247,23 @@ namespace GameCore.UI.MainMenu
                     _abilityScoresGrid.Add(row);
                 }
             }
+
+            // Query ability inputs after they are created
+            string[] inputNames = { "str", "dex", "con", "int", "wis", "cha" };
+            for (int i = 0; i < inputNames.Length; i++)
+            {
+                _abilityInputs[i] = _root.Q<IntegerField>($"ability-{inputNames[i]}-input");
+                
+                // Set up event handler for this input
+                int index = i; // Capture for closure
+                if (_abilityInputs[i] != null)
+                {
+                    _abilityInputs[i].RegisterValueChangedCallback(evt =>
+                    {
+                        AbilityScoreChanged?.Invoke(index, evt.newValue);
+                    });
+                }
+            }
         }
 
         private VisualElement CreateAbilityStatRow(string abilityName)
@@ -221,16 +279,17 @@ namespace GameCore.UI.MainMenu
             VisualElement values = new VisualElement();
             values.AddToClassList("character-creation-ability-stat-values");
 
-            // Score column
+            // Score input column
             VisualElement scoreColumn = new VisualElement();
             scoreColumn.AddToClassList("character-creation-ability-stat-column");
             Label scoreLabel = new Label("Score");
             scoreLabel.AddToClassList("character-creation-ability-stat-label");
-            Label scoreValue = new Label("10");
-            scoreValue.AddToClassList("character-creation-ability-score-value");
-            scoreValue.name = $"ability-score-{abilityName.ToLower()}";
+            IntegerField scoreInput = new IntegerField();
+            scoreInput.value = 10;
+            scoreInput.AddToClassList("character-creation-ability-score-input");
+            scoreInput.name = $"ability-{abilityName.ToLower()}-input";
             scoreColumn.Add(scoreLabel);
-            scoreColumn.Add(scoreValue);
+            scoreColumn.Add(scoreInput);
             values.Add(scoreColumn);
 
             // Modifier column
@@ -324,16 +383,15 @@ namespace GameCore.UI.MainMenu
             // Update selected options
             UpdateOptionSelection(_classButtonsContainer, state.SelectedClass);
             UpdateOptionSelection(_raceButtonsContainer, state.SelectedRace);
-            UpdateOptionSelection(_backgroundButtonsContainer, state.SelectedBackground);
 
-            // Update ability scores
+            // Update ability scores without triggering change events
             if (state.AbilityScores != null && state.AbilityScores.Length == 6)
             {
                 for (int i = 0; i < 6; i++)
                 {
                     if (_abilityInputs[i] != null)
                     {
-                        _abilityInputs[i].value = state.AbilityScores[i];
+                        _abilityInputs[i].SetValueWithoutNotify(state.AbilityScores[i]);
                     }
                 }
             }
@@ -391,14 +449,10 @@ namespace GameCore.UI.MainMenu
 
             string abilityName = abilityNames[index];
 
-            // Update score display
-            Label scoreLabel = _root.Q<Label>($"ability-score-{abilityName}");
-            if (scoreLabel != null)
+            // Update score input value
+            if (_abilityInputs[index] != null)
             {
-                scoreLabel.text = score.ToString();
-                scoreLabel.RemoveFromClassList("increased");
-                scoreLabel.RemoveFromClassList("decreased");
-                scoreLabel.AddToClassList("neutral");
+                _abilityInputs[index].SetValueWithoutNotify(score);
             }
 
             // Update modifier display

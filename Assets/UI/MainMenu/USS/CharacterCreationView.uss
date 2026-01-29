@@ -18,35 +18,47 @@
     flex-direction: row;
     max-width: 1800px;
     width: 95%;
+    height: 95%;
     max-height: 95%;
     align-items: stretch;
     background-color: var(--color-bg-primary);
     border-radius: var(--radius-md);
     border-width: 1px;
     border-color: var(--color-border-strong);
-    padding: 20px;
+    padding: 24px;
     overflow: hidden;
 }
 
 .character-creation-container > * {
-    margin-right: 20px;
+    margin-right: 24px;
 }
 
 /* Left Panel */
 .character-creation-left-panel {
     flex-direction: column;
-    width: 550px;
+    flex-basis: 50%;
+    flex-grow: 0;
     flex-shrink: 0;
+    min-width: 400px;
     overflow: hidden;
+    height: 100%;
 }
 
 .character-creation-left-panel > * {
     margin-bottom: 20px;
 }
 
-.character-creation-main-content-scroll,
-.character-creation-detail-panel-scroll {
+.character-creation-main-content-scroll {
+    flex-basis: 0;
     flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.character-creation-detail-panel-scroll {
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
     min-height: 0;
 }
 
@@ -57,6 +69,9 @@
     border-radius: var(--radius-md);
     padding: 25px;
     flex-shrink: 0;
+    min-height: 0;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .character-creation-title {
@@ -68,37 +83,65 @@
     letter-spacing: -0.96px;
 }
 
-.character-creation-section {
-    margin-bottom: 30px;
-}
-
-.character-creation-section-title {
+/* Tabs Container */
+.character-creation-tabs-container {
     flex-direction: row;
-    align-items: center;
-    color: var(--color-text-n2);
-    font-size: 16px;
-    margin-bottom: 12px;
-    letter-spacing: -0.32px;
+    margin-bottom: 20px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--color-border-subtle);
+    padding-bottom: 0;
 }
 
-.character-creation-step-number {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background-color: var(--color-bg-secondary);
-    color: var(--color-blue);
-    -unity-font-style: bold;
-    font-size: 14px;
-    margin-right: 10px;
+.character-creation-tab {
+    background-color: transparent;
+    border-width: 0;
+    border-bottom-width: 2px;
+    border-bottom-color: transparent;
+    color: var(--color-text-n3);
+    font-size: 15px;
+    padding: 12px 20px;
+    flex-grow: 1;
+    min-width: 0;
+    -unity-font-style: normal;
+    transition-duration: var(--transition-fast);
+    transition-property: color, border-bottom-color;
     justify-content: center;
-    align-items: center;
-    border-width: 1px;
-    border-color: var(--color-border-strong);
+    -unity-text-align: middle-center;
+    letter-spacing: -0.3px;
+}
+
+.character-creation-tab:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-shade1);
+}
+
+.character-creation-tab.active {
+    color: var(--color-blue);
+    border-bottom-color: var(--color-blue);
+    -unity-font-style: bold;
+}
+
+.character-creation-tab-content-container {
+    flex-grow: 1;
+    min-height: 0;
+    position: relative;
+}
+
+.character-creation-tab-content {
+    display: none;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.character-creation-tab-content.active {
+    display: flex;
+    flex-direction: column;
 }
 
 .character-creation-buttons-container {
     flex-direction: column;
     width: 100%;
+    min-height: 200px;
 }
 
 .character-creation-buttons-container > * {
@@ -141,49 +184,6 @@
     -unity-font-style: bold;
 }
 
-/* Ability Score Input */
-.character-creation-ability-input {
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
-}
-
-.character-creation-ability-input > * {
-    margin-right: 12px;
-    margin-bottom: 12px;
-}
-
-.character-creation-ability-box {
-    background-color: var(--color-bg-secondary);
-    border-width: 1px;
-    border-color: var(--color-border-strong);
-    border-radius: var(--radius-sm);
-    padding: 12px;
-    min-width: 80px;
-    flex-grow: 1;
-    align-items: center;
-}
-
-.character-creation-ability-label {
-    color: var(--color-blue);
-    font-size: 14px;
-    -unity-font-style: bold;
-    margin-bottom: 8px;
-    -unity-text-align: middle-center;
-    letter-spacing: -0.28px;
-}
-
-.character-creation-ability-box IntegerField {
-    width: 100%;
-    background-color: var(--color-bg-primary);
-    border-width: 1px;
-    border-color: var(--color-border-default);
-    border-radius: var(--radius-sm);
-    color: var(--color-text-primary);
-    font-size: 16px;
-    padding: 8px;
-}
-
 .character-creation-roll-button {
     width: 100%;
     background-color: var(--color-bg-secondary);
@@ -194,7 +194,8 @@
     border-radius: var(--radius-sm);
     font-size: 14px;
     -unity-font-style: bold;
-    margin-top: 12px;
+    margin-top: 15px;
+    margin-bottom: 10px;
     letter-spacing: -0.28px;
     transition-duration: var(--transition-fast);
     transition-property: border-color, background-color;
@@ -212,8 +213,7 @@
     border-color: var(--color-border-strong);
     border-radius: var(--radius-md);
     padding: 30px;
-    min-height: 400px;
-    max-height: 700px;
+    flex-shrink: 0;
 }
 
 .character-creation-detail-panel-scroll {
@@ -327,18 +327,30 @@
 /* Right Panel */
 .character-creation-right-panel {
     flex-direction: column;
-    flex-grow: 1;
+    flex-basis: 50%;
+    flex-grow: 0;
+    flex-shrink: 0;
+    min-width: 400px;
     overflow: hidden;
+    height: 100%;
 }
 
 .character-creation-right-panel > * {
     margin-bottom: 20px;
 }
 
-.character-creation-stats-panel-scroll,
+.character-creation-stats-panel-scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    flex-basis: auto;
+}
+
 .character-creation-proficiency-panel-scroll {
     flex-grow: 1;
+    flex-shrink: 1;
     min-height: 0;
+    flex-basis: auto;
 }
 
 .character-creation-stats-panel {
@@ -348,6 +360,7 @@
     border-radius: var(--radius-md);
     padding: 30px;
     flex-shrink: 0;
+    min-height: 0;
 }
 
 .character-creation-stats-title {
@@ -433,6 +446,28 @@
     letter-spacing: -0.4px;
 }
 
+/* Ability Score Input in stat rows */
+.character-creation-ability-score-input {
+    width: 60px;
+    min-width: 60px;
+}
+
+.character-creation-ability-score-input #unity-text-input {
+    background-color: var(--color-bg-primary);
+    border-width: 1px;
+    border-color: var(--color-border-default);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+    font-size: 18px;
+    -unity-font-style: bold;
+    padding: 6px 8px;
+    -unity-text-align: middle-center;
+}
+
+.character-creation-ability-score-input:focus #unity-text-input {
+    border-color: var(--color-blue);
+}
+
 .character-creation-ability-score-value.increased {
     color: #4caf50; /* Green for positive changes */
 }
@@ -512,9 +547,8 @@
     border-color: var(--color-border-strong);
     border-radius: var(--radius-md);
     padding: 30px;
-    flex-grow: 1;
-    min-height: 400px;
-    max-height: 600px;
+    flex-shrink: 0;
+    min-height: 0;
 }
 
 .character-creation-proficiency-title {
