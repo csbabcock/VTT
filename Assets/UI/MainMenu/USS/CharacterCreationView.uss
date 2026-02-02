@@ -584,8 +584,16 @@
 .character-creation-ability-modifier-value {
     font-size: 18px;
     -unity-font-style: bold;
-    color: #4caf50; /* Green for positive modifiers */
+    color: var(--color-text-n3); /* Neutral grey for dash / unassigned */
     letter-spacing: -0.36px;
+}
+
+.character-creation-ability-modifier-value.character-creation-ability-mod-positive {
+    color: #4caf50; /* Green for positive modifiers */
+}
+
+.character-creation-ability-modifier-value.character-creation-ability-mod-neutral {
+    color: var(--color-text-n3); /* Grey for zero or dash */
 }
 
 .character-creation-ability-modifier-value.negative {
@@ -643,6 +651,19 @@
     font-size: 15px;
     -unity-font-style: bold;
     letter-spacing: -0.3px;
+}
+
+/* Modifier-type stats (Initiative, Proficiency, Spell Attack): green / grey / red */
+.character-creation-char-stat-value.character-creation-char-stat-modifier.character-creation-char-stat-positive {
+    color: #4caf50;
+}
+
+.character-creation-char-stat-value.character-creation-char-stat-modifier.character-creation-char-stat-neutral {
+    color: var(--color-text-n3);
+}
+
+.character-creation-char-stat-value.character-creation-char-stat-modifier.character-creation-char-stat-negative {
+    color: var(--color-red);
 }
 
 /* Proficiency Panel */

@@ -540,7 +540,23 @@ namespace GameCore.UI.MainMenu
                 }
             }
 
-            // Only calculate derived stats if all abilities are assigned
+            // Calculate each derived stat when its respective ability is assigned
+            int? hitPoints = null;
+            if (state.AbilityScores[2] >= 0) // CON
+            {
+                int conMod = _calculator.CalculateAbilityModifier(state.AbilityScores[2]);
+                hitPoints = CalculateHitPoints(state.SelectedClass, conMod);
+            }
+
+            int? armorClass = null;
+            int? initiative = null;
+            if (state.AbilityScores[1] >= 0) // DEX
+            {
+                int dexMod = _calculator.CalculateAbilityModifier(state.AbilityScores[1]);
+                armorClass = 10 + dexMod;
+                initiative = dexMod;
+            }
+
             bool allAssigned = true;
             for (int i = 0; i < 6; i++)
             {
@@ -550,38 +566,31 @@ namespace GameCore.UI.MainMenu
                     break;
                 }
             }
+            int? proficiencyBonus = allAssigned ? _calculator.CalculateProficiencyBonus(1) : (int?)null; // Level 1
 
-            if (allAssigned)
+            int? spellSaveDC = null;
+            int? spellAttack = null;
+            if (IsSpellcaster(state.SelectedClass) && HasCastingAbilityAssigned(state.SelectedClass, state.AbilityScores))
             {
-                // Calculate derived stats
-                int conMod = _calculator.CalculateAbilityModifier(state.AbilityScores[2]); // CON
-                int dexMod = _calculator.CalculateAbilityModifier(state.AbilityScores[1]); // DEX
-                int wisMod = _calculator.CalculateAbilityModifier(state.AbilityScores[4]); // WIS
-                int proficiencyBonus = _calculator.CalculateProficiencyBonus(1); // Level 1
-
-                // Calculate HP (simplified - would use class hit die)
-                int hitPoints = CalculateHitPoints(state.SelectedClass, conMod);
-
-                // Calculate AC (simplified)
-                int armorClass = 10 + dexMod;
-
-                // Calculate spellcasting stats if applicable
-                int? spellSaveDC = null;
-                int? spellAttack = null;
-                if (IsSpellcaster(state.SelectedClass))
-                {
-                    int castingModifier = GetCastingModifier(state.SelectedClass, state.AbilityScores);
-                    spellSaveDC = 8 + proficiencyBonus + castingModifier;
-                    spellAttack = proficiencyBonus + castingModifier;
-                }
-
-                _view.UpdateDerivedStats(hitPoints, armorClass, dexMod, proficiencyBonus, spellSaveDC, spellAttack);
+                int castingModifier = GetCastingModifier(state.SelectedClass, state.AbilityScores);
+                int prof = _calculator.CalculateProficiencyBonus(1);
+                spellSaveDC = 8 + prof + castingModifier;
+                spellAttack = prof + castingModifier;
             }
-            else
+
+            _view.UpdateDerivedStats(hitPoints, armorClass, initiative, proficiencyBonus, spellSaveDC, spellAttack);
+        }
+
+        private bool HasCastingAbilityAssigned(string className, int[] abilityScores)
+        {
+            if (abilityScores == null || abilityScores.Length < 6) return false;
+            return className switch
             {
-                // Show default/placeholder values when not all assigned
-                _view.UpdateDerivedStats(0, 0, 0, 0, null, null);
-            }
+                "Wizard" => abilityScores[3] >= 0, // INT
+                "Cleric" or "Druid" or "Ranger" => abilityScores[4] >= 0, // WIS
+                "Bard" or "Paladin" or "Sorcerer" or "Warlock" => abilityScores[5] >= 0, // CHA
+                _ => false
+            };
         }
 
         private int CalculateHitPoints(string className, int conModifier)

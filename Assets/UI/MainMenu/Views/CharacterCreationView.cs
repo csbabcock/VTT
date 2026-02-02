@@ -328,19 +328,19 @@ namespace GameCore.UI.MainMenu
 
         private void InitializeCharacterStatItems()
         {
-            // Create character stat items if they don't exist
+            // Create character stat items if they don't exist (default to dash until stats are assigned)
             if (_characterStatsGrid != null && _characterStatsGrid.childCount == 0)
             {
-                CreateCharacterStatItem(_characterStatsGrid, "Hit Points", "10", "hp-value");
-                CreateCharacterStatItem(_characterStatsGrid, "Armor Class", "11", "ac-value");
-                CreateCharacterStatItem(_characterStatsGrid, "Initiative", "+1", "initiative-value");
-                CreateCharacterStatItem(_characterStatsGrid, "Proficiency", "+2", "proficiency-value");
+                CreateCharacterStatItem(_characterStatsGrid, "Hit Points", "—", "hp-value", isModifier: false);
+                CreateCharacterStatItem(_characterStatsGrid, "Armor Class", "—", "ac-value", isModifier: false);
+                CreateCharacterStatItem(_characterStatsGrid, "Initiative", "—", "initiative-value", isModifier: true);
+                CreateCharacterStatItem(_characterStatsGrid, "Proficiency", "—", "proficiency-value", isModifier: true);
             }
 
             if (_spellcastingStatsGrid != null && _spellcastingStatsGrid.childCount == 0)
             {
-                CreateCharacterStatItem(_spellcastingStatsGrid, "Spell Save DC", "13", "spell-save-dc-value");
-                CreateCharacterStatItem(_spellcastingStatsGrid, "Spell Attack", "+5", "spell-attack-value");
+                CreateCharacterStatItem(_spellcastingStatsGrid, "Spell Save DC", "—", "spell-save-dc-value", isModifier: false);
+                CreateCharacterStatItem(_spellcastingStatsGrid, "Spell Attack", "—", "spell-attack-value", isModifier: true);
             }
 
             if (_physicalTraitsGrid != null && _physicalTraitsGrid.childCount == 0)
@@ -351,7 +351,7 @@ namespace GameCore.UI.MainMenu
             }
         }
 
-        private void CreateCharacterStatItem(VisualElement parent, string label, string value, string valueName)
+        private void CreateCharacterStatItem(VisualElement parent, string label, string value, string valueName, bool isModifier = false)
         {
             if (parent == null) return;
 
@@ -364,6 +364,8 @@ namespace GameCore.UI.MainMenu
 
             Label valueElement = new Label(value);
             valueElement.AddToClassList("character-creation-char-stat-value");
+            if (isModifier)
+                valueElement.AddToClassList("character-creation-char-stat-modifier");
             valueElement.name = valueName;
             item.Add(valueElement);
 
@@ -516,60 +518,67 @@ namespace GameCore.UI.MainMenu
                 }
             }
 
-            // Update modifier display
+            // Update modifier display (dash = neutral grey; positive = green; zero = grey; negative = red)
             Label modLabel = _root.Q<Label>($"ability-mod-{abilityName}");
             if (modLabel != null)
             {
+                modLabel.RemoveFromClassList("character-creation-ability-mod-positive");
+                modLabel.RemoveFromClassList("character-creation-ability-mod-neutral");
+                modLabel.RemoveFromClassList("negative");
                 if (score < 0)
                 {
                     modLabel.text = "—";
-                    modLabel.RemoveFromClassList("negative");
+                    modLabel.AddToClassList("character-creation-ability-mod-neutral");
                 }
                 else
                 {
                     modLabel.text = modifier >= 0 ? $"+{modifier}" : modifier.ToString();
-                    if (modifier < 0)
-                    {
+                    if (modifier > 0)
+                        modLabel.AddToClassList("character-creation-ability-mod-positive");
+                    else if (modifier < 0)
                         modLabel.AddToClassList("negative");
-                    }
                     else
-                    {
-                        modLabel.RemoveFromClassList("negative");
-                    }
+                        modLabel.AddToClassList("character-creation-ability-mod-neutral");
                 }
             }
         }
 
         /// <summary>
         /// Updates derived character stats display.
-        /// Called by Presenter with calculated data.
+        /// Called by Presenter with calculated data. Null values show "—" (dash).
         /// </summary>
-        public void UpdateDerivedStats(int hitPoints, int armorClass, int initiative, int proficiencyBonus, 
+        public void UpdateDerivedStats(int? hitPoints, int? armorClass, int? initiative, int? proficiencyBonus,
             int? spellSaveDC = null, int? spellAttack = null)
         {
-            UpdateStatLabel("hp-value", hitPoints.ToString());
-            UpdateStatLabel("ac-value", armorClass.ToString());
-            UpdateStatLabel("initiative-value", initiative >= 0 ? $"+{initiative}" : initiative.ToString());
-            UpdateStatLabel("proficiency-value", proficiencyBonus >= 0 ? $"+{proficiencyBonus}" : proficiencyBonus.ToString());
+            UpdateStatLabel("hp-value", hitPoints.HasValue ? hitPoints.Value.ToString() : "—", isModifier: false);
+            UpdateStatLabel("ac-value", armorClass.HasValue ? armorClass.Value.ToString() : "—", isModifier: false);
+            UpdateStatLabel("initiative-value", initiative.HasValue ? (initiative.Value >= 0 ? $"+{initiative.Value}" : initiative.Value.ToString()) : "—", isModifier: true, modifierValue: initiative);
+            UpdateStatLabel("proficiency-value", proficiencyBonus.HasValue ? (proficiencyBonus.Value >= 0 ? $"+{proficiencyBonus.Value}" : proficiencyBonus.Value.ToString()) : "—", isModifier: true, modifierValue: proficiencyBonus);
 
-            if (spellSaveDC.HasValue)
-            {
-                UpdateStatLabel("spell-save-dc-value", spellSaveDC.Value.ToString());
-            }
-
-            if (spellAttack.HasValue)
-            {
-                UpdateStatLabel("spell-attack-value", spellAttack.Value >= 0 ? $"+{spellAttack.Value}" : spellAttack.Value.ToString());
-            }
+            UpdateStatLabel("spell-save-dc-value", spellSaveDC.HasValue ? spellSaveDC.Value.ToString() : "—", isModifier: false);
+            UpdateStatLabel("spell-attack-value", spellAttack.HasValue ? (spellAttack.Value >= 0 ? $"+{spellAttack.Value}" : spellAttack.Value.ToString()) : "—", isModifier: true, modifierValue: spellAttack);
         }
 
-        private void UpdateStatLabel(string labelName, string value)
+        private void UpdateStatLabel(string labelName, string value, bool isModifier = false, int? modifierValue = null)
         {
             Label label = _root.Q<Label>(labelName);
-            if (label != null)
-            {
-                label.text = value;
-            }
+            if (label == null) return;
+
+            label.text = value;
+
+            if (!isModifier) return;
+
+            label.RemoveFromClassList("character-creation-char-stat-positive");
+            label.RemoveFromClassList("character-creation-char-stat-neutral");
+            label.RemoveFromClassList("character-creation-char-stat-negative");
+            if (!modifierValue.HasValue || value == "—")
+                label.AddToClassList("character-creation-char-stat-neutral");
+            else if (modifierValue.Value > 0)
+                label.AddToClassList("character-creation-char-stat-positive");
+            else if (modifierValue.Value < 0)
+                label.AddToClassList("character-creation-char-stat-negative");
+            else
+                label.AddToClassList("character-creation-char-stat-neutral");
         }
 
         private void AddFeature(string name, string description)
