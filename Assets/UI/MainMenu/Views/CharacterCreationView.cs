@@ -55,6 +55,8 @@ namespace GameCore.UI.MainMenu
         private Button _manualButton;
         private Button _pointBuyButton;
         private Label _pointBuyPointsLabel;
+        private Button _confirmScoresButton;
+        private VisualElement _scoreMethodButtonsContainer;
 
         // Drag and drop visual state (UI only - no business logic)
         private VisualElement _dragPreview; // Visual preview of dragged score
@@ -75,6 +77,7 @@ namespace GameCore.UI.MainMenu
         public event System.Action<int, int> DragStartedFromRolledScore; // rolledScoreIndex, scoreValue
         public event System.Action<int> DragStartedFromAbility; // abilityIndex
         public event System.Action<Vector2> DropOccurred; // position
+        public event System.Action ConfirmScoresClicked;
         public event System.Action CancelClicked;
         public event System.Action CreateCharacterClicked;
 
@@ -162,6 +165,8 @@ namespace GameCore.UI.MainMenu
             _manualButton = _root.Q<Button>("manual-button");
             _pointBuyButton = _root.Q<Button>("point-buy-button");
             _pointBuyPointsLabel = _root.Q<Label>("point-buy-points-label");
+            _confirmScoresButton = _root.Q<Button>("confirm-scores-button");
+            _scoreMethodButtonsContainer = _root.Q<VisualElement>("score-method-buttons");
         }
 
         private void SetupEventHandlers()
@@ -194,6 +199,8 @@ namespace GameCore.UI.MainMenu
                 _manualButton.clicked += () => ManualClicked?.Invoke();
             if (_pointBuyButton != null)
                 _pointBuyButton.clicked += () => PointBuyClicked?.Invoke();
+            if (_confirmScoresButton != null)
+                _confirmScoresButton.clicked += () => ConfirmScoresClicked?.Invoke();
         }
 
         private void SwitchTab(int tabIndex)
@@ -448,19 +455,31 @@ namespace GameCore.UI.MainMenu
             UpdateOptionSelection(_classButtonsContainer, state.SelectedClass);
             UpdateOptionSelection(_raceButtonsContainer, state.SelectedRace);
 
-            // Update score method button selection (outline on selected)
-            UpdateScoreMethodSelection(state.SelectedScoreMethod);
-
-            if (state.SelectedScoreMethod == "PointBuy")
+            // When locked: hide pool, method buttons, and confirm button; show only final ability scores
+            if (state.AbilityScoresLocked)
             {
-                ShowPointBuyPool();
-                SetPointBuyControlsVisible(true);
+                if (_rolledScoresPool != null) _rolledScoresPool.style.display = DisplayStyle.None;
+                if (_scoreMethodButtonsContainer != null) _scoreMethodButtonsContainer.style.display = DisplayStyle.None;
+                if (_confirmScoresButton != null) _confirmScoresButton.style.display = DisplayStyle.None;
+                SetPointBuyControlsVisible(false);
             }
             else
             {
-                HidePointBuyPool();
-                SetPointBuyControlsVisible(false);
-                UpdateRolledScores(state.RolledScores, state.AssignedRolledScoreIndices, state.IsManualMode, state.RolledDiceBreakdown, state.RolledDroppedIndices);
+                if (_rolledScoresPool != null) _rolledScoresPool.style.display = DisplayStyle.Flex;
+                if (_scoreMethodButtonsContainer != null) _scoreMethodButtonsContainer.style.display = DisplayStyle.Flex;
+                if (_confirmScoresButton != null) _confirmScoresButton.style.display = DisplayStyle.Flex;
+                UpdateScoreMethodSelection(state.SelectedScoreMethod);
+                if (state.SelectedScoreMethod == "PointBuy")
+                {
+                    ShowPointBuyPool();
+                    SetPointBuyControlsVisible(true);
+                }
+                else
+                {
+                    HidePointBuyPool();
+                    SetPointBuyControlsVisible(false);
+                    UpdateRolledScores(state.RolledScores, state.AssignedRolledScoreIndices, state.IsManualMode, state.RolledDiceBreakdown, state.RolledDroppedIndices);
+                }
             }
 
             // Update ability scores without triggering change events

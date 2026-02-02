@@ -1,32 +1,35 @@
 @import url("MainMenuView.uss");
 
-/* Root container */
+/* Root container - full screen */
 .character-creation-root {
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
+    flex-direction: column;
     background-color: rgba(0, 0, 0, 0.85);
-    padding: 20px;
-    justify-content: center;
-    align-items: center;
+    padding: 0;
 }
 
-/* Main container with two-column grid layout */
+/* Single page scroll - takes all space above action buttons */
+.character-creation-page-scroll {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+/* Main container with two-column layout - grows with content for one scroll */
 .character-creation-container {
     flex-direction: row;
-    max-width: 1800px;
-    width: 95%;
-    height: 95%;
-    max-height: 95%;
+    width: 100%;
+    min-height: 100%;
     align-items: stretch;
     background-color: var(--color-bg-primary);
-    border-radius: var(--radius-md);
-    border-width: 1px;
+    border-radius: 0;
+    border-width: 0;
     border-color: var(--color-border-strong);
     padding: 24px;
-    overflow: hidden;
+    flex-shrink: 0;
 }
 
 .character-creation-container > * {
@@ -40,26 +43,10 @@
     flex-grow: 0;
     flex-shrink: 0;
     min-width: 400px;
-    overflow: hidden;
-    height: 100%;
 }
 
 .character-creation-left-panel > * {
     margin-bottom: 20px;
-}
-
-.character-creation-main-content-scroll {
-    flex-basis: 0;
-    flex-grow: 1;
-    flex-shrink: 1;
-    min-height: 0;
-}
-
-.character-creation-detail-panel-scroll {
-    flex-basis: 0;
-    flex-grow: 1;
-    flex-shrink: 1;
-    min-height: 0;
 }
 
 .character-creation-main-content {
@@ -69,9 +56,7 @@
     border-radius: var(--radius-md);
     padding: 25px;
     flex-shrink: 0;
-    min-height: 0;
     flex-direction: column;
-    flex-grow: 1;
 }
 
 .character-creation-title {
@@ -225,6 +210,29 @@
     border-width: 2px;
 }
 
+.character-creation-confirm-scores-button {
+    width: 100%;
+    background-color: var(--color-bg-secondary);
+    border-width: 2px;
+    border-color: var(--color-blue);
+    color: var(--color-blue);
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    -unity-font-style: bold;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    letter-spacing: -0.28px;
+    transition-duration: var(--transition-fast);
+    transition-property: border-color, background-color, color;
+}
+
+.character-creation-confirm-scores-button:hover {
+    border-color: var(--color-blue);
+    background-color: var(--color-bg-shade1);
+    color: var(--color-text-primary);
+}
+
 /* Detail Panel */
 .character-creation-detail-panel {
     background-color: var(--color-bg-secondary);
@@ -233,11 +241,6 @@
     border-radius: var(--radius-md);
     padding: 30px;
     flex-shrink: 0;
-}
-
-.character-creation-detail-panel-scroll {
-    flex-grow: 1;
-    min-height: 0;
 }
 
 .character-creation-detail-title {
@@ -293,9 +296,8 @@
     letter-spacing: -0.28px;
 }
 
-.character-creation-detail-content-scroll {
-    flex-grow: 1;
-    min-height: 0;
+.character-creation-detail-content-wrapper {
+    flex-direction: column;
 }
 
 .character-creation-detail-content {
@@ -350,26 +352,10 @@
     flex-grow: 0;
     flex-shrink: 0;
     min-width: 400px;
-    overflow: hidden;
-    height: 100%;
 }
 
 .character-creation-right-panel > * {
     margin-bottom: 20px;
-}
-
-.character-creation-stats-panel-scroll {
-    flex-grow: 1;
-    flex-shrink: 1;
-    min-height: 0;
-    flex-basis: auto;
-}
-
-.character-creation-proficiency-panel-scroll {
-    flex-grow: 1;
-    flex-shrink: 1;
-    min-height: 0;
-    flex-basis: auto;
 }
 
 .character-creation-stats-panel {
@@ -933,14 +919,15 @@
     margin-right: 0;
 }
 
-/* Action Buttons */
+/* Action Buttons - fixed at bottom, outside scroll */
 .character-creation-action-buttons {
     flex-direction: row;
     justify-content: flex-end;
+    flex-shrink: 0;
     padding: 20px;
     border-top-width: 1px;
     border-top-color: var(--color-border-subtle);
-    margin-top: 20px;
+    background-color: var(--color-bg-primary);
 }
 
 .character-creation-action-buttons > * {

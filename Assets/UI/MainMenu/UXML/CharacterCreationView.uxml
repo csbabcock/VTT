@@ -1,11 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/MainMenu/USS/CharacterCreationView.uss?fileID=7433441132597879392&amp;guid=d50ded843bb59ba49b9028199398f790&amp;type=3#CharacterCreationView"/>
     <ui:VisualElement name="root" class="character-creation-root">
-        <ui:VisualElement name="container" class="character-creation-container">
-            <ui:VisualElement name="left-panel" class="character-creation-left-panel">
-                <ui:ScrollView name="main-content-scroll" mode="Vertical" class="character-creation-main-content-scroll">
+        <ui:ScrollView name="page-scroll" mode="Vertical" class="character-creation-page-scroll">
+            <ui:VisualElement name="container" class="character-creation-container">
+                <ui:VisualElement name="left-panel" class="character-creation-left-panel">
                     <ui:VisualElement name="main-content" class="character-creation-main-content">
-                        <ui:Label text="Character Creation" class="character-creation-title"/>
                         <ui:VisualElement name="tabs-container" class="character-creation-tabs-container">
                             <ui:Button name="tab-class" class="character-creation-tab active" text="Class"/>
                             <ui:Button name="tab-race" class="character-creation-tab" text="Race"/>
@@ -19,8 +18,6 @@
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
-                </ui:ScrollView>
-                <ui:ScrollView name="detail-panel-scroll" mode="Vertical" class="character-creation-detail-panel-scroll">
                     <ui:VisualElement name="detail-panel" class="character-creation-detail-panel">
                         <ui:Label text="Selection Details" class="character-creation-detail-title"/>
                         <ui:VisualElement name="detail-header" class="character-creation-detail-header">
@@ -32,17 +29,15 @@
                                 <ui:Label name="detail-type" text="Race" class="character-creation-detail-type"/>
                             </ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:ScrollView name="detail-content-scroll" mode="Vertical" class="character-creation-detail-content-scroll">
+                        <ui:VisualElement name="detail-content-wrapper" class="character-creation-detail-content-wrapper">
                             <ui:Label name="detail-content" text="Hill dwarves are known for their keen senses..." class="character-creation-detail-content"/>
                             <ui:VisualElement name="features-section" class="character-creation-features-section">
                                 <ui:Label text="Special Features" class="character-creation-features-title"/>
                             </ui:VisualElement>
-                        </ui:ScrollView>
+                        </ui:VisualElement>
                     </ui:VisualElement>
-                </ui:ScrollView>
-            </ui:VisualElement>
-            <ui:VisualElement name="right-panel" class="character-creation-right-panel">
-                <ui:ScrollView name="stats-panel-scroll" mode="Vertical" class="character-creation-stats-panel-scroll">
+                </ui:VisualElement>
+                <ui:VisualElement name="right-panel" class="character-creation-right-panel">
                     <ui:VisualElement name="stats-panel" class="character-creation-stats-panel">
                         <ui:Label text="Character Stats" class="character-creation-stats-title"/>
                         <ui:VisualElement name="rolled-scores-pool" class="character-creation-rolled-scores-pool">
@@ -51,6 +46,7 @@
                             <ui:VisualElement name="rolled-scores-container" class="character-creation-rolled-scores-container"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="ability-scores-grid" class="character-creation-ability-scores-grid"/>
+                        <ui:Button name="confirm-scores-button" text="Confirm Scores" class="character-creation-confirm-scores-button"/>
                         <ui:VisualElement name="score-method-buttons" class="character-creation-score-method-buttons">
                             <ui:Button name="roll-abilities-button" text="Roll" class="character-creation-roll-button"/>
                             <ui:Button name="standard-array-button" text="Standard Array" class="character-creation-roll-button"/>
@@ -64,14 +60,12 @@
                         <ui:Label text="Physical Traits" class="character-creation-subtitle"/>
                         <ui:VisualElement name="physical-traits-grid" class="character-creation-character-stats-grid"/>
                     </ui:VisualElement>
-                </ui:ScrollView>
-                <ui:ScrollView name="proficiency-panel-scroll" mode="Vertical" class="character-creation-proficiency-panel-scroll">
                     <ui:VisualElement name="proficiency-panel" class="character-creation-proficiency-panel">
                         <ui:Label text="Proficiencies" class="character-creation-proficiency-title"/>
                     </ui:VisualElement>
-                </ui:ScrollView>
+                </ui:VisualElement>
             </ui:VisualElement>
-        </ui:VisualElement>
+        </ui:ScrollView>
         <ui:VisualElement name="action-buttons" class="character-creation-action-buttons">
             <ui:Button name="cancel-button" text="Cancel" class="character-creation-cancel-button"/>
             <ui:Button name="create-button" text="Create Character" class="character-creation-create-button"/>

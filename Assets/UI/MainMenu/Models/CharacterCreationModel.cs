@@ -20,6 +20,7 @@ namespace GameCore.UI.MainMenu
         public int[] AssignedRolledScoreIndices; // Which rolled score index is assigned to each ability (-1 if unassigned)
         public bool IsManualMode; // When true, pool slots are editable and can be -1 (empty)
         public string SelectedScoreMethod; // "Roll", "StandardArray", "Manual", "PointBuy", or ""
+        public bool AbilityScoresLocked; // When true, pool and method buttons are hidden; only final ability scores shown
     }
 
     /// <summary>
@@ -88,7 +89,8 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = null,
                 AssignedRolledScoreIndices = new int[] { -1, -1, -1, -1, -1, -1 }, // No assignments
                 IsManualMode = false,
-                SelectedScoreMethod = string.Empty
+                SelectedScoreMethod = string.Empty,
+                AbilityScoresLocked = false
             };
         }
 
@@ -109,9 +111,36 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = State.RolledDroppedIndices,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
-                SelectedScoreMethod = State.SelectedScoreMethod
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = State.AbilityScoresLocked
             };
 
+            StateChanged?.Invoke(State);
+        }
+
+        /// <summary>
+        /// Locks ability scores: hides pool and method buttons in the UI; only final ability scores remain visible.
+        /// </summary>
+        public void SetAbilityScoresLocked(bool locked)
+        {
+            if (State.AbilityScoresLocked == locked)
+                return;
+
+            State = new CharacterCreationState
+            {
+                IsVisible = State.IsVisible,
+                SelectedClass = State.SelectedClass,
+                SelectedRace = State.SelectedRace,
+                SelectedBackground = State.SelectedBackground,
+                AbilityScores = State.AbilityScores,
+                RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
+                RolledDroppedIndices = State.RolledDroppedIndices,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = locked
+            };
             StateChanged?.Invoke(State);
         }
 
@@ -150,7 +179,8 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = droppedIndices,
                 AssignedRolledScoreIndices = assignedIndices,
                 IsManualMode = isManualMode,
-                SelectedScoreMethod = value
+                SelectedScoreMethod = value,
+                AbilityScoresLocked = State.AbilityScoresLocked
             };
             StateChanged?.Invoke(State);
         }
@@ -172,7 +202,8 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = State.RolledDroppedIndices,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
-                SelectedScoreMethod = State.SelectedScoreMethod
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);
@@ -195,7 +226,8 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = State.RolledDroppedIndices,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
-                SelectedScoreMethod = State.SelectedScoreMethod
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);
@@ -218,7 +250,8 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = State.RolledDroppedIndices,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
-                SelectedScoreMethod = State.SelectedScoreMethod
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);
@@ -249,7 +282,8 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = State.RolledDroppedIndices,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
-                SelectedScoreMethod = State.SelectedScoreMethod
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);
@@ -284,7 +318,8 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = State.RolledDroppedIndices,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
-                SelectedScoreMethod = State.SelectedScoreMethod
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);
@@ -323,7 +358,8 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = droppedIndices,
                 AssignedRolledScoreIndices = new int[] { -1, -1, -1, -1, -1, -1 }, // Reset assignments
                 IsManualMode = isManualMode,
-                SelectedScoreMethod = State.SelectedScoreMethod
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);
@@ -367,7 +403,8 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = State.RolledDroppedIndices,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = true,
-                SelectedScoreMethod = State.SelectedScoreMethod
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);
@@ -431,7 +468,8 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = State.RolledDroppedIndices,
                 AssignedRolledScoreIndices = newAssignedIndices,
                 IsManualMode = State.IsManualMode,
-                SelectedScoreMethod = State.SelectedScoreMethod
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);
@@ -478,7 +516,8 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = State.RolledDroppedIndices,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
-                SelectedScoreMethod = State.SelectedScoreMethod
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);
@@ -512,7 +551,8 @@ namespace GameCore.UI.MainMenu
                 RolledDroppedIndices = State.RolledDroppedIndices,
                 AssignedRolledScoreIndices = newAssignedIndices,
                 IsManualMode = State.IsManualMode,
-                SelectedScoreMethod = State.SelectedScoreMethod
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);

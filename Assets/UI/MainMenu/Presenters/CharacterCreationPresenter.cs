@@ -82,6 +82,7 @@ namespace GameCore.UI.MainMenu
             _view.DragStartedFromRolledScore += HandleDragStartedFromRolledScore;
             _view.DragStartedFromAbility += HandleDragStartedFromAbility;
             _view.DropOccurred += HandleDropOccurred;
+            _view.ConfirmScoresClicked += HandleConfirmScoresClicked;
             _view.CancelClicked += HandleCancelClicked;
             _view.CreateCharacterClicked += HandleCreateCharacterClicked;
 
@@ -120,6 +121,7 @@ namespace GameCore.UI.MainMenu
                 _view.DragStartedFromRolledScore -= HandleDragStartedFromRolledScore;
                 _view.DragStartedFromAbility -= HandleDragStartedFromAbility;
                 _view.DropOccurred -= HandleDropOccurred;
+                _view.ConfirmScoresClicked -= HandleConfirmScoresClicked;
                 _view.CancelClicked -= HandleCancelClicked;
                 _view.CreateCharacterClicked -= HandleCreateCharacterClicked;
 
@@ -236,6 +238,27 @@ namespace GameCore.UI.MainMenu
             if (current <= PointBuyCostTable.MinScore)
                 return;
             Model.SetPointBuyAbilityScore(abilityIndex, current - 1);
+        }
+
+        private void HandleConfirmScoresClicked()
+        {
+            if (Model.State.AbilityScoresLocked)
+                return;
+            var scores = Model.State.AbilityScores;
+            if (scores == null || scores.Length != 6)
+            {
+                Debug.LogWarning("CharacterCreationPresenter: Cannot confirm - ability scores not ready.");
+                return;
+            }
+            for (int i = 0; i < 6; i++)
+            {
+                if (scores[i] < 3 || scores[i] > 18)
+                {
+                    Debug.LogWarning($"CharacterCreationPresenter: Cannot confirm - ability score at index {i} is {scores[i]}. All scores must be 3–18.");
+                    return;
+                }
+            }
+            Model.SetAbilityScoresLocked(true);
         }
 
         private static int GetPointBuyScoreForAbility(CharacterCreationState state, int abilityIndex)
