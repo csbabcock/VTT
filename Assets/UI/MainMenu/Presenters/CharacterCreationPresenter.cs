@@ -1,6 +1,8 @@
 using GameCore.UI;
+using GameCore.UI.MainMenu.Services;
 using GameCore.PlayerData.Rulesets;
 using UnityEngine;
+using UnityEngine.UIElements;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,6 +24,8 @@ namespace GameCore.UI.MainMenu
 
         private bool _initialized;
         private IRulesetCalculator _calculator;
+        private DragAndDropHandler _dragAndDropHandler;
+        private DragState _currentDragState;
 
         private void Awake()
         {
@@ -60,14 +64,24 @@ namespace GameCore.UI.MainMenu
 
             _view.Initialize();
 
+            // Initialize drag and drop handler after view is initialized
+            InitializeDragAndDropHandler();
+
             // Subscribe to view events
             _view.ClassSelected += HandleClassSelected;
             _view.RaceSelected += HandleRaceSelected;
             _view.RollAbilitiesClicked += HandleRollAbilitiesClicked;
-            _view.RolledScoreAssignedToAbility += HandleRolledScoreAssignedToAbility;
-            _view.AbilityScoreUnassigned += HandleAbilityScoreUnassigned;
+            _view.DragStartedFromRolledScore += HandleDragStartedFromRolledScore;
+            _view.DragStartedFromAbility += HandleDragStartedFromAbility;
+            _view.DropOccurred += HandleDropOccurred;
             _view.CancelClicked += HandleCancelClicked;
             _view.CreateCharacterClicked += HandleCreateCharacterClicked;
+
+            // Register for pointer move to update drag preview
+            if (_view.Root != null)
+            {
+                _view.Root.RegisterCallback<PointerMoveEvent>(OnPointerMove);
+            }
 
             // Subscribe to model events
             Model.StateChanged += HandleModelStateChanged;
@@ -89,10 +103,16 @@ namespace GameCore.UI.MainMenu
                 _view.ClassSelected -= HandleClassSelected;
                 _view.RaceSelected -= HandleRaceSelected;
                 _view.RollAbilitiesClicked -= HandleRollAbilitiesClicked;
-                _view.RolledScoreAssignedToAbility -= HandleRolledScoreAssignedToAbility;
-                _view.AbilityScoreUnassigned -= HandleAbilityScoreUnassigned;
+                _view.DragStartedFromRolledScore -= HandleDragStartedFromRolledScore;
+                _view.DragStartedFromAbility -= HandleDragStartedFromAbility;
+                _view.DropOccurred -= HandleDropOccurred;
                 _view.CancelClicked -= HandleCancelClicked;
                 _view.CreateCharacterClicked -= HandleCreateCharacterClicked;
+
+                if (_view.Root != null)
+                {
+                    _view.Root.UnregisterCallback<PointerMoveEvent>(OnPointerMove);
+                }
             }
 
             if (Model != null)
@@ -138,6 +158,18 @@ namespace GameCore.UI.MainMenu
             Model.SetSelectedRace(raceName);
         }
 
+        private void InitializeDragAndDropHandler()
+        {
+            if (_view.Root == null) return;
+
+            VisualElement abilityScoresGrid = _view.Root.Q<VisualElement>("ability-scores-grid");
+            VisualElement rolledScoresContainer = _view.Root.Q<VisualElement>("rolled-scores-container");
+            if (abilityScoresGrid != null && rolledScoresContainer != null)
+            {
+                _dragAndDropHandler = new DragAndDropHandler(_view.Root, abilityScoresGrid, rolledScoresContainer);
+            }
+        }
+
         private void HandleRollAbilitiesClicked()
         {
             int[] newScores = new int[6];
@@ -148,14 +180,248 @@ namespace GameCore.UI.MainMenu
             Model.SetRolledScores(newScores);
         }
 
-        private void HandleRolledScoreAssignedToAbility(int rolledScoreIndex, int abilityIndex)
+        // ========== Drag and Drop Handlers ==========
+
+        private void HandleDragStartedFromRolledScore(int rolledScoreIndex, int scoreValue)
         {
-            Model.AssignRolledScoreToAbility(rolledScoreIndex, abilityIndex);
+            if (Model.State.RolledScores == null || rolledScoreIndex < 0 || rolledScoreIndex >= 6)
+                return;
+
+            // Update drag state
+            _currentDragState = new DragState
+            {
+                IsDragging = true,
+                RolledScoreIndex = rolledScoreIndex,
+                SourceAbilityIndex = -1,
+                IsDraggingFromAbility = false,
+                ScoreValue = scoreValue
+            };
+
+            // Update UI - show drag preview
+            _view.ShowDragPreview(scoreValue);
+
+            // Mark rolled score element as dragging
+            VisualElement rolledScoreElement = _view.Root?.Q<VisualElement>($"rolled-score-{rolledScoreIndex}");
+            if (rolledScoreElement != null)
+            {
+                _view.MarkElementAsDragging(rolledScoreElement);
+            }
         }
 
-        private void HandleAbilityScoreUnassigned(int abilityIndex)
+        private void HandleDragStartedFromAbility(int abilityIndex)
         {
-            Model.UnassignAbilityScore(abilityIndex);
+            if (abilityIndex < 0 || abilityIndex >= 6 || Model.State.AssignedRolledScoreIndices == null)
+                return;
+
+            int rolledScoreIndex = Model.State.AssignedRolledScoreIndices[abilityIndex];
+            if (rolledScoreIndex < 0 || Model.State.RolledScores == null || rolledScoreIndex >= Model.State.RolledScores.Length)
+                return;
+
+            int scoreValue = Model.State.RolledScores[rolledScoreIndex];
+
+            // Update drag state
+            _currentDragState = new DragState
+            {
+                IsDragging = true,
+                RolledScoreIndex = rolledScoreIndex,
+                SourceAbilityIndex = abilityIndex,
+                IsDraggingFromAbility = true,
+                ScoreValue = scoreValue
+            };
+
+            // Update UI - show drag preview
+            _view.ShowDragPreview(scoreValue);
+
+            // Mark ability row as dragging
+            string[] abilityNames = { "str", "dex", "con", "int", "wis", "cha" };
+            VisualElement abilityRow = _view.Root?.Q<VisualElement>($"ability-stat-{abilityNames[abilityIndex]}");
+            if (abilityRow != null)
+            {
+                _view.MarkElementAsDragging(abilityRow);
+            }
+        }
+
+        private void OnPointerMove(PointerMoveEvent evt)
+        {
+            if (!_currentDragState.IsDragging) return;
+
+            // Update drag preview position
+            _view.UpdateDragPreviewPosition(evt.position);
+
+            // Update visual feedback for drop zones
+            if (_dragAndDropHandler == null) return;
+
+            VisualElement elementUnderPointer = _dragAndDropHandler.GetElementUnderPointer(evt.position);
+            if (elementUnderPointer == null)
+            {
+                _dragAndDropHandler.ClearDropZoneFeedback();
+                return;
+            }
+
+            // Skip if over drag preview or dragged element
+            if (_dragAndDropHandler.IsDragPreviewOrChild(elementUnderPointer))
+            {
+                return;
+            }
+
+            if (_currentDragState.IsDraggingFromAbility)
+            {
+                // Dragging from ability - highlight rolled scores container if over it
+                VisualElement rolledContainer = _dragAndDropHandler.FindRolledScoresContainer(elementUnderPointer);
+                if (rolledContainer != null)
+                {
+                    _view.HighlightRolledScoresContainer();
+                    _dragAndDropHandler.ClearDropZoneFeedback();
+                }
+                else
+                {
+                    _view.ClearDropZoneHighlights();
+                }
+            }
+            else
+            {
+                // Dragging from pool - highlight ability rows
+                VisualElement abilityRow = _dragAndDropHandler.FindAbilityRow(elementUnderPointer);
+                if (abilityRow != null)
+                {
+                    int abilityIndex = _dragAndDropHandler.GetAbilityIndexFromRow(abilityRow);
+                    if (abilityIndex >= 0)
+                    {
+                        _view.HighlightDropZone(abilityIndex);
+                    }
+                }
+                else
+                {
+                    _view.ClearDropZoneHighlights();
+                }
+            }
+        }
+
+        private void HandleDropOccurred(Vector2 position)
+        {
+            if (!_currentDragState.IsDragging) return;
+
+            if (_dragAndDropHandler == null)
+            {
+                CleanupDrag();
+                return;
+            }
+
+            // Find element under drop position
+            VisualElement target = _dragAndDropHandler.GetElementUnderPointer(position);
+            if (target == null)
+            {
+                // Dropped outside - return to pool if dragging from ability
+                if (_currentDragState.IsDraggingFromAbility)
+                {
+                    Model.UnassignAbilityScore(_currentDragState.SourceAbilityIndex);
+                }
+                CleanupDrag();
+                return;
+            }
+
+            // Skip if target is drag preview or dragged element
+            if (_dragAndDropHandler.IsDragPreviewOrChild(target))
+            {
+                return;
+            }
+
+            // Check if dropped on ability row
+            VisualElement abilityRow = _dragAndDropHandler.FindAbilityRow(target);
+            if (abilityRow != null)
+            {
+                int targetAbilityIndex = _dragAndDropHandler.GetAbilityIndexFromRow(abilityRow);
+                if (targetAbilityIndex >= 0)
+                {
+                    HandleDropOnAbility(targetAbilityIndex);
+                    CleanupDrag();
+                    return;
+                }
+            }
+
+            // Check if dropped on rolled scores container
+            VisualElement rolledContainer = _dragAndDropHandler.FindRolledScoresContainer(target);
+            if (rolledContainer != null && _currentDragState.IsDraggingFromAbility)
+            {
+                // Unassign ability score back to pool
+                Model.UnassignAbilityScore(_currentDragState.SourceAbilityIndex);
+                CleanupDrag();
+                return;
+            }
+
+            // Dropped elsewhere - return to pool if dragging from ability
+            if (_currentDragState.IsDraggingFromAbility)
+            {
+                Model.UnassignAbilityScore(_currentDragState.SourceAbilityIndex);
+            }
+            CleanupDrag();
+        }
+
+        private void HandleDropOnAbility(int targetAbilityIndex)
+        {
+            if (_currentDragState.IsDraggingFromAbility)
+            {
+                // Dragging from one ability to another - swap them
+                if (_currentDragState.SourceAbilityIndex >= 0 && 
+                    _currentDragState.SourceAbilityIndex != targetAbilityIndex && 
+                    _currentDragState.RolledScoreIndex >= 0)
+                {
+                    // Get the rolled score index currently assigned to target ability (if any)
+                    int targetRolledScoreIndex = -1;
+                    if (Model.State.AssignedRolledScoreIndices != null && 
+                        targetAbilityIndex >= 0 && targetAbilityIndex < 6)
+                    {
+                        targetRolledScoreIndex = Model.State.AssignedRolledScoreIndices[targetAbilityIndex];
+                    }
+
+                    // Assign the dragged rolled score to target ability
+                    Model.AssignRolledScoreToAbility(_currentDragState.RolledScoreIndex, targetAbilityIndex);
+
+                    // If target had a score, assign it to source (swap)
+                    if (targetRolledScoreIndex >= 0 && targetRolledScoreIndex != _currentDragState.RolledScoreIndex)
+                    {
+                        Model.AssignRolledScoreToAbility(targetRolledScoreIndex, _currentDragState.SourceAbilityIndex);
+                    }
+                }
+                // If dropped on same ability, do nothing (just cleanup)
+            }
+            else
+            {
+                // Dragging from rolled scores pool to ability
+                if (_currentDragState.RolledScoreIndex >= 0)
+                {
+                    Model.AssignRolledScoreToAbility(_currentDragState.RolledScoreIndex, targetAbilityIndex);
+                }
+            }
+        }
+
+        private void CleanupDrag()
+        {
+            // Clear visual feedback
+            _view.ClearDropZoneHighlights();
+            _view.HideDragPreview();
+
+            // Unmark dragged elements
+            if (_currentDragState.IsDraggingFromAbility && _currentDragState.SourceAbilityIndex >= 0)
+            {
+                string[] abilityNames = { "str", "dex", "con", "int", "wis", "cha" };
+                VisualElement abilityRow = _view.Root?.Q<VisualElement>($"ability-stat-{abilityNames[_currentDragState.SourceAbilityIndex]}");
+                if (abilityRow != null)
+                {
+                    _view.UnmarkElementAsDragging(abilityRow);
+                }
+            }
+            else if (_currentDragState.RolledScoreIndex >= 0)
+            {
+                VisualElement rolledScoreElement = _view.Root?.Q<VisualElement>($"rolled-score-{_currentDragState.RolledScoreIndex}");
+                if (rolledScoreElement != null)
+                {
+                    _view.UnmarkElementAsDragging(rolledScoreElement);
+                }
+            }
+
+            // Reset drag state
+            _currentDragState = DragState.None;
         }
 
         private int Roll4d6DropLowest()
