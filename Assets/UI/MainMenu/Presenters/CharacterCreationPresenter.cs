@@ -71,6 +71,9 @@ namespace GameCore.UI.MainMenu
             _view.ClassSelected += HandleClassSelected;
             _view.RaceSelected += HandleRaceSelected;
             _view.RollAbilitiesClicked += HandleRollAbilitiesClicked;
+            _view.StandardArrayClicked += HandleStandardArrayClicked;
+            _view.ManualClicked += HandleManualClicked;
+            _view.ManualScoreChanged += HandleManualScoreChanged;
             _view.DragStartedFromRolledScore += HandleDragStartedFromRolledScore;
             _view.DragStartedFromAbility += HandleDragStartedFromAbility;
             _view.DropOccurred += HandleDropOccurred;
@@ -103,6 +106,9 @@ namespace GameCore.UI.MainMenu
                 _view.ClassSelected -= HandleClassSelected;
                 _view.RaceSelected -= HandleRaceSelected;
                 _view.RollAbilitiesClicked -= HandleRollAbilitiesClicked;
+                _view.StandardArrayClicked -= HandleStandardArrayClicked;
+                _view.ManualClicked -= HandleManualClicked;
+                _view.ManualScoreChanged -= HandleManualScoreChanged;
                 _view.DragStartedFromRolledScore -= HandleDragStartedFromRolledScore;
                 _view.DragStartedFromAbility -= HandleDragStartedFromAbility;
                 _view.DropOccurred -= HandleDropOccurred;
@@ -172,12 +178,35 @@ namespace GameCore.UI.MainMenu
 
         private void HandleRollAbilitiesClicked()
         {
+            Model.SetSelectedScoreMethod("Roll");
             int[] newScores = new int[6];
             for (int i = 0; i < 6; i++)
             {
                 newScores[i] = Roll4d6DropLowest();
             }
-            Model.SetRolledScores(newScores);
+            Model.SetRolledScores(newScores, isManualMode: false);
+        }
+
+        private void HandleStandardArrayClicked()
+        {
+            Model.SetSelectedScoreMethod("StandardArray");
+            // D&D 5e standard array: 15, 14, 13, 12, 10, 8
+            Model.SetRolledScores(new int[] { 15, 14, 13, 12, 10, 8 }, isManualMode: false);
+        }
+
+        private void HandleManualClicked()
+        {
+            Model.SetSelectedScoreMethod("Manual");
+            Model.SetRolledScores(new int[] { -1, -1, -1, -1, -1, -1 }, isManualMode: true);
+        }
+
+        private void HandleManualScoreChanged(int index, string text)
+        {
+            if (index < 0 || index >= 6) return;
+            int value = -1;
+            if (!string.IsNullOrWhiteSpace(text) && int.TryParse(text.Trim(), out int parsed))
+                value = parsed;
+            Model.SetRolledScoreAt(index, value);
         }
 
         // ========== Drag and Drop Handlers ==========
@@ -187,6 +216,11 @@ namespace GameCore.UI.MainMenu
             if (Model.State.RolledScores == null || rolledScoreIndex < 0 || rolledScoreIndex >= 6)
                 return;
 
+            // Use value from model (so manual-typed values are correct)
+            int value = Model.State.RolledScores[rolledScoreIndex];
+            if (value < 3)
+                return; // Don't drag empty or invalid manual slots
+
             // Update drag state
             _currentDragState = new DragState
             {
@@ -194,11 +228,11 @@ namespace GameCore.UI.MainMenu
                 RolledScoreIndex = rolledScoreIndex,
                 SourceAbilityIndex = -1,
                 IsDraggingFromAbility = false,
-                ScoreValue = scoreValue
+                ScoreValue = value
             };
 
             // Update UI - show drag preview
-            _view.ShowDragPreview(scoreValue);
+            _view.ShowDragPreview(value);
 
             // Mark rolled score element as dragging
             VisualElement rolledScoreElement = _view.Root?.Q<VisualElement>($"rolled-score-{rolledScoreIndex}");

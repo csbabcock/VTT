@@ -14,8 +14,10 @@ namespace GameCore.UI.MainMenu
         public string SelectedRace;
         public string SelectedBackground;
         public int[] AbilityScores; // STR, DEX, CON, INT, WIS, CHA (final assigned scores)
-        public int[] RolledScores; // The 6 rolled scores from dice (null if not rolled yet)
+        public int[] RolledScores; // The 6 rolled scores from dice (null if not rolled yet). In manual mode can contain -1 for empty.
         public int[] AssignedRolledScoreIndices; // Which rolled score index is assigned to each ability (-1 if unassigned)
+        public bool IsManualMode; // When true, pool slots are editable and can be -1 (empty)
+        public string SelectedScoreMethod; // "Roll", "StandardArray", "Manual", or ""
     }
 
     /// <summary>
@@ -38,7 +40,9 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = string.Empty,
                 AbilityScores = new int[] { -1, -1, -1, -1, -1, -1 }, // Unassigned by default
                 RolledScores = null, // No scores rolled yet
-                AssignedRolledScoreIndices = new int[] { -1, -1, -1, -1, -1, -1 } // No assignments
+                AssignedRolledScoreIndices = new int[] { -1, -1, -1, -1, -1, -1 }, // No assignments
+                IsManualMode = false,
+                SelectedScoreMethod = string.Empty
             };
         }
 
@@ -55,9 +59,31 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
-                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod
             };
 
+            StateChanged?.Invoke(State);
+        }
+
+        public void SetSelectedScoreMethod(string method)
+        {
+            string value = method ?? string.Empty;
+            if (State.SelectedScoreMethod == value)
+                return;
+            State = new CharacterCreationState
+            {
+                IsVisible = State.IsVisible,
+                SelectedClass = State.SelectedClass,
+                SelectedRace = State.SelectedRace,
+                SelectedBackground = State.SelectedBackground,
+                AbilityScores = State.AbilityScores,
+                RolledScores = State.RolledScores,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = value
+            };
             StateChanged?.Invoke(State);
         }
 
@@ -74,7 +100,9 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
-                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod
             };
 
             StateChanged?.Invoke(State);
@@ -93,7 +121,9 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
-                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod
             };
 
             StateChanged?.Invoke(State);
@@ -112,7 +142,9 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = backgroundName ?? string.Empty,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
-                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod
             };
 
             StateChanged?.Invoke(State);
@@ -139,7 +171,9 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = newScores,
                 RolledScores = State.RolledScores,
-                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod
             };
 
             StateChanged?.Invoke(State);
@@ -170,16 +204,20 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = clampedScores,
                 RolledScores = State.RolledScores,
-                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod
             };
 
             StateChanged?.Invoke(State);
         }
 
         /// <summary>
-        /// Sets the rolled scores from dice rolling. Resets all assignments.
+        /// Sets the rolled scores from dice rolling, standard array, or manual (empty slots). Resets all assignments.
         /// </summary>
-        public void SetRolledScores(int[] rolledScores)
+        /// <param name="rolledScores">Six values. For manual mode use -1 for empty slots.</param>
+        /// <param name="isManualMode">When true, -1 is allowed for empty editable slots.</param>
+        public void SetRolledScores(int[] rolledScores, bool isManualMode = false)
         {
             if (rolledScores == null || rolledScores.Length != 6)
                 return;
@@ -187,7 +225,10 @@ namespace GameCore.UI.MainMenu
             int[] clampedScores = new int[6];
             for (int i = 0; i < 6; i++)
             {
-                clampedScores[i] = Mathf.Clamp(rolledScores[i], 3, 18);
+                if (isManualMode && rolledScores[i] < 0)
+                    clampedScores[i] = -1;
+                else
+                    clampedScores[i] = Mathf.Clamp(rolledScores[i], 3, 18);
             }
 
             State = new CharacterCreationState
@@ -198,7 +239,51 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = new int[] { -1, -1, -1, -1, -1, -1 }, // Reset to unassigned
                 RolledScores = clampedScores,
-                AssignedRolledScoreIndices = new int[] { -1, -1, -1, -1, -1, -1 } // Reset assignments
+                AssignedRolledScoreIndices = new int[] { -1, -1, -1, -1, -1, -1 }, // Reset assignments
+                IsManualMode = isManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        /// <summary>
+        /// Updates a single score in the pool (for manual mode). Value must be -1 (clear) or 3–18.
+        /// </summary>
+        public void SetRolledScoreAt(int index, int value)
+        {
+            if (!State.IsManualMode || State.RolledScores == null || index < 0 || index >= 6)
+                return;
+            int clamped = value < 0 ? -1 : Mathf.Clamp(value, 3, 18);
+            if (State.RolledScores[index] == clamped)
+                return;
+
+            int[] newScores = new int[6];
+            Array.Copy(State.RolledScores, newScores, 6);
+            newScores[index] = clamped;
+
+            // Recompute ability scores from assignments
+            int[] newAbilityScores = new int[6];
+            for (int i = 0; i < 6; i++)
+            {
+                int ri = State.AssignedRolledScoreIndices[i];
+                if (ri >= 0 && ri < 6 && newScores[ri] >= 0)
+                    newAbilityScores[i] = newScores[ri];
+                else
+                    newAbilityScores[i] = -1;
+            }
+
+            State = new CharacterCreationState
+            {
+                IsVisible = State.IsVisible,
+                SelectedClass = State.SelectedClass,
+                SelectedRace = State.SelectedRace,
+                SelectedBackground = State.SelectedBackground,
+                AbilityScores = newAbilityScores,
+                RolledScores = newScores,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = true,
+                SelectedScoreMethod = State.SelectedScoreMethod
             };
 
             StateChanged?.Invoke(State);
@@ -258,7 +343,9 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = newAbilityScores,
                 RolledScores = State.RolledScores,
-                AssignedRolledScoreIndices = newAssignedIndices
+                AssignedRolledScoreIndices = newAssignedIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod
             };
 
             StateChanged?.Invoke(State);
@@ -288,7 +375,9 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = newAbilityScores,
                 RolledScores = State.RolledScores,
-                AssignedRolledScoreIndices = newAssignedIndices
+                AssignedRolledScoreIndices = newAssignedIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod
             };
 
             StateChanged?.Invoke(State);

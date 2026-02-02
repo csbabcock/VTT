@@ -46,11 +46,15 @@
                     <ui:VisualElement name="stats-panel" class="character-creation-stats-panel">
                         <ui:Label text="Character Stats" class="character-creation-stats-title"/>
                         <ui:VisualElement name="rolled-scores-pool" class="character-creation-rolled-scores-pool">
-                            <ui:Label text="Rolled Scores" class="character-creation-rolled-scores-title"/>
+                            <ui:Label text="Ability Score Pool" class="character-creation-rolled-scores-title"/>
                             <ui:VisualElement name="rolled-scores-container" class="character-creation-rolled-scores-container"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="ability-scores-grid" class="character-creation-ability-scores-grid"/>
-                        <ui:Button name="roll-abilities-button" text="Roll 4d6 Drop Lowest" class="character-creation-roll-button"/>
+                        <ui:VisualElement name="score-method-buttons" class="character-creation-score-method-buttons">
+                            <ui:Button name="roll-abilities-button" text="Roll" class="character-creation-roll-button"/>
+                            <ui:Button name="standard-array-button" text="Standard Array" class="character-creation-roll-button"/>
+                            <ui:Button name="manual-button" text="Manual" class="character-creation-roll-button"/>
+                        </ui:VisualElement>
                         <ui:Label text="Combat &amp; Defense" class="character-creation-subtitle"/>
                         <ui:VisualElement name="character-stats-grid" class="character-creation-character-stats-grid"/>
                         <ui:Label text="Spellcasting" class="character-creation-subtitle"/>

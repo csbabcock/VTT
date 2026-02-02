@@ -48,14 +48,22 @@ namespace GameCore.UI.MainMenu
         private Button _cancelButton;
         private Button _createButton;
         private Button _rollButton;
+        private Button _standardArrayButton;
+        private Button _manualButton;
 
         // Drag and drop visual state (UI only - no business logic)
         private VisualElement _dragPreview; // Visual preview of dragged score
+        private int _pendingManualDragIndex = -1;
+        private int _pendingManualDragValue;
+        private Vector2 _pendingManualDragPosition;
 
         // Events - View only raises events, delegates all logic to Presenter
         public event System.Action<string> ClassSelected;
         public event System.Action<string> RaceSelected;
         public event System.Action RollAbilitiesClicked;
+        public event System.Action StandardArrayClicked;
+        public event System.Action ManualClicked;
+        public event System.Action<int, string> ManualScoreChanged; // rolledScoreIndex, text
         public event System.Action<int, int> DragStartedFromRolledScore; // rolledScoreIndex, scoreValue
         public event System.Action<int> DragStartedFromAbility; // abilityIndex
         public event System.Action<Vector2> DropOccurred; // position
@@ -142,6 +150,8 @@ namespace GameCore.UI.MainMenu
             _cancelButton = _root.Q<Button>("cancel-button");
             _createButton = _root.Q<Button>("create-button");
             _rollButton = _root.Q<Button>("roll-abilities-button");
+            _standardArrayButton = _root.Q<Button>("standard-array-button");
+            _manualButton = _root.Q<Button>("manual-button");
         }
 
         private void SetupEventHandlers()
@@ -168,6 +178,10 @@ namespace GameCore.UI.MainMenu
 
             if (_rollButton != null)
                 _rollButton.clicked += () => RollAbilitiesClicked?.Invoke();
+            if (_standardArrayButton != null)
+                _standardArrayButton.clicked += () => StandardArrayClicked?.Invoke();
+            if (_manualButton != null)
+                _manualButton.clicked += () => ManualClicked?.Invoke();
         }
 
         private void SwitchTab(int tabIndex)
@@ -404,8 +418,11 @@ namespace GameCore.UI.MainMenu
             UpdateOptionSelection(_classButtonsContainer, state.SelectedClass);
             UpdateOptionSelection(_raceButtonsContainer, state.SelectedRace);
 
+            // Update score method button selection (outline on selected)
+            UpdateScoreMethodSelection(state.SelectedScoreMethod);
+
             // Update rolled scores pool
-            UpdateRolledScores(state.RolledScores, state.AssignedRolledScoreIndices);
+            UpdateRolledScores(state.RolledScores, state.AssignedRolledScoreIndices, state.IsManualMode);
 
             // Update ability scores without triggering change events
             if (state.AbilityScores != null && state.AbilityScores.Length == 6)
@@ -459,6 +476,31 @@ namespace GameCore.UI.MainMenu
                         button.RemoveFromClassList("selected");
                     }
                 }
+            }
+        }
+
+        private void UpdateScoreMethodSelection(string selectedScoreMethod)
+        {
+            if (_rollButton != null)
+            {
+                if (selectedScoreMethod == "Roll")
+                    _rollButton.AddToClassList("selected");
+                else
+                    _rollButton.RemoveFromClassList("selected");
+            }
+            if (_standardArrayButton != null)
+            {
+                if (selectedScoreMethod == "StandardArray")
+                    _standardArrayButton.AddToClassList("selected");
+                else
+                    _standardArrayButton.RemoveFromClassList("selected");
+            }
+            if (_manualButton != null)
+            {
+                if (selectedScoreMethod == "Manual")
+                    _manualButton.AddToClassList("selected");
+                else
+                    _manualButton.RemoveFromClassList("selected");
             }
         }
 
@@ -633,8 +675,19 @@ namespace GameCore.UI.MainMenu
 
         private void OnGlobalPointerMove(PointerMoveEvent evt)
         {
+            // If we have a pending manual drag and pointer moved enough, start the drag
+            if (_pendingManualDragIndex >= 0)
+            {
+                float dx = evt.position.x - _pendingManualDragPosition.x;
+                float dy = evt.position.y - _pendingManualDragPosition.y;
+                if (dx * dx + dy * dy > 64f) // 8px threshold
+                {
+                    DragStartedFromRolledScore?.Invoke(_pendingManualDragIndex, _pendingManualDragValue);
+                    _pendingManualDragIndex = -1;
+                }
+            }
+
             // Update drag preview position if it exists
-            // Presenter will handle visual feedback via public methods
             if (_dragPreview != null && _root != null)
             {
                 Vector2 screenPos = evt.position;
@@ -647,7 +700,7 @@ namespace GameCore.UI.MainMenu
 
         private void OnGlobalPointerUp(PointerUpEvent evt)
         {
-            // Simply notify Presenter of drop - Presenter handles all logic
+            _pendingManualDragIndex = -1;
             DropOccurred?.Invoke(evt.position);
         }
 
@@ -807,7 +860,7 @@ namespace GameCore.UI.MainMenu
             }
         }
 
-        private VisualElement CreateRolledScoreElement(int rolledScoreIndex, int scoreValue, bool isAssigned)
+        private VisualElement CreateRolledScoreElement(int rolledScoreIndex, int scoreValue, bool isAssigned, bool isManualMode)
         {
             VisualElement item = new VisualElement();
             item.AddToClassList("character-creation-rolled-score-item");
@@ -819,44 +872,147 @@ namespace GameCore.UI.MainMenu
                 item.AddToClassList("assigned");
             }
 
-            Label valueLabel = new Label(scoreValue.ToString());
-            valueLabel.AddToClassList("character-creation-rolled-score-value");
-            item.Add(valueLabel);
-
-            // Setup drag handler - just raise event, Presenter handles logic
-            item.RegisterCallback<PointerDownEvent>(evt =>
+            if (isManualMode)
             {
-                if (evt.button == 0 && !isAssigned) // Left mouse button
+                TextField valueField = new TextField();
+                valueField.AddToClassList("character-creation-rolled-score-value");
+                valueField.name = $"rolled-score-field-{rolledScoreIndex}";
+                valueField.value = scoreValue >= 3 ? scoreValue.ToString() : "";
+                valueField.maxLength = 2;
+                valueField.isDelayed = true;
+                valueField.RegisterValueChangedCallback(evt =>
                 {
-                    DragStartedFromRolledScore?.Invoke(rolledScoreIndex, scoreValue);
+                    string raw = evt.newValue ?? "";
+                    string digitsOnly = new string(System.Array.FindAll(raw.ToCharArray(), c => char.IsDigit(c)));
+                    if (digitsOnly != raw)
+                    {
+                        valueField.SetValueWithoutNotify(digitsOnly);
+                        raw = digitsOnly;
+                    }
+                    if (string.IsNullOrEmpty(digitsOnly))
+                    {
+                        ManualScoreChanged?.Invoke(rolledScoreIndex, "");
+                        return;
+                    }
+                    if (!int.TryParse(digitsOnly, out int parsed))
+                        return;
+                    if (parsed > 18)
+                    {
+                        valueField.SetValueWithoutNotify("18");
+                        ManualScoreChanged?.Invoke(rolledScoreIndex, "18");
+                        return;
+                    }
+                    if (parsed >= 3 && parsed <= 18)
+                        ManualScoreChanged?.Invoke(rolledScoreIndex, digitsOnly);
+                });
+                valueField.RegisterCallback<FocusOutEvent>(_ =>
+                {
+                    string v = valueField.value?.Trim() ?? "";
+                    if (string.IsNullOrEmpty(v)) return;
+                    if (!int.TryParse(v, out int parsed) || parsed < 3)
+                    {
+                        valueField.value = "";
+                        ManualScoreChanged?.Invoke(rolledScoreIndex, "");
+                    }
+                    else if (parsed > 18)
+                    {
+                        valueField.value = "18";
+                        ManualScoreChanged?.Invoke(rolledScoreIndex, "18");
+                    }
+                });
+
+                // Drag handle: click here and drag to move the score
+                VisualElement dragHandle = new VisualElement();
+                dragHandle.AddToClassList("character-creation-rolled-score-drag-handle");
+                dragHandle.name = $"rolled-score-handle-{rolledScoreIndex}";
+                dragHandle.pickingMode = PickingMode.Position;
+                Label handleIcon = new Label("\u22ee"); // ⋮ vertical ellipsis (grip)
+                handleIcon.AddToClassList("character-creation-rolled-score-drag-handle-icon");
+                handleIcon.pickingMode = PickingMode.Ignore;
+                dragHandle.Add(handleIcon);
+
+                dragHandle.RegisterCallback<PointerDownEvent>(evt =>
+                {
+                    if (evt.button != 0 || isAssigned) return;
+                    ManualScoreChanged?.Invoke(rolledScoreIndex, valueField.value);
+                    if (int.TryParse(valueField.value?.Trim(), out int v) && v >= 3 && v <= 18)
+                    {
+                        _pendingManualDragIndex = rolledScoreIndex;
+                        _pendingManualDragValue = v;
+                        _pendingManualDragPosition = evt.position;
+                    }
                     evt.StopPropagation();
-                }
-            });
+                });
+                item.Add(dragHandle);
+                item.Add(valueField);
+            }
+            else
+            {
+                Label valueLabel = new Label(scoreValue >= 3 ? scoreValue.ToString() : "—");
+                valueLabel.AddToClassList("character-creation-rolled-score-value");
+                item.Add(valueLabel);
+
+                item.RegisterCallback<PointerDownEvent>(evt =>
+                {
+                    if (evt.button == 0 && !isAssigned)
+                    {
+                        DragStartedFromRolledScore?.Invoke(rolledScoreIndex, scoreValue);
+                        evt.StopPropagation();
+                    }
+                });
+            }
 
             return item;
         }
 
-        public void UpdateRolledScores(int[] rolledScores, int[] assignedRolledScoreIndices)
+        public void UpdateRolledScores(int[] rolledScores, int[] assignedRolledScoreIndices, bool isManualMode = false)
         {
             if (_rolledScoresContainer == null) return;
 
-            _rolledScoresContainer.Clear();
-
             if (rolledScores == null || rolledScores.Length != 6)
             {
-                // Hide pool if no scores
+                _rolledScoresContainer.Clear();
                 if (_rolledScoresPool != null)
-                {
                     _rolledScoresPool.style.display = DisplayStyle.None;
-                }
                 return;
             }
 
-            // Show pool when scores are available
             if (_rolledScoresPool != null)
-            {
                 _rolledScoresPool.style.display = DisplayStyle.Flex;
+
+            // When manual mode and we already have 6 elements with TextFields, update values in place to preserve focus
+            if (isManualMode && _rolledScoresContainer.childCount == 6)
+            {
+                VisualElement first = _rolledScoresContainer[0];
+                if (first.Q<TextField>() != null)
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        TextField field = _rolledScoresContainer[i].Q<TextField>($"rolled-score-field-{i}");
+                        if (field != null)
+                        {
+                            string newVal = rolledScores[i] >= 3 ? rolledScores[i].ToString() : "";
+                            if (field.value != newVal)
+                                field.SetValueWithoutNotify(newVal);
+                        }
+                        bool isAssigned = false;
+                        if (assignedRolledScoreIndices != null)
+                        {
+                            for (int j = 0; j < 6; j++)
+                            {
+                                if (assignedRolledScoreIndices[j] == i) { isAssigned = true; break; }
+                            }
+                        }
+                        if (isAssigned)
+                            _rolledScoresContainer[i].AddToClassList("assigned");
+                        else
+                            _rolledScoresContainer[i].RemoveFromClassList("assigned");
+                    }
+                    return;
+                }
             }
+
+            _rolledScoresContainer.Clear();
 
             for (int i = 0; i < 6; i++)
             {
@@ -873,7 +1029,7 @@ namespace GameCore.UI.MainMenu
                     }
                 }
 
-                VisualElement scoreElement = CreateRolledScoreElement(i, rolledScores[i], isAssigned);
+                VisualElement scoreElement = CreateRolledScoreElement(i, rolledScores[i], isAssigned, isManualMode);
                 _rolledScoresContainer.Add(scoreElement);
             }
         }

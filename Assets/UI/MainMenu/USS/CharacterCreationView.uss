@@ -184,6 +184,20 @@
     -unity-font-style: bold;
 }
 
+.character-creation-score-method-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.character-creation-score-method-buttons > .character-creation-roll-button {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 80px;
+    margin-right: 8px;
+}
+
 .character-creation-roll-button {
     width: 100%;
     background-color: var(--color-bg-secondary);
@@ -194,8 +208,8 @@
     border-radius: var(--radius-sm);
     font-size: 14px;
     -unity-font-style: bold;
-    margin-top: 15px;
-    margin-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
     letter-spacing: -0.28px;
     transition-duration: var(--transition-fast);
     transition-property: border-color, background-color;
@@ -204,6 +218,11 @@
 .character-creation-roll-button:hover {
     border-color: var(--color-blue);
     background-color: var(--color-bg-shade1);
+}
+
+.character-creation-roll-button.selected {
+    border-color: var(--color-blue);
+    border-width: 2px;
 }
 
 /* Detail Panel */
@@ -399,8 +418,8 @@
 }
 
 .character-creation-rolled-scores-container > * {
-    margin-right: 8px;
-    margin-bottom: 8px;
+    margin-right: 12px;
+    margin-bottom: 12px;
 }
 
 .character-creation-rolled-scores-container.drag-over {
@@ -411,10 +430,11 @@
 }
 
 .character-creation-rolled-score-item {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
-    min-height: 50px;
+    flex-direction: row;
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
     background-color: var(--color-bg-primary);
     border-width: 2px;
     border-color: var(--color-border-strong);
@@ -449,6 +469,53 @@
     -unity-font-style: bold;
     color: var(--color-blue);
     letter-spacing: -0.4px;
+}
+
+/* Manual mode: drag handle (left) - click and drag here to move the score */
+.character-creation-rolled-score-drag-handle {
+    width: 14px;
+    min-width: 14px;
+    height: 100%;
+    background-color: var(--color-bg-shade1);
+    border-width: 1px;
+    border-color: var(--color-border-strong);
+    border-radius: 2px 0 0 2px;
+    justify-content: center;
+    align-items: center;
+    align-self: stretch;
+}
+
+.character-creation-rolled-score-drag-handle:hover {
+    background-color: var(--color-border-default);
+}
+
+.character-creation-rolled-score-drag-handle-icon {
+    color: var(--color-text-n3);
+    font-size: 12px;
+    -unity-text-align: middle-center;
+}
+
+/* Manual mode: TextField (right) - click here to type; gray caret for visibility */
+.character-creation-rolled-score-item TextField.character-creation-rolled-score-value {
+    flex-grow: 1;
+    width: 100%;
+    min-width: 28px;
+    min-height: 32px;
+    -unity-text-align: middle-center;
+    border-width: 0;
+    border-color: transparent;
+    padding: 6px 4px;
+    background-color: transparent;
+    --unity-cursor-color: rgba(180, 180, 180, 1);
+}
+
+.character-creation-rolled-score-item TextField.character-creation-rolled-score-value .unity-text-field__input {
+    -unity-text-align: middle-center;
+    border-width: 0;
+    border-color: transparent;
+    background-color: transparent;
+    min-width: 24px;
+    padding: 2px 0;
 }
 
 /* Drop Zone Styles */
