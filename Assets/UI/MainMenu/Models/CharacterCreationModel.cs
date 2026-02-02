@@ -15,6 +15,8 @@ namespace GameCore.UI.MainMenu
         public string SelectedBackground;
         public int[] AbilityScores; // STR, DEX, CON, INT, WIS, CHA (final assigned scores)
         public int[] RolledScores; // The 6 rolled scores from dice (null if not rolled yet). In manual mode can contain -1 for empty.
+        public int[][] RolledDiceBreakdown; // For Roll option: RolledDiceBreakdown[i] = 4 dice for slot i, or null
+        public int[] RolledDroppedIndices; // For Roll option: which die index (0-3) was dropped per slot, or -1
         public int[] AssignedRolledScoreIndices; // Which rolled score index is assigned to each ability (-1 if unassigned)
         public bool IsManualMode; // When true, pool slots are editable and can be -1 (empty)
         public string SelectedScoreMethod; // "Roll", "StandardArray", "Manual", or ""
@@ -40,6 +42,7 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = string.Empty,
                 AbilityScores = new int[] { -1, -1, -1, -1, -1, -1 }, // Unassigned by default
                 RolledScores = null, // No scores rolled yet
+                RolledDiceBreakdown = null,
                 AssignedRolledScoreIndices = new int[] { -1, -1, -1, -1, -1, -1 }, // No assignments
                 IsManualMode = false,
                 SelectedScoreMethod = string.Empty
@@ -59,6 +62,7 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod
@@ -80,6 +84,7 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = value
@@ -100,6 +105,7 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod
@@ -121,6 +127,7 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod
@@ -142,6 +149,7 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = backgroundName ?? string.Empty,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod
@@ -171,6 +179,7 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = newScores,
                 RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod
@@ -204,6 +213,7 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = clampedScores,
                 RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod
@@ -217,7 +227,8 @@ namespace GameCore.UI.MainMenu
         /// </summary>
         /// <param name="rolledScores">Six values. For manual mode use -1 for empty slots.</param>
         /// <param name="isManualMode">When true, -1 is allowed for empty editable slots.</param>
-        public void SetRolledScores(int[] rolledScores, bool isManualMode = false)
+        /// <param name="diceBreakdown">For Roll option: 6 slots, each int[4] (the 4 dice). Null for Standard Array/Manual.</param>
+        public void SetRolledScores(int[] rolledScores, bool isManualMode = false, int[][] diceBreakdown = null)
         {
             if (rolledScores == null || rolledScores.Length != 6)
                 return;
@@ -239,6 +250,7 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = new int[] { -1, -1, -1, -1, -1, -1 }, // Reset to unassigned
                 RolledScores = clampedScores,
+                RolledDiceBreakdown = diceBreakdown,
                 AssignedRolledScoreIndices = new int[] { -1, -1, -1, -1, -1, -1 }, // Reset assignments
                 IsManualMode = isManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod
@@ -281,6 +293,7 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = newAbilityScores,
                 RolledScores = newScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = true,
                 SelectedScoreMethod = State.SelectedScoreMethod
@@ -343,6 +356,7 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = newAbilityScores,
                 RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
                 AssignedRolledScoreIndices = newAssignedIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod
@@ -375,6 +389,7 @@ namespace GameCore.UI.MainMenu
                 SelectedBackground = State.SelectedBackground,
                 AbilityScores = newAbilityScores,
                 RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
                 AssignedRolledScoreIndices = newAssignedIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod

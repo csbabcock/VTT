@@ -180,11 +180,14 @@ namespace GameCore.UI.MainMenu
         {
             Model.SetSelectedScoreMethod("Roll");
             int[] newScores = new int[6];
+            int[][] newBreakdown = new int[6][];
             for (int i = 0; i < 6; i++)
             {
-                newScores[i] = Roll4d6DropLowest();
+                (int[] dice, int sum) = Roll4d6DropLowestDetailed();
+                newBreakdown[i] = dice;
+                newScores[i] = sum;
             }
-            Model.SetRolledScores(newScores, isManualMode: false);
+            Model.SetRolledScores(newScores, isManualMode: false, diceBreakdown: newBreakdown);
         }
 
         private void HandleStandardArrayClicked()
@@ -458,7 +461,7 @@ namespace GameCore.UI.MainMenu
             _currentDragState = DragState.None;
         }
 
-        private int Roll4d6DropLowest()
+        private (int[] dice, int sum) Roll4d6DropLowestDetailed()
         {
             int[] rolls = new int[4];
             for (int i = 0; i < 4; i++)
@@ -476,7 +479,7 @@ namespace GameCore.UI.MainMenu
                 sum += rolls[i];
             }
 
-            return sum - lowest;
+            return (rolls, sum - lowest);
         }
 
         private void HandleCancelClicked()

@@ -2,35 +2,147 @@ This file is authoritative. Changes must be additive or explicitly marked.
 
 
 
-# CONTEXT
+\# CONTEXT
 
-## Relevant UI Objects
 
-* CharacterCreationView
-* ability-scores-grid
-* roll-abilities-button
-* tabs-container (Class, Race tabs)
-* stats-panel
-* detail-panel
 
-## Relevant Scripts
+\## Relevant UI Objects
 
-* Assets/UI/MainMenu/Views/CharacterCreationView.cs
-* Assets/UI/MainMenu/USS/CharacterCreationView.uss
-* Assets/UI/MainMenu/UXML/CharacterCreationView.uxml
 
-## Relevant Prefabs
 
-* (none identified)
+\* CharacterCreationView
 
-## Current Unity Scene(s)
+\* ability-scores-grid
 
-* (not identified in session)
+\* roll-abilities-button
 
-## Current state
+\* tabs-container (Class, Race tabs)
 
-* Character creation uses MVP: View is passive (display + events only); Presenter holds drag-and-drop and assignment logic.
-* Drag-and-drop for ability scores: rolled scores draggable, ability rows are drop zones; drag-from-ability and swap/replace supported.
-* DragAndDropHandler (MainMenu/Services) handles element detection and drop-zone visual feedback; DragState holds drag state; Presenter owns state and calls View UI methods (e.g. ShowDragPreview, HighlightDropZone).
-* Stats-panel: rolled-scores-pool (rolled-scores-container), ability-scores-grid (Labels in drop zones), roll-abilities-button. Ability score display is Labels in drop zones, not IntegerFields.
-* Relevant scripts include MainMenu Presenters, Views, Models, and Services (e.g. CharacterCreationDataService, DragAndDropHandler).
+\* stats-panel
+
+\* detail-panel
+
+
+
+\## Relevant Scripts
+
+
+
+\* Assets/UI/MainMenu/Views/CharacterCreationView.cs
+
+\* Assets/UI/MainMenu/USS/CharacterCreationView.uss
+
+\* Assets/UI/MainMenu/UXML/CharacterCreationView.uxml
+
+
+
+\## Relevant Prefabs
+
+
+
+\* (none identified)
+
+
+
+\## Current Unity Scene(s)
+
+
+
+\* (not identified in session)
+
+
+
+\## Current state
+
+
+
+\* Character creation uses MVP: View is passive (display + events only); Presenter holds drag-and-drop and assignment logic.
+
+\* Drag-and-drop for ability scores: rolled scores draggable, ability rows are drop zones; drag-from-ability and swap/replace supported.
+
+\* DragAndDropHandler (MainMenu/Services) handles element detection and drop-zone visual feedback; DragState holds drag state; Presenter owns state and calls View UI methods (e.g. ShowDragPreview, HighlightDropZone).
+
+\* Stats-panel: rolled-scores-pool (rolled-scores-container), ability-scores-grid (Labels in drop zones), roll-abilities-button. Ability score display is Labels in drop zones, not IntegerFields.
+
+\* Relevant scripts include MainMenu Presenters, Views, Models, and Services (e.g. CharacterCreationDataService, DragAndDropHandler).
+
+
+
+\## Engineering guardrails
+
+
+
+\### Goals
+
+\* Maintainable code that stays easy to change.
+
+\* Consistent architecture for UI and gameplay code.
+
+\* Avoid pattern theater. Patterns are tools, not requirements.
+
+
+
+\### Default approach
+
+\* Start simple, refactor when a second use or clear pain appears.
+
+\* Prefer small modules and clear seams over deep hierarchies.
+
+\* Optimize for readability and testability, not cleverness.
+
+
+
+\### SOLID guidance (pragmatic)
+
+\* Single Responsibility: one reason to change. If a class keeps growing, split by responsibility.
+
+\* Open/Closed: extend with new components; avoid repeatedly editing core logic.
+
+\* Liskov: avoid inheritance unless subclasses are truly substitutable.
+
+\* Interface Segregation: small focused interfaces; no god interfaces for convenience.
+
+\* Dependency Inversion: depend on abstractions at boundaries (UI, persistence, networking). Do not inject everything everywhere.
+
+
+
+\### UI architecture
+
+\* MVP for screens with non trivial logic or multiple states.
+
+\* Small UI widgets can stay simple (View only) until logic grows.
+
+
+
+MVP rules of thumb:
+
+\* View: dumb render + forward events; no domain logic.
+
+\* Presenter: owns UI logic and state transitions; calls services; updates the view.
+
+\* Model: domain data and services, independent of UI concerns.
+
+
+
+\### When NOT to apply patterns
+
+\* One off feature with no expected reuse.
+
+\* Pattern adds more files than the feature adds value.
+
+\* Indirection without a clear testing or decoupling benefit.
+
+
+
+\### When to introduce a pattern
+
+\* Same logic appears twice.
+
+\* A class has 3+ responsibilities.
+
+\* Changes keep touching too many files.
+
+\* UI logic is getting tangled with rendering code.
+
+
+

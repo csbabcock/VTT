@@ -422,7 +422,7 @@ namespace GameCore.UI.MainMenu
             UpdateScoreMethodSelection(state.SelectedScoreMethod);
 
             // Update rolled scores pool
-            UpdateRolledScores(state.RolledScores, state.AssignedRolledScoreIndices, state.IsManualMode);
+            UpdateRolledScores(state.RolledScores, state.AssignedRolledScoreIndices, state.IsManualMode, state.RolledDiceBreakdown);
 
             // Update ability scores without triggering change events
             if (state.AbilityScores != null && state.AbilityScores.Length == 6)
@@ -860,7 +860,7 @@ namespace GameCore.UI.MainMenu
             }
         }
 
-        private VisualElement CreateRolledScoreElement(int rolledScoreIndex, int scoreValue, bool isAssigned, bool isManualMode)
+        private VisualElement CreateRolledScoreElement(int rolledScoreIndex, int scoreValue, bool isAssigned, bool isManualMode, int[] diceForSlot = null)
         {
             VisualElement item = new VisualElement();
             item.AddToClassList("character-creation-rolled-score-item");
@@ -948,9 +948,49 @@ namespace GameCore.UI.MainMenu
             }
             else
             {
+                bool hasDice = diceForSlot != null && diceForSlot.Length == 4;
+
+                if (hasDice)
+                    item.AddToClassList("character-creation-rolled-score-item--with-dice");
+
                 Label valueLabel = new Label(scoreValue >= 3 ? scoreValue.ToString() : "—");
                 valueLabel.AddToClassList("character-creation-rolled-score-value");
-                item.Add(valueLabel);
+
+                if (hasDice)
+                {
+                    // Fixed-height score container so it doesn't expand; dice row sits below with clear gap
+                    VisualElement valueBox = new VisualElement();
+                    valueBox.AddToClassList("character-creation-rolled-score-value-box");
+                    valueBox.Add(valueLabel);
+                    item.Add(valueBox);
+
+                    // Dropped die = first occurrence of the minimum (4d6 drop lowest)
+                    int minVal = diceForSlot[0];
+                    for (int d = 1; d < 4; d++)
+                        if (diceForSlot[d] < minVal) minVal = diceForSlot[d];
+                    int droppedIndex = 0;
+                    for (int d = 0; d < 4; d++)
+                        if (diceForSlot[d] == minVal) { droppedIndex = d; break; }
+
+                    VisualElement diceRow = new VisualElement();
+                    diceRow.AddToClassList("character-creation-rolled-score-dice-row");
+                    for (int d = 0; d < 4; d++)
+                    {
+                        Label dieChip = new Label(diceForSlot[d].ToString());
+                        dieChip.AddToClassList("character-creation-rolled-score-die-chip");
+                        if (d == droppedIndex)
+                            dieChip.AddToClassList("character-creation-rolled-score-die-chip-dropped");
+                        else
+                            dieChip.AddToClassList("character-creation-rolled-score-die-chip-kept");
+                        dieChip.pickingMode = PickingMode.Ignore;
+                        diceRow.Add(dieChip);
+                    }
+                    item.Add(diceRow);
+                }
+                else
+                {
+                    item.Add(valueLabel);
+                }
 
                 item.RegisterCallback<PointerDownEvent>(evt =>
                 {
@@ -965,7 +1005,7 @@ namespace GameCore.UI.MainMenu
             return item;
         }
 
-        public void UpdateRolledScores(int[] rolledScores, int[] assignedRolledScoreIndices, bool isManualMode = false)
+        public void UpdateRolledScores(int[] rolledScores, int[] assignedRolledScoreIndices, bool isManualMode = false, int[][] diceBreakdown = null)
         {
             if (_rolledScoresContainer == null) return;
 
@@ -1029,7 +1069,8 @@ namespace GameCore.UI.MainMenu
                     }
                 }
 
-                VisualElement scoreElement = CreateRolledScoreElement(i, rolledScores[i], isAssigned, isManualMode);
+                int[] diceForSlot = (diceBreakdown != null && i < diceBreakdown.Length) ? diceBreakdown[i] : null;
+                VisualElement scoreElement = CreateRolledScoreElement(i, rolledScores[i], isAssigned, isManualMode, diceForSlot);
                 _rolledScoresContainer.Add(scoreElement);
             }
         }
