@@ -19,7 +19,49 @@ namespace GameCore.UI.MainMenu
         public int[] RolledDroppedIndices; // For Roll option: which die index (0-3) was dropped per slot, or -1
         public int[] AssignedRolledScoreIndices; // Which rolled score index is assigned to each ability (-1 if unassigned)
         public bool IsManualMode; // When true, pool slots are editable and can be -1 (empty)
-        public string SelectedScoreMethod; // "Roll", "StandardArray", "Manual", or ""
+        public string SelectedScoreMethod; // "Roll", "StandardArray", "Manual", "PointBuy", or ""
+    }
+
+    /// <summary>
+    /// Point Buy cost table: score 8 = 0, 9 = 1, 10 = 2, 11 = 3, 12 = 4, 13 = 5, 14 = 7, 15 = 9.
+    /// Used for Point Buy ability score mode (27 points total).
+    /// </summary>
+    public static class PointBuyCostTable
+    {
+        public const int TotalPoints = 27;
+        public const int MinScore = 8;
+        public const int MaxScore = 15;
+
+        public static int CostForScore(int score)
+        {
+            if (score < MinScore || score > MaxScore)
+                return 0;
+            return score switch
+            {
+                8 => 0,
+                9 => 1,
+                10 => 2,
+                11 => 3,
+                12 => 4,
+                13 => 5,
+                14 => 7,
+                15 => 9,
+                _ => 0
+            };
+        }
+
+        public static int GetPointsRemaining(int[] abilityScores)
+        {
+            if (abilityScores == null || abilityScores.Length != 6)
+                return TotalPoints;
+            int spent = 0;
+            for (int i = 0; i < 6; i++)
+            {
+                int s = abilityScores[i];
+                spent += CostForScore(s >= MinScore && s <= MaxScore ? s : MinScore);
+            }
+            return TotalPoints - spent;
+        }
     }
 
     /// <summary>
@@ -78,18 +120,36 @@ namespace GameCore.UI.MainMenu
             string value = method ?? string.Empty;
             if (State.SelectedScoreMethod == value)
                 return;
+
+            int[] abilityScores = State.AbilityScores;
+            int[] rolledScores = State.RolledScores;
+            int[][] diceBreakdown = State.RolledDiceBreakdown;
+            int[] droppedIndices = State.RolledDroppedIndices;
+            int[] assignedIndices = State.AssignedRolledScoreIndices;
+            bool isManualMode = State.IsManualMode;
+
+            if (value == "PointBuy")
+            {
+                abilityScores = new int[] { 8, 8, 8, 8, 8, 8 };
+                rolledScores = null;
+                diceBreakdown = null;
+                droppedIndices = null;
+                assignedIndices = new int[] { -1, -1, -1, -1, -1, -1 };
+                isManualMode = false;
+            }
+
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
                 SelectedClass = State.SelectedClass,
                 SelectedRace = State.SelectedRace,
                 SelectedBackground = State.SelectedBackground,
-                AbilityScores = State.AbilityScores,
-                RolledScores = State.RolledScores,
-                RolledDiceBreakdown = State.RolledDiceBreakdown,
-                RolledDroppedIndices = State.RolledDroppedIndices,
-                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
-                IsManualMode = State.IsManualMode,
+                AbilityScores = abilityScores,
+                RolledScores = rolledScores,
+                RolledDiceBreakdown = diceBreakdown,
+                RolledDroppedIndices = droppedIndices,
+                AssignedRolledScoreIndices = assignedIndices,
+                IsManualMode = isManualMode,
                 SelectedScoreMethod = value
             };
             StateChanged?.Invoke(State);
@@ -370,6 +430,53 @@ namespace GameCore.UI.MainMenu
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
                 RolledDroppedIndices = State.RolledDroppedIndices,
                 AssignedRolledScoreIndices = newAssignedIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        /// <summary>
+        /// Sets an ability score in Point Buy mode. Only valid when SelectedScoreMethod == "PointBuy".
+        /// Score must be 8-15; total cost of all six scores must not exceed 27 points.
+        /// </summary>
+        public void SetPointBuyAbilityScore(int abilityIndex, int newScore)
+        {
+            if (State.SelectedScoreMethod != "PointBuy" || abilityIndex < 0 || abilityIndex >= 6)
+                return;
+            int clamped = Mathf.Clamp(newScore, PointBuyCostTable.MinScore, PointBuyCostTable.MaxScore);
+            int[] current = State.AbilityScores;
+            if (current == null || current.Length != 6)
+                return;
+            int currentScore = current[abilityIndex];
+            if (currentScore >= PointBuyCostTable.MinScore && currentScore <= PointBuyCostTable.MaxScore)
+            { }
+            else
+                currentScore = PointBuyCostTable.MinScore; // treat invalid as 8 for cost
+
+            int currentCost = PointBuyCostTable.CostForScore(currentScore);
+            int newCost = PointBuyCostTable.CostForScore(clamped);
+            int pointsRemaining = PointBuyCostTable.GetPointsRemaining(current);
+            int deltaCost = newCost - currentCost;
+            if (deltaCost > pointsRemaining)
+                return; // not enough points to increase
+
+            int[] newScores = new int[6];
+            Array.Copy(current, newScores, 6);
+            newScores[abilityIndex] = clamped;
+
+            State = new CharacterCreationState
+            {
+                IsVisible = State.IsVisible,
+                SelectedClass = State.SelectedClass,
+                SelectedRace = State.SelectedRace,
+                SelectedBackground = State.SelectedBackground,
+                AbilityScores = newScores,
+                RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
+                RolledDroppedIndices = State.RolledDroppedIndices,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod
             };

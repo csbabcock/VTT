@@ -50,5 +50,13 @@ This file is authoritative. Changes must be additive or explicitly marked.
 
 &nbsp; - If/when point-buy is implemented, decide whether that reintroduces IntegerFields or uses an alternative control.
 
+\* Point Buy implemented: uses Labels plus +/- buttons per ability row (alternative control); pool shows remaining points. Cost table 8=0, 9=1, 10=2, 11=3, 12=4, 13=5, 14=7, 15=9; 27 points total. No IntegerFields.
+
+
+
+\* Dice chip styling (Roll option): Kept dice chips use default (primary) text color. Dropped (lowest) die chip is greyed-out inactive (muted grey + opacity), not red, to show “unused” rather than error.
+
+\* Ability score rolling behind IAbilityScoreRoller (DIP); rolled-score pool UI in partial CharacterCreationView.RolledScores.cs (SRP).
+
 
 

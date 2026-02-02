@@ -56,15 +56,19 @@ This file is authoritative. Changes must be additive or explicitly marked.
 
 
 
-\* Character creation uses MVP: View is passive (display + events only); Presenter holds drag-and-drop and assignment logic.
+\* Character creation uses MVP: View is passive (display + events only); Presenter holds drag-and-drop, assignment, and validation logic; Model holds state (including RolledDroppedIndices for dice breakdown).
 
-\* Drag-and-drop for ability scores: rolled scores draggable, ability rows are drop zones; drag-from-ability and swap/replace supported.
+\* Ability score options: Roll (4d6 drop lowest), Standard Array, Manual (six editable fields with drag handle), Point Buy (27 points, scores 8–15, cost table 8=0 through 15=9). Roll shows dice breakdown chips under each score; kept dice chips use default (primary) text color; dropped (lowest) die chip is greyed-out inactive (muted grey + opacity), not red.
+
+\* Point Buy: pool shows remaining points; each ability row has minus (left of score) and plus (right of score); Presenter computes points remaining and +/- enabled states and calls View.UpdatePointBuyPointsRemaining and View.UpdatePointBuyButtonStates; Model has PointBuyCostTable and SetPointBuyAbilityScore; View has no Point Buy domain logic.
+
+\* IAbilityScoreRoller (MainMenu/Services) used by Presenter for rolling; rolled-score pool UI lives in CharacterCreationView.RolledScores.cs partial. Drag-and-drop: rolled scores draggable, ability rows drop zones; drag-from-ability and swap/replace supported.
 
 \* DragAndDropHandler (MainMenu/Services) handles element detection and drop-zone visual feedback; DragState holds drag state; Presenter owns state and calls View UI methods (e.g. ShowDragPreview, HighlightDropZone).
 
-\* Stats-panel: rolled-scores-pool (rolled-scores-container), ability-scores-grid (Labels in drop zones), roll-abilities-button. Ability score display is Labels in drop zones, not IntegerFields.
+\* Stats-panel: rolled-scores-pool (rolled-scores-container or Point Buy points label), ability-scores-grid (Labels in drop zones; Point Buy shows +/- per row), roll / Standard Array / Manual / Point Buy buttons. Ability score display is Labels in drop zones, not IntegerFields.
 
-\* Relevant scripts include MainMenu Presenters, Views, Models, and Services (e.g. CharacterCreationDataService, DragAndDropHandler).
+\* View uses single source for ability names (AbilityNamesShort, AbilityNamesDisplay). Relevant scripts include MainMenu Presenters, Views, Models, and Services (CharacterCreationDataService, DragAndDropHandler, IAbilityScoreRoller, AbilityScoreRoller; CharacterCreationView.cs + CharacterCreationView.RolledScores.cs).
 
 
 

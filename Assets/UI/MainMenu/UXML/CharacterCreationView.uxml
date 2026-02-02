@@ -47,6 +47,7 @@
                         <ui:Label text="Character Stats" class="character-creation-stats-title"/>
                         <ui:VisualElement name="rolled-scores-pool" class="character-creation-rolled-scores-pool">
                             <ui:Label text="Ability Score Pool" class="character-creation-rolled-scores-title"/>
+                            <ui:Label name="point-buy-points-label" text="27" class="character-creation-point-buy-points"/>
                             <ui:VisualElement name="rolled-scores-container" class="character-creation-rolled-scores-container"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="ability-scores-grid" class="character-creation-ability-scores-grid"/>
@@ -54,6 +55,7 @@
                             <ui:Button name="roll-abilities-button" text="Roll" class="character-creation-roll-button"/>
                             <ui:Button name="standard-array-button" text="Standard Array" class="character-creation-roll-button"/>
                             <ui:Button name="manual-button" text="Manual" class="character-creation-roll-button"/>
+                            <ui:Button name="point-buy-button" text="Point Buy" class="character-creation-roll-button"/>
                         </ui:VisualElement>
                         <ui:Label text="Combat &amp; Defense" class="character-creation-subtitle"/>
                         <ui:VisualElement name="character-stats-grid" class="character-creation-character-stats-grid"/>

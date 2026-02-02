@@ -75,6 +75,9 @@ namespace GameCore.UI.MainMenu
             _view.RollAbilitiesClicked += HandleRollAbilitiesClicked;
             _view.StandardArrayClicked += HandleStandardArrayClicked;
             _view.ManualClicked += HandleManualClicked;
+            _view.PointBuyClicked += HandlePointBuyClicked;
+            _view.PointBuyIncrementClicked += HandlePointBuyIncrementClicked;
+            _view.PointBuyDecrementClicked += HandlePointBuyDecrementClicked;
             _view.ManualScoreChanged += HandleManualScoreChanged;
             _view.DragStartedFromRolledScore += HandleDragStartedFromRolledScore;
             _view.DragStartedFromAbility += HandleDragStartedFromAbility;
@@ -110,6 +113,9 @@ namespace GameCore.UI.MainMenu
                 _view.RollAbilitiesClicked -= HandleRollAbilitiesClicked;
                 _view.StandardArrayClicked -= HandleStandardArrayClicked;
                 _view.ManualClicked -= HandleManualClicked;
+                _view.PointBuyClicked -= HandlePointBuyClicked;
+                _view.PointBuyIncrementClicked -= HandlePointBuyIncrementClicked;
+                _view.PointBuyDecrementClicked -= HandlePointBuyDecrementClicked;
                 _view.ManualScoreChanged -= HandleManualScoreChanged;
                 _view.DragStartedFromRolledScore -= HandleDragStartedFromRolledScore;
                 _view.DragStartedFromAbility -= HandleDragStartedFromAbility;
@@ -205,6 +211,63 @@ namespace GameCore.UI.MainMenu
         {
             Model.SetSelectedScoreMethod("Manual");
             Model.SetRolledScores(new int[] { -1, -1, -1, -1, -1, -1 }, isManualMode: true);
+        }
+
+        private void HandlePointBuyClicked()
+        {
+            Model.SetSelectedScoreMethod("PointBuy");
+        }
+
+        private void HandlePointBuyIncrementClicked(int abilityIndex)
+        {
+            if (Model.State.SelectedScoreMethod != "PointBuy" || abilityIndex < 0 || abilityIndex >= 6)
+                return;
+            int current = GetPointBuyScoreForAbility(abilityIndex);
+            if (current >= PointBuyCostTable.MaxScore)
+                return;
+            Model.SetPointBuyAbilityScore(abilityIndex, current + 1);
+        }
+
+        private void HandlePointBuyDecrementClicked(int abilityIndex)
+        {
+            if (Model.State.SelectedScoreMethod != "PointBuy" || abilityIndex < 0 || abilityIndex >= 6)
+                return;
+            int current = GetPointBuyScoreForAbility(abilityIndex);
+            if (current <= PointBuyCostTable.MinScore)
+                return;
+            Model.SetPointBuyAbilityScore(abilityIndex, current - 1);
+        }
+
+        private static int GetPointBuyScoreForAbility(CharacterCreationState state, int abilityIndex)
+        {
+            if (state.AbilityScores == null || abilityIndex < 0 || abilityIndex >= state.AbilityScores.Length)
+                return PointBuyCostTable.MinScore;
+            int s = state.AbilityScores[abilityIndex];
+            return (s >= PointBuyCostTable.MinScore && s <= PointBuyCostTable.MaxScore)
+                ? s
+                : PointBuyCostTable.MinScore;
+        }
+
+        private int GetPointBuyScoreForAbility(int abilityIndex)
+        {
+            return GetPointBuyScoreForAbility(Model.State, abilityIndex);
+        }
+
+        private static void ComputePointBuyButtonStates(CharacterCreationState state, out bool[] minusEnabled, out bool[] plusEnabled)
+        {
+            minusEnabled = new bool[6];
+            plusEnabled = new bool[6];
+            if (state.AbilityScores == null || state.AbilityScores.Length != 6)
+                return;
+            int pointsRemaining = PointBuyCostTable.GetPointsRemaining(state.AbilityScores);
+            for (int i = 0; i < 6; i++)
+            {
+                int score = GetPointBuyScoreForAbility(state, i);
+                int costCurrent = PointBuyCostTable.CostForScore(score);
+                int costNext = PointBuyCostTable.CostForScore(score + 1);
+                minusEnabled[i] = score > PointBuyCostTable.MinScore;
+                plusEnabled[i] = score < PointBuyCostTable.MaxScore && (costNext - costCurrent) <= pointsRemaining;
+            }
         }
 
         private void HandleManualScoreChanged(int index, string text)
@@ -510,6 +573,13 @@ namespace GameCore.UI.MainMenu
         private void HandleModelStateChanged(CharacterCreationState state)
         {
             _view.UpdateView(state);
+            if (state.SelectedScoreMethod == "PointBuy")
+            {
+                int pointsRemaining = PointBuyCostTable.GetPointsRemaining(state.AbilityScores);
+                _view.UpdatePointBuyPointsRemaining(pointsRemaining);
+                ComputePointBuyButtonStates(state, out bool[] minusEnabled, out bool[] plusEnabled);
+                _view.UpdatePointBuyButtonStates(minusEnabled, plusEnabled);
+            }
             UpdateDetailPanel(state);
             UpdateCharacterStats(state);
         }

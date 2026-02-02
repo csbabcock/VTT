@@ -12,6 +12,9 @@ namespace GameCore.UI.MainMenu
     [RequireComponent(typeof(UIDocument))]
     public partial class CharacterCreationView : MonoBehaviour, IUIView<CharacterCreationState>
     {
+        private static readonly string[] AbilityNamesShort = { "str", "dex", "con", "int", "wis", "cha" };
+        private static readonly string[] AbilityNamesDisplay = { "STR", "DEX", "CON", "INT", "WIS", "CHA" };
+
         [Header("Assets")]
         [Tooltip("Optional: USS stylesheet for this view. If not assigned, it will still work if referenced from the UXML.")]
         [SerializeField] private StyleSheet _characterCreationStyleSheet;
@@ -50,6 +53,8 @@ namespace GameCore.UI.MainMenu
         private Button _rollButton;
         private Button _standardArrayButton;
         private Button _manualButton;
+        private Button _pointBuyButton;
+        private Label _pointBuyPointsLabel;
 
         // Drag and drop visual state (UI only - no business logic)
         private VisualElement _dragPreview; // Visual preview of dragged score
@@ -63,6 +68,9 @@ namespace GameCore.UI.MainMenu
         public event System.Action RollAbilitiesClicked;
         public event System.Action StandardArrayClicked;
         public event System.Action ManualClicked;
+        public event System.Action PointBuyClicked;
+        public event System.Action<int> PointBuyIncrementClicked;
+        public event System.Action<int> PointBuyDecrementClicked;
         public event System.Action<int, string> ManualScoreChanged; // rolledScoreIndex, text
         public event System.Action<int, int> DragStartedFromRolledScore; // rolledScoreIndex, scoreValue
         public event System.Action<int> DragStartedFromAbility; // abilityIndex
@@ -152,6 +160,8 @@ namespace GameCore.UI.MainMenu
             _rollButton = _root.Q<Button>("roll-abilities-button");
             _standardArrayButton = _root.Q<Button>("standard-array-button");
             _manualButton = _root.Q<Button>("manual-button");
+            _pointBuyButton = _root.Q<Button>("point-buy-button");
+            _pointBuyPointsLabel = _root.Q<Label>("point-buy-points-label");
         }
 
         private void SetupEventHandlers()
@@ -182,6 +192,8 @@ namespace GameCore.UI.MainMenu
                 _standardArrayButton.clicked += () => StandardArrayClicked?.Invoke();
             if (_manualButton != null)
                 _manualButton.clicked += () => ManualClicked?.Invoke();
+            if (_pointBuyButton != null)
+                _pointBuyButton.clicked += () => PointBuyClicked?.Invoke();
         }
 
         private void SwitchTab(int tabIndex)
@@ -270,23 +282,21 @@ namespace GameCore.UI.MainMenu
             // Create ability stat rows if they don't exist
             if (_abilityScoresGrid.childCount == 0)
             {
-                string[] abilityNames = { "STR", "DEX", "CON", "INT", "WIS", "CHA" };
-                foreach (string abilityName in abilityNames)
+                for (int i = 0; i < AbilityNamesDisplay.Length; i++)
                 {
-                    VisualElement row = CreateAbilityStatRow(abilityName);
+                    VisualElement row = CreateAbilityStatRow(AbilityNamesDisplay[i], i);
                     _abilityScoresGrid.Add(row);
                 }
             }
 
             // Query ability score labels after they are created
-            string[] inputNames = { "str", "dex", "con", "int", "wis", "cha" };
-            for (int i = 0; i < inputNames.Length; i++)
+            for (int i = 0; i < AbilityNamesShort.Length; i++)
             {
-                _abilityScoreLabels[i] = _root.Q<Label>($"ability-{inputNames[i]}-score-label");
+                _abilityScoreLabels[i] = _root.Q<Label>($"ability-{AbilityNamesShort[i]}-score-label");
             }
         }
 
-        private VisualElement CreateAbilityStatRow(string abilityName)
+        private VisualElement CreateAbilityStatRow(string abilityName, int abilityIndex)
         {
             VisualElement row = new VisualElement();
             row.AddToClassList("character-creation-ability-stat-row");
@@ -299,6 +309,16 @@ namespace GameCore.UI.MainMenu
 
             VisualElement values = new VisualElement();
             values.AddToClassList("character-creation-ability-stat-values");
+
+            // Point Buy: minus button (left of score; hidden by default)
+            VisualElement pointBuyMinus = new VisualElement();
+            pointBuyMinus.AddToClassList("character-creation-point-buy-controls");
+            pointBuyMinus.name = $"ability-{abilityName.ToLower()}-point-buy-minus";
+            pointBuyMinus.style.display = DisplayStyle.None;
+            Button minusBtn = new Button(() => PointBuyDecrementClicked?.Invoke(abilityIndex)) { text = "−" };
+            minusBtn.AddToClassList("character-creation-point-buy-btn");
+            pointBuyMinus.Add(minusBtn);
+            values.Add(pointBuyMinus);
 
             // Score input column
             VisualElement scoreColumn = new VisualElement();
@@ -323,6 +343,16 @@ namespace GameCore.UI.MainMenu
             scoreColumn.Add(scoreLabel);
             scoreColumn.Add(scoreDropZone);
             values.Add(scoreColumn);
+
+            // Point Buy: plus button (right of score; hidden by default)
+            VisualElement pointBuyPlus = new VisualElement();
+            pointBuyPlus.AddToClassList("character-creation-point-buy-controls");
+            pointBuyPlus.name = $"ability-{abilityName.ToLower()}-point-buy-plus";
+            pointBuyPlus.style.display = DisplayStyle.None;
+            Button plusBtn = new Button(() => PointBuyIncrementClicked?.Invoke(abilityIndex)) { text = "+" };
+            plusBtn.AddToClassList("character-creation-point-buy-btn");
+            pointBuyPlus.Add(plusBtn);
+            values.Add(pointBuyPlus);
 
             // Modifier column
             VisualElement modColumn = new VisualElement();
@@ -421,8 +451,17 @@ namespace GameCore.UI.MainMenu
             // Update score method button selection (outline on selected)
             UpdateScoreMethodSelection(state.SelectedScoreMethod);
 
-            // Update rolled scores pool
-            UpdateRolledScores(state.RolledScores, state.AssignedRolledScoreIndices, state.IsManualMode, state.RolledDiceBreakdown, state.RolledDroppedIndices);
+            if (state.SelectedScoreMethod == "PointBuy")
+            {
+                ShowPointBuyPool();
+                SetPointBuyControlsVisible(true);
+            }
+            else
+            {
+                HidePointBuyPool();
+                SetPointBuyControlsVisible(false);
+                UpdateRolledScores(state.RolledScores, state.AssignedRolledScoreIndices, state.IsManualMode, state.RolledDiceBreakdown, state.RolledDroppedIndices);
+            }
 
             // Update ability scores without triggering change events
             if (state.AbilityScores != null && state.AbilityScores.Length == 6)
@@ -432,8 +471,7 @@ namespace GameCore.UI.MainMenu
                     if (_abilityScoreLabels[i] != null)
                     {
                         int score = state.AbilityScores[i];
-                        string[] abilityNames = { "str", "dex", "con", "int", "wis", "cha" };
-                        VisualElement row = _root.Q<VisualElement>($"ability-stat-{abilityNames[i]}");
+                        VisualElement row = _root.Q<VisualElement>($"ability-stat-{AbilityNamesShort[i]}");
                         
                         if (score < 0)
                         {
@@ -502,6 +540,72 @@ namespace GameCore.UI.MainMenu
                 else
                     _manualButton.RemoveFromClassList("selected");
             }
+            if (_pointBuyButton != null)
+            {
+                if (selectedScoreMethod == "PointBuy")
+                    _pointBuyButton.AddToClassList("selected");
+                else
+                    _pointBuyButton.RemoveFromClassList("selected");
+            }
+        }
+
+        private void ShowPointBuyPool()
+        {
+            if (_rolledScoresPool != null)
+                _rolledScoresPool.style.display = DisplayStyle.Flex;
+            if (_pointBuyPointsLabel != null)
+                _pointBuyPointsLabel.style.display = DisplayStyle.Flex;
+            if (_rolledScoresContainer != null)
+                _rolledScoresContainer.style.display = DisplayStyle.None;
+        }
+
+        private void HidePointBuyPool()
+        {
+            if (_pointBuyPointsLabel != null)
+                _pointBuyPointsLabel.style.display = DisplayStyle.None;
+            if (_rolledScoresContainer != null)
+                _rolledScoresContainer.style.display = DisplayStyle.Flex;
+        }
+
+        private void SetPointBuyControlsVisible(bool visible)
+        {
+            if (_abilityScoresGrid == null || _root == null) return;
+            foreach (string name in AbilityNamesShort)
+            {
+                VisualElement minusContainer = _root.Q<VisualElement>($"ability-{name}-point-buy-minus");
+                VisualElement plusContainer = _root.Q<VisualElement>($"ability-{name}-point-buy-plus");
+                if (minusContainer != null)
+                    minusContainer.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+                if (plusContainer != null)
+                    plusContainer.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+        }
+
+        /// <summary>
+        /// Updates the Point Buy pool label with remaining points. Called by Presenter with computed value.
+        /// </summary>
+        public void UpdatePointBuyPointsRemaining(int pointsRemaining)
+        {
+            if (_pointBuyPointsLabel != null)
+                _pointBuyPointsLabel.text = pointsRemaining.ToString();
+        }
+
+        /// <summary>
+        /// Updates Point Buy +/- button enabled states. Called by Presenter with computed values.
+        /// </summary>
+        public void UpdatePointBuyButtonStates(bool[] minusEnabled, bool[] plusEnabled)
+        {
+            if (minusEnabled == null || plusEnabled == null || _root == null) return;
+            int count = Math.Min(minusEnabled.Length, Math.Min(plusEnabled.Length, AbilityNamesShort.Length));
+            for (int i = 0; i < count; i++)
+            {
+                VisualElement minusContainer = _root.Q<VisualElement>($"ability-{AbilityNamesShort[i]}-point-buy-minus");
+                VisualElement plusContainer = _root.Q<VisualElement>($"ability-{AbilityNamesShort[i]}-point-buy-plus");
+                Button minusBtn = minusContainer?.Q<Button>();
+                Button plusBtn = plusContainer?.Q<Button>();
+                if (minusBtn != null) minusBtn.SetEnabled(minusEnabled[i]);
+                if (plusBtn != null) plusBtn.SetEnabled(plusEnabled[i]);
+            }
         }
 
         /// <summary>
@@ -530,10 +634,9 @@ namespace GameCore.UI.MainMenu
         /// </summary>
         public void UpdateAbilityScoreDisplay(int index, int score, int modifier)
         {
-            string[] abilityNames = { "str", "dex", "con", "int", "wis", "cha" };
-            if (index < 0 || index >= abilityNames.Length) return;
+            if (index < 0 || index >= AbilityNamesShort.Length) return;
 
-            string abilityName = abilityNames[index];
+            string abilityName = AbilityNamesShort[index];
 
             // Update score label value
             if (_abilityScoreLabels[index] != null)
@@ -652,10 +755,9 @@ namespace GameCore.UI.MainMenu
             // Setup ability rows to raise drag events
             if (_abilityScoresGrid != null)
             {
-                string[] abilityNames = { "str", "dex", "con", "int", "wis", "cha" };
-                for (int i = 0; i < abilityNames.Length; i++)
+                for (int i = 0; i < AbilityNamesShort.Length; i++)
                 {
-                    VisualElement row = _root.Q<VisualElement>($"ability-stat-{abilityNames[i]}");
+                    VisualElement row = _root.Q<VisualElement>($"ability-stat-{AbilityNamesShort[i]}");
                     if (row != null)
                     {
                         int abilityIndex = i; // Capture for closure
@@ -775,11 +877,9 @@ namespace GameCore.UI.MainMenu
         public void HighlightDropZone(int abilityIndex)
         {
             if (_abilityScoresGrid == null) return;
+            if (abilityIndex < 0 || abilityIndex >= AbilityNamesShort.Length) return;
 
-            string[] abilityNames = { "str", "dex", "con", "int", "wis", "cha" };
-            if (abilityIndex < 0 || abilityIndex >= abilityNames.Length) return;
-
-            VisualElement row = _root.Q<VisualElement>($"ability-stat-{abilityNames[abilityIndex]}");
+            VisualElement row = _root.Q<VisualElement>($"ability-stat-{AbilityNamesShort[abilityIndex]}");
             if (row != null)
             {
                 row.AddToClassList("drag-over");
