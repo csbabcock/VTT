@@ -24,6 +24,7 @@ namespace GameCore.UI.MainMenu
 
         private bool _initialized;
         private IRulesetCalculator _calculator;
+        private IAbilityScoreRoller _abilityScoreRoller;
         private DragAndDropHandler _dragAndDropHandler;
         private DragState _currentDragState;
 
@@ -36,6 +37,7 @@ namespace GameCore.UI.MainMenu
 
             Model = new CharacterCreationModel();
             _calculator = RulesetCalculatorFactory.GetDefaultCalculator();
+            _abilityScoreRoller = AbilityScoreRollerFactory.GetDefault();
         }
 
         private void OnEnable()
@@ -181,13 +183,15 @@ namespace GameCore.UI.MainMenu
             Model.SetSelectedScoreMethod("Roll");
             int[] newScores = new int[6];
             int[][] newBreakdown = new int[6][];
+            int[] newDroppedIndices = new int[6];
             for (int i = 0; i < 6; i++)
             {
-                (int[] dice, int sum) = Roll4d6DropLowestDetailed();
+                (int[] dice, int sum, int droppedIndex) = _abilityScoreRoller.Roll4d6DropLowest();
                 newBreakdown[i] = dice;
                 newScores[i] = sum;
+                newDroppedIndices[i] = droppedIndex;
             }
-            Model.SetRolledScores(newScores, isManualMode: false, diceBreakdown: newBreakdown);
+            Model.SetRolledScores(newScores, isManualMode: false, diceBreakdown: newBreakdown, droppedIndices: newDroppedIndices);
         }
 
         private void HandleStandardArrayClicked()
@@ -208,7 +212,7 @@ namespace GameCore.UI.MainMenu
             if (index < 0 || index >= 6) return;
             int value = -1;
             if (!string.IsNullOrWhiteSpace(text) && int.TryParse(text.Trim(), out int parsed))
-                value = parsed;
+                value = Mathf.Clamp(parsed, 3, 18); // Business rule: ability scores 3–18
             Model.SetRolledScoreAt(index, value);
         }
 
@@ -459,27 +463,6 @@ namespace GameCore.UI.MainMenu
 
             // Reset drag state
             _currentDragState = DragState.None;
-        }
-
-        private (int[] dice, int sum) Roll4d6DropLowestDetailed()
-        {
-            int[] rolls = new int[4];
-            for (int i = 0; i < 4; i++)
-            {
-                rolls[i] = Random.Range(1, 7); // 1-6
-            }
-
-            // Find lowest and drop it
-            int lowest = rolls[0];
-            int sum = rolls[0];
-            for (int i = 1; i < 4; i++)
-            {
-                if (rolls[i] < lowest)
-                    lowest = rolls[i];
-                sum += rolls[i];
-            }
-
-            return (rolls, sum - lowest);
         }
 
         private void HandleCancelClicked()
