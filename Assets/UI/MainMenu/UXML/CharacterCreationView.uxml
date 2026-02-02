@@ -45,6 +45,10 @@
                 <ui:ScrollView name="stats-panel-scroll" mode="Vertical" class="character-creation-stats-panel-scroll">
                     <ui:VisualElement name="stats-panel" class="character-creation-stats-panel">
                         <ui:Label text="Character Stats" class="character-creation-stats-title"/>
+                        <ui:VisualElement name="rolled-scores-pool" class="character-creation-rolled-scores-pool">
+                            <ui:Label text="Rolled Scores" class="character-creation-rolled-scores-title"/>
+                            <ui:VisualElement name="rolled-scores-container" class="character-creation-rolled-scores-container"/>
+                        </ui:VisualElement>
                         <ui:VisualElement name="ability-scores-grid" class="character-creation-ability-scores-grid"/>
                         <ui:Button name="roll-abilities-button" text="Roll 4d6 Drop Lowest" class="character-creation-roll-button"/>
                         <ui:Label text="Combat &amp; Defense" class="character-creation-subtitle"/>

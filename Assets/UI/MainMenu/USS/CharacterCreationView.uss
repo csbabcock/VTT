@@ -374,6 +374,94 @@
     letter-spacing: -0.8px;
 }
 
+/* Rolled Scores Pool */
+.character-creation-rolled-scores-pool {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--color-bg-shade1);
+    border-radius: var(--radius-sm);
+    border-width: 1px;
+    border-color: var(--color-border-default);
+}
+
+.character-creation-rolled-scores-title {
+    color: var(--color-text-n2);
+    font-size: 14px;
+    -unity-font-style: bold;
+    margin-bottom: 12px;
+    letter-spacing: -0.28px;
+}
+
+.character-creation-rolled-scores-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-height: 60px;
+}
+
+.character-creation-rolled-scores-container > * {
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+.character-creation-rolled-scores-container.drag-over {
+    border-width: 2px;
+    border-color: var(--color-blue);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-shade1);
+}
+
+.character-creation-rolled-score-item {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+    background-color: var(--color-bg-primary);
+    border-width: 2px;
+    border-color: var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    justify-content: center;
+    align-items: center;
+    transition-duration: var(--transition-fast);
+    transition-property: border-color, background-color, opacity;
+}
+
+.character-creation-rolled-score-item:hover {
+    border-color: var(--color-blue);
+    background-color: var(--color-bg-shade1);
+}
+
+.character-creation-rolled-score-item.dragging {
+    opacity: 0.5;
+}
+
+.character-creation-rolled-score-item.drag-preview {
+    opacity: 0.9;
+}
+
+.character-creation-rolled-score-item.assigned {
+    opacity: 0.4;
+    border-color: var(--color-border-default);
+    background-color: var(--color-bg-shade1);
+}
+
+.character-creation-rolled-score-value {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: var(--color-blue);
+    letter-spacing: -0.4px;
+}
+
+/* Drop Zone Styles */
+.character-creation-ability-stat-row.drag-over {
+    border-color: var(--color-blue);
+    border-width: 2px;
+    background-color: var(--color-bg-shade1);
+}
+
+.character-creation-ability-stat-row.unassigned .character-creation-ability-score-value {
+    color: var(--color-text-n4);
+}
+
 .character-creation-subtitle {
     color: var(--color-text-n2);
     font-size: 16px;
@@ -446,26 +534,43 @@
     letter-spacing: -0.4px;
 }
 
-/* Ability Score Input in stat rows */
-.character-creation-ability-score-input {
+/* Ability Score Drop Zone */
+.character-creation-ability-score-drop-zone {
     width: 60px;
     min-width: 60px;
-}
-
-.character-creation-ability-score-input #unity-text-input {
-    background-color: var(--color-bg-primary);
-    border-width: 1px;
-    border-color: var(--color-border-default);
+    height: 40px;
+    min-height: 40px;
+    border-width: 2px;
+    border-color: var(--color-border-subtle);
     border-radius: var(--radius-sm);
-    color: var(--color-text-primary);
-    font-size: 18px;
-    -unity-font-style: bold;
-    padding: 6px 8px;
-    -unity-text-align: middle-center;
+    background-color: var(--color-bg-shade1);
+    justify-content: center;
+    align-items: center;
+    transition-duration: var(--transition-fast);
+    transition-property: border-color, background-color;
 }
 
-.character-creation-ability-score-input:focus #unity-text-input {
+.character-creation-ability-stat-row.unassigned .character-creation-ability-score-drop-zone {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-bg-shade1);
+}
+
+.character-creation-ability-stat-row.drag-over .character-creation-ability-score-drop-zone {
     border-color: var(--color-blue);
+    background-color: var(--color-bg-shade1);
+}
+
+.character-creation-ability-stat-row.assigned .character-creation-ability-score-drop-zone {
+    border-color: var(--color-border-default);
+    background-color: var(--color-bg-primary);
+}
+
+/* Ability Score Label in stat rows */
+.character-creation-ability-score-value {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: var(--color-text-primary);
+    -unity-text-align: middle-center;
 }
 
 .character-creation-ability-score-value.increased {

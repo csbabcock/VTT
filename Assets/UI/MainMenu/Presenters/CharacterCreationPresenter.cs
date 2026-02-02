@@ -63,9 +63,9 @@ namespace GameCore.UI.MainMenu
             // Subscribe to view events
             _view.ClassSelected += HandleClassSelected;
             _view.RaceSelected += HandleRaceSelected;
-            _view.BackgroundSelected += HandleBackgroundSelected;
-            _view.AbilityScoreChanged += HandleAbilityScoreChanged;
             _view.RollAbilitiesClicked += HandleRollAbilitiesClicked;
+            _view.RolledScoreAssignedToAbility += HandleRolledScoreAssignedToAbility;
+            _view.AbilityScoreUnassigned += HandleAbilityScoreUnassigned;
             _view.CancelClicked += HandleCancelClicked;
             _view.CreateCharacterClicked += HandleCreateCharacterClicked;
 
@@ -88,9 +88,9 @@ namespace GameCore.UI.MainMenu
             {
                 _view.ClassSelected -= HandleClassSelected;
                 _view.RaceSelected -= HandleRaceSelected;
-                _view.BackgroundSelected -= HandleBackgroundSelected;
-                _view.AbilityScoreChanged -= HandleAbilityScoreChanged;
                 _view.RollAbilitiesClicked -= HandleRollAbilitiesClicked;
+                _view.RolledScoreAssignedToAbility -= HandleRolledScoreAssignedToAbility;
+                _view.AbilityScoreUnassigned -= HandleAbilityScoreUnassigned;
                 _view.CancelClicked -= HandleCancelClicked;
                 _view.CreateCharacterClicked -= HandleCreateCharacterClicked;
             }
@@ -138,16 +138,6 @@ namespace GameCore.UI.MainMenu
             Model.SetSelectedRace(raceName);
         }
 
-        private void HandleBackgroundSelected(string backgroundName)
-        {
-            Model.SetSelectedBackground(backgroundName);
-        }
-
-        private void HandleAbilityScoreChanged(int index, int value)
-        {
-            Model.SetAbilityScore(index, value);
-        }
-
         private void HandleRollAbilitiesClicked()
         {
             int[] newScores = new int[6];
@@ -155,7 +145,17 @@ namespace GameCore.UI.MainMenu
             {
                 newScores[i] = Roll4d6DropLowest();
             }
-            Model.SetAbilityScores(newScores);
+            Model.SetRolledScores(newScores);
+        }
+
+        private void HandleRolledScoreAssignedToAbility(int rolledScoreIndex, int abilityIndex)
+        {
+            Model.AssignRolledScoreToAbility(rolledScoreIndex, abilityIndex);
+        }
+
+        private void HandleAbilityScoreUnassigned(int abilityIndex)
+        {
+            Model.UnassignAbilityScore(abilityIndex);
         }
 
         private int Roll4d6DropLowest()
@@ -262,33 +262,60 @@ namespace GameCore.UI.MainMenu
             for (int i = 0; i < 6; i++)
             {
                 int score = state.AbilityScores[i];
-                int modifier = _calculator.CalculateAbilityModifier(score);
-                _view.UpdateAbilityScoreDisplay(i, score, modifier);
+                if (score < 0)
+                {
+                    // Unassigned - show placeholder
+                    _view.UpdateAbilityScoreDisplay(i, -1, 0);
+                }
+                else
+                {
+                    int modifier = _calculator.CalculateAbilityModifier(score);
+                    _view.UpdateAbilityScoreDisplay(i, score, modifier);
+                }
             }
 
-            // Calculate derived stats
-            int conMod = _calculator.CalculateAbilityModifier(state.AbilityScores[2]); // CON
-            int dexMod = _calculator.CalculateAbilityModifier(state.AbilityScores[1]); // DEX
-            int wisMod = _calculator.CalculateAbilityModifier(state.AbilityScores[4]); // WIS
-            int proficiencyBonus = _calculator.CalculateProficiencyBonus(1); // Level 1
-
-            // Calculate HP (simplified - would use class hit die)
-            int hitPoints = CalculateHitPoints(state.SelectedClass, conMod);
-
-            // Calculate AC (simplified)
-            int armorClass = 10 + dexMod;
-
-            // Calculate spellcasting stats if applicable
-            int? spellSaveDC = null;
-            int? spellAttack = null;
-            if (IsSpellcaster(state.SelectedClass))
+            // Only calculate derived stats if all abilities are assigned
+            bool allAssigned = true;
+            for (int i = 0; i < 6; i++)
             {
-                int castingModifier = GetCastingModifier(state.SelectedClass, state.AbilityScores);
-                spellSaveDC = 8 + proficiencyBonus + castingModifier;
-                spellAttack = proficiencyBonus + castingModifier;
+                if (state.AbilityScores[i] < 0)
+                {
+                    allAssigned = false;
+                    break;
+                }
             }
 
-            _view.UpdateDerivedStats(hitPoints, armorClass, dexMod, proficiencyBonus, spellSaveDC, spellAttack);
+            if (allAssigned)
+            {
+                // Calculate derived stats
+                int conMod = _calculator.CalculateAbilityModifier(state.AbilityScores[2]); // CON
+                int dexMod = _calculator.CalculateAbilityModifier(state.AbilityScores[1]); // DEX
+                int wisMod = _calculator.CalculateAbilityModifier(state.AbilityScores[4]); // WIS
+                int proficiencyBonus = _calculator.CalculateProficiencyBonus(1); // Level 1
+
+                // Calculate HP (simplified - would use class hit die)
+                int hitPoints = CalculateHitPoints(state.SelectedClass, conMod);
+
+                // Calculate AC (simplified)
+                int armorClass = 10 + dexMod;
+
+                // Calculate spellcasting stats if applicable
+                int? spellSaveDC = null;
+                int? spellAttack = null;
+                if (IsSpellcaster(state.SelectedClass))
+                {
+                    int castingModifier = GetCastingModifier(state.SelectedClass, state.AbilityScores);
+                    spellSaveDC = 8 + proficiencyBonus + castingModifier;
+                    spellAttack = proficiencyBonus + castingModifier;
+                }
+
+                _view.UpdateDerivedStats(hitPoints, armorClass, dexMod, proficiencyBonus, spellSaveDC, spellAttack);
+            }
+            else
+            {
+                // Show default/placeholder values when not all assigned
+                _view.UpdateDerivedStats(0, 0, 0, 0, null, null);
+            }
         }
 
         private int CalculateHitPoints(string className, int conModifier)

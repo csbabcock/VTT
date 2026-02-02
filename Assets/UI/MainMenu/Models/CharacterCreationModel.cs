@@ -13,7 +13,9 @@ namespace GameCore.UI.MainMenu
         public string SelectedClass;
         public string SelectedRace;
         public string SelectedBackground;
-        public int[] AbilityScores; // STR, DEX, CON, INT, WIS, CHA
+        public int[] AbilityScores; // STR, DEX, CON, INT, WIS, CHA (final assigned scores)
+        public int[] RolledScores; // The 6 rolled scores from dice (null if not rolled yet)
+        public int[] AssignedRolledScoreIndices; // Which rolled score index is assigned to each ability (-1 if unassigned)
     }
 
     /// <summary>
@@ -34,7 +36,9 @@ namespace GameCore.UI.MainMenu
                 SelectedClass = string.Empty,
                 SelectedRace = string.Empty,
                 SelectedBackground = string.Empty,
-                AbilityScores = new int[] { 10, 12, 13, 8, 15, 10 } // STR, DEX, CON, INT, WIS, CHA
+                AbilityScores = new int[] { -1, -1, -1, -1, -1, -1 }, // Unassigned by default
+                RolledScores = null, // No scores rolled yet
+                AssignedRolledScoreIndices = new int[] { -1, -1, -1, -1, -1, -1 } // No assignments
             };
         }
 
@@ -49,7 +53,9 @@ namespace GameCore.UI.MainMenu
                 SelectedClass = State.SelectedClass,
                 SelectedRace = State.SelectedRace,
                 SelectedBackground = State.SelectedBackground,
-                AbilityScores = State.AbilityScores
+                AbilityScores = State.AbilityScores,
+                RolledScores = State.RolledScores,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices
             };
 
             StateChanged?.Invoke(State);
@@ -66,7 +72,9 @@ namespace GameCore.UI.MainMenu
                 SelectedClass = className ?? string.Empty,
                 SelectedRace = State.SelectedRace,
                 SelectedBackground = State.SelectedBackground,
-                AbilityScores = State.AbilityScores
+                AbilityScores = State.AbilityScores,
+                RolledScores = State.RolledScores,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices
             };
 
             StateChanged?.Invoke(State);
@@ -83,7 +91,9 @@ namespace GameCore.UI.MainMenu
                 SelectedClass = State.SelectedClass,
                 SelectedRace = raceName ?? string.Empty,
                 SelectedBackground = State.SelectedBackground,
-                AbilityScores = State.AbilityScores
+                AbilityScores = State.AbilityScores,
+                RolledScores = State.RolledScores,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices
             };
 
             StateChanged?.Invoke(State);
@@ -100,7 +110,9 @@ namespace GameCore.UI.MainMenu
                 SelectedClass = State.SelectedClass,
                 SelectedRace = State.SelectedRace,
                 SelectedBackground = backgroundName ?? string.Empty,
-                AbilityScores = State.AbilityScores
+                AbilityScores = State.AbilityScores,
+                RolledScores = State.RolledScores,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices
             };
 
             StateChanged?.Invoke(State);
@@ -125,7 +137,9 @@ namespace GameCore.UI.MainMenu
                 SelectedClass = State.SelectedClass,
                 SelectedRace = State.SelectedRace,
                 SelectedBackground = State.SelectedBackground,
-                AbilityScores = newScores
+                AbilityScores = newScores,
+                RolledScores = State.RolledScores,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices
             };
 
             StateChanged?.Invoke(State);
@@ -154,7 +168,127 @@ namespace GameCore.UI.MainMenu
                 SelectedClass = State.SelectedClass,
                 SelectedRace = State.SelectedRace,
                 SelectedBackground = State.SelectedBackground,
-                AbilityScores = clampedScores
+                AbilityScores = clampedScores,
+                RolledScores = State.RolledScores,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        /// <summary>
+        /// Sets the rolled scores from dice rolling. Resets all assignments.
+        /// </summary>
+        public void SetRolledScores(int[] rolledScores)
+        {
+            if (rolledScores == null || rolledScores.Length != 6)
+                return;
+
+            int[] clampedScores = new int[6];
+            for (int i = 0; i < 6; i++)
+            {
+                clampedScores[i] = Mathf.Clamp(rolledScores[i], 3, 18);
+            }
+
+            State = new CharacterCreationState
+            {
+                IsVisible = State.IsVisible,
+                SelectedClass = State.SelectedClass,
+                SelectedRace = State.SelectedRace,
+                SelectedBackground = State.SelectedBackground,
+                AbilityScores = new int[] { -1, -1, -1, -1, -1, -1 }, // Reset to unassigned
+                RolledScores = clampedScores,
+                AssignedRolledScoreIndices = new int[] { -1, -1, -1, -1, -1, -1 } // Reset assignments
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        /// <summary>
+        /// Assigns a rolled score to an ability. If the rolled score is already assigned elsewhere, swaps them.
+        /// </summary>
+        public void AssignRolledScoreToAbility(int rolledScoreIndex, int abilityIndex)
+        {
+            if (State.RolledScores == null || rolledScoreIndex < 0 || rolledScoreIndex >= 6 || 
+                abilityIndex < 0 || abilityIndex >= 6)
+                return;
+
+            int[] newAssignedIndices = new int[6];
+            Array.Copy(State.AssignedRolledScoreIndices, newAssignedIndices, 6);
+
+            // If this rolled score is already assigned to another ability, unassign it
+            for (int i = 0; i < 6; i++)
+            {
+                if (newAssignedIndices[i] == rolledScoreIndex)
+                {
+                    newAssignedIndices[i] = -1;
+                    break;
+                }
+            }
+
+            // If this ability already has a rolled score assigned, unassign it
+            int previousRolledIndex = newAssignedIndices[abilityIndex];
+            if (previousRolledIndex >= 0)
+            {
+                // The previous rolled score becomes unassigned (handled above if it's the same)
+            }
+
+            // Assign the rolled score to this ability
+            newAssignedIndices[abilityIndex] = rolledScoreIndex;
+
+            // Calculate new ability scores
+            int[] newAbilityScores = new int[6];
+            for (int i = 0; i < 6; i++)
+            {
+                if (newAssignedIndices[i] >= 0 && newAssignedIndices[i] < State.RolledScores.Length)
+                {
+                    newAbilityScores[i] = State.RolledScores[newAssignedIndices[i]];
+                }
+                else
+                {
+                    newAbilityScores[i] = -1; // Unassigned
+                }
+            }
+
+            State = new CharacterCreationState
+            {
+                IsVisible = State.IsVisible,
+                SelectedClass = State.SelectedClass,
+                SelectedRace = State.SelectedRace,
+                SelectedBackground = State.SelectedBackground,
+                AbilityScores = newAbilityScores,
+                RolledScores = State.RolledScores,
+                AssignedRolledScoreIndices = newAssignedIndices
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        /// <summary>
+        /// Unassigns a rolled score from an ability (drags it back to pool).
+        /// </summary>
+        public void UnassignAbilityScore(int abilityIndex)
+        {
+            if (abilityIndex < 0 || abilityIndex >= 6)
+                return;
+
+            int[] newAssignedIndices = new int[6];
+            Array.Copy(State.AssignedRolledScoreIndices, newAssignedIndices, 6);
+            newAssignedIndices[abilityIndex] = -1;
+
+            int[] newAbilityScores = new int[6];
+            Array.Copy(State.AbilityScores, newAbilityScores, 6);
+            newAbilityScores[abilityIndex] = -1;
+
+            State = new CharacterCreationState
+            {
+                IsVisible = State.IsVisible,
+                SelectedClass = State.SelectedClass,
+                SelectedRace = State.SelectedRace,
+                SelectedBackground = State.SelectedBackground,
+                AbilityScores = newAbilityScores,
+                RolledScores = State.RolledScores,
+                AssignedRolledScoreIndices = newAssignedIndices
             };
 
             StateChanged?.Invoke(State);
