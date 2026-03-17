@@ -21,7 +21,7 @@ namespace GameCore.UI.InGame.Services
         /// <returns>True if input system is properly configured, false otherwise.</returns>
         public static bool ValidateInputSystem()
         {
-            var eventSystem = Object.FindFirstObjectByType<EventSystem>();
+            var eventSystem = Object.FindAnyObjectByType<EventSystem>();
             if (eventSystem == null)
             {
                 Debug.LogWarning("UIInputValidator: No EventSystem found in scene! UI Toolkit requires an EventSystem with InputSystemUIInputModule to receive input.");

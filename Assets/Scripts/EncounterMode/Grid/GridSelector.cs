@@ -52,14 +52,14 @@ namespace GameCore.EncounterMode.Grid
             if (_gridGenerator == null && transform.parent != null)
                 _gridGenerator = transform.parent.GetComponent<IGridGenerator>();
             if (_gridGenerator == null)
-                _gridGenerator = FindFirstObjectByType<GridGenerator>();
+                _gridGenerator = FindAnyObjectByType<GridGenerator>();
 
             // Find camera if not assigned
             if (SelectionCamera == null)
             {
                 SelectionCamera = Camera.main;
                 if (SelectionCamera == null)
-                    SelectionCamera = FindFirstObjectByType<Camera>();
+                    SelectionCamera = FindAnyObjectByType<Camera>();
             }
 
 #if ENABLE_INPUT_SYSTEM
@@ -197,7 +197,7 @@ namespace GameCore.EncounterMode.Grid
             if (groundCell != null)
             {
                 // Check if cell is reachable (if EncounterModeManager is available and movement mode is active)
-                EncounterModeManager encounterManager = FindFirstObjectByType<EncounterModeManager>();
+                EncounterModeManager encounterManager = FindAnyObjectByType<EncounterModeManager>();
                 if (encounterManager != null && encounterManager.IsMovementModeActive)
                 {
                     if (encounterManager.IsCellReachable(groundCell))
@@ -243,7 +243,7 @@ namespace GameCore.EncounterMode.Grid
             if (_hoveredCell != null)
             {
                 // Check if cell is reachable (if EncounterModeManager is available)
-                EncounterModeManager encounterManager = FindFirstObjectByType<EncounterModeManager>();
+                EncounterModeManager encounterManager = FindAnyObjectByType<EncounterModeManager>();
                 if (encounterManager != null && encounterManager.IsMovementModeActive)
                 {
                     if (!encounterManager.IsCellReachable(_hoveredCell))

@@ -38,7 +38,7 @@ namespace GameCore.UI.MainMenu
             // Try to find CharacterCreationPresenter if not assigned
             if (_characterCreationPresenter == null)
             {
-                _characterCreationPresenter = FindFirstObjectByType<CharacterCreationPresenter>();
+                _characterCreationPresenter = FindAnyObjectByType<CharacterCreationPresenter>();
                 if (_characterCreationPresenter == null)
                 {
                     Debug.LogWarning("MainMenuPresenter: CharacterCreationPresenter not found. Make sure a GameObject with CharacterCreationPresenter component exists in the scene.");

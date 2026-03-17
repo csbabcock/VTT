@@ -107,14 +107,14 @@ namespace GameCore.EncounterMode
                 if (GridReachableCellsVisualizer == null && transform.parent != null)
                     GridReachableCellsVisualizer = transform.parent.GetComponent<GridReachableCellsVisualizer>();
                 if (GridReachableCellsVisualizer == null)
-                    GridReachableCellsVisualizer = FindFirstObjectByType<GridReachableCellsVisualizer>();
+                    GridReachableCellsVisualizer = FindAnyObjectByType<GridReachableCellsVisualizer>();
             }
 
             if (PlayerController == null)
-                PlayerController = FindFirstObjectByType<PlayerController>();
+                PlayerController = FindAnyObjectByType<PlayerController>();
 
             if (InGameUIPresenter == null)
-                InGameUIPresenter = FindFirstObjectByType<InGameUIPresenter>();
+                InGameUIPresenter = FindAnyObjectByType<InGameUIPresenter>();
 
             _playerInputs = PlayerController?.GetComponent<PlayerInputs>();
 

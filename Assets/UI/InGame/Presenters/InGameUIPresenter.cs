@@ -57,11 +57,11 @@ namespace GameCore.UI.InGame
             // Find PlayerInputs if not assigned
             if (_playerInputs == null)
             {
-                _playerInputs = FindFirstObjectByType<PlayerInputs>();
+                _playerInputs = FindAnyObjectByType<PlayerInputs>();
             }
 
             // Find EncounterModeManager
-            _encounterModeManager = FindFirstObjectByType<EncounterModeManager>();
+            _encounterModeManager = FindAnyObjectByType<EncounterModeManager>();
 
             Model = new InGameUIModel();
             

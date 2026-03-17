@@ -29,7 +29,7 @@ namespace GameCore.EncounterMode.Grid
             if (_gridGenerator == null && transform.parent != null)
                 _gridGenerator = transform.parent.GetComponent<IGridGenerator>();
             if (_gridGenerator == null)
-                _gridGenerator = FindFirstObjectByType<GridGenerator>();
+                _gridGenerator = FindAnyObjectByType<GridGenerator>();
         }
 
         private void Start()

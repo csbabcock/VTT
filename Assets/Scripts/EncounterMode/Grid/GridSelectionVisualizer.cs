@@ -40,17 +40,17 @@ namespace GameCore.EncounterMode.Grid
             if (_gridSelector == null && transform.parent != null)
                 _gridSelector = transform.parent.GetComponent<IGridSelector>();
             if (_gridSelector == null)
-                _gridSelector = FindFirstObjectByType<GridSelector>();
+                _gridSelector = FindAnyObjectByType<GridSelector>();
 
             // Find grid generator
             _gridGenerator = GetComponent<IGridGenerator>();
             if (_gridGenerator == null && transform.parent != null)
                 _gridGenerator = transform.parent.GetComponent<IGridGenerator>();
             if (_gridGenerator == null)
-                _gridGenerator = FindFirstObjectByType<GridGenerator>();
+                _gridGenerator = FindAnyObjectByType<GridGenerator>();
 
             // Find encounter mode manager for reachability checks
-            _encounterModeManager = FindFirstObjectByType<EncounterModeManager>();
+            _encounterModeManager = FindAnyObjectByType<EncounterModeManager>();
         }
 
         private void Update()

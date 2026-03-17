@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using GameCore.EncounterMode;
 using GameCore.EncounterMode.Services;
 #if ENABLE_INPUT_SYSTEM 
@@ -256,7 +256,7 @@ namespace GameCore
             _perspectiveManager.Initialize();
 
             // Find encounter mode manager
-            var encounterModeManagerObj = FindFirstObjectByType<EncounterModeManager>();
+            var encounterModeManagerObj = FindAnyObjectByType<EncounterModeManager>();
             if (encounterModeManagerObj != null)
             {
                 _encounterModeManager = encounterModeManagerObj;

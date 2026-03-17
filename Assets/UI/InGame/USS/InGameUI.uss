@@ -49,10 +49,6 @@
     min-height: 24px;
 }
 
-.controls-cheatsheet-row:last-child {
-    margin-bottom: 0;
-}
-
 .controls-cheatsheet-action {
     color: var(--vtt-text-main);
     font-size: 14px;
