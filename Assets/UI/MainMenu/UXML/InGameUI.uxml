@@ -1,6 +1,51 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <!-- Root HUD layer over gameplay -->
     <ui:VisualElement name="root" class="hud-root">
+        <!-- Controls cheat sheet - anchored top-left -->
+        <ui:VisualElement name="controls-cheatsheet-panel" class="controls-cheatsheet-panel diegetic-panel">
+            <ui:VisualElement name="controls-cheatsheet-header" class="controls-cheatsheet-header">
+                <ui:Label text="Controls" class="controls-cheatsheet-title" />
+            </ui:VisualElement>
+            <ui:VisualElement name="controls-cheatsheet-content" class="controls-cheatsheet-content">
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Move" class="controls-cheatsheet-action" />
+                    <ui:Label text="WASD / Arrows" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Look" class="controls-cheatsheet-action" />
+                    <ui:Label text="Mouse" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Jump" class="controls-cheatsheet-action" />
+                    <ui:Label text="Space" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Sprint" class="controls-cheatsheet-action" />
+                    <ui:Label text="Shift" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Perspective" class="controls-cheatsheet-action" />
+                    <ui:Label text="V" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Encounter Mode" class="controls-cheatsheet-action" />
+                    <ui:Label text="E" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Character Sheet" class="controls-cheatsheet-action" />
+                    <ui:Label text="Tab" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Select Cell" class="controls-cheatsheet-action" />
+                    <ui:Label text="Left Click" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Elevation" class="controls-cheatsheet-action" />
+                    <ui:Label text="Scroll" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
         <!-- Character sheet panel; initially hidden by InGameUIView -->
         <ui:VisualElement name="character-sheet-panel" class="charsheet-panel diegetic-panel">
             <!-- Persistent Header Bar -->

@@ -20,8 +20,8 @@ namespace GameCore.EncounterMode.Grid
         [Tooltip("Color for selected cell")]
         public Color SelectedCellColor = new Color(0.2f, 1f, 0.2f, 0.7f); // Light green
 
-        [Tooltip("Height offset for visual indicators above grid")]
-        public float VisualHeightOffset = 0.02f;
+        [Tooltip("Height offset for visual indicators above grid (increased to prevent z-fighting)")]
+        public float VisualHeightOffset = 0.08f;
 
         [Tooltip("Size of the visual indicator relative to cell size")]
         [Range(0.8f, 1.0f)]
@@ -153,8 +153,8 @@ namespace GameCore.EncounterMode.Grid
                 }
                 else
                 {
-                    // Create a simple unlit material using helper
-                    Material newMaterial = MaterialHelper.CreateMaterial(color, false);
+                    // Use transparent material for proper alpha blending and render-on-top visibility
+                    Material newMaterial = MaterialHelper.CreateMaterial(color, true);
                     if (newMaterial != null)
                     {
                         renderer.material = newMaterial;
@@ -165,6 +165,8 @@ namespace GameCore.EncounterMode.Grid
                 if (renderer.material != null)
                 {
                     renderer.material.color = color;
+                    // Transparent materials need explicit render queue for proper draw order
+                    renderer.material.renderQueue = 3000;
                 }
             }
 

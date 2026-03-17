@@ -6,6 +6,76 @@
     background-color: rgba(0, 0, 0, 0); /* transparent over gameplay */
 }
 
+/* Controls Cheat Sheet - anchored top-left */
+.controls-cheatsheet-panel {
+    position: absolute;
+    left: 48px;
+    top: 5px;
+    width: 220px;
+    border-radius: var(--vtt-radius-large);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: rgba(12, 12, 16, 0.85);
+    padding: 0;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.controls-cheatsheet-header {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--vtt-spacing-medium) var(--vtt-spacing-large);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--vtt-border-color);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.controls-cheatsheet-title {
+    color: var(--vtt-text-main);
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.controls-cheatsheet-content {
+    flex-direction: column;
+    padding: var(--vtt-spacing-medium) var(--vtt-spacing-large);
+}
+
+.controls-cheatsheet-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--vtt-spacing-small);
+    min-height: 24px;
+}
+
+.controls-cheatsheet-row:last-child {
+    margin-bottom: 0;
+}
+
+.controls-cheatsheet-action {
+    color: var(--vtt-text-main);
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-right: var(--vtt-spacing-medium);
+}
+
+.controls-cheatsheet-binding {
+    color: var(--vtt-text-muted);
+    font-size: 13px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-right;
+    flex-shrink: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: var(--vtt-radius-small);
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+}
+
 /* Generic small diegetic panel (top/bottom corners, etc.) */
 .hud-panel {
     background-color: rgba(0, 0, 0, 0.45);
