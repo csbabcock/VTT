@@ -4,94 +4,139 @@ namespace GameCore.UI.MainMenu
 {
     /// <summary>
     /// Service providing character creation data (classes, races, backgrounds).
-    /// Follows Single Responsibility Principle - only provides static data definitions.
+    /// This now acts as a lightweight adapter over JSON-backed ruleset content.
     /// </summary>
     public static class CharacterCreationDataService
     {
-        public static readonly string[] AvailableClasses = new[]
-        {
-            "Cleric", "Fighter", "Wizard", "Rogue", "Barbarian", 
-            "Ranger", "Bard", "Paladin", "Druid"
-        };
+        private const string DefaultRulesetId = "DnD5e";
+        
+        private static PlayerData.Rulesets.RulesetContentService _contentService;
 
-        public static readonly string[] AvailableRaces = new[]
+        private static PlayerData.Rulesets.RulesetContentService ContentService
         {
-            "Hill Dwarf", "High Elf", "Human", "Dragonborn", "Half-Orc", 
-            "Tiefling", "Halfling", "Gnome", "Half-Elf"
-        };
+            get
+            {
+                if (_contentService == null)
+                {
+                    _contentService = new PlayerData.Rulesets.RulesetContentService(DefaultRulesetId);
+                }
 
-        public static readonly string[] AvailableBackgrounds = new[]
+                return _contentService;
+            }
+        }
+
+        public static string[] AvailableClasses
         {
-            "Acolyte", "Soldier", "Criminal", "Folk Hero", "Noble", "Sage"
-        };
+            get
+            {
+                var classes = ContentService.GetAvailableClasses();
+                var names = new List<string>();
+                foreach (var c in classes)
+                {
+                    if (!string.IsNullOrEmpty(c.name))
+                    {
+                        names.Add(c.name);
+                    }
+                }
+                return names.ToArray();
+            }
+        }
+
+        public static string[] AvailableRaces
+        {
+            get
+            {
+                var races = ContentService.GetAvailableRaces();
+                var names = new List<string>();
+                foreach (var r in races)
+                {
+                    if (!string.IsNullOrEmpty(r.name))
+                    {
+                        names.Add(r.name);
+                    }
+                }
+                return names.ToArray();
+            }
+        }
+
+        public static string[] AvailableBackgrounds
+        {
+            get
+            {
+                var backgrounds = ContentService.GetAvailableBackgrounds();
+                var names = new List<string>();
+                foreach (var b in backgrounds)
+                {
+                    if (!string.IsNullOrEmpty(b.name))
+                    {
+                        names.Add(b.name);
+                    }
+                }
+                return names.ToArray();
+            }
+        }
 
         /// <summary>
-        /// Gets description for a race.
+        /// Gets description for a race by display name.
         /// </summary>
         public static string GetRaceDescription(string raceName)
         {
-            return _raceDescriptions.TryGetValue(raceName, out var description) 
-                ? description 
-                : $"Description for {raceName}.";
+            if (string.IsNullOrEmpty(raceName))
+                return string.Empty;
+
+            foreach (var race in ContentService.GetAvailableRaces())
+            {
+                if (race.name == raceName)
+                {
+                    return race.description ?? $"Description for {raceName}.";
+                }
+            }
+
+            return $"Description for {raceName}.";
         }
 
         /// <summary>
-        /// Gets description for a class.
+        /// Gets description for a class by display name.
         /// </summary>
         public static string GetClassDescription(string className)
         {
-            return _classDescriptions.TryGetValue(className, out var description) 
-                ? description 
-                : $"Description for {className}.";
+            if (string.IsNullOrEmpty(className))
+                return string.Empty;
+
+            foreach (var c in ContentService.GetAvailableClasses())
+            {
+                if (c.name == className)
+                {
+                    return c.description ?? $"Description for {className}.";
+                }
+            }
+
+            return $"Description for {className}.";
         }
 
         /// <summary>
-        /// Gets features for a race.
+        /// Gets features for a race by display name.
         /// </summary>
         public static List<FeatureData> GetRaceFeatures(string raceName)
         {
-            return _raceFeatures.TryGetValue(raceName, out var features) 
-                ? features 
-                : new List<FeatureData>();
-        }
+            var features = new List<FeatureData>();
+            if (string.IsNullOrEmpty(raceName))
+                return features;
 
-        private static readonly Dictionary<string, string> _raceDescriptions = new()
-        {
+            foreach (var race in ContentService.GetAvailableRaces())
             {
-                "Hill Dwarf",
-                "Hill dwarves are known for their keen senses, deep intuition, and remarkable resilience. " +
-                "Hardy and dependable, they have adapted to life in rugged mountainous terrain, developing " +
-                "exceptional fortitude and wisdom through generations of living in harmony with stone and earth."
-            }
-        };
-
-        private static readonly Dictionary<string, string> _classDescriptions = new()
-        {
-            // Can be expanded with actual class descriptions
-        };
-
-        private static readonly Dictionary<string, List<FeatureData>> _raceFeatures = new()
-        {
-            {
-                "Hill Dwarf",
-                new List<FeatureData>
+                if (race.name == raceName && race.features != null)
                 {
-                    new FeatureData(
-                        "Dwarven Resilience",
-                        "You have advantage on saving throws against poison, and you have resistance against poison damage."
-                    ),
-                    new FeatureData(
-                        "Dwarven Toughness",
-                        "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
-                    ),
-                    new FeatureData(
-                        "Stonecunning",
-                        "Whenever you make an Intelligence (History) check related to the origin of stonework, " +
-                        "you are considered proficient in the History skill and add double your proficiency bonus to the check."
-                    )
+                    foreach (var feat in race.features)
+                    {
+                        features.Add(new FeatureData(feat.name, feat.description));
+                    }
+                    break;
                 }
             }
-        };
+
+            return features;
+        }
     }
 
     /// <summary>

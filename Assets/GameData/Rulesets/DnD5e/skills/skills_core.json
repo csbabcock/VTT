@@ -1,0 +1,12 @@
+{
+  "id": "skill-manifest",
+  "name": "Core Skills",
+  "ability": "",
+  "skills": [
+    { "id": "skill.athletics", "name": "Athletics", "ability": "STR" },
+    { "id": "skill.acrobatics", "name": "Acrobatics", "ability": "DEX" },
+    { "id": "skill.stealth", "name": "Stealth", "ability": "DEX" },
+    { "id": "skill.perception", "name": "Perception", "ability": "WIS" }
+  ]
+}
+

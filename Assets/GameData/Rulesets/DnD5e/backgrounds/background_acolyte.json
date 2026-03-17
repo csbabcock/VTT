@@ -1,0 +1,15 @@
+{
+  "id": "background.acolyte",
+  "name": "Acolyte",
+  "description": "You have spent your life in the service of a temple to a specific god or pantheon of gods.",
+  "skillProficiencies": [ "Insight", "Religion" ],
+  "toolProficiencies": [],
+  "features": [
+    {
+      "id": "feature.shelter_of_the_faithful",
+      "name": "Shelter of the Faithful",
+      "description": "You and your adventuring companions can expect to receive free healing and care at a temple of your faith."
+    }
+  ]
+}
+

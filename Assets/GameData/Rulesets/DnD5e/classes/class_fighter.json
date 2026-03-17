@@ -1,0 +1,22 @@
+{
+  "id": "class.fighter",
+  "name": "Fighter",
+  "description": "Fighters share an unparalleled mastery with weapons and armor, and a thorough knowledge of the skills of combat.",
+  "hitDie": 10,
+  "primaryAbility": "STR",
+  "spellcastingAbility": "",
+  "savingThrowProficiencies": [ "STR", "CON" ],
+  "armorProficiencies": [ "Light", "Medium", "Heavy", "Shield" ],
+  "weaponProficiencies": [ "Simple", "Martial" ],
+  "featuresByLevel": [
+    {
+      "level": 1,
+      "feature": {
+        "id": "feature.fighting_style",
+        "name": "Fighting Style",
+        "description": "You adopt a particular style of fighting as your specialty."
+      }
+    }
+  ]
+}
+
