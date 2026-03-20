@@ -36,8 +36,6 @@ namespace GameCore.UI.InGame
                 return;
             }
 
-            Debug.Log($"CharacterSheetUIUpdater: Updating character sheet for {data.CharacterName} (ruleset: {rulesetId})");
-
             // Get ruleset calculator and adapter
             var calculator = RulesetCalculatorFactory.GetCalculator(rulesetId) ?? RulesetCalculatorFactory.GetDefaultCalculator();
             var adapter = RulesetAdapterFactory.GetAdapter(rulesetId) ?? RulesetAdapterFactory.GetDefaultAdapter();
@@ -188,30 +186,21 @@ namespace GameCore.UI.InGame
             }
             var skillModifiers = rulesetData != null ? adapter.GetSkillModifiers(rulesetData, calculator) : GetSkillModifiersFromLegacy(data, calculator);
 
-            int foundCount = 0;
-            int updatedCount = 0;
-
             foreach (var kvp in skillMapping)
             {
                 string buttonName = kvp.Key;
                 string skillName = kvp.Value;
                 
                 var buttons = root.Query<Button>(name: buttonName).ToList();
-                foundCount += buttons.Count;
 
                 foreach (var button in buttons)
                 {
                     bool isProficient = proficientSkills.Contains(skillName);
                     int modifier = skillModifiers.TryGetValue(skillName, out var m) ? m : 0;
 
-                    if (UpdateSkill(button, skillName, modifier, isProficient))
-                    {
-                        updatedCount++;
-                    }
+                    UpdateSkill(button, skillName, modifier, isProficient);
                 }
             }
-
-            Debug.Log($"CharacterSheetUIUpdater: Found {foundCount} skill button(s), updated {updatedCount}");
         }
 
         /// <summary>

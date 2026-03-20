@@ -4,7 +4,6 @@ using GameCore.PlayerData.Rulesets;
 using GameCore.PlayerData.Rulesets.Definitions;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -665,9 +664,7 @@ namespace GameCore.UI.MainMenu
             {
                 name = race.name ?? state.SelectedRaceId;
                 type = "Race";
-                AbilityModifierTextInterpolator.InterpolationResult descMeta =
-                    AbilityModifierTextInterpolator.InterpolateWithMeta(
-                        race.description ?? string.Empty, state.AbilityScores, _calculator);
+                AbilityModifierTextInterpolator.InterpolationResult descMeta = InterpolateRulesText(race.description, state);
                 description = descMeta.Text;
                 features = InterpolateFeatureDescriptions(
                     CharacterCreationDataService.GetRaceFeatures(state.SelectedRaceId), state);
@@ -680,9 +677,7 @@ namespace GameCore.UI.MainMenu
             {
                 name = cls.name ?? state.SelectedClassId;
                 type = "Class";
-                AbilityModifierTextInterpolator.InterpolationResult clsDescMeta =
-                    AbilityModifierTextInterpolator.InterpolateWithMeta(
-                        cls.description ?? string.Empty, state.AbilityScores, _calculator);
+                AbilityModifierTextInterpolator.InterpolationResult clsDescMeta = InterpolateRulesText(cls.description, state);
                 description = clsDescMeta.Text;
                 features = InterpolateFeatureDescriptions(
                     BuildClassFeatures(cls, state.CharacterLevel), state);
@@ -698,9 +693,7 @@ namespace GameCore.UI.MainMenu
             {
                 name = bg.name ?? state.SelectedBackgroundId;
                 type = "Background";
-                AbilityModifierTextInterpolator.InterpolationResult bgDescMeta =
-                    AbilityModifierTextInterpolator.InterpolateWithMeta(
-                        bg.description ?? string.Empty, state.AbilityScores, _calculator);
+                AbilityModifierTextInterpolator.InterpolationResult bgDescMeta = InterpolateRulesText(bg.description, state);
                 description = bgDescMeta.Text;
                 features = InterpolateFeatureDescriptions(
                     CharacterCreationDataService.GetBackgroundFeatures(state.SelectedBackgroundId), state);
@@ -710,6 +703,14 @@ namespace GameCore.UI.MainMenu
             }
 
             _view.UpdateDetailPanel(name, type, description, features, null, null, false);
+        }
+
+        private AbilityModifierTextInterpolator.InterpolationResult InterpolateRulesText(
+            string rawText,
+            CharacterCreationState state)
+        {
+            return AbilityModifierTextInterpolator.InterpolateWithMeta(
+                rawText ?? string.Empty, state.AbilityScores, _calculator);
         }
 
         private List<FeatureData> InterpolateFeatureDescriptions(
@@ -809,47 +810,24 @@ namespace GameCore.UI.MainMenu
 
             int level = Mathf.Clamp(state.CharacterLevel, CharacterCreationModel.MinCharacterLevel,
                 CharacterCreationModel.MaxCharacterLevel);
-            string hitDiceDisplay = null;
-            if (classDef != null && classDef.hitDie >= 4)
-                hitDiceDisplay = $"{level}d{classDef.hitDie}";
+            string hitDiceDisplay = CharacterCreationRulesPreview.FormatHitDicePool(classDef, level);
 
             int? hitPoints = null;
             if (state.AbilityScores[2] >= 0 && classDef != null)
             {
                 int conMod = _calculator.CalculateAbilityModifier(state.AbilityScores[2]);
-                hitPoints = CalculateHitPointsForLevel(classDef, conMod, level);
+                hitPoints = DnD5eDerivedStats.CalculateMaxHitPointsForLevel(classDef, conMod, level);
             }
 
-            int? armorClass = null;
+            int? armorClass = CharacterCreationRulesPreview.ComputeUnarmoredArmorClassPreview(
+                classDef, state.AbilityScores, _calculator);
+
             int? initiative = null;
             if (state.AbilityScores[1] >= 0)
-            {
-                int dexMod = _calculator.CalculateAbilityModifier(state.AbilityScores[1]);
-                initiative = dexMod;
-                if (classDef != null)
-                {
-                    bool needCon = classDef.id != null &&
-                                   classDef.id.Equals("class.barbarian", StringComparison.OrdinalIgnoreCase);
-                    bool needWis = classDef.id != null &&
-                                   classDef.id.Equals("class.monk", StringComparison.OrdinalIgnoreCase);
-                    int conMod = state.AbilityScores[2] >= 0
-                        ? _calculator.CalculateAbilityModifier(state.AbilityScores[2])
-                        : 0;
-                    int wisMod = state.AbilityScores[4] >= 0
-                        ? _calculator.CalculateAbilityModifier(state.AbilityScores[4])
-                        : 0;
-                    if (needCon && state.AbilityScores[2] < 0)
-                        armorClass = null;
-                    else if (needWis && state.AbilityScores[4] < 0)
-                        armorClass = null;
-                    else
-                        armorClass = DnD5eDerivedStats.CalculateUnarmoredArmorClass(classDef, dexMod, conMod, wisMod);
-                }
-                else
-                    armorClass = 10 + dexMod;
-            }
+                initiative = _calculator.CalculateAbilityModifier(state.AbilityScores[1]);
 
-            int? proficiencyBonus = classDef != null ? _calculator.CalculateProficiencyBonus(level) : (int?)null;
+            int? proficiencyBonus =
+                classDef != null ? _calculator.CalculateProficiencyBonus(level) : (int?)null;
 
             int? spellSaveDC = null;
             int? spellAttack = null;
@@ -874,35 +852,12 @@ namespace GameCore.UI.MainMenu
                 _view.UpdatePhysicalTraits("—", "—", "—");
             }
 
-            _view.UpdateProficiencyPanel(BuildProficiencySections(classDef, state));
-        }
-
-        private List<CharacterProficiencySection> BuildProficiencySections(ClassDefinition cls, CharacterCreationState state)
-        {
-            BackgroundDefinition bg = null;
+            BackgroundDefinition background = null;
             if (!string.IsNullOrEmpty(state.SelectedBackgroundId))
-                _contentQuery.TryGetBackground(state.SelectedBackgroundId, out bg);
+                _contentQuery.TryGetBackground(state.SelectedBackgroundId, out background);
 
-            var list = new List<CharacterProficiencySection>();
-            if (cls != null)
-            {
-                if (cls.savingThrowProficiencies != null && cls.savingThrowProficiencies.Count > 0)
-                    list.Add(new CharacterProficiencySection("Saving throws", cls.savingThrowProficiencies));
-                if (cls.armorProficiencies != null && cls.armorProficiencies.Count > 0)
-                    list.Add(new CharacterProficiencySection("Armor", cls.armorProficiencies));
-                if (cls.weaponProficiencies != null && cls.weaponProficiencies.Count > 0)
-                    list.Add(new CharacterProficiencySection("Weapons", cls.weaponProficiencies));
-            }
-
-            if (bg != null)
-            {
-                if (bg.skillProficiencies != null && bg.skillProficiencies.Count > 0)
-                    list.Add(new CharacterProficiencySection("Skills (background)", bg.skillProficiencies));
-                if (bg.toolProficiencies != null && bg.toolProficiencies.Count > 0)
-                    list.Add(new CharacterProficiencySection("Tools (background)", bg.toolProficiencies));
-            }
-
-            return list;
+            _view.UpdateProficiencyPanel(
+                CharacterCreationRulesPreview.BuildProficiencySections(classDef, background));
         }
 
         private static int AbilityCodeToIndex(string code)
@@ -943,9 +898,5 @@ namespace GameCore.UI.MainMenu
             return _calculator.CalculateAbilityModifier(abilityScores[idx]);
         }
 
-        private static int CalculateHitPointsForLevel(ClassDefinition classDef, int conModifier, int level)
-        {
-            return DnD5eDerivedStats.CalculateMaxHitPointsForLevel(classDef, conModifier, level);
-        }
     }
 }

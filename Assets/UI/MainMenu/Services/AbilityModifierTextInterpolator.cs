@@ -10,6 +10,12 @@ namespace GameCore.UI.MainMenu.Services
     /// </summary>
     public static class AbilityModifierTextInterpolator
     {
+        /// <summary>Matches MainMenuView.uss theme tokens for modifier emphasis.</summary>
+        private const string ColorModifierPositive = "#4CF490";
+        private const string ColorModifierNegative = "#FF4C4C";
+        private const string ColorModifierNeutral = "#CED3E0";
+        private const string ColorModifierHint = "#B6C0CF";
+
         private static readonly string[] AbilityAbbrev = { "STR", "DEX", "CON", "INT", "WIS", "CHA" };
 
         private static readonly Regex AbilityModifierPhrase = new Regex(
@@ -73,9 +79,9 @@ namespace GameCore.UI.MainMenu.Services
         private static string FormatRichModifier(int mod, string abbrev)
         {
             string numStr = mod.ToString();
-            string numColor = mod > 0 ? "#4CF490" : mod < 0 ? "#FF4C4C" : "#CED3E0";
+            string numColor = mod > 0 ? ColorModifierPositive : mod < 0 ? ColorModifierNegative : ColorModifierNeutral;
             string modRich = $"<b><color={numColor}>{numStr}</color></b>";
-            string hintRich = $"<size=12><color=#B6C0CF> ({abbrev})</color></size>";
+            string hintRich = $"<size=12><color={ColorModifierHint}> ({abbrev})</color></size>";
             return modRich + hintRich;
         }
 

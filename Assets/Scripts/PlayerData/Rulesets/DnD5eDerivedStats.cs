@@ -65,13 +65,13 @@ namespace GameCore.PlayerData.Rulesets
             int conModifier,
             int wisModifier)
         {
-            if (classDef?.id != null)
-            {
-                if (classDef.id.Equals("class.barbarian", StringComparison.OrdinalIgnoreCase))
-                    return 10 + dexModifier + conModifier;
-                if (classDef.id.Equals("class.monk", StringComparison.OrdinalIgnoreCase))
-                    return 10 + dexModifier + wisModifier;
-            }
+            if (classDef?.id == null)
+                return 10 + dexModifier;
+
+            if (classDef.id.Equals(DnD5eClassIds.Barbarian, StringComparison.OrdinalIgnoreCase))
+                return 10 + dexModifier + conModifier;
+            if (classDef.id.Equals(DnD5eClassIds.Monk, StringComparison.OrdinalIgnoreCase))
+                return 10 + dexModifier + wisModifier;
 
             return 10 + dexModifier;
         }
