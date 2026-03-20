@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GameCore.UI;
+using GameCore.UI.MainMenu.Scrollbars;
 using GameCore.UI.MainMenu.Services;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -42,6 +43,9 @@ namespace GameCore.UI.MainMenu
         [Header("Assets")]
         [Tooltip("Optional: USS stylesheet for this view. If not assigned, it will still work if referenced from the UXML.")]
         [SerializeField] private StyleSheet _characterCreationStyleSheet;
+
+        /// <summary>Custom pane scrollbars (USS + track/thumb in UXML); swappable for tests.</summary>
+        private ICustomPaneScrollBarBinder _paneScrollBarBinder = new CharacterCreationPaneScrollBarBinder();
 
         private UIDocument _uiDocument;
         private VisualElement _root;
@@ -154,6 +158,7 @@ namespace GameCore.UI.MainMenu
             QueryUIElements();
             SetupEventHandlers();
             InitializeUIElements();
+            _paneScrollBarBinder.BindTree(_root);
         }
 
         private void QueryUIElements()
@@ -583,6 +588,8 @@ namespace GameCore.UI.MainMenu
                 _root.style.display = DisplayStyle.Flex;
                 _root.SetEnabled(true);
             }
+
+            _paneScrollBarBinder.BindTree(_root);
         }
 
         public void Hide()

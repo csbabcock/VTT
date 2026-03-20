@@ -12,24 +12,119 @@
     padding: 0;
 }
 
-/* Single page scroll - takes all space above action buttons */
-.character-creation-page-scroll {
+/* Fills viewport between root and action bar; nested panes scroll independently */
+.character-creation-content-host {
     flex-grow: 1;
+    flex-shrink: 1;
     min-height: 0;
+    flex-direction: column;
+    width: 100%;
 }
 
-/* Main container with two-column layout - grows with content for one scroll */
+/* Main container: constrained row so child columns can shrink and inner ScrollViews receive height */
 .character-creation-container {
     flex-direction: row;
     width: 100%;
-    min-height: 100%;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
     align-items: stretch;
     background-color: var(--color-bg-primary);
     border-radius: 0;
     border-width: 0;
     border-color: var(--color-border-strong);
-    padding: 24px;
+    padding: 20px;
+}
+
+/* MainMenu-style inner scroll regions (class/race/background, detail body, stats, proficiencies) */
+.character-creation-options-scroll,
+.character-creation-detail-scroll,
+.character-creation-stats-scroll,
+.character-creation-proficiency-scroll {
+    width: 100%;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+/* Row: ScrollView + authorable track (native vertical scroller is Hidden in UXML). */
+.character-creation-scroll-with-custom-bar {
+    flex-direction: row;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    width: 100%;
+    align-items: stretch;
+}
+
+.character-creation-scroll-with-custom-bar > .character-creation-pane-scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-width: 0;
+    width: auto;
+}
+
+/* ScrollView must clip: viewport grows in flex, content sizes to children — without min-height: 0 the view expands and never scrolls (maxScroll stays 0). */
+.character-creation-pane-scroll.unity-scroll-view--vertical {
+    min-height: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.character-creation-pane-scroll .unity-scroll-view__content-viewport--vertical {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.character-creation-custom-vscroll-track {
+    width: 20px;
+    min-width: 20px;
     flex-shrink: 0;
+    flex-grow: 0;
+    align-self: stretch;
+    /* 6px from scroll pane matches horizontal breathing room; vertical inset matches thumb left/right (2px) via padding. */
+    margin-left: 6px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    position: relative;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    /* Darker trough than panel cards; thumb reads as a slightly lighter chip */
+    background-color: var(--color-bg-primary);
+    border-width: 1px;
+    border-color: var(--color-border-default);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.character-creation-custom-vscroll-thumb {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    min-height: 28px;
+    border-radius: 2px;
+    background-color: var(--color-border-default);
+    border-width: 0;
+    transition-duration: var(--transition-fast);
+    transition-property: background-color;
+}
+
+.character-creation-custom-vscroll-thumb:hover {
+    background-color: var(--color-border-strong);
+}
+
+.character-creation-custom-vscroll-thumb:active {
+    background-color: var(--color-blue-25);
+}
+
+.character-creation-stats-scroll-content {
+    flex-direction: column;
+    width: 100%;
+    flex-grow: 0;
+    /* Former inline padding on stats ScrollView */
+    padding: 5px;
+    margin: 5px;
 }
 
 .character-creation-container > * {
@@ -39,24 +134,29 @@
 /* Left Panel */
 .character-creation-left-panel {
     flex-direction: column;
-    flex-basis: 50%;
-    flex-grow: 0;
-    flex-shrink: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
     min-width: 400px;
+    min-height: 0;
 }
 
 .character-creation-left-panel > * {
     margin-bottom: 20px;
 }
 
+/* ~45% of left column: class/race/background + tabs */
 .character-creation-main-content {
     background-color: var(--color-bg-secondary);
     border-width: 1px;
     border-color: var(--color-border-strong);
     border-radius: var(--radius-md);
     padding: 25px;
-    flex-shrink: 0;
     flex-direction: column;
+    flex-grow: 9;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-height: 0;
 }
 
 .character-creation-level-row {
@@ -64,6 +164,7 @@
     align-items: center;
     margin-bottom: 18px;
     flex-wrap: wrap;
+    flex-shrink: 0;
 }
 
 .character-creation-level-row > * {
@@ -116,6 +217,7 @@
     border-bottom-width: 1px;
     border-bottom-color: var(--color-border-subtle);
     padding-bottom: 0;
+    flex-shrink: 0;
 }
 
 .character-creation-tab {
@@ -126,7 +228,8 @@
     color: var(--color-text-n3);
     font-size: 15px;
     padding: 12px 20px;
-    flex-grow: 1;
+    flex-grow: 0;
+    flex-shrink: 0;
     min-width: 0;
     -unity-font-style: normal;
     transition-duration: var(--transition-fast);
@@ -164,20 +267,28 @@
     flex-direction: column;
 }
 
+/* Wrapping tile grid (matches ability-row chip spacing ~12px) */
 .character-creation-buttons-container {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
     width: 100%;
-    min-height: 200px;
+    padding-bottom: var(--spacing-sm);
 }
 
 .character-creation-buttons-container > * {
-    margin-bottom: var(--spacing-sm);
+    margin-right: 12px;
+    margin-bottom: 12px;
 }
 
 .character-creation-option-button {
-    width: 100%;
-    height: 48px;
-    min-height: 48px;
+    min-width: 132px;
+    max-width: 200px;
+    width: auto;
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 52px;
+    min-height: 52px;
     background-color: var(--color-bg-secondary);
     border-radius: var(--radius-sm);
     border-width: 1px;
@@ -190,7 +301,8 @@
     justify-content: center;
     align-items: center;
     -unity-text-align: middle-center;
-    
+    white-space: normal;
+
     transition-duration: var(--transition-fast);
     transition-property: background-color, border-color, color;
 }
@@ -274,17 +386,22 @@
     color: var(--color-text-primary);
 }
 
-/* Detail Panel */
+/* ~55% of left column: sticky header + scrollable body */
 .character-creation-detail-panel {
     background-color: var(--color-bg-secondary);
     border-width: 1px;
     border-color: var(--color-border-strong);
     border-radius: var(--radius-md);
     padding: 30px;
-    flex-shrink: 0;
+    flex-direction: column;
+    flex-grow: 11;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-height: 0;
 }
 
 .character-creation-detail-title {
+    flex-shrink: 0;
     color: var(--color-blue);
     font-size: 20px;
     -unity-font-style: bold;
@@ -299,6 +416,7 @@
     flex-direction: row;
     align-items: center;
     margin-bottom: 20px;
+    flex-shrink: 0;
 }
 
 .character-creation-detail-header > * {
@@ -462,16 +580,18 @@
 /* Right Panel */
 .character-creation-right-panel {
     flex-direction: column;
-    flex-basis: 50%;
-    flex-grow: 0;
-    flex-shrink: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
     min-width: 400px;
+    min-height: 0;
 }
 
 .character-creation-right-panel > * {
     margin-bottom: 20px;
 }
 
+/* ~65% of right column */
 .character-creation-stats-panel {
     background-color: var(--color-bg-secondary);
     border-width: 1px;
@@ -479,12 +599,14 @@
     border-radius: var(--radius-md);
     padding: 30px;
     flex-direction: column;
-    flex-shrink: 0;
-    flex-grow: 0;
+    flex-grow: 13;
+    flex-shrink: 1;
+    flex-basis: 0;
     min-height: 0;
 }
 
 .character-creation-stats-title {
+    flex-shrink: 0;
     color: var(--color-blue);
     font-size: 20px;
     -unity-font-style: bold;
@@ -985,18 +1107,22 @@
     color: var(--color-red);
 }
 
-/* Proficiency Panel */
+/* ~35% of right column */
 .character-creation-proficiency-panel {
     background-color: var(--color-bg-secondary);
     border-width: 1px;
     border-color: var(--color-border-strong);
     border-radius: var(--radius-md);
     padding: 30px;
-    flex-shrink: 0;
+    flex-direction: column;
+    flex-grow: 7;
+    flex-shrink: 1;
+    flex-basis: 0;
     min-height: 0;
 }
 
 .character-creation-proficiency-title {
+    flex-shrink: 0;
     color: var(--color-blue);
     font-size: 20px;
     -unity-font-style: bold;
@@ -1009,7 +1135,7 @@
 
 .character-creation-proficiency-list-host {
     flex-direction: column;
-    flex-grow: 1;
+    flex-grow: 0;
 }
 
 .character-creation-proficiency-placeholder {
