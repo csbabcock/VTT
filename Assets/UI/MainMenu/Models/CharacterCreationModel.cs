@@ -95,6 +95,10 @@ namespace GameCore.UI.MainMenu
         public const int MinCharacterLevel = 1;
         public const int MaxCharacterLevel = 20;
 
+        /// <summary>Direct Manual ability tile entry (empty uses -1 in model).</summary>
+        public const int MinManualAbilityEntryScore = 1;
+        public const int MaxManualAbilityEntryScore = 20;
+
         public event Action<CharacterCreationState> StateChanged;
 
         public CharacterCreationState State { get; private set; }
@@ -428,13 +432,50 @@ namespace GameCore.UI.MainMenu
         }
 
         /// <summary>
-        /// Updates a single score in the pool (for manual mode). Value must be -1 (clear) or 3–18.
+        /// Direct entry on an ability tile (Manual method only). Value -1 clears; otherwise 1–20.
+        /// </summary>
+        public void SetManualAbilityEntry(int abilityIndex, int value)
+        {
+            if (State.SelectedScoreMethod != "Manual" || !State.IsManualMode ||
+                abilityIndex < 0 || abilityIndex >= 6 || State.AbilityScores == null)
+                return;
+
+            int v = value < 0 ? -1 : Mathf.Clamp(value, MinManualAbilityEntryScore, MaxManualAbilityEntryScore);
+            if (State.AbilityScores[abilityIndex] == v)
+                return;
+
+            int[] newAbilityScores = new int[6];
+            Array.Copy(State.AbilityScores, newAbilityScores, 6);
+            newAbilityScores[abilityIndex] = v;
+
+            State = new CharacterCreationState
+            {
+                IsVisible = State.IsVisible,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
+                AbilityScores = newAbilityScores,
+                RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
+                RolledDroppedIndices = State.RolledDroppedIndices,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
+                AbilityScoresLocked = State.AbilityScoresLocked
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        /// <summary>
+        /// Updates a single score in the pool (for manual mode). Value must be -1 (clear) or 1–20.
         /// </summary>
         public void SetRolledScoreAt(int index, int value)
         {
             if (!State.IsManualMode || State.RolledScores == null || index < 0 || index >= 6)
                 return;
-            int clamped = value < 0 ? -1 : Mathf.Clamp(value, 3, 18);
+            int clamped = value < 0 ? -1 : Mathf.Clamp(value, MinManualAbilityEntryScore, MaxManualAbilityEntryScore);
             if (State.RolledScores[index] == clamped)
                 return;
 

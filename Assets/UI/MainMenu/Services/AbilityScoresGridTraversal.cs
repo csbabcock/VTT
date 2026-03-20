@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 namespace GameCore.UI.MainMenu.Services
 {
     /// <summary>
-    /// Knows how stat rows are nested under <c>ability-scores-grid</c>: split hosts (5 + CHA) vs legacy flat list.
+    /// Knows how stat rows are nested under <c>ability-scores-grid</c>: split hosts (3 + 3) vs legacy flat list.
     /// Keeps traversal logic in one place for views and drag-drop feedback (SRP / DRY).
     /// </summary>
     public static class AbilityScoresGridTraversal
@@ -23,7 +23,7 @@ namespace GameCore.UI.MainMenu.Services
         }
 
         /// <summary>
-        /// Visits each ability stat row (tile) in visual order: primary row host (STR–WIS), then secondary (CHA), or legacy flat list.
+        /// Visits each ability stat row (tile) in visual order: primary row host (STR–CON), then secondary (INT–CHA), or legacy flat list.
         /// </summary>
         public static void ForEachStatRow(VisualElement abilityScoresGrid, Action<VisualElement> visitStatRow)
         {

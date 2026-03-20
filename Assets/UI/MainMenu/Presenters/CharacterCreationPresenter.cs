@@ -87,6 +87,7 @@ namespace GameCore.UI.MainMenu
             _view.PointBuyIncrementClicked += HandlePointBuyIncrementClicked;
             _view.PointBuyDecrementClicked += HandlePointBuyDecrementClicked;
             _view.ManualScoreChanged += HandleManualScoreChanged;
+            _view.ManualAbilityEntryChanged += HandleManualAbilityEntryChanged;
             _view.DragStartedFromRolledScore += HandleDragStartedFromRolledScore;
             _view.DragStartedFromAbility += HandleDragStartedFromAbility;
             _view.DropOccurred += HandleDropOccurred;
@@ -132,6 +133,7 @@ namespace GameCore.UI.MainMenu
                 _view.PointBuyIncrementClicked -= HandlePointBuyIncrementClicked;
                 _view.PointBuyDecrementClicked -= HandlePointBuyDecrementClicked;
                 _view.ManualScoreChanged -= HandleManualScoreChanged;
+                _view.ManualAbilityEntryChanged -= HandleManualAbilityEntryChanged;
                 _view.DragStartedFromRolledScore -= HandleDragStartedFromRolledScore;
                 _view.DragStartedFromAbility -= HandleDragStartedFromAbility;
                 _view.DropOccurred -= HandleDropOccurred;
@@ -286,9 +288,10 @@ namespace GameCore.UI.MainMenu
             }
             for (int i = 0; i < 6; i++)
             {
-                if (scores[i] < 3 || scores[i] > 18)
+                if (scores[i] < CharacterCreationModel.MinManualAbilityEntryScore ||
+                    scores[i] > CharacterCreationModel.MaxManualAbilityEntryScore)
                 {
-                    Debug.LogWarning($"CharacterCreationPresenter: Cannot confirm - ability score at index {i} is {scores[i]}. All scores must be 3–18.");
+                    Debug.LogWarning($"CharacterCreationPresenter: Cannot confirm - ability score at index {i} is {scores[i]}. All scores must be {CharacterCreationModel.MinManualAbilityEntryScore}–{CharacterCreationModel.MaxManualAbilityEntryScore}.");
                     return;
                 }
             }
@@ -332,14 +335,27 @@ namespace GameCore.UI.MainMenu
             if (index < 0 || index >= 6) return;
             int value = -1;
             if (!string.IsNullOrWhiteSpace(text) && int.TryParse(text.Trim(), out int parsed))
-                value = Mathf.Clamp(parsed, 3, 18); // Business rule: ability scores 3–18
+                value = Mathf.Clamp(parsed, CharacterCreationModel.MinManualAbilityEntryScore, CharacterCreationModel.MaxManualAbilityEntryScore);
             Model.SetRolledScoreAt(index, value);
+        }
+
+        private void HandleManualAbilityEntryChanged(int abilityIndex, string text)
+        {
+            if (abilityIndex < 0 || abilityIndex >= 6) return;
+            if (Model.State.SelectedScoreMethod != "Manual" || !Model.State.IsManualMode)
+                return;
+            int value = -1;
+            if (!string.IsNullOrWhiteSpace(text) && int.TryParse(text.Trim(), out int parsed))
+                value = Mathf.Clamp(parsed, CharacterCreationModel.MinManualAbilityEntryScore, CharacterCreationModel.MaxManualAbilityEntryScore);
+            Model.SetManualAbilityEntry(abilityIndex, value);
         }
 
         // ========== Drag and Drop Handlers ==========
 
         private void HandleDragStartedFromRolledScore(int rolledScoreIndex, int scoreValue)
         {
+            if (Model.State.SelectedScoreMethod == "Manual" && Model.State.IsManualMode)
+                return;
             if (Model.State.RolledScores == null || rolledScoreIndex < 0 || rolledScoreIndex >= 6)
                 return;
 
@@ -371,6 +387,8 @@ namespace GameCore.UI.MainMenu
 
         private void HandleDragStartedFromAbility(int abilityIndex)
         {
+            if (Model.State.SelectedScoreMethod == "Manual" && Model.State.IsManualMode)
+                return;
             if (abilityIndex < 0 || abilityIndex >= 6 || Model.State.AssignedRolledScoreIndices == null)
                 return;
 

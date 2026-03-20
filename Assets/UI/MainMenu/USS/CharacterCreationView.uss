@@ -7,6 +7,8 @@
     right: 0;
     top: 0;
     bottom: 0;
+    width: 100%;
+    height: 100%;
     flex-direction: column;
     background-color: rgba(0, 0, 0, 0.85);
     padding: 0;
@@ -121,10 +123,11 @@
 .character-creation-stats-scroll-content {
     flex-direction: column;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     flex-grow: 0;
-    /* Former inline padding on stats ScrollView */
-    padding: 5px;
-    margin: 5px;
+    /* Match ability tiles / pool: symmetric inset only (no horizontal margin). */
+    padding: 8px;
 }
 
 .character-creation-container > * {
@@ -325,15 +328,15 @@
 .character-creation-score-method-buttons {
     flex-direction: row;
     flex-wrap: wrap;
-    margin-top: 15px;
-    margin-bottom: 10px;
+    margin-top: 12px;
+    margin-bottom: 8px;
 }
 
 .character-creation-score-method-buttons > .character-creation-roll-button {
     flex-grow: 1;
     flex-basis: 0;
-    min-width: 80px;
-    margin-right: 8px;
+    min-width: 72px;
+    margin-right: 6px;
 }
 
 .character-creation-roll-button {
@@ -342,13 +345,13 @@
     color: var(--color-text-primary);
     border-width: 2px;
     border-color: var(--color-border-strong);
-    padding: 10px 20px;
+    padding: 8px 12px;
     border-radius: var(--radius-sm);
-    font-size: 14px;
+    font-size: 13px;
     -unity-font-style: bold;
     margin-top: 0;
     margin-bottom: 0;
-    letter-spacing: -0.28px;
+    letter-spacing: -0.26px;
     transition-duration: var(--transition-fast);
     transition-property: border-color, background-color;
 }
@@ -369,13 +372,13 @@
     border-width: 2px;
     border-color: var(--color-blue);
     color: var(--color-blue);
-    padding: 12px 20px;
+    padding: 10px 16px;
     border-radius: var(--radius-sm);
-    font-size: 14px;
+    font-size: 13px;
     -unity-font-style: bold;
-    margin-top: 10px;
-    margin-bottom: 15px;
-    letter-spacing: -0.28px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    letter-spacing: -0.26px;
     transition-duration: var(--transition-fast);
     transition-property: border-color, background-color, color;
 }
@@ -597,30 +600,39 @@
     border-width: 1px;
     border-color: var(--color-border-strong);
     border-radius: var(--radius-md);
-    padding: 30px;
+    padding: 24px;
     flex-direction: column;
     flex-grow: 13;
     flex-shrink: 1;
     flex-basis: 0;
+    min-height: 0;
+    min-width: 0;
+    align-items: stretch;
+}
+
+/* Ensure the stats ScrollView row always receives the remaining height under the title */
+.character-creation-stats-panel > .character-creation-scroll-with-custom-bar {
+    flex-grow: 1;
+    flex-shrink: 1;
     min-height: 0;
 }
 
 .character-creation-stats-title {
     flex-shrink: 0;
     color: var(--color-blue);
-    font-size: 20px;
+    font-size: 18px;
     -unity-font-style: bold;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
     border-bottom-width: 1px;
     border-bottom-color: var(--color-border-subtle);
-    padding-bottom: 12px;
-    letter-spacing: -0.8px;
+    padding-bottom: 10px;
+    letter-spacing: -0.72px;
 }
 
 /* Rolled Scores Pool */
 .character-creation-rolled-scores-pool {
-    margin-bottom: 20px;
-    padding: 15px;
+    margin-bottom: 14px;
+    padding: 12px;
     background-color: var(--color-bg-shade1);
     border-radius: var(--radius-sm);
     border-width: 1px;
@@ -629,37 +641,127 @@
 
 .character-creation-rolled-scores-title {
     color: var(--color-text-n2);
-    font-size: 14px;
+    font-size: 13px;
     -unity-font-style: bold;
-    margin-bottom: 12px;
-    letter-spacing: -0.28px;
+    margin-bottom: 10px;
+    letter-spacing: -0.26px;
 }
 
 /* Point Buy: available points display in pool */
 .character-creation-point-buy-points {
-    font-size: 18px;
+    font-size: 16px;
     -unity-font-style: bold;
     color: var(--color-text-primary);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
-/* Point Buy: +/- buttons next to each ability score - align with score value and mod value row */
+/* Two equal halves; [−][score][+] centered in left half, mod centered in right (headers match in label row). */
+.character-creation-ability-score-value-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex-shrink: 1;
+    flex-wrap: nowrap;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.character-creation-ability-stat-value-half--score {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+.character-creation-ability-stat-value-half--mod {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+/* 55.32% of half width == 27.66% of full tile — same compact score/mod cell size as before the split. */
+.character-creation-ability-stat-value-half--score .character-creation-point-buy-controls {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-width: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.character-creation-ability-stat-value-half--score .character-creation-point-buy-controls--before-mod {
+    margin-right: 0;
+}
+
+/* Drop zone and manual TextField stack (absolute) so toggling does not change slot size. */
+.character-creation-ability-score-input-slot {
+    position: relative;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: 55.32%;
+    min-width: 28px;
+    width: auto;
+    height: 36px;
+    min-height: 26px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.character-creation-ability-score-input-slot > .character-creation-ability-score-drop-zone,
+.character-creation-ability-score-input-slot > .character-creation-ability-score-entry-field {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.character-creation-ability-stat-value-half--mod .character-creation-ability-mod-box {
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: 55.32%;
+    min-width: 28px;
+    width: auto;
+    height: 36px;
+    min-height: 26px;
+    margin-right: 0;
+}
+
 .character-creation-point-buy-controls {
     flex-direction: row;
     align-items: center;
-    /* Align to bottom of row so buttons sit on same horizontal line as score number and mod number (value row) */
-    align-self: flex-end;
+    justify-content: center;
+    flex-shrink: 1;
+    min-width: 0;
     -unity-text-align: middle-center;
 }
 
 .character-creation-point-buy-btn {
-    min-width: 36px;
+    min-width: 18px;
     width: 36px;
+    max-width: 100%;
     height: 36px;
+    max-height: 100%;
+    min-height: 22px;
+    flex-shrink: 1;
     padding: 0;
-    margin-left: 6px;
+    margin-left: 0;
     margin-right: 0;
-    font-size: 18px;
+    margin-top: 0;
+    font-size: 16px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
 
@@ -693,12 +795,13 @@
 .character-creation-rolled-scores-container {
     flex-direction: row;
     flex-wrap: nowrap;
-    min-height: 60px;
+    min-height: 52px;
+    align-items: center;
 }
 
 .character-creation-rolled-scores-container > * {
-    margin-right: 28px;
-    margin-bottom: 12px;
+    margin-right: 14px;
+    margin-bottom: 0;
 }
 
 .character-creation-rolled-scores-container.drag-over {
@@ -710,10 +813,10 @@
 
 .character-creation-rolled-score-item {
     flex-direction: row;
-    width: 56px;
-    height: 56px;
-    min-width: 56px;
-    min-height: 56px;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
     background-color: var(--color-bg-primary);
     border-width: 2px;
     border-color: var(--color-border-strong);
@@ -747,8 +850,8 @@
 .character-creation-rolled-score-item--with-dice {
     flex-direction: column;
     align-items: center;
-    width: 80px;
-    min-width: 80px;
+    width: 72px;
+    min-width: 72px;
     flex-shrink: 0;
     height: auto;
     padding: 0;
@@ -758,10 +861,10 @@
 
 /* Score container stays fixed height, centered above dice row */
 .character-creation-rolled-score-value-box {
-    width: 56px;
-    height: 56px;
-    min-width: 56px;
-    min-height: 56px;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
     background-color: var(--color-bg-primary);
     border-width: 2px;
     border-color: var(--color-border-strong);
@@ -790,7 +893,7 @@
     flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
-    margin-top: 8px;
+    margin-top: 6px;
 }
 
 .character-creation-rolled-score-dice-row > * {
@@ -798,16 +901,16 @@
 }
 
 .character-creation-rolled-score-die-chip {
-    width: 18px;
-    height: 20px;
-    min-width: 18px;
-    min-height: 20px;
+    width: 16px;
+    height: 18px;
+    min-width: 16px;
+    min-height: 18px;
     background-color: var(--color-bg-shade1);
     border-width: 2px;
     border-color: var(--color-border-strong);
     border-radius: 3px;
     -unity-text-align: middle-center;
-    font-size: 12px;
+    font-size: 11px;
     -unity-font-style: bold;
 }
 
@@ -821,16 +924,16 @@
 }
 
 .character-creation-rolled-score-value {
-    font-size: 20px;
+    font-size: 17px;
     -unity-font-style: bold;
     color: var(--color-blue);
-    letter-spacing: -0.4px;
+    letter-spacing: -0.34px;
 }
 
 /* Manual mode: drag handle (left) - click and drag here to move the score */
 .character-creation-rolled-score-drag-handle {
-    width: 14px;
-    min-width: 14px;
+    width: 12px;
+    min-width: 12px;
     height: 100%;
     background-color: var(--color-bg-shade1);
     border-width: 1px;
@@ -856,11 +959,11 @@
     flex-grow: 1;
     width: 100%;
     min-width: 28px;
-    min-height: 32px;
+    min-height: 28px;
     -unity-text-align: middle-center;
     border-width: 0;
     border-color: transparent;
-    padding: 6px 4px;
+    padding: 4px 3px;
     background-color: transparent;
     --unity-cursor-color: rgba(180, 180, 180, 1);
 }
@@ -887,43 +990,58 @@
 
 .character-creation-subtitle {
     color: var(--color-text-n2);
-    font-size: 16px;
+    font-size: 15px;
     -unity-font-style: bold;
-    margin-bottom: 15px;
-    margin-top: 20px;
-    letter-spacing: -0.32px;
+    margin-bottom: 12px;
+    margin-top: 16px;
+    letter-spacing: -0.3px;
 }
 
-/* Two explicit rows (5 + CHA): avoids Yoga wrap bugs (lone flex line stretching / overlap) */
+/* Two explicit rows (3 + 3); equal-width tiles; inner score row uses % columns so three tiles always fit panel width (no horizontal scroll). */
 .character-creation-ability-scores-grid {
     flex-direction: column;
     flex-grow: 0;
     flex-shrink: 0;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
 }
 
 /* class name must match AbilityScoresGridTraversal.RowHostUssClass (C#) */
 .character-creation-ability-scores-row {
     flex-direction: row;
-    flex-wrap: wrap;
-    align-content: flex-start;
+    flex-wrap: nowrap;
+    align-content: stretch;
+    align-items: stretch;
     flex-grow: 0;
     width: 100%;
+    min-width: 0;
+    justify-content: center;
 }
 
 /* USS does not support the + sibling combinator */
 .character-creation-ability-scores-row--second {
-    margin-top: 12px;
+    margin-top: 8px;
+    justify-content: center;
 }
 
-.character-creation-ability-scores-row > * {
-    margin-right: 12px;
-    margin-bottom: 12px;
+/* Equal columns; min-width 0 so flex can shrink — intrinsic layout comes from fluid % score/mod band inside each tile. */
+.character-creation-ability-scores-row > .character-creation-ability-stat-row {
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 8px;
     flex-grow: 1;
     flex-shrink: 1;
     flex-basis: 0;
-    min-width: 200px;
-    max-width: 20%;
+    min-width: 0;
+    width: auto;
+    max-width: none;
+}
+
+.character-creation-ability-scores-tile--row-end {
+    margin-right: 0;
 }
 
 .character-creation-ability-stat-row {
@@ -931,29 +1049,86 @@
     border-radius: var(--radius-sm);
     border-width: 1px;
     border-color: var(--color-border-default);
-    padding: 12px;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    min-width: 200px;
-    flex-shrink: 0;
+    padding: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    min-width: 0;
+    flex-shrink: 1;
+    width: 100%;
 }
 
 .character-creation-ability-stat-name {
     color: var(--color-blue);
-    font-size: 16px;
+    font-size: 14px;
     -unity-font-style: bold;
-    min-width: 50px;
-    letter-spacing: -0.32px;
+    width: 100%;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0 0 8px 0;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--color-border-subtle);
+    letter-spacing: -0.3px;
+    -unity-text-align: middle-center;
 }
 
 .character-creation-ability-stat-values {
     flex-direction: row;
     align-items: center;
+    justify-content: center;
+    flex-grow: 0;
+    flex-shrink: 1;
+    min-width: 0;
+    width: 100%;
+    margin: 8px 0 0 0;
+    padding: 0;
 }
 
-.character-creation-ability-stat-values > * {
-    margin-right: 20px;
+.character-creation-ability-stat-inline-block {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    flex-shrink: 1;
+    flex-grow: 0;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    align-self: stretch;
+    margin: 0;
+    padding: 0;
+}
+
+.character-creation-ability-stat-inline-label-row {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-shrink: 0;
+    width: 100%;
+    min-width: 0;
+    margin: 0 0 6px 0;
+    padding: 0;
+}
+
+/* Equal halves: “Score” centered over left column, “Mod” over right. */
+.character-creation-ability-stat-header-track--score {
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-width: 0;
+    width: auto;
+    margin-right: 0;
+}
+
+.character-creation-ability-stat-header-track--mod {
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-width: 0;
+    width: auto;
 }
 
 .character-creation-ability-stat-column {
@@ -961,26 +1136,26 @@
 }
 
 .character-creation-ability-stat-label {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--color-text-n4);
-    margin-bottom: 4px;
-    letter-spacing: 0.5px;
+    margin: 0 0 4px 0;
+    letter-spacing: 0.4px;
     -unity-font-style: normal;
-}
-
-.character-creation-ability-score-value {
-    font-size: 20px;
-    -unity-font-style: bold;
-    color: var(--color-text-primary);
-    letter-spacing: -0.4px;
+    /* Same vertical slot for “Score” / “Mod” so headers line up across columns */
+    min-height: 14px;
+    max-height: 14px;
+    -unity-text-align: middle-center;
+    width: 100%;
 }
 
 /* Ability Score Drop Zone */
 .character-creation-ability-score-drop-zone {
-    width: 60px;
-    min-width: 60px;
-    height: 40px;
-    min-height: 40px;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    flex-shrink: 0;
+    height: 100%;
+    min-height: 26px;
     border-width: 2px;
     border-color: var(--color-border-subtle);
     border-radius: var(--radius-sm);
@@ -1006,11 +1181,57 @@
     background-color: var(--color-bg-primary);
 }
 
+/* Manual mode: direct numeric entry in place of the drop zone */
+.character-creation-ability-score-entry-field {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    flex-shrink: 0;
+    min-height: 26px;
+    height: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+    -unity-text-align: middle-center;
+    border-width: 2px;
+    border-color: var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-primary);
+    --unity-cursor-color: rgba(180, 180, 180, 1);
+}
+
+.character-creation-ability-stat-row.unassigned .character-creation-ability-score-entry-field {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-bg-shade1);
+}
+
+.character-creation-ability-stat-row.unassigned .character-creation-ability-mod-box {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-bg-shade1);
+}
+
+.character-creation-ability-stat-row.assigned .character-creation-ability-mod-box {
+    border-color: var(--color-border-default);
+    background-color: var(--color-bg-primary);
+}
+
+.character-creation-ability-score-entry-field .unity-text-field__input {
+    -unity-text-align: middle-center;
+    min-height: 22px;
+    font-size: 15px;
+    -unity-font-style: bold;
+    border-width: 0;
+    background-color: transparent;
+    padding: 4px 2px;
+    color: var(--color-text-primary);
+}
+
 /* Ability Score Label in stat rows */
 .character-creation-ability-score-value {
-    font-size: 20px;
+    font-size: 17px;
     -unity-font-style: bold;
     color: var(--color-text-primary);
+    letter-spacing: -0.34px;
     -unity-text-align: middle-center;
 }
 
@@ -1023,10 +1244,29 @@
 }
 
 .character-creation-ability-modifier-value {
-    font-size: 18px;
+    font-size: 15px;
     -unity-font-style: bold;
     color: var(--color-text-n3); /* Neutral grey for dash / unassigned */
-    letter-spacing: -0.36px;
+    letter-spacing: -0.3px;
+}
+
+/* Modifier in same row as score; width comes from value-row flex rule when nested there. */
+.character-creation-ability-mod-box {
+    min-width: 0;
+    min-height: 26px;
+    flex-shrink: 1;
+    border-width: 2px;
+    border-color: var(--color-border-default);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-shade1);
+    justify-content: center;
+    align-items: center;
+}
+
+.character-creation-ability-mod-box > .character-creation-ability-modifier-value {
+    min-height: auto;
+    margin-bottom: 0;
+    -unity-text-align: middle-center;
 }
 
 .character-creation-ability-modifier-value.character-creation-ability-mod-positive {
@@ -1059,13 +1299,13 @@
 .character-creation-character-stats-grid {
     flex-direction: row;
     flex-wrap: wrap;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    margin-top: 8px;
+    margin-bottom: 14px;
 }
 
 .character-creation-character-stats-grid > * {
-    margin-right: 10px;
-    margin-bottom: 10px;
+    margin-right: 8px;
+    margin-bottom: 8px;
 }
 
 .character-creation-char-stat-item {
@@ -1073,25 +1313,28 @@
     border-radius: var(--radius-sm);
     border-width: 1px;
     border-color: var(--color-border-default);
-    padding: 12px;
+    padding: 10px;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    min-width: 150px;
+    min-width: 120px;
     flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 160px;
+    max-width: 340px;
 }
 
 .character-creation-char-stat-label {
     color: var(--color-text-n3);
-    font-size: 14px;
-    letter-spacing: -0.28px;
+    font-size: 13px;
+    letter-spacing: -0.26px;
 }
 
 .character-creation-char-stat-value {
     color: var(--color-text-primary);
-    font-size: 15px;
+    font-size: 14px;
     -unity-font-style: bold;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.28px;
 }
 
 /* Modifier-type stats (Initiative, Proficiency, Spell Attack): green / grey / red */

@@ -65,7 +65,9 @@ namespace GameCore.UI.MainMenu
             {
                 if (evt.button != 0 || isAssigned) return;
                 ManualScoreChanged?.Invoke(rolledScoreIndex, valueField.value);
-                if (int.TryParse(valueField.value?.Trim(), out int v) && v >= 3 && v <= 18)
+                if (int.TryParse(valueField.value?.Trim(), out int v) &&
+                    v >= CharacterCreationModel.MinManualAbilityEntryScore &&
+                    v <= CharacterCreationModel.MaxManualAbilityEntryScore)
                 {
                     _pendingManualDragIndex = rolledScoreIndex;
                     _pendingManualDragValue = v;

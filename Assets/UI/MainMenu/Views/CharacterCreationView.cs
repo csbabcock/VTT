@@ -28,7 +28,7 @@ namespace GameCore.UI.MainMenu
 
     /// <summary>
     /// View for character creation UI.
-    /// Follows MVP pattern - only handles UI display and user input, delegates logic to Presenter.
+    /// Follows MVP: coordinates binding and events; ability stat tiles are built by <see cref="AbilityStatRowViewFactory"/>.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public partial class CharacterCreationView : MonoBehaviour, IUIView<CharacterCreationState>
@@ -36,7 +36,7 @@ namespace GameCore.UI.MainMenu
         private static readonly string[] AbilityNamesShort = { "str", "dex", "con", "int", "wis", "cha" };
         private static readonly string[] AbilityNamesDisplay = { "STR", "DEX", "CON", "INT", "WIS", "CHA" };
 
-        private const int PrimaryRowAbilityCount = 5;
+        private const int PrimaryRowAbilityCount = 3;
         private const string AbilityScoresRowPrimaryName = "ability-scores-row-primary";
         private const string AbilityScoresRowSecondaryName = "ability-scores-row-secondary";
 
@@ -94,11 +94,15 @@ namespace GameCore.UI.MainMenu
         private Button _confirmScoresButton;
         private VisualElement _scoreMethodButtonsContainer;
 
+        /// <summary>Cached once when ability rows are created; routes tile controls to view events.</summary>
+        private AbilityStatRowUiBinding _abilityStatRowBinding;
+
         // Drag and drop visual state (UI only - no business logic)
         private VisualElement _dragPreview; // Visual preview of dragged score
         private int _pendingManualDragIndex = -1;
         private int _pendingManualDragValue;
         private Vector2 _pendingManualDragPosition;
+        private bool _suppressManualAbilityEntryEvents;
 
         // Events - View only raises events, delegates all logic to Presenter
         public event System.Action<string> ClassSelected;
@@ -111,6 +115,7 @@ namespace GameCore.UI.MainMenu
         public event System.Action<int> PointBuyIncrementClicked;
         public event System.Action<int> PointBuyDecrementClicked;
         public event System.Action<int, string> ManualScoreChanged; // rolledScoreIndex, text
+        public event System.Action<int, string> ManualAbilityEntryChanged; // abilityIndex, text (direct Manual mode)
         public event System.Action<int, int> DragStartedFromRolledScore; // rolledScoreIndex, scoreValue
         public event System.Action<int> DragStartedFromAbility; // abilityIndex
         public event System.Action<Vector2> DropOccurred; // position
@@ -409,6 +414,8 @@ namespace GameCore.UI.MainMenu
         {
             if (_abilityScoresGrid == null) return;
 
+            _abilityStatRowBinding = CreateAbilityStatRowBinding();
+
             VisualElement rowPrimary = _root.Q<VisualElement>(AbilityScoresRowPrimaryName);
             VisualElement rowSecondary = _root.Q<VisualElement>(AbilityScoresRowSecondaryName);
 
@@ -427,7 +434,7 @@ namespace GameCore.UI.MainMenu
         }
 
         /// <summary>
-        /// Split UXML: first row STR–WIS, second row CHA (layout workaround for wrapped flex lines).
+        /// Split UXML: two rows of three tiles (STR–CON, INT–CHA).
         /// </summary>
         private void PopulateSplitAbilityRowsIfEmpty(VisualElement rowPrimary, VisualElement rowSecondary)
         {
@@ -435,84 +442,34 @@ namespace GameCore.UI.MainMenu
                 return;
 
             for (int i = 0; i < PrimaryRowAbilityCount; i++)
-                rowPrimary.Add(CreateAbilityStatRow(AbilityNamesDisplay[i], i));
+            {
+                VisualElement tile = CreateAbilityStatRow(AbilityNamesDisplay[i], i);
+                if (i == PrimaryRowAbilityCount - 1)
+                    tile.AddToClassList("character-creation-ability-scores-tile--row-end");
+                rowPrimary.Add(tile);
+            }
 
-            int chaIndex = PrimaryRowAbilityCount;
-            rowSecondary.Add(CreateAbilityStatRow(AbilityNamesDisplay[chaIndex], chaIndex));
+            for (int i = PrimaryRowAbilityCount; i < AbilityNamesDisplay.Length; i++)
+            {
+                VisualElement tile = CreateAbilityStatRow(AbilityNamesDisplay[i], i);
+                if (i == AbilityNamesDisplay.Length - 1)
+                    tile.AddToClassList("character-creation-ability-scores-tile--row-end");
+                rowSecondary.Add(tile);
+            }
+        }
+
+        private AbilityStatRowUiBinding CreateAbilityStatRowBinding()
+        {
+            return new AbilityStatRowUiBinding(
+                i => PointBuyDecrementClicked?.Invoke(i),
+                i => PointBuyIncrementClicked?.Invoke(i),
+                (i, s) => ManualAbilityEntryChanged?.Invoke(i, s),
+                () => _suppressManualAbilityEntryEvents);
         }
 
         private VisualElement CreateAbilityStatRow(string abilityName, int abilityIndex)
         {
-            VisualElement row = new VisualElement();
-            row.AddToClassList("character-creation-ability-stat-row");
-            row.name = $"ability-stat-{abilityName.ToLower()}";
-            row.userData = abilityName; // Store ability name for drag/drop
-
-            Label nameLabel = new Label(abilityName);
-            nameLabel.AddToClassList("character-creation-ability-stat-name");
-            row.Add(nameLabel);
-
-            VisualElement values = new VisualElement();
-            values.AddToClassList("character-creation-ability-stat-values");
-
-            // Point Buy: minus button (left of score; hidden by default)
-            VisualElement pointBuyMinus = new VisualElement();
-            pointBuyMinus.AddToClassList("character-creation-point-buy-controls");
-            pointBuyMinus.name = $"ability-{abilityName.ToLower()}-point-buy-minus";
-            pointBuyMinus.style.display = DisplayStyle.None;
-            Button minusBtn = new Button(() => PointBuyDecrementClicked?.Invoke(abilityIndex)) { text = "−" };
-            minusBtn.AddToClassList("character-creation-point-buy-btn");
-            pointBuyMinus.Add(minusBtn);
-            values.Add(pointBuyMinus);
-
-            // Score input column
-            VisualElement scoreColumn = new VisualElement();
-            scoreColumn.AddToClassList("character-creation-ability-stat-column");
-            Label scoreLabel = new Label("Score");
-            scoreLabel.AddToClassList("character-creation-ability-stat-label");
-            
-            // Drop zone container for the score
-            VisualElement scoreDropZone = new VisualElement();
-            scoreDropZone.AddToClassList("character-creation-ability-score-drop-zone");
-            scoreDropZone.name = $"ability-{abilityName.ToLower()}-drop-zone";
-            scoreDropZone.userData = abilityName; // Store ability name for easier lookup
-            
-            Label scoreValueLabel = new Label(""); // Blank when unassigned
-            scoreValueLabel.AddToClassList("character-creation-ability-score-value");
-            scoreValueLabel.name = $"ability-{abilityName.ToLower()}-score-label";
-            scoreDropZone.Add(scoreValueLabel);
-            
-            // Make drop zone accept pointer events
-            scoreDropZone.pickingMode = PickingMode.Position;
-            
-            scoreColumn.Add(scoreLabel);
-            scoreColumn.Add(scoreDropZone);
-            values.Add(scoreColumn);
-
-            // Point Buy: plus button (right of score; hidden by default)
-            VisualElement pointBuyPlus = new VisualElement();
-            pointBuyPlus.AddToClassList("character-creation-point-buy-controls");
-            pointBuyPlus.name = $"ability-{abilityName.ToLower()}-point-buy-plus";
-            pointBuyPlus.style.display = DisplayStyle.None;
-            Button plusBtn = new Button(() => PointBuyIncrementClicked?.Invoke(abilityIndex)) { text = "+" };
-            plusBtn.AddToClassList("character-creation-point-buy-btn");
-            pointBuyPlus.Add(plusBtn);
-            values.Add(pointBuyPlus);
-
-            // Modifier column
-            VisualElement modColumn = new VisualElement();
-            modColumn.AddToClassList("character-creation-ability-stat-column");
-            Label modLabel = new Label("Mod");
-            modLabel.AddToClassList("character-creation-ability-stat-label");
-            Label modValue = new Label("—");
-            modValue.AddToClassList("character-creation-ability-modifier-value");
-            modValue.name = $"ability-mod-{abilityName.ToLower()}";
-            modColumn.Add(modLabel);
-            modColumn.Add(modValue);
-            values.Add(modColumn);
-
-            row.Add(values);
-            return row;
+            return AbilityStatRowViewFactory.CreateRow(abilityName, abilityIndex, _abilityStatRowBinding);
         }
 
         private void InitializeCharacterStatItems()
@@ -626,55 +583,106 @@ namespace GameCore.UI.MainMenu
                 if (_scoreMethodButtonsContainer != null) _scoreMethodButtonsContainer.style.display = DisplayStyle.None;
                 if (_confirmScoresButton != null) _confirmScoresButton.style.display = DisplayStyle.None;
                 SetPointBuyControlsVisible(false);
+                SetAbilityScoreDirectEntryVisible(false);
             }
             else
             {
-                if (_rolledScoresPool != null) _rolledScoresPool.style.display = DisplayStyle.Flex;
+                bool useDirectManualEntry = state.SelectedScoreMethod == "Manual" && state.IsManualMode;
+
                 if (_scoreMethodButtonsContainer != null) _scoreMethodButtonsContainer.style.display = DisplayStyle.Flex;
                 if (_confirmScoresButton != null) _confirmScoresButton.style.display = DisplayStyle.Flex;
                 UpdateScoreMethodSelection(state.SelectedScoreMethod);
                 if (state.SelectedScoreMethod == "PointBuy")
                 {
+                    if (_rolledScoresPool != null) _rolledScoresPool.style.display = DisplayStyle.Flex;
                     ShowPointBuyPool();
                     SetPointBuyControlsVisible(true);
+                    SetAbilityScoreDirectEntryVisible(false);
+                }
+                else if (useDirectManualEntry)
+                {
+                    if (_rolledScoresPool != null) _rolledScoresPool.style.display = DisplayStyle.None;
+                    HidePointBuyPool();
+                    SetPointBuyControlsVisible(false);
+                    SetAbilityScoreDirectEntryVisible(true);
                 }
                 else
                 {
+                    if (_rolledScoresPool != null) _rolledScoresPool.style.display = DisplayStyle.Flex;
                     HidePointBuyPool();
                     SetPointBuyControlsVisible(false);
+                    SetAbilityScoreDirectEntryVisible(false);
                     UpdateRolledScores(state.RolledScores, state.AssignedRolledScoreIndices, state.IsManualMode, state.RolledDiceBreakdown, state.RolledDroppedIndices);
                 }
             }
+
+            bool syncDirectManualFields = !state.AbilityScoresLocked && state.SelectedScoreMethod == "Manual" && state.IsManualMode;
 
             // Update ability scores without triggering change events
             if (state.AbilityScores != null && state.AbilityScores.Length == 6)
             {
                 for (int i = 0; i < 6; i++)
                 {
-                    if (_abilityScoreLabels[i] != null)
+                    int score = state.AbilityScores[i];
+                    VisualElement row = _root.Q<VisualElement>($"ability-stat-{AbilityNamesShort[i]}");
+
+                    if (syncDirectManualFields)
                     {
-                        int score = state.AbilityScores[i];
-                        VisualElement row = _root.Q<VisualElement>($"ability-stat-{AbilityNamesShort[i]}");
-                        
-                        if (score < 0)
+                        TextField entryField = _root.Q<TextField>($"ability-{AbilityNamesShort[i]}-score-entry");
+                        if (entryField != null)
                         {
-                            _abilityScoreLabels[i].text = ""; // Blank when unassigned
-                            if (row != null)
+                            string t = score < 0 ? "" : score.ToString();
+                            if (entryField.value != t)
                             {
-                                row.AddToClassList("unassigned");
-                                row.RemoveFromClassList("assigned");
-                            }
-                        }
-                        else
-                        {
-                            _abilityScoreLabels[i].text = score.ToString();
-                            if (row != null)
-                            {
-                                row.RemoveFromClassList("unassigned");
-                                row.AddToClassList("assigned");
+                                _suppressManualAbilityEntryEvents = true;
+                                entryField.SetValueWithoutNotify(t);
+                                _suppressManualAbilityEntryEvents = false;
                             }
                         }
                     }
+                    else if (_abilityScoreLabels[i] != null)
+                    {
+                        if (score < 0)
+                            _abilityScoreLabels[i].text = "";
+                        else
+                            _abilityScoreLabels[i].text = score.ToString();
+                    }
+
+                    if (row != null)
+                    {
+                        if (score < 0)
+                        {
+                            row.AddToClassList("unassigned");
+                            row.RemoveFromClassList("assigned");
+                        }
+                        else
+                        {
+                            row.RemoveFromClassList("unassigned");
+                            row.AddToClassList("assigned");
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SetAbilityScoreDirectEntryVisible(bool visible)
+        {
+            if (_root == null) return;
+            foreach (string shortName in AbilityNamesShort)
+            {
+                VisualElement dropZone = _root.Q<VisualElement>($"ability-{shortName}-drop-zone");
+                TextField entry = _root.Q<TextField>($"ability-{shortName}-score-entry");
+                if (dropZone != null)
+                {
+                    dropZone.style.display = DisplayStyle.Flex;
+                    dropZone.style.visibility = visible ? Visibility.Hidden : Visibility.Visible;
+                    dropZone.pickingMode = visible ? PickingMode.Ignore : PickingMode.Position;
+                }
+                if (entry != null)
+                {
+                    entry.style.display = DisplayStyle.Flex;
+                    entry.style.visibility = visible ? Visibility.Visible : Visibility.Hidden;
+                    entry.SetEnabled(visible);
                 }
             }
         }
@@ -754,9 +762,15 @@ namespace GameCore.UI.MainMenu
                 VisualElement minusContainer = _root.Q<VisualElement>($"ability-{name}-point-buy-minus");
                 VisualElement plusContainer = _root.Q<VisualElement>($"ability-{name}-point-buy-plus");
                 if (minusContainer != null)
-                    minusContainer.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+                {
+                    minusContainer.style.display = DisplayStyle.Flex;
+                    minusContainer.style.visibility = visible ? Visibility.Visible : Visibility.Hidden;
+                }
                 if (plusContainer != null)
-                    plusContainer.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+                {
+                    plusContainer.style.display = DisplayStyle.Flex;
+                    plusContainer.style.visibility = visible ? Visibility.Visible : Visibility.Hidden;
+                }
             }
         }
 
