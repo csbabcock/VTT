@@ -32,8 +32,10 @@ namespace GameCore.UI.MainMenu
         public string SelectedRaceId;
         /// <summary>Ruleset content id, e.g. background.acolyte</summary>
         public string SelectedBackgroundId;
-        /// <summary>Character level (1–20) for feature display and scaled stats.</summary>
+        /// <summary>Total character level (1–20). Sum of <see cref="ClassLevels"/> (clamped). Used for proficiency and global scaling.</summary>
         public int CharacterLevel;
+        /// <summary>Per-class levels (ruleset id → level). Total level is the sum; each class is capped so the sum does not exceed 20.</summary>
+        public Dictionary<string, int> ClassLevels;
         public int[] AbilityScores; // STR, DEX, CON, INT, WIS, CHA (final assigned scores)
         public int[] RolledScores; // The 6 rolled scores from dice (null if not rolled yet). In manual mode can contain -1 for empty.
         public int[][] RolledDiceBreakdown; // For Roll option: RolledDiceBreakdown[i] = 4 dice for slot i, or null
@@ -112,6 +114,7 @@ namespace GameCore.UI.MainMenu
                 SelectedRaceId = string.Empty,
                 SelectedBackgroundId = string.Empty,
                 CharacterLevel = 1,
+                ClassLevels = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase),
                 AbilityScores = new int[] { -1, -1, -1, -1, -1, -1 }, // Unassigned by default
                 RolledScores = null, // No scores rolled yet
                 RolledDiceBreakdown = null,
@@ -142,6 +145,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -149,13 +153,28 @@ namespace GameCore.UI.MainMenu
         }
 
         /// <summary>
-        /// Sets character level (clamped 1–20). Affects which class features are shown and proficiency-based stats.
+        /// Sets level for one class (ruleset id). Clamps to 1–20 per class and caps so the sum of all class levels ≤ 20.
         /// </summary>
-        public void SetCharacterLevel(int level)
+        public void SetClassLevel(string classId, int level)
         {
-            int clamped = Mathf.Clamp(level, MinCharacterLevel, MaxCharacterLevel);
-            if (State.CharacterLevel == clamped)
+            if (string.IsNullOrEmpty(classId))
                 return;
+
+            Dictionary<string, int> dict = CloneClassLevels(State.ClassLevels);
+            if (!dict.ContainsKey(classId))
+                dict[classId] = MinCharacterLevel;
+
+            int currentLevel = dict[classId];
+            int othersSum = SumClassLevelsInternal(dict) - currentLevel;
+            int cap = Mathf.Clamp(MaxCharacterLevel - othersSum, MinCharacterLevel, MaxCharacterLevel);
+            int clamped = Mathf.Clamp(level, MinCharacterLevel, cap);
+
+            if (clamped == currentLevel)
+                return;
+
+            dict[classId] = clamped;
+            int total = SumClassLevelsInternal(dict);
+            int characterLevel = Mathf.Clamp(total, MinCharacterLevel, MaxCharacterLevel);
 
             State = new CharacterCreationState
             {
@@ -163,7 +182,8 @@ namespace GameCore.UI.MainMenu
                 SelectedClassId = State.SelectedClassId,
                 SelectedRaceId = State.SelectedRaceId,
                 SelectedBackgroundId = State.SelectedBackgroundId,
-                CharacterLevel = clamped,
+                CharacterLevel = characterLevel,
+                ClassLevels = dict,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
@@ -175,6 +195,17 @@ namespace GameCore.UI.MainMenu
             };
             StateChanged?.Invoke(State);
         }
+
+        /// <summary>Sets level for <see cref="CharacterCreationState.SelectedClassId"/>.</summary>
+        public void SetSelectedClassLevel(int level)
+        {
+            if (string.IsNullOrEmpty(State.SelectedClassId))
+                return;
+            SetClassLevel(State.SelectedClassId, level);
+        }
+
+        /// <summary>Same constraints as <see cref="SetClassLevel"/> for the current selection.</summary>
+        public void SetCharacterLevel(int level) => SetSelectedClassLevel(level);
 
         /// <summary>
         /// Locks ability scores: hides pool and method buttons in the UI; only final ability scores remain visible.
@@ -198,6 +229,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = locked
             };
             StateChanged?.Invoke(State);
@@ -240,6 +272,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = isManualMode,
                 SelectedScoreMethod = value,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
             StateChanged?.Invoke(State);
@@ -247,13 +280,25 @@ namespace GameCore.UI.MainMenu
 
         public void SetSelectedClassId(string classId)
         {
-            if (State.SelectedClassId == classId)
+            string id = classId ?? string.Empty;
+            if (State.SelectedClassId == id)
                 return;
+
+            // Single-class list UX: switching the highlighted class replaces the build with that class at level 1.
+            // For multiclass, call <see cref="TryAddMulticlassClass"/> (and stop replacing here) when the UI supports it.
+            Dictionary<string, int> newLevels = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            if (!string.IsNullOrEmpty(id))
+                newLevels[id] = MinCharacterLevel;
+
+            int total = SumClassLevelsInternal(newLevels);
+            int characterLevel = total <= 0
+                ? MinCharacterLevel
+                : Mathf.Clamp(total, MinCharacterLevel, MaxCharacterLevel);
 
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClassId = classId ?? string.Empty,
+                SelectedClassId = id,
                 SelectedRaceId = State.SelectedRaceId,
                 SelectedBackgroundId = State.SelectedBackgroundId,
                 AbilityScores = State.AbilityScores,
@@ -263,11 +308,110 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
-                CharacterLevel = State.CharacterLevel,
+                CharacterLevel = characterLevel,
+                ClassLevels = newLevels,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);
+        }
+
+        /// <summary>
+        /// Multiclass: adds <paramref name="classId"/> at level 1 if missing, provided total character level would stay ≤ 20.
+        /// Does not change <see cref="CharacterCreationState.SelectedClassId"/>; set selection after if needed.
+        /// </summary>
+        public bool TryAddMulticlassClass(string classId)
+        {
+            string id = classId ?? string.Empty;
+            if (string.IsNullOrEmpty(id))
+                return false;
+
+            Dictionary<string, int> dict = CloneClassLevels(State.ClassLevels);
+            if (dict.ContainsKey(id))
+                return true;
+
+            int prospective = SumClassLevelsInternal(dict) + MinCharacterLevel;
+            if (prospective > MaxCharacterLevel)
+                return false;
+
+            dict[id] = MinCharacterLevel;
+            int total = SumClassLevelsInternal(dict);
+            int characterLevel = Mathf.Clamp(total, MinCharacterLevel, MaxCharacterLevel);
+
+            State = new CharacterCreationState
+            {
+                IsVisible = State.IsVisible,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
+                CharacterLevel = characterLevel,
+                ClassLevels = dict,
+                AbilityScores = State.AbilityScores,
+                RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
+                RolledDroppedIndices = State.RolledDroppedIndices,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                AbilityScoresLocked = State.AbilityScoresLocked
+            };
+            StateChanged?.Invoke(State);
+            return true;
+        }
+
+        private static Dictionary<string, int> CloneClassLevels(Dictionary<string, int> src)
+        {
+            if (src == null || src.Count == 0)
+                return new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            return new Dictionary<string, int>(src, StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static int SumClassLevelsInternal(Dictionary<string, int> levels)
+        {
+            if (levels == null || levels.Count == 0)
+                return 0;
+            int s = 0;
+            foreach (KeyValuePair<string, int> kv in levels)
+                s += kv.Value;
+            return s;
+        }
+
+        /// <summary>Sum of all class levels in the map (not clamped).</summary>
+        public static int SumClassLevels(IReadOnlyDictionary<string, int> levels)
+        {
+            if (levels == null || levels.Count == 0)
+                return 0;
+            int s = 0;
+            foreach (KeyValuePair<string, int> kv in levels)
+                s += kv.Value;
+            return s;
+        }
+
+        public static int GetClassLevel(IReadOnlyDictionary<string, int> levels, string classId)
+        {
+            if (string.IsNullOrEmpty(classId) || levels == null)
+                return MinCharacterLevel;
+            if (!levels.TryGetValue(classId, out int v))
+                return MinCharacterLevel;
+            return Mathf.Clamp(v, MinCharacterLevel, MaxCharacterLevel);
+        }
+
+        public static int MaxClassLevelAllowed(IReadOnlyDictionary<string, int> levels, string classId)
+        {
+            if (string.IsNullOrEmpty(classId))
+                return MaxCharacterLevel;
+
+            int others = 0;
+            if (levels != null)
+            {
+                foreach (KeyValuePair<string, int> kv in levels)
+                {
+                    if (!string.Equals(kv.Key, classId, StringComparison.OrdinalIgnoreCase))
+                        others += kv.Value;
+                }
+            }
+
+            return Mathf.Clamp(MaxCharacterLevel - others, MinCharacterLevel, MaxCharacterLevel);
         }
 
         public void SetSelectedRaceId(string raceId)
@@ -289,6 +433,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -314,6 +459,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -347,6 +493,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -384,6 +531,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -425,6 +573,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = isManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -462,6 +611,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -508,6 +658,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = true,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -574,6 +725,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -623,6 +775,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -659,6 +812,7 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 

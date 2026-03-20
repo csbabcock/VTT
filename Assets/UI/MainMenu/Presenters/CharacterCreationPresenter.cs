@@ -1,3 +1,4 @@
+using System;
 using GameCore.UI;
 using GameCore.UI.MainMenu.Services;
 using GameCore.PlayerData.Rulesets;
@@ -79,7 +80,7 @@ namespace GameCore.UI.MainMenu
             _view.ClassSelected += HandleClassSelected;
             _view.RaceSelected += HandleRaceSelected;
             _view.BackgroundSelected += HandleBackgroundSelected;
-            _view.CharacterLevelChanged += HandleCharacterLevelChanged;
+            _view.SelectedClassLevelChanged += HandleSelectedClassLevelChanged;
             _view.RollAbilitiesClicked += HandleRollAbilitiesClicked;
             _view.StandardArrayClicked += HandleStandardArrayClicked;
             _view.ManualClicked += HandleManualClicked;
@@ -125,7 +126,7 @@ namespace GameCore.UI.MainMenu
                 _view.ClassSelected -= HandleClassSelected;
                 _view.RaceSelected -= HandleRaceSelected;
                 _view.BackgroundSelected -= HandleBackgroundSelected;
-                _view.CharacterLevelChanged -= HandleCharacterLevelChanged;
+                _view.SelectedClassLevelChanged -= HandleSelectedClassLevelChanged;
                 _view.RollAbilitiesClicked -= HandleRollAbilitiesClicked;
                 _view.StandardArrayClicked -= HandleStandardArrayClicked;
                 _view.ManualClicked -= HandleManualClicked;
@@ -205,9 +206,9 @@ namespace GameCore.UI.MainMenu
             Model.SetSelectedBackgroundId(backgroundId);
         }
 
-        private void HandleCharacterLevelChanged(int level)
+        private void HandleSelectedClassLevelChanged(int level)
         {
-            Model.SetCharacterLevel(level);
+            Model.SetSelectedClassLevel(level);
         }
 
         private void InitializeDragAndDropHandler()
@@ -616,7 +617,12 @@ namespace GameCore.UI.MainMenu
             }
 
             // TODO: Save character to file using CharacterFileService
-            Debug.Log($"CharacterCreationPresenter: Creating character - Level: {Model.State.CharacterLevel}, ClassId: {Model.State.SelectedClassId}, RaceId: {Model.State.SelectedRaceId}, BackgroundId: {Model.State.SelectedBackgroundId}");
+            int clsLv = CharacterCreationModel.GetClassLevel(Model.State.ClassLevels, Model.State.SelectedClassId);
+            string mapDump = Model.State.ClassLevels != null
+                ? string.Join(", ", Model.State.ClassLevels.Select(kv => $"{kv.Key}={kv.Value}"))
+                : string.Empty;
+            Debug.Log(
+                $"CharacterCreationPresenter: Creating character - Total level: {Model.State.CharacterLevel}, selected class level: {clsLv}, ClassId: {Model.State.SelectedClassId}, RaceId: {Model.State.SelectedRaceId}, BackgroundId: {Model.State.SelectedBackgroundId}, class map: [{mapDump}]");
 
             Hide();
             // TODO: Notify MainMenuPresenter to refresh character list
@@ -684,16 +690,19 @@ namespace GameCore.UI.MainMenu
             {
                 name = cls.name ?? state.SelectedClassId;
                 type = "Class";
+                int classLevel = CharacterCreationModel.GetClassLevel(state.ClassLevels, state.SelectedClassId);
+                int classLevelMax =
+                    CharacterCreationModel.MaxClassLevelAllowed(state.ClassLevels, state.SelectedClassId);
                 AbilityModifierTextInterpolator.InterpolationResult clsDescMeta = InterpolateRulesText(cls.description, state);
                 description = clsDescMeta.Text;
                 features = InterpolateFeatureDescriptions(
-                    CharacterCreationClassContentBuilder.BuildFeaturesThroughLevel(cls, state.CharacterLevel), state);
+                    CharacterCreationClassContentBuilder.BuildFeaturesThroughLevel(cls, classLevel), state);
                 List<CharacterDetailSection> sectionList = InterpolateDetailSections(
                     CharacterCreationClassContentBuilder.BuildStructuredDescription(cls), state);
                 string featHeading =
-                    CharacterCreationClassContentBuilder.ClassFeaturesSectionHeading(state.CharacterLevel);
+                    CharacterCreationClassContentBuilder.ClassFeaturesSectionHeading(classLevel);
                 _view.UpdateDetailPanel(name, type, description, features, sectionList, featHeading,
-                    clsDescMeta.Substituted);
+                    clsDescMeta.Substituted, true, classLevel, classLevelMax);
                 return;
             }
             else if (!string.IsNullOrEmpty(state.SelectedBackgroundId) &&
@@ -782,15 +791,18 @@ namespace GameCore.UI.MainMenu
             if (!string.IsNullOrEmpty(state.SelectedClassId))
                 _contentQuery.TryGetClass(state.SelectedClassId, out classDef);
 
-            int level = Mathf.Clamp(state.CharacterLevel, CharacterCreationModel.MinCharacterLevel,
+            int totalLevel = Mathf.Clamp(state.CharacterLevel, CharacterCreationModel.MinCharacterLevel,
                 CharacterCreationModel.MaxCharacterLevel);
-            string hitDiceDisplay = CharacterCreationRulesPreview.FormatHitDicePool(classDef, level);
+            int classLevel = CharacterCreationModel.GetClassLevel(state.ClassLevels, state.SelectedClassId);
+            classLevel = Mathf.Clamp(classLevel, CharacterCreationModel.MinCharacterLevel,
+                CharacterCreationModel.MaxCharacterLevel);
+            string hitDiceDisplay = CharacterCreationRulesPreview.FormatHitDicePool(classDef, classLevel);
 
             int? hitPoints = null;
             if (state.AbilityScores[2] >= 0 && classDef != null)
             {
                 int conMod = _calculator.CalculateAbilityModifier(state.AbilityScores[2]);
-                hitPoints = DnD5eDerivedStats.CalculateMaxHitPointsForLevel(classDef, conMod, level);
+                hitPoints = DnD5eDerivedStats.CalculateMaxHitPointsForLevel(classDef, conMod, classLevel);
             }
 
             int? armorClass = CharacterCreationRulesPreview.ComputeUnarmoredArmorClassPreview(
@@ -801,12 +813,12 @@ namespace GameCore.UI.MainMenu
                 initiative = _calculator.CalculateAbilityModifier(state.AbilityScores[1]);
 
             int? proficiencyBonus =
-                classDef != null ? _calculator.CalculateProficiencyBonus(level) : (int?)null;
+                classDef != null ? _calculator.CalculateProficiencyBonus(totalLevel) : (int?)null;
 
             int? spellSaveDC = null;
             int? spellAttack = null;
             if (CharacterCreationRulesPreview.TryGetSpellcastingPreview(
-                    classDef, state.AbilityScores, level, _calculator, out int dc, out int atk))
+                    classDef, state.AbilityScores, totalLevel, _calculator, out int dc, out int atk))
             {
                 spellSaveDC = dc;
                 spellAttack = atk;

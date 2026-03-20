@@ -69,10 +69,14 @@ namespace GameCore.UI.MainMenu
         private Label _detailContent;
         private VisualElement _featuresSection;
         private Label _featuresSectionTitle;
-        private Button _characterLevelMinus;
-        private Button _characterLevelPlus;
-        private IntegerField _characterLevelField;
-        private bool _characterLevelControlsHooked;
+        private Label _characterLevelTotalLabel;
+        private VisualElement _detailClassLevelRow;
+        private Label _detailClassLevelHint;
+        private Button _detailClassLevelMinus;
+        private Button _detailClassLevelPlus;
+        private IntegerField _detailClassLevelField;
+        private bool _detailClassLevelControlsHooked;
+        private int _detailClassLevelMaxCached = CharacterCreationModel.MaxCharacterLevel;
 
         // Stats panel
         private VisualElement _abilityScoresGrid;
@@ -122,8 +126,8 @@ namespace GameCore.UI.MainMenu
         public event System.Action ConfirmScoresClicked;
         public event System.Action CancelClicked;
         public event System.Action CreateCharacterClicked;
-        /// <summary>Invoked when the user changes character level (1–20).</summary>
-        public event System.Action<int> CharacterLevelChanged;
+        /// <summary>Invoked when the user changes the selected class level (1–20).</summary>
+        public event System.Action<int> SelectedClassLevelChanged;
 
         public VisualElement Root => _root;
 
@@ -198,9 +202,12 @@ namespace GameCore.UI.MainMenu
             _detailContent = _root.Q<Label>("detail-content");
             _featuresSection = _root.Q<VisualElement>("features-section");
             _featuresSectionTitle = _root.Q<Label>("features-section-title");
-            _characterLevelMinus = _root.Q<Button>("character-level-minus");
-            _characterLevelPlus = _root.Q<Button>("character-level-plus");
-            _characterLevelField = _root.Q<IntegerField>("character-level-field");
+            _characterLevelTotalLabel = _root.Q<Label>("character-level-total");
+            _detailClassLevelRow = _root.Q<VisualElement>("detail-class-level-row");
+            _detailClassLevelHint = _root.Q<Label>("detail-class-level-hint");
+            _detailClassLevelMinus = _root.Q<Button>("detail-class-level-minus");
+            _detailClassLevelPlus = _root.Q<Button>("detail-class-level-plus");
+            _detailClassLevelField = _root.Q<IntegerField>("detail-class-level-field");
 
             // Stats panel
             _abilityScoresGrid = _root.Q<VisualElement>("ability-scores-grid");
@@ -256,51 +263,52 @@ namespace GameCore.UI.MainMenu
             if (_confirmScoresButton != null)
                 _confirmScoresButton.clicked += () => ConfirmScoresClicked?.Invoke();
 
-            SetupCharacterLevelControls();
+            SetupDetailClassLevelControls();
         }
 
-        private void SetupCharacterLevelControls()
+        private void SetupDetailClassLevelControls()
         {
-            if (_characterLevelControlsHooked)
+            if (_detailClassLevelControlsHooked)
                 return;
-            _characterLevelControlsHooked = true;
+            _detailClassLevelControlsHooked = true;
 
-            if (_characterLevelField != null)
+            if (_detailClassLevelField != null)
             {
-                _characterLevelField.label = string.Empty;
-                _characterLevelField.RegisterValueChangedCallback(evt =>
+                _detailClassLevelField.label = string.Empty;
+                _detailClassLevelField.RegisterValueChangedCallback(evt =>
                 {
-                    int v = Mathf.Clamp(evt.newValue, CharacterCreationModel.MinCharacterLevel,
-                        CharacterCreationModel.MaxCharacterLevel);
+                    int cap = Mathf.Max(_detailClassLevelMaxCached, CharacterCreationModel.MinCharacterLevel);
+                    int v = Mathf.Clamp(evt.newValue, CharacterCreationModel.MinCharacterLevel, cap);
                     if (v != evt.newValue)
-                        _characterLevelField.SetValueWithoutNotify(v);
-                    CharacterLevelChanged?.Invoke(v);
+                        _detailClassLevelField.SetValueWithoutNotify(v);
+                    SelectedClassLevelChanged?.Invoke(v);
                 });
             }
 
-            if (_characterLevelMinus != null)
+            if (_detailClassLevelMinus != null)
             {
-                _characterLevelMinus.clicked += () =>
+                _detailClassLevelMinus.clicked += () =>
                 {
-                    int v = _characterLevelField != null
-                        ? _characterLevelField.value
+                    int v = _detailClassLevelField != null
+                        ? _detailClassLevelField.value
                         : CharacterCreationModel.MinCharacterLevel;
                     int next = Mathf.Max(CharacterCreationModel.MinCharacterLevel, v - 1);
-                    _characterLevelField?.SetValueWithoutNotify(next);
-                    CharacterLevelChanged?.Invoke(next);
+                    _detailClassLevelField?.SetValueWithoutNotify(next);
+                    SelectedClassLevelChanged?.Invoke(next);
                 };
             }
 
-            if (_characterLevelPlus != null)
+            if (_detailClassLevelPlus != null)
             {
-                _characterLevelPlus.clicked += () =>
+                _detailClassLevelPlus.clicked += () =>
                 {
-                    int v = _characterLevelField != null
-                        ? _characterLevelField.value
+                    int v = _detailClassLevelField != null
+                        ? _detailClassLevelField.value
                         : CharacterCreationModel.MinCharacterLevel;
-                    int next = Mathf.Min(CharacterCreationModel.MaxCharacterLevel, v + 1);
-                    _characterLevelField?.SetValueWithoutNotify(next);
-                    CharacterLevelChanged?.Invoke(next);
+                    int cap = Mathf.Max(_detailClassLevelMaxCached, CharacterCreationModel.MinCharacterLevel);
+                    int next = Mathf.Min(cap, v + 1);
+                    _detailClassLevelField?.SetValueWithoutNotify(next);
+                    SelectedClassLevelChanged?.Invoke(next);
                 };
             }
         }
@@ -356,6 +364,9 @@ namespace GameCore.UI.MainMenu
             {
                 _rolledScoresPool.style.display = DisplayStyle.None;
             }
+
+            if (_detailClassLevelRow != null)
+                _detailClassLevelRow.style.display = DisplayStyle.None;
         }
 
         /// <summary>
@@ -573,8 +584,8 @@ namespace GameCore.UI.MainMenu
             UpdateOptionSelection(_raceButtonsContainer, state.SelectedRaceId);
             UpdateOptionSelection(_backgroundButtonsContainer, state.SelectedBackgroundId);
 
-            if (_characterLevelField != null && _characterLevelField.value != state.CharacterLevel)
-                _characterLevelField.SetValueWithoutNotify(state.CharacterLevel);
+            if (_characterLevelTotalLabel != null)
+                _characterLevelTotalLabel.text = state.CharacterLevel.ToString();
 
             // When locked: hide pool, method buttons, and confirm button; show only final ability scores
             if (state.AbilityScoresLocked)
@@ -812,10 +823,34 @@ namespace GameCore.UI.MainMenu
             List<FeatureData> features,
             IReadOnlyList<CharacterDetailSection> detailSections = null,
             string featuresSectionHeading = null,
-            bool descriptionHasLiveAbilityHints = false)
+            bool descriptionHasLiveAbilityHints = false,
+            bool showDetailClassLevel = false,
+            int detailClassLevel = 1,
+            int detailClassLevelMax = CharacterCreationModel.MaxCharacterLevel)
         {
             if (_detailName != null) _detailName.text = name ?? string.Empty;
             if (_detailType != null) _detailType.text = type ?? string.Empty;
+
+            _detailClassLevelMaxCached = Mathf.Max(detailClassLevelMax, CharacterCreationModel.MinCharacterLevel);
+            if (_detailClassLevelRow != null)
+            {
+                if (showDetailClassLevel)
+                {
+                    _detailClassLevelRow.style.display = DisplayStyle.Flex;
+                    if (_detailClassLevelHint != null)
+                        _detailClassLevelHint.text =
+                            $"{CharacterCreationModel.MinCharacterLevel}–{_detailClassLevelMaxCached}";
+                    if (_detailClassLevelField != null &&
+                        _detailClassLevelField.value != detailClassLevel)
+                        _detailClassLevelField.SetValueWithoutNotify(detailClassLevel);
+                    if (_detailClassLevelMinus != null)
+                        _detailClassLevelMinus.SetEnabled(detailClassLevel > CharacterCreationModel.MinCharacterLevel);
+                    if (_detailClassLevelPlus != null)
+                        _detailClassLevelPlus.SetEnabled(detailClassLevel < _detailClassLevelMaxCached);
+                }
+                else
+                    _detailClassLevelRow.style.display = DisplayStyle.None;
+            }
             if (_featuresSectionTitle != null)
                 _featuresSectionTitle.text = string.IsNullOrEmpty(featuresSectionHeading)
                     ? "Special Features"

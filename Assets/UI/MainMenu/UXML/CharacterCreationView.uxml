@@ -5,12 +5,9 @@
             <ui:VisualElement name="container" class="character-creation-container">
                 <ui:VisualElement name="left-panel" class="character-creation-left-panel">
                     <ui:VisualElement name="main-content" class="character-creation-main-content">
-                        <ui:VisualElement name="character-level-row" class="character-creation-level-row">
+                        <ui:VisualElement name="character-total-level-row" class="character-creation-level-row character-creation-total-level-row">
                             <ui:Label text="Character level" class="character-creation-level-label"/>
-                            <ui:Button name="character-level-minus" text="−" class="character-creation-level-step-button"/>
-                            <ui:IntegerField name="character-level-field" value="1" class="character-creation-level-field"/>
-                            <ui:Button name="character-level-plus" text="+" class="character-creation-level-step-button"/>
-                            <ui:Label name="character-level-range-hint" text="1–20" class="character-creation-level-hint"/>
+                            <ui:Label name="character-level-total" text="1" class="character-creation-total-level-value"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="tabs-container" class="character-creation-tabs-container">
                             <ui:Button name="tab-class" text="Class" class="character-creation-tab active"/>
@@ -60,6 +57,13 @@
                                 <ui:Label name="detail-name" text="Hill Dwarf" class="character-creation-detail-name"/>
                                 <ui:Label name="detail-type" text="Race" class="character-creation-detail-type"/>
                             </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="detail-class-level-row" class="character-creation-level-row character-creation-detail-class-level-row">
+                            <ui:Label text="Class level" class="character-creation-level-label"/>
+                            <ui:Button name="detail-class-level-minus" text="−" class="character-creation-level-step-button"/>
+                            <ui:IntegerField name="detail-class-level-field" value="1" class="character-creation-level-field"/>
+                            <ui:Button name="detail-class-level-plus" text="+" class="character-creation-level-step-button"/>
+                            <ui:Label name="detail-class-level-hint" text="1–20" class="character-creation-level-hint"/>
                         </ui:VisualElement>
                         <ui:VisualElement class="character-creation-scroll-with-custom-bar">
                             <ui:ScrollView mode="Vertical" show-horizontal-scroller="false" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="character-creation-detail-scroll character-creation-pane-scroll">
