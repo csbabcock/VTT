@@ -364,6 +364,21 @@
     letter-spacing: -0.3px;
 }
 
+/* Live ability substitution: draws the eye to rules using current scores */
+.character-creation-live-ability-hint {
+    background-color: rgba(2, 190, 250, 0.09);
+    border-left-width: 3px;
+    border-left-color: var(--color-blue);
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    margin-top: 2px;
+    margin-bottom: 4px;
+}
+
+.character-creation-detail-section-heading--live-stats {
+    color: var(--color-teal);
+}
+
 .character-creation-detail-quick-build {
     flex-direction: column;
     background-color: var(--color-bg-shade1);
@@ -378,6 +393,11 @@
     border-top-color: var(--color-border-default);
     border-right-color: var(--color-border-default);
     border-bottom-color: var(--color-border-default);
+}
+
+.character-creation-detail-quick-build--live-stats {
+    background-color: rgba(2, 190, 250, 0.1);
+    border-left-color: var(--color-teal);
 }
 
 .character-creation-detail-quick-build-title {
@@ -417,6 +437,12 @@
     border-color: var(--color-border-default);
     padding: 15px;
     margin-bottom: 12px;
+}
+
+.character-creation-feature-item--live-stats {
+    border-color: var(--color-blue);
+    border-left-width: 3px;
+    border-left-color: var(--color-blue);
 }
 
 .character-creation-feature-name {

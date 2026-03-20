@@ -664,9 +664,14 @@ namespace GameCore.UI.MainMenu
             {
                 name = race.name ?? state.SelectedRaceId;
                 type = "Race";
-                description = race.description ?? string.Empty;
-                features = CharacterCreationDataService.GetRaceFeatures(state.SelectedRaceId);
-                _view.UpdateDetailPanel(name, type, description, features, null, "Race features");
+                AbilityModifierTextInterpolator.InterpolationResult descMeta =
+                    AbilityModifierTextInterpolator.InterpolateWithMeta(
+                        race.description ?? string.Empty, state.AbilityScores, _calculator);
+                description = descMeta.Text;
+                features = InterpolateFeatureDescriptions(
+                    CharacterCreationDataService.GetRaceFeatures(state.SelectedRaceId), state);
+                _view.UpdateDetailPanel(name, type, description, features, null, "Race features",
+                    descMeta.Substituted);
                 return;
             }
             else if (!string.IsNullOrEmpty(state.SelectedClassId) &&
@@ -674,11 +679,17 @@ namespace GameCore.UI.MainMenu
             {
                 name = cls.name ?? state.SelectedClassId;
                 type = "Class";
-                description = cls.description ?? string.Empty;
-                features = BuildClassFeatures(cls, state.CharacterLevel);
-                List<CharacterDetailSection> sectionList = BuildClassDetailSections(cls);
+                AbilityModifierTextInterpolator.InterpolationResult clsDescMeta =
+                    AbilityModifierTextInterpolator.InterpolateWithMeta(
+                        cls.description ?? string.Empty, state.AbilityScores, _calculator);
+                description = clsDescMeta.Text;
+                features = InterpolateFeatureDescriptions(
+                    BuildClassFeatures(cls, state.CharacterLevel), state);
+                List<CharacterDetailSection> sectionList = InterpolateDetailSections(
+                    BuildClassDetailSections(cls), state);
                 string featHeading = $"Class features (levels 1–{state.CharacterLevel})";
-                _view.UpdateDetailPanel(name, type, description, features, sectionList, featHeading);
+                _view.UpdateDetailPanel(name, type, description, features, sectionList, featHeading,
+                    clsDescMeta.Substituted);
                 return;
             }
             else if (!string.IsNullOrEmpty(state.SelectedBackgroundId) &&
@@ -686,13 +697,56 @@ namespace GameCore.UI.MainMenu
             {
                 name = bg.name ?? state.SelectedBackgroundId;
                 type = "Background";
-                description = bg.description ?? string.Empty;
-                features = CharacterCreationDataService.GetBackgroundFeatures(state.SelectedBackgroundId);
-                _view.UpdateDetailPanel(name, type, description, features, null, "Background features");
+                AbilityModifierTextInterpolator.InterpolationResult bgDescMeta =
+                    AbilityModifierTextInterpolator.InterpolateWithMeta(
+                        bg.description ?? string.Empty, state.AbilityScores, _calculator);
+                description = bgDescMeta.Text;
+                features = InterpolateFeatureDescriptions(
+                    CharacterCreationDataService.GetBackgroundFeatures(state.SelectedBackgroundId), state);
+                _view.UpdateDetailPanel(name, type, description, features, null, "Background features",
+                    bgDescMeta.Substituted);
                 return;
             }
 
-            _view.UpdateDetailPanel(name, type, description, features, null, null);
+            _view.UpdateDetailPanel(name, type, description, features, null, null, false);
+        }
+
+        private List<FeatureData> InterpolateFeatureDescriptions(
+            List<FeatureData> features, CharacterCreationState state)
+        {
+            if (features == null || features.Count == 0)
+                return features;
+            var results = new List<FeatureData>(features.Count);
+            foreach (FeatureData f in features)
+            {
+                AbilityModifierTextInterpolator.InterpolationResult meta =
+                    AbilityModifierTextInterpolator.InterpolateWithMeta(
+                        f.Description ?? string.Empty, state.AbilityScores, _calculator);
+                results.Add(new FeatureData(f.Name, meta.Text, meta.Substituted));
+            }
+
+            return results;
+        }
+
+        private List<CharacterDetailSection> InterpolateDetailSections(
+            List<CharacterDetailSection> sections, CharacterCreationState state)
+        {
+            if (sections == null || sections.Count == 0)
+                return sections;
+            var results = new List<CharacterDetailSection>(sections.Count);
+            foreach (CharacterDetailSection sec in sections)
+            {
+                AbilityModifierTextInterpolator.InterpolationResult headMeta =
+                    AbilityModifierTextInterpolator.InterpolateWithMeta(
+                        sec.Heading ?? string.Empty, state.AbilityScores, _calculator);
+                AbilityModifierTextInterpolator.InterpolationResult bodyMeta =
+                    AbilityModifierTextInterpolator.InterpolateWithMeta(
+                        sec.Body ?? string.Empty, state.AbilityScores, _calculator);
+                bool hints = headMeta.Substituted || bodyMeta.Substituted;
+                results.Add(new CharacterDetailSection(headMeta.Text, bodyMeta.Text, hints));
+            }
+
+            return results;
         }
 
         private static List<CharacterDetailSection> BuildClassDetailSections(ClassDefinition cls)

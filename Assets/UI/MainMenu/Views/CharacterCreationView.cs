@@ -13,11 +13,14 @@ namespace GameCore.UI.MainMenu
     {
         public string Heading { get; }
         public string Body { get; }
+        /// <summary>True when heading or body contains live ability modifier hints (rich text).</summary>
+        public bool HasLiveAbilityHints { get; }
 
-        public CharacterDetailSection(string heading, string body)
+        public CharacterDetailSection(string heading, string body, bool hasLiveAbilityHints = false)
         {
             Heading = heading ?? string.Empty;
             Body = body ?? string.Empty;
+            HasLiveAbilityHints = hasLiveAbilityHints;
         }
     }
 
@@ -744,7 +747,8 @@ namespace GameCore.UI.MainMenu
             string description,
             List<FeatureData> features,
             IReadOnlyList<CharacterDetailSection> detailSections = null,
-            string featuresSectionHeading = null)
+            string featuresSectionHeading = null,
+            bool descriptionHasLiveAbilityHints = false)
         {
             if (_detailName != null) _detailName.text = name ?? string.Empty;
             if (_detailType != null) _detailType.text = type ?? string.Empty;
@@ -769,10 +773,13 @@ namespace GameCore.UI.MainMenu
                         {
                             var box = new VisualElement();
                             box.AddToClassList("character-creation-detail-quick-build");
+                            if (s.HasLiveAbilityHints)
+                                box.AddToClassList("character-creation-detail-quick-build--live-stats");
                             if (!string.IsNullOrEmpty(s.Heading))
                             {
                                 var ht = new Label(s.Heading);
                                 ht.AddToClassList("character-creation-detail-quick-build-title");
+                                ConfigureRulesRichTextLabel(ht, emphasizeBlock: false);
                                 box.Add(ht);
                             }
 
@@ -780,6 +787,7 @@ namespace GameCore.UI.MainMenu
                             {
                                 var bt = new Label(s.Body);
                                 bt.AddToClassList("character-creation-detail-section-body");
+                                ConfigureRulesRichTextLabel(bt, emphasizeBlock: false);
                                 box.Add(bt);
                             }
 
@@ -791,6 +799,9 @@ namespace GameCore.UI.MainMenu
                             {
                                 var h = new Label(s.Heading);
                                 h.AddToClassList("character-creation-detail-section-heading");
+                                ConfigureRulesRichTextLabel(h, emphasizeBlock: false);
+                                if (s.HasLiveAbilityHints)
+                                    h.AddToClassList("character-creation-detail-section-heading--live-stats");
                                 _detailSectionsHost.Add(h);
                             }
 
@@ -798,26 +809,30 @@ namespace GameCore.UI.MainMenu
                             {
                                 var b = new Label(s.Body);
                                 b.AddToClassList("character-creation-detail-section-body");
+                                ConfigureRulesRichTextLabel(b, s.HasLiveAbilityHints);
                                 _detailSectionsHost.Add(b);
                             }
                         }
                     }
 
                     if (_detailContent != null)
+                    {
                         _detailContent.style.display = DisplayStyle.None;
+                        _detailContent.RemoveFromClassList("character-creation-live-ability-hint");
+                    }
                 }
                 else
                 {
                     if (_detailContent != null)
                     {
                         _detailContent.style.display = DisplayStyle.Flex;
-                        _detailContent.text = description ?? string.Empty;
+                        ApplyDetailContentDescription(description ?? string.Empty, descriptionHasLiveAbilityHints);
                     }
                 }
             }
             else if (_detailContent != null)
             {
-                _detailContent.text = description ?? string.Empty;
+                ApplyDetailContentDescription(description ?? string.Empty, descriptionHasLiveAbilityHints);
             }
 
             ClearFeatures();
@@ -825,9 +840,32 @@ namespace GameCore.UI.MainMenu
             {
                 foreach (var feature in features)
                 {
-                    AddFeature(feature.Name, feature.Description);
+                    AddFeature(feature.Name, feature.Description, feature.HasLiveAbilityHints);
                 }
             }
+        }
+
+        /// <summary>
+        /// Enables rich text for rules content and optionally adds a highlighted block style when
+        /// live ability substitutions are present.
+        /// </summary>
+        private static void ConfigureRulesRichTextLabel(Label label, bool emphasizeBlock)
+        {
+            if (label == null) return;
+            label.enableRichText = true;
+            if (emphasizeBlock)
+                label.AddToClassList("character-creation-live-ability-hint");
+        }
+
+        private void ApplyDetailContentDescription(string description, bool emphasizeLiveAbility)
+        {
+            if (_detailContent == null) return;
+            _detailContent.enableRichText = true;
+            _detailContent.text = description;
+            if (emphasizeLiveAbility)
+                _detailContent.AddToClassList("character-creation-live-ability-hint");
+            else
+                _detailContent.RemoveFromClassList("character-creation-live-ability-hint");
         }
 
         /// <summary>
@@ -938,12 +976,14 @@ namespace GameCore.UI.MainMenu
                 label.AddToClassList("character-creation-char-stat-neutral");
         }
 
-        private void AddFeature(string name, string description)
+        private void AddFeature(string name, string description, bool hasLiveAbilityHints = false)
         {
             if (_featuresSection == null) return;
 
             VisualElement feature = new VisualElement();
             feature.AddToClassList("character-creation-feature-item");
+            if (hasLiveAbilityHints)
+                feature.AddToClassList("character-creation-feature-item--live-stats");
 
             Label nameLabel = new Label(name);
             nameLabel.AddToClassList("character-creation-feature-name");
@@ -951,6 +991,7 @@ namespace GameCore.UI.MainMenu
 
             Label descLabel = new Label(description);
             descLabel.AddToClassList("character-creation-feature-description");
+            ConfigureRulesRichTextLabel(descLabel, hasLiveAbilityHints);
             feature.Add(descLabel);
 
             _featuresSection.Add(feature);

@@ -83,11 +83,14 @@ namespace GameCore.UI.MainMenu
     {
         public string Name { get; }
         public string Description { get; }
+        /// <summary>True when description includes live ability modifier substitution (rich text).</summary>
+        public bool HasLiveAbilityHints { get; }
 
-        public FeatureData(string name, string description)
+        public FeatureData(string name, string description, bool hasLiveAbilityHints = false)
         {
             Name = name;
             Description = description;
+            HasLiveAbilityHints = hasLiveAbilityHints;
         }
     }
 }
