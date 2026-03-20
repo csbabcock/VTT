@@ -89,5 +89,52 @@ namespace GameCore.UI.MainMenu.Services
         private static bool IsMonk(ClassDefinition classDef) =>
             classDef?.id != null &&
             classDef.id.Equals(DnD5eClassIds.Monk, StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Spell save DC and spell attack when the class is a spellcaster and the key ability score is assigned.
+        /// </summary>
+        public static bool TryGetSpellcastingPreview(
+            ClassDefinition classDef,
+            int[] abilityScores,
+            int level,
+            IRulesetCalculator calculator,
+            out int spellSaveDc,
+            out int spellAttack)
+        {
+            spellSaveDc = 0;
+            spellAttack = 0;
+            if (calculator == null || !IsSpellcastingClass(classDef) ||
+                !HasSpellcastingAbilityAssigned(classDef, abilityScores))
+                return false;
+
+            int castingModifier = GetSpellcastingAbilityModifier(classDef, abilityScores, calculator);
+            int prof = calculator.CalculateProficiencyBonus(level);
+            spellSaveDc = 8 + prof + castingModifier;
+            spellAttack = prof + castingModifier;
+            return true;
+        }
+
+        private static bool IsSpellcastingClass(ClassDefinition classDef) =>
+            classDef != null && !string.IsNullOrEmpty(classDef.spellcastingAbility);
+
+        private static bool HasSpellcastingAbilityAssigned(ClassDefinition classDef, int[] abilityScores)
+        {
+            if (classDef == null || abilityScores == null || abilityScores.Length < AbilityCount)
+                return false;
+            if (!DnD5eAbilityCodes.TryIndexFromCode(classDef.spellcastingAbility, out int idx))
+                return false;
+            return idx >= 0 && idx < abilityScores.Length && abilityScores[idx] >= 0;
+        }
+
+        private static int GetSpellcastingAbilityModifier(
+            ClassDefinition classDef,
+            int[] abilityScores,
+            IRulesetCalculator calculator)
+        {
+            if (!DnD5eAbilityCodes.TryIndexFromCode(classDef.spellcastingAbility, out int idx) ||
+                abilityScores == null || idx >= abilityScores.Length)
+                return 0;
+            return calculator.CalculateAbilityModifier(abilityScores[idx]);
+        }
     }
 }

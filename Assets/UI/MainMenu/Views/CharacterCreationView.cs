@@ -786,57 +786,10 @@ namespace GameCore.UI.MainMenu
                 _detailSectionsHost.Clear();
                 if (useSections)
                 {
-                    foreach (CharacterDetailSection s in detailSections)
-                    {
-                        if (string.IsNullOrEmpty(s.Heading) && string.IsNullOrEmpty(s.Body))
-                            continue;
-
-                        bool quickBuild = string.Equals(s.Heading, "Quick Build", StringComparison.OrdinalIgnoreCase);
-                        if (quickBuild)
-                        {
-                            var box = new VisualElement();
-                            box.AddToClassList("character-creation-detail-quick-build");
-                            if (s.HasLiveAbilityHints)
-                                box.AddToClassList("character-creation-detail-quick-build--live-stats");
-                            if (!string.IsNullOrEmpty(s.Heading))
-                            {
-                                var ht = new Label(s.Heading);
-                                ht.AddToClassList("character-creation-detail-quick-build-title");
-                                ConfigureRulesRichTextLabel(ht, emphasizeBlock: false);
-                                box.Add(ht);
-                            }
-
-                            if (!string.IsNullOrEmpty(s.Body))
-                            {
-                                var bt = new Label(s.Body);
-                                bt.AddToClassList("character-creation-detail-section-body");
-                                ConfigureRulesRichTextLabel(bt, emphasizeBlock: false);
-                                box.Add(bt);
-                            }
-
-                            _detailSectionsHost.Add(box);
-                        }
-                        else
-                        {
-                            if (!string.IsNullOrEmpty(s.Heading))
-                            {
-                                var h = new Label(s.Heading);
-                                h.AddToClassList("character-creation-detail-section-heading");
-                                ConfigureRulesRichTextLabel(h, emphasizeBlock: false);
-                                if (s.HasLiveAbilityHints)
-                                    h.AddToClassList("character-creation-detail-section-heading--live-stats");
-                                _detailSectionsHost.Add(h);
-                            }
-
-                            if (!string.IsNullOrEmpty(s.Body))
-                            {
-                                var b = new Label(s.Body);
-                                b.AddToClassList("character-creation-detail-section-body");
-                                ConfigureRulesRichTextLabel(b, s.HasLiveAbilityHints);
-                                _detailSectionsHost.Add(b);
-                            }
-                        }
-                    }
+                    CharacterCreationDetailPanelBinder.PopulateSectionsHost(
+                        _detailSectionsHost,
+                        detailSections,
+                        ConfigureRulesRichTextLabel);
 
                     if (_detailContent != null)
                     {

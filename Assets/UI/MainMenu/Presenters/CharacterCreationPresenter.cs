@@ -180,21 +180,10 @@ namespace GameCore.UI.MainMenu
 
         private void BindRaceClassBackgroundOptionsFromContent()
         {
-            List<(string id, string displayName)> classes = _contentQuery.GetClasses()
-                .Where(c => !string.IsNullOrEmpty(c.id))
-                .OrderBy(c => c.name)
-                .Select(c => (c.id, string.IsNullOrEmpty(c.name) ? c.id : c.name))
-                .ToList();
-            List<(string id, string displayName)> races = _contentQuery.GetRaces()
-                .Where(r => !string.IsNullOrEmpty(r.id))
-                .OrderBy(r => r.name)
-                .Select(r => (r.id, string.IsNullOrEmpty(r.name) ? r.id : r.name))
-                .ToList();
-            List<(string id, string displayName)> backgrounds = _contentQuery.GetBackgrounds()
-                .Where(b => !string.IsNullOrEmpty(b.id))
-                .OrderBy(b => b.name)
-                .Select(b => (b.id, string.IsNullOrEmpty(b.name) ? b.id : b.name))
-                .ToList();
+            (List<(string id, string displayName)> classes,
+                List<(string id, string displayName)> races,
+                List<(string id, string displayName)> backgrounds) =
+                CharacterCreationRulesetOptionLists.CreateSortedRaceClassBackground(_contentQuery);
 
             _view.BindRaceClassBackgroundOptions(classes, races, backgrounds);
         }
@@ -680,10 +669,11 @@ namespace GameCore.UI.MainMenu
                 AbilityModifierTextInterpolator.InterpolationResult clsDescMeta = InterpolateRulesText(cls.description, state);
                 description = clsDescMeta.Text;
                 features = InterpolateFeatureDescriptions(
-                    BuildClassFeatures(cls, state.CharacterLevel), state);
+                    CharacterCreationClassContentBuilder.BuildFeaturesThroughLevel(cls, state.CharacterLevel), state);
                 List<CharacterDetailSection> sectionList = InterpolateDetailSections(
-                    BuildClassDetailSections(cls), state);
-                string featHeading = $"Class features (levels 1–{state.CharacterLevel})";
+                    CharacterCreationClassContentBuilder.BuildStructuredDescription(cls), state);
+                string featHeading =
+                    CharacterCreationClassContentBuilder.ClassFeaturesSectionHeading(state.CharacterLevel);
                 _view.UpdateDetailPanel(name, type, description, features, sectionList, featHeading,
                     clsDescMeta.Substituted);
                 return;
@@ -751,40 +741,6 @@ namespace GameCore.UI.MainMenu
             return results;
         }
 
-        private static List<CharacterDetailSection> BuildClassDetailSections(ClassDefinition cls)
-        {
-            if (cls?.descriptionSections == null || cls.descriptionSections.Count == 0)
-                return null;
-
-            var list = new List<CharacterDetailSection>();
-            foreach (ClassDescriptionSection sec in cls.descriptionSections)
-            {
-                if (sec == null)
-                    continue;
-                list.Add(new CharacterDetailSection(sec.heading, sec.body));
-            }
-
-            return list.Count > 0 ? list : null;
-        }
-
-        private static List<FeatureData> BuildClassFeatures(ClassDefinition cls, int characterLevel)
-        {
-            var list = new List<FeatureData>();
-            if (cls?.featuresByLevel == null)
-                return list;
-            int cap = Mathf.Clamp(characterLevel, CharacterCreationModel.MinCharacterLevel,
-                CharacterCreationModel.MaxCharacterLevel);
-            foreach (ClassFeatureByLevelDefinition fl in cls.featuresByLevel.OrderBy(x => x.level))
-            {
-                if (fl?.feature == null || fl.level > cap)
-                    continue;
-                string title = $"{fl.level}. {fl.feature.name}";
-                list.Add(new FeatureData(title, fl.feature.description));
-            }
-
-            return list;
-        }
-
         private void UpdateCharacterStats(CharacterCreationState state)
         {
             if (state.AbilityScores == null || state.AbilityScores.Length != 6)
@@ -831,12 +787,11 @@ namespace GameCore.UI.MainMenu
 
             int? spellSaveDC = null;
             int? spellAttack = null;
-            if (IsSpellcaster(classDef) && HasCastingAbilityAssigned(classDef, state.AbilityScores))
+            if (CharacterCreationRulesPreview.TryGetSpellcastingPreview(
+                    classDef, state.AbilityScores, level, _calculator, out int dc, out int atk))
             {
-                int castingModifier = GetCastingModifier(classDef, state.AbilityScores);
-                int prof = _calculator.CalculateProficiencyBonus(level);
-                spellSaveDC = 8 + prof + castingModifier;
-                spellAttack = prof + castingModifier;
+                spellSaveDC = dc;
+                spellAttack = atk;
             }
 
             _view.UpdateDerivedStats(hitPoints, armorClass, initiative, proficiencyBonus, spellSaveDC, spellAttack,
@@ -858,44 +813,6 @@ namespace GameCore.UI.MainMenu
 
             _view.UpdateProficiencyPanel(
                 CharacterCreationRulesPreview.BuildProficiencySections(classDef, background));
-        }
-
-        private static int AbilityCodeToIndex(string code)
-        {
-            if (string.IsNullOrEmpty(code))
-                return -1;
-            return code switch
-            {
-                "STR" => 0,
-                "DEX" => 1,
-                "CON" => 2,
-                "INT" => 3,
-                "WIS" => 4,
-                "CHA" => 5,
-                _ => -1
-            };
-        }
-
-        private static bool IsSpellcaster(ClassDefinition classDef) =>
-            classDef != null && !string.IsNullOrEmpty(classDef.spellcastingAbility);
-
-        private static bool HasCastingAbilityAssigned(ClassDefinition classDef, int[] abilityScores)
-        {
-            if (classDef == null || string.IsNullOrEmpty(classDef.spellcastingAbility) ||
-                abilityScores == null || abilityScores.Length < 6)
-                return false;
-            int idx = AbilityCodeToIndex(classDef.spellcastingAbility);
-            return idx >= 0 && abilityScores[idx] >= 0;
-        }
-
-        private int GetCastingModifier(ClassDefinition classDef, int[] abilityScores)
-        {
-            if (classDef == null)
-                return 0;
-            int idx = AbilityCodeToIndex(classDef.spellcastingAbility);
-            if (idx < 0 || abilityScores == null || idx >= abilityScores.Length)
-                return 0;
-            return _calculator.CalculateAbilityModifier(abilityScores[idx]);
         }
 
     }

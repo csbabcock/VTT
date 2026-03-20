@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameCore.PlayerData.Rulesets;
 using UnityEngine;
 
 namespace GameCore.PlayerData
@@ -138,16 +139,11 @@ namespace GameCore.PlayerData
         /// </summary>
         public int GetAbilityModifier(string abilityName)
         {
-            return abilityName.ToUpper() switch
-            {
-                "STR" => strengthModifier,
-                "DEX" => dexterityModifier,
-                "CON" => constitutionModifier,
-                "INT" => intelligenceModifier,
-                "WIS" => wisdomModifier,
-                "CHA" => charismaModifier,
-                _ => 0
-            };
+            int[] scores = { strength, dexterity, constitution, intelligence, wisdom, charisma };
+            if (!DnD5eAbilityCodes.TryIndexFromCode(abilityName, out int idx) ||
+                (uint)idx >= (uint)scores.Length)
+                return 0;
+            return CalculateModifier(scores[idx]);
         }
 
         /// <summary>

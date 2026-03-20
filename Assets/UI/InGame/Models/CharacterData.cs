@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameCore.PlayerData.Rulesets;
 
 namespace GameCore.UI.InGame.Models
 {
@@ -37,16 +38,11 @@ namespace GameCore.UI.InGame.Models
         /// </summary>
         public int GetAbilityModifier(string abilityName)
         {
-            return abilityName.ToUpper() switch
-            {
-                "STR" => GetAbilityModifier(Strength),
-                "DEX" => GetAbilityModifier(Dexterity),
-                "CON" => GetAbilityModifier(Constitution),
-                "INT" => GetAbilityModifier(Intelligence),
-                "WIS" => GetAbilityModifier(Wisdom),
-                "CHA" => GetAbilityModifier(Charisma),
-                _ => 0
-            };
+            int[] scores = { Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma };
+            if (!DnD5eAbilityCodes.TryIndexFromCode(abilityName, out int idx) ||
+                (uint)idx >= (uint)scores.Length)
+                return 0;
+            return GetAbilityModifier(scores[idx]);
         }
 
         /// <summary>
