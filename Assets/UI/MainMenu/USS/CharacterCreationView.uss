@@ -59,6 +59,47 @@
     flex-direction: column;
 }
 
+.character-creation-level-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.character-creation-level-row > * {
+    margin-right: 10px;
+}
+
+.character-creation-level-label {
+    color: var(--color-text-n2);
+    font-size: 14px;
+    -unity-font-style: bold;
+    min-width: 110px;
+}
+
+.character-creation-level-step-button {
+    min-width: 36px;
+    height: 32px;
+    padding: 4px 8px;
+    font-size: 18px;
+    border-radius: var(--radius-sm);
+    border-width: 1px;
+    border-color: var(--color-border-strong);
+    background-color: var(--color-bg-shade1);
+    color: var(--color-text-primary);
+}
+
+.character-creation-level-field {
+    width: 72px;
+    min-width: 72px;
+    flex-shrink: 0;
+}
+
+.character-creation-level-hint {
+    color: var(--color-text-n3);
+    font-size: 12px;
+}
+
 .character-creation-title {
     color: var(--color-blue);
     font-size: 24px;
@@ -298,6 +339,54 @@
 
 .character-creation-detail-content-wrapper {
     flex-direction: column;
+}
+
+.character-creation-detail-sections-host {
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+.character-creation-detail-section-heading {
+    font-size: 17px;
+    -unity-font-style: bold;
+    color: var(--color-text-primary);
+    margin-top: 18px;
+    margin-bottom: 8px;
+    letter-spacing: -0.34px;
+    white-space: normal;
+}
+
+.character-creation-detail-section-body {
+    color: var(--color-text-n2);
+    font-size: 15px;
+    margin-bottom: 14px;
+    white-space: normal;
+    letter-spacing: -0.3px;
+}
+
+.character-creation-detail-quick-build {
+    flex-direction: column;
+    background-color: var(--color-bg-shade1);
+    border-left-width: 3px;
+    border-left-color: var(--color-blue);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    border-radius: var(--radius-sm);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-top-color: var(--color-border-default);
+    border-right-color: var(--color-border-default);
+    border-bottom-color: var(--color-border-default);
+}
+
+.character-creation-detail-quick-build-title {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: var(--color-blue);
+    margin-bottom: 8px;
+    letter-spacing: -0.28px;
+    text-transform: uppercase;
 }
 
 .character-creation-detail-content {

@@ -1,16 +1,23 @@
 using System.Collections.Generic;
-using System.Linq;
 using GameCore.PlayerData;
 
 namespace GameCore.PlayerData.Rulesets
 {
     /// <summary>
-    /// D&D 5e ruleset calculator implementation.
-    /// Follows Strategy Pattern - encapsulates all D&D 5e specific calculation logic.
+    /// D&amp;D 5e ruleset calculator implementation.
+    /// Follows Strategy Pattern - encapsulates all D&amp;D 5e specific calculation logic.
     /// </summary>
     public class DnD5eRulesetCalculator : IRulesetCalculator
     {
+        private readonly IRulesetContentQuery _contentQuery;
+
         public string RulesetId => "DnD5e";
+
+        /// <param name="contentQuery">When null, uses <see cref="RulesetContentQueryProvider"/> for DnD5e skills list.</param>
+        public DnD5eRulesetCalculator(IRulesetContentQuery contentQuery = null)
+        {
+            _contentQuery = contentQuery ?? RulesetContentQueryProvider.GetOrCreate("DnD5e");
+        }
 
         public int CalculateAbilityModifier(int abilityScore)
         {
@@ -124,21 +131,37 @@ namespace GameCore.PlayerData.Rulesets
         public Dictionary<string, string> GetAvailableSkills()
         {
             var skills = new Dictionary<string, string>();
-            foreach (DnD5eSkill skill in System.Enum.GetValues(typeof(DnD5eSkill)))
+            foreach (var s in _contentQuery.GetSkills())
             {
-                skills[skill.ToString()] = skill.GetDisplayName();
+                if (!string.IsNullOrEmpty(s.id))
+                    skills[s.id] = string.IsNullOrEmpty(s.name) ? s.id : s.name;
             }
+
+            if (skills.Count > 0)
+                return skills;
+
+            foreach (DnD5eSkill skill in System.Enum.GetValues(typeof(DnD5eSkill)))
+                skills[skill.ToString()] = skill.GetDisplayName();
             return skills;
         }
 
         public string GetSkillAbilityScore(string skillId)
         {
-            if (System.Enum.TryParse<DnD5eSkill>(skillId, out DnD5eSkill skill))
-            {
-                return skill.GetAbilityScore();
-            }
-            return "STR"; // Default fallback
+            if (_contentQuery.TryGetSkill(skillId, out var s) && !string.IsNullOrEmpty(s.ability))
+                return s.ability;
+
+            if (System.Enum.TryParse<DnD5eSkill>(skillId, out DnD5eSkill byEnum))
+                return byEnum.GetAbilityScore();
+
+            string tail = skillId;
+            if (!string.IsNullOrEmpty(skillId) && skillId.StartsWith("skill.", System.StringComparison.Ordinal))
+                tail = skillId.Substring("skill.".Length);
+
+            DnD5eSkill? fromPretty = DnD5eSkillExtensions.FromString(tail.Replace('_', ' '));
+            if (fromPretty.HasValue)
+                return fromPretty.Value.GetAbilityScore();
+
+            return "STR";
         }
     }
 }
-

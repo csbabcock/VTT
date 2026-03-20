@@ -1,138 +1,75 @@
 using System.Collections.Generic;
+using System.Linq;
+using GameCore.PlayerData.Rulesets;
+using GameCore.PlayerData.Rulesets.Definitions;
 
 namespace GameCore.UI.MainMenu
 {
     /// <summary>
-    /// Service providing character creation data (classes, races, backgrounds).
-    /// This now acts as a lightweight adapter over JSON-backed ruleset content.
+    /// Backward-compatible façade over <see cref="IRulesetContentQuery"/> for character creation display strings.
+    /// Prefer injecting <see cref="IRulesetContentQuery"/> into presenters.
     /// </summary>
     public static class CharacterCreationDataService
     {
         private const string DefaultRulesetId = "DnD5e";
-        
-        private static PlayerData.Rulesets.RulesetContentService _contentService;
 
-        private static PlayerData.Rulesets.RulesetContentService ContentService
+        private static IRulesetContentQuery Query => RulesetContentQueryProvider.GetOrCreate(DefaultRulesetId);
+
+        public static string[] AvailableClasses =>
+            Query.GetClasses().Select(c => c.name).Where(n => !string.IsNullOrEmpty(n)).OrderBy(n => n).ToArray();
+
+        public static string[] AvailableRaces =>
+            Query.GetRaces().Select(r => r.name).Where(n => !string.IsNullOrEmpty(n)).OrderBy(n => n).ToArray();
+
+        public static string[] AvailableBackgrounds =>
+            Query.GetBackgrounds().Select(b => b.name).Where(n => !string.IsNullOrEmpty(n)).OrderBy(n => n).ToArray();
+
+        public static string GetRaceDescription(string raceId)
         {
-            get
-            {
-                if (_contentService == null)
-                {
-                    _contentService = new PlayerData.Rulesets.RulesetContentService(DefaultRulesetId);
-                }
-
-                return _contentService;
-            }
-        }
-
-        public static string[] AvailableClasses
-        {
-            get
-            {
-                var classes = ContentService.GetAvailableClasses();
-                var names = new List<string>();
-                foreach (var c in classes)
-                {
-                    if (!string.IsNullOrEmpty(c.name))
-                    {
-                        names.Add(c.name);
-                    }
-                }
-                return names.ToArray();
-            }
-        }
-
-        public static string[] AvailableRaces
-        {
-            get
-            {
-                var races = ContentService.GetAvailableRaces();
-                var names = new List<string>();
-                foreach (var r in races)
-                {
-                    if (!string.IsNullOrEmpty(r.name))
-                    {
-                        names.Add(r.name);
-                    }
-                }
-                return names.ToArray();
-            }
-        }
-
-        public static string[] AvailableBackgrounds
-        {
-            get
-            {
-                var backgrounds = ContentService.GetAvailableBackgrounds();
-                var names = new List<string>();
-                foreach (var b in backgrounds)
-                {
-                    if (!string.IsNullOrEmpty(b.name))
-                    {
-                        names.Add(b.name);
-                    }
-                }
-                return names.ToArray();
-            }
-        }
-
-        /// <summary>
-        /// Gets description for a race by display name.
-        /// </summary>
-        public static string GetRaceDescription(string raceName)
-        {
-            if (string.IsNullOrEmpty(raceName))
+            if (string.IsNullOrEmpty(raceId) || !Query.TryGetRace(raceId, out RaceDefinition race))
                 return string.Empty;
-
-            foreach (var race in ContentService.GetAvailableRaces())
-            {
-                if (race.name == raceName)
-                {
-                    return race.description ?? $"Description for {raceName}.";
-                }
-            }
-
-            return $"Description for {raceName}.";
+            return race.description ?? string.Empty;
         }
 
-        /// <summary>
-        /// Gets description for a class by display name.
-        /// </summary>
-        public static string GetClassDescription(string className)
+        public static string GetClassDescription(string classId)
         {
-            if (string.IsNullOrEmpty(className))
+            if (string.IsNullOrEmpty(classId) || !Query.TryGetClass(classId, out ClassDefinition c))
                 return string.Empty;
-
-            foreach (var c in ContentService.GetAvailableClasses())
-            {
-                if (c.name == className)
-                {
-                    return c.description ?? $"Description for {className}.";
-                }
-            }
-
-            return $"Description for {className}.";
+            return c.description ?? string.Empty;
         }
 
-        /// <summary>
-        /// Gets features for a race by display name.
-        /// </summary>
-        public static List<FeatureData> GetRaceFeatures(string raceName)
+        public static string GetBackgroundDescription(string backgroundId)
+        {
+            if (string.IsNullOrEmpty(backgroundId) || !Query.TryGetBackground(backgroundId, out BackgroundDefinition b))
+                return string.Empty;
+            return b.description ?? string.Empty;
+        }
+
+        public static List<FeatureData> GetRaceFeatures(string raceId)
         {
             var features = new List<FeatureData>();
-            if (string.IsNullOrEmpty(raceName))
+            if (string.IsNullOrEmpty(raceId) || !Query.TryGetRace(raceId, out RaceDefinition race) ||
+                race.features == null)
                 return features;
-
-            foreach (var race in ContentService.GetAvailableRaces())
+            foreach (FeatureDefinition feat in race.features)
             {
-                if (race.name == raceName && race.features != null)
-                {
-                    foreach (var feat in race.features)
-                    {
-                        features.Add(new FeatureData(feat.name, feat.description));
-                    }
-                    break;
-                }
+                if (feat != null)
+                    features.Add(new FeatureData(feat.name, feat.description));
+            }
+
+            return features;
+        }
+
+        public static List<FeatureData> GetBackgroundFeatures(string backgroundId)
+        {
+            var features = new List<FeatureData>();
+            if (string.IsNullOrEmpty(backgroundId) ||
+                !Query.TryGetBackground(backgroundId, out BackgroundDefinition background) || background.features == null)
+                return features;
+            foreach (FeatureDefinition feat in background.features)
+            {
+                if (feat != null)
+                    features.Add(new FeatureData(feat.name, feat.description));
             }
 
             return features;

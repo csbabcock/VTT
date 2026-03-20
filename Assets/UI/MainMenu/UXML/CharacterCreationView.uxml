@@ -5,9 +5,17 @@
             <ui:VisualElement name="container" class="character-creation-container">
                 <ui:VisualElement name="left-panel" class="character-creation-left-panel">
                     <ui:VisualElement name="main-content" class="character-creation-main-content">
+                        <ui:VisualElement name="character-level-row" class="character-creation-level-row">
+                            <ui:Label text="Character level" class="character-creation-level-label"/>
+                            <ui:Button name="character-level-minus" text="−" class="character-creation-level-step-button"/>
+                            <ui:IntegerField name="character-level-field" value="1" class="character-creation-level-field"/>
+                            <ui:Button name="character-level-plus" text="+" class="character-creation-level-step-button"/>
+                            <ui:Label name="character-level-range-hint" text="1–20" class="character-creation-level-hint"/>
+                        </ui:VisualElement>
                         <ui:VisualElement name="tabs-container" class="character-creation-tabs-container">
                             <ui:Button name="tab-class" class="character-creation-tab active" text="Class"/>
                             <ui:Button name="tab-race" class="character-creation-tab" text="Race"/>
+                            <ui:Button name="tab-background" class="character-creation-tab" text="Background"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="tab-content-container" class="character-creation-tab-content-container">
                             <ui:VisualElement name="tab-class-content" class="character-creation-tab-content active">
@@ -15,6 +23,9 @@
                             </ui:VisualElement>
                             <ui:VisualElement name="tab-race-content" class="character-creation-tab-content">
                                 <ui:VisualElement name="race-buttons-container" class="character-creation-buttons-container"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="tab-background-content" class="character-creation-tab-content">
+                                <ui:VisualElement name="background-buttons-container" class="character-creation-buttons-container"/>
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
@@ -30,9 +41,10 @@
                             </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement name="detail-content-wrapper" class="character-creation-detail-content-wrapper">
+                            <ui:VisualElement name="detail-sections-host" class="character-creation-detail-sections-host"/>
                             <ui:Label name="detail-content" text="Hill dwarves are known for their keen senses..." class="character-creation-detail-content"/>
                             <ui:VisualElement name="features-section" class="character-creation-features-section">
-                                <ui:Label text="Special Features" class="character-creation-features-title"/>
+                                <ui:Label name="features-section-title" text="Special Features" class="character-creation-features-title"/>
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>

@@ -13,8 +13,8 @@ namespace GameCore.PlayerData.Rulesets
 
         static RulesetCalculatorFactory()
         {
-            // Register default calculators
-            RegisterCalculator(new DnD5eRulesetCalculator());
+            RegisterCalculator(
+                new DnD5eRulesetCalculator(RulesetContentQueryProvider.GetOrCreate("DnD5e")));
         }
 
         /// <summary>

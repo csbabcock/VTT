@@ -1,6 +1,7 @@
 using GameCore.UI;
 using GameCore.UI.MainMenu.Services;
 using GameCore.PlayerData.Rulesets;
+using GameCore.PlayerData.Rulesets.Definitions;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
@@ -19,10 +20,14 @@ namespace GameCore.UI.MainMenu
         [Header("References")]
         [SerializeField] private CharacterCreationView _view;
 
+        [Header("Ruleset")]
+        [SerializeField] private string _rulesetId = "DnD5e";
+
         public CharacterCreationModel Model { get; private set; }
         public CharacterCreationView View => _view;
 
         private bool _initialized;
+        private IRulesetContentQuery _contentQuery;
         private IRulesetCalculator _calculator;
         private IAbilityScoreRoller _abilityScoreRoller;
         private DragAndDropHandler _dragAndDropHandler;
@@ -36,6 +41,7 @@ namespace GameCore.UI.MainMenu
             }
 
             Model = new CharacterCreationModel();
+            _contentQuery = RulesetContentQueryProvider.GetOrCreate(_rulesetId);
             _calculator = RulesetCalculatorFactory.GetDefaultCalculator();
             _abilityScoreRoller = AbilityScoreRollerFactory.GetDefault();
         }
@@ -72,6 +78,8 @@ namespace GameCore.UI.MainMenu
             // Subscribe to view events
             _view.ClassSelected += HandleClassSelected;
             _view.RaceSelected += HandleRaceSelected;
+            _view.BackgroundSelected += HandleBackgroundSelected;
+            _view.CharacterLevelChanged += HandleCharacterLevelChanged;
             _view.RollAbilitiesClicked += HandleRollAbilitiesClicked;
             _view.StandardArrayClicked += HandleStandardArrayClicked;
             _view.ManualClicked += HandleManualClicked;
@@ -99,6 +107,10 @@ namespace GameCore.UI.MainMenu
             _view.Hide();
             _view.UpdateView(Model.State);
 
+            BindRaceClassBackgroundOptionsFromContent();
+            // Touch spell index once so large spell folders load in a predictable place (lazy load on first access).
+            _ = _contentQuery.GetSpells();
+
             _initialized = true;
         }
 
@@ -111,6 +123,8 @@ namespace GameCore.UI.MainMenu
             {
                 _view.ClassSelected -= HandleClassSelected;
                 _view.RaceSelected -= HandleRaceSelected;
+                _view.BackgroundSelected -= HandleBackgroundSelected;
+                _view.CharacterLevelChanged -= HandleCharacterLevelChanged;
                 _view.RollAbilitiesClicked -= HandleRollAbilitiesClicked;
                 _view.StandardArrayClicked -= HandleStandardArrayClicked;
                 _view.ManualClicked -= HandleManualClicked;
@@ -164,14 +178,45 @@ namespace GameCore.UI.MainMenu
             Model.SetVisible(false);
         }
 
-        private void HandleClassSelected(string className)
+        private void BindRaceClassBackgroundOptionsFromContent()
         {
-            Model.SetSelectedClass(className);
+            List<(string id, string displayName)> classes = _contentQuery.GetClasses()
+                .Where(c => !string.IsNullOrEmpty(c.id))
+                .OrderBy(c => c.name)
+                .Select(c => (c.id, string.IsNullOrEmpty(c.name) ? c.id : c.name))
+                .ToList();
+            List<(string id, string displayName)> races = _contentQuery.GetRaces()
+                .Where(r => !string.IsNullOrEmpty(r.id))
+                .OrderBy(r => r.name)
+                .Select(r => (r.id, string.IsNullOrEmpty(r.name) ? r.id : r.name))
+                .ToList();
+            List<(string id, string displayName)> backgrounds = _contentQuery.GetBackgrounds()
+                .Where(b => !string.IsNullOrEmpty(b.id))
+                .OrderBy(b => b.name)
+                .Select(b => (b.id, string.IsNullOrEmpty(b.name) ? b.id : b.name))
+                .ToList();
+
+            _view.BindRaceClassBackgroundOptions(classes, races, backgrounds);
         }
 
-        private void HandleRaceSelected(string raceName)
+        private void HandleClassSelected(string classId)
         {
-            Model.SetSelectedRace(raceName);
+            Model.SetSelectedClassId(classId);
+        }
+
+        private void HandleRaceSelected(string raceId)
+        {
+            Model.SetSelectedRaceId(raceId);
+        }
+
+        private void HandleBackgroundSelected(string backgroundId)
+        {
+            Model.SetSelectedBackgroundId(backgroundId);
+        }
+
+        private void HandleCharacterLevelChanged(int level)
+        {
+            Model.SetCharacterLevel(level);
         }
 
         private void InitializeDragAndDropHandler()
@@ -564,7 +609,7 @@ namespace GameCore.UI.MainMenu
             }
 
             // TODO: Save character to file using CharacterFileService
-            Debug.Log($"CharacterCreationPresenter: Creating character - Class: {Model.State.SelectedClass}, Race: {Model.State.SelectedRace}, Background: {Model.State.SelectedBackground}");
+            Debug.Log($"CharacterCreationPresenter: Creating character - Level: {Model.State.CharacterLevel}, ClassId: {Model.State.SelectedClassId}, RaceId: {Model.State.SelectedRaceId}, BackgroundId: {Model.State.SelectedBackgroundId}");
 
             Hide();
             // TODO: Notify MainMenuPresenter to refresh character list
@@ -572,19 +617,19 @@ namespace GameCore.UI.MainMenu
 
         private bool ValidateCharacterCreation()
         {
-            if (string.IsNullOrEmpty(Model.State.SelectedClass))
+            if (string.IsNullOrEmpty(Model.State.SelectedClassId))
             {
                 Debug.LogWarning("CharacterCreationPresenter: Class must be selected.");
                 return false;
             }
 
-            if (string.IsNullOrEmpty(Model.State.SelectedRace))
+            if (string.IsNullOrEmpty(Model.State.SelectedRaceId))
             {
                 Debug.LogWarning("CharacterCreationPresenter: Race must be selected.");
                 return false;
             }
 
-            if (string.IsNullOrEmpty(Model.State.SelectedBackground))
+            if (string.IsNullOrEmpty(Model.State.SelectedBackgroundId))
             {
                 Debug.LogWarning("CharacterCreationPresenter: Background must be selected.");
                 return false;
@@ -614,22 +659,74 @@ namespace GameCore.UI.MainMenu
             string description = string.Empty;
             List<FeatureData> features = null;
 
-            // Race takes priority for detail panel
-            if (!string.IsNullOrEmpty(state.SelectedRace))
+            if (!string.IsNullOrEmpty(state.SelectedRaceId) &&
+                _contentQuery.TryGetRace(state.SelectedRaceId, out RaceDefinition race))
             {
-                name = state.SelectedRace;
+                name = race.name ?? state.SelectedRaceId;
                 type = "Race";
-                description = CharacterCreationDataService.GetRaceDescription(state.SelectedRace);
-                features = CharacterCreationDataService.GetRaceFeatures(state.SelectedRace);
+                description = race.description ?? string.Empty;
+                features = CharacterCreationDataService.GetRaceFeatures(state.SelectedRaceId);
+                _view.UpdateDetailPanel(name, type, description, features, null, "Race features");
+                return;
             }
-            else if (!string.IsNullOrEmpty(state.SelectedClass))
+            else if (!string.IsNullOrEmpty(state.SelectedClassId) &&
+                     _contentQuery.TryGetClass(state.SelectedClassId, out ClassDefinition cls))
             {
-                name = state.SelectedClass;
+                name = cls.name ?? state.SelectedClassId;
                 type = "Class";
-                description = CharacterCreationDataService.GetClassDescription(state.SelectedClass);
+                description = cls.description ?? string.Empty;
+                features = BuildClassFeatures(cls, state.CharacterLevel);
+                List<CharacterDetailSection> sectionList = BuildClassDetailSections(cls);
+                string featHeading = $"Class features (levels 1–{state.CharacterLevel})";
+                _view.UpdateDetailPanel(name, type, description, features, sectionList, featHeading);
+                return;
+            }
+            else if (!string.IsNullOrEmpty(state.SelectedBackgroundId) &&
+                     _contentQuery.TryGetBackground(state.SelectedBackgroundId, out BackgroundDefinition bg))
+            {
+                name = bg.name ?? state.SelectedBackgroundId;
+                type = "Background";
+                description = bg.description ?? string.Empty;
+                features = CharacterCreationDataService.GetBackgroundFeatures(state.SelectedBackgroundId);
+                _view.UpdateDetailPanel(name, type, description, features, null, "Background features");
+                return;
             }
 
-            _view.UpdateDetailPanel(name, type, description, features);
+            _view.UpdateDetailPanel(name, type, description, features, null, null);
+        }
+
+        private static List<CharacterDetailSection> BuildClassDetailSections(ClassDefinition cls)
+        {
+            if (cls?.descriptionSections == null || cls.descriptionSections.Count == 0)
+                return null;
+
+            var list = new List<CharacterDetailSection>();
+            foreach (ClassDescriptionSection sec in cls.descriptionSections)
+            {
+                if (sec == null)
+                    continue;
+                list.Add(new CharacterDetailSection(sec.heading, sec.body));
+            }
+
+            return list.Count > 0 ? list : null;
+        }
+
+        private static List<FeatureData> BuildClassFeatures(ClassDefinition cls, int characterLevel)
+        {
+            var list = new List<FeatureData>();
+            if (cls?.featuresByLevel == null)
+                return list;
+            int cap = Mathf.Clamp(characterLevel, CharacterCreationModel.MinCharacterLevel,
+                CharacterCreationModel.MaxCharacterLevel);
+            foreach (ClassFeatureByLevelDefinition fl in cls.featuresByLevel.OrderBy(x => x.level))
+            {
+                if (fl?.feature == null || fl.level > cap)
+                    continue;
+                string title = $"{fl.level}. {fl.feature.name}";
+                list.Add(new FeatureData(title, fl.feature.description));
+            }
+
+            return list;
         }
 
         private void UpdateCharacterStats(CharacterCreationState state)
@@ -637,13 +734,11 @@ namespace GameCore.UI.MainMenu
             if (state.AbilityScores == null || state.AbilityScores.Length != 6)
                 return;
 
-            // Update ability score displays
             for (int i = 0; i < 6; i++)
             {
                 int score = state.AbilityScores[i];
                 if (score < 0)
                 {
-                    // Unassigned - show placeholder
                     _view.UpdateAbilityScoreDisplay(i, -1, 0);
                 }
                 else
@@ -653,12 +748,17 @@ namespace GameCore.UI.MainMenu
                 }
             }
 
-            // Calculate each derived stat when its respective ability is assigned
+            ClassDefinition classDef = null;
+            if (!string.IsNullOrEmpty(state.SelectedClassId))
+                _contentQuery.TryGetClass(state.SelectedClassId, out classDef);
+
+            int level = Mathf.Clamp(state.CharacterLevel, CharacterCreationModel.MinCharacterLevel,
+                CharacterCreationModel.MaxCharacterLevel);
             int? hitPoints = null;
-            if (state.AbilityScores[2] >= 0) // CON
+            if (state.AbilityScores[2] >= 0 && classDef != null)
             {
                 int conMod = _calculator.CalculateAbilityModifier(state.AbilityScores[2]);
-                hitPoints = CalculateHitPoints(state.SelectedClass, conMod);
+                hitPoints = CalculateHitPointsForLevel(classDef, conMod, level);
             }
 
             int? armorClass = null;
@@ -679,64 +779,89 @@ namespace GameCore.UI.MainMenu
                     break;
                 }
             }
-            int? proficiencyBonus = allAssigned ? _calculator.CalculateProficiencyBonus(1) : (int?)null; // Level 1
+
+            int? proficiencyBonus = allAssigned ? _calculator.CalculateProficiencyBonus(level) : (int?)null;
 
             int? spellSaveDC = null;
             int? spellAttack = null;
-            if (IsSpellcaster(state.SelectedClass) && HasCastingAbilityAssigned(state.SelectedClass, state.AbilityScores))
+            if (IsSpellcaster(classDef) && HasCastingAbilityAssigned(classDef, state.AbilityScores))
             {
-                int castingModifier = GetCastingModifier(state.SelectedClass, state.AbilityScores);
-                int prof = _calculator.CalculateProficiencyBonus(1);
+                int castingModifier = GetCastingModifier(classDef, state.AbilityScores);
+                int prof = _calculator.CalculateProficiencyBonus(level);
                 spellSaveDC = 8 + prof + castingModifier;
                 spellAttack = prof + castingModifier;
             }
 
             _view.UpdateDerivedStats(hitPoints, armorClass, initiative, proficiencyBonus, spellSaveDC, spellAttack);
+
+            if (_contentQuery.TryGetRace(state.SelectedRaceId, out RaceDefinition race))
+            {
+                string darkvisionLabel = race.hasDarkvision ? $"{race.darkvisionRange} ft" : "—";
+                _view.UpdatePhysicalTraits(race.size ?? "Medium", $"{race.speed} ft", darkvisionLabel);
+            }
+            else
+            {
+                _view.UpdatePhysicalTraits("—", "—", "—");
+            }
         }
 
-        private bool HasCastingAbilityAssigned(string className, int[] abilityScores)
+        private static int AbilityCodeToIndex(string code)
         {
-            if (abilityScores == null || abilityScores.Length < 6) return false;
-            return className switch
+            if (string.IsNullOrEmpty(code))
+                return -1;
+            return code switch
             {
-                "Wizard" => abilityScores[3] >= 0, // INT
-                "Cleric" or "Druid" or "Ranger" => abilityScores[4] >= 0, // WIS
-                "Bard" or "Paladin" or "Sorcerer" or "Warlock" => abilityScores[5] >= 0, // CHA
-                _ => false
+                "STR" => 0,
+                "DEX" => 1,
+                "CON" => 2,
+                "INT" => 3,
+                "WIS" => 4,
+                "CHA" => 5,
+                _ => -1
             };
         }
 
-        private int CalculateHitPoints(string className, int conModifier)
-        {
-            // Simplified - would use class hit die table
-            int baseHP = className switch
-            {
-                "Barbarian" => 12,
-                "Fighter" or "Paladin" or "Ranger" => 10,
-                "Bard" or "Cleric" or "Druid" or "Monk" or "Rogue" or "Warlock" => 8,
-                "Sorcerer" or "Wizard" => 6,
-                _ => 8
-            };
+        private static bool IsSpellcaster(ClassDefinition classDef) =>
+            classDef != null && !string.IsNullOrEmpty(classDef.spellcastingAbility);
 
-            return baseHP + conModifier;
+        private static bool HasCastingAbilityAssigned(ClassDefinition classDef, int[] abilityScores)
+        {
+            if (classDef == null || string.IsNullOrEmpty(classDef.spellcastingAbility) ||
+                abilityScores == null || abilityScores.Length < 6)
+                return false;
+            int idx = AbilityCodeToIndex(classDef.spellcastingAbility);
+            return idx >= 0 && abilityScores[idx] >= 0;
         }
 
-        private bool IsSpellcaster(string className)
+        private int GetCastingModifier(ClassDefinition classDef, int[] abilityScores)
         {
-            return className == "Cleric" || className == "Wizard" || className == "Bard" || 
-                   className == "Druid" || className == "Sorcerer" || className == "Warlock" || 
-                   className == "Paladin" || className == "Ranger";
+            if (classDef == null)
+                return 0;
+            int idx = AbilityCodeToIndex(classDef.spellcastingAbility);
+            if (idx < 0 || abilityScores == null || idx >= abilityScores.Length)
+                return 0;
+            return _calculator.CalculateAbilityModifier(abilityScores[idx]);
         }
 
-        private int GetCastingModifier(string className, int[] abilityScores)
+        /// <summary>D&amp;D 5e: max die + CON at 1st level, then fixed average + CON per additional level.</summary>
+        private static int CalculateHitPointsForLevel(ClassDefinition classDef, int conModifier, int level)
         {
-            // Returns the appropriate ability modifier for spellcasting
-            return className switch
+            if (classDef == null || level < 1)
+                return 8 + conModifier;
+            int die = classDef.hitDie >= 4 ? classDef.hitDie : 8;
+            int avg = AverageHitDieIncrease(die);
+            return die + conModifier + (level - 1) * (avg + conModifier);
+        }
+
+        private static int AverageHitDieIncrease(int hitDie)
+        {
+            return hitDie switch
             {
-                "Wizard" => _calculator.CalculateAbilityModifier(abilityScores[3]), // INT
-                "Cleric" or "Druid" or "Ranger" => _calculator.CalculateAbilityModifier(abilityScores[4]), // WIS
-                "Bard" or "Paladin" or "Sorcerer" or "Warlock" => _calculator.CalculateAbilityModifier(abilityScores[5]), // CHA
-                _ => 0
+                12 => 7,
+                10 => 6,
+                8 => 5,
+                6 => 4,
+                _ => Mathf.Max(1, hitDie / 2 + 1)
             };
         }
     }

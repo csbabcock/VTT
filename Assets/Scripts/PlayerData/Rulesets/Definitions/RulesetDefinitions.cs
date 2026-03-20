@@ -60,6 +60,18 @@ namespace GameCore.PlayerData.Rulesets.Definitions
     }
 
     /// <summary>
+    /// One block of class lore / overview (e.g. D&amp;D Beyond–style sections with headings).
+    /// </summary>
+    [Serializable]
+    public class ClassDescriptionSection
+    {
+        /// <summary>Section title (e.g. "Primal Instinct"). Leave empty for intro-only paragraphs.</summary>
+        public string heading;
+        [TextArea]
+        public string body;
+    }
+
+    /// <summary>
     /// Class definition for a ruleset.
     /// </summary>
     [Serializable]
@@ -69,6 +81,9 @@ namespace GameCore.PlayerData.Rulesets.Definitions
         public string name;                 // e.g., "Fighter"
         [TextArea]
         public string description;
+
+        /// <summary>When non-empty, the character creation detail panel renders these as titled sections (see also <see cref="description"/> fallback).</summary>
+        public List<ClassDescriptionSection> descriptionSections;
 
         public int hitDie;                  // e.g., 10 for d10
         public string primaryAbility;       // e.g., "STR"
@@ -122,6 +137,52 @@ namespace GameCore.PlayerData.Rulesets.Definitions
         public List<ClassDefinition> classes;
         public List<BackgroundDefinition> backgrounds;
         public List<SkillDefinition> skills;
+    }
+
+    /// <summary>
+    /// JSON file that bundles multiple skills (e.g. skills_core.json).
+    /// When "skills" is non-empty, each entry is registered; otherwise the file can represent one skill if id/name are set.
+    /// </summary>
+    [Serializable]
+    public class SkillManifestDefinition
+    {
+        public string id;
+        public string name;
+        public string ability;
+        public List<SkillDefinition> skills;
+    }
+
+    /// <summary>
+    /// Spell reference data for lists and character creation.
+    /// </summary>
+    [Serializable]
+    public class SpellDefinition
+    {
+        public string id;
+        public string name;
+        public int level;
+        public string school;
+        public string castingTime;
+        public string range;
+        public string duration;
+        [TextArea]
+        public string description;
+        [TextArea]
+        public string higherLevels;
+        public List<string> classes;
+        public List<string> spellListIds;
+    }
+
+    /// <summary>
+    /// Short rules / reference topic for help UI (rest, exhaustion, etc.).
+    /// </summary>
+    [Serializable]
+    public class RuleTopicDefinition
+    {
+        public string id;
+        public string title;
+        [TextArea]
+        public string body;
     }
 }
 

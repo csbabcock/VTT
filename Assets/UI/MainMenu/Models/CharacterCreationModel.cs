@@ -10,9 +10,14 @@ namespace GameCore.UI.MainMenu
     public struct CharacterCreationState
     {
         public bool IsVisible;
-        public string SelectedClass;
-        public string SelectedRace;
-        public string SelectedBackground;
+        /// <summary>Ruleset content id, e.g. class.fighter</summary>
+        public string SelectedClassId;
+        /// <summary>Ruleset content id, e.g. race.hill_dwarf</summary>
+        public string SelectedRaceId;
+        /// <summary>Ruleset content id, e.g. background.acolyte</summary>
+        public string SelectedBackgroundId;
+        /// <summary>Character level (1–20) for feature display and scaled stats.</summary>
+        public int CharacterLevel;
         public int[] AbilityScores; // STR, DEX, CON, INT, WIS, CHA (final assigned scores)
         public int[] RolledScores; // The 6 rolled scores from dice (null if not rolled yet). In manual mode can contain -1 for empty.
         public int[][] RolledDiceBreakdown; // For Roll option: RolledDiceBreakdown[i] = 4 dice for slot i, or null
@@ -71,6 +76,9 @@ namespace GameCore.UI.MainMenu
     /// </summary>
     public class CharacterCreationModel : IUIModel<CharacterCreationState>
     {
+        public const int MinCharacterLevel = 1;
+        public const int MaxCharacterLevel = 20;
+
         public event Action<CharacterCreationState> StateChanged;
 
         public CharacterCreationState State { get; private set; }
@@ -80,9 +88,10 @@ namespace GameCore.UI.MainMenu
             State = new CharacterCreationState
             {
                 IsVisible = false,
-                SelectedClass = string.Empty,
-                SelectedRace = string.Empty,
-                SelectedBackground = string.Empty,
+                SelectedClassId = string.Empty,
+                SelectedRaceId = string.Empty,
+                SelectedBackgroundId = string.Empty,
+                CharacterLevel = 1,
                 AbilityScores = new int[] { -1, -1, -1, -1, -1, -1 }, // Unassigned by default
                 RolledScores = null, // No scores rolled yet
                 RolledDiceBreakdown = null,
@@ -102,9 +111,39 @@ namespace GameCore.UI.MainMenu
             State = new CharacterCreationState
             {
                 IsVisible = visible,
-                SelectedClass = State.SelectedClass,
-                SelectedRace = State.SelectedRace,
-                SelectedBackground = State.SelectedBackground,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
+                AbilityScores = State.AbilityScores,
+                RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
+                RolledDroppedIndices = State.RolledDroppedIndices,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
+                AbilityScoresLocked = State.AbilityScoresLocked
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        /// <summary>
+        /// Sets character level (clamped 1–20). Affects which class features are shown and proficiency-based stats.
+        /// </summary>
+        public void SetCharacterLevel(int level)
+        {
+            int clamped = Mathf.Clamp(level, MinCharacterLevel, MaxCharacterLevel);
+            if (State.CharacterLevel == clamped)
+                return;
+
+            State = new CharacterCreationState
+            {
+                IsVisible = State.IsVisible,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
+                CharacterLevel = clamped,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
@@ -114,7 +153,6 @@ namespace GameCore.UI.MainMenu
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
-
             StateChanged?.Invoke(State);
         }
 
@@ -129,9 +167,9 @@ namespace GameCore.UI.MainMenu
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClass = State.SelectedClass,
-                SelectedRace = State.SelectedRace,
-                SelectedBackground = State.SelectedBackground,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
@@ -139,6 +177,7 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
                 AbilityScoresLocked = locked
             };
             StateChanged?.Invoke(State);
@@ -170,9 +209,9 @@ namespace GameCore.UI.MainMenu
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClass = State.SelectedClass,
-                SelectedRace = State.SelectedRace,
-                SelectedBackground = State.SelectedBackground,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
                 AbilityScores = abilityScores,
                 RolledScores = rolledScores,
                 RolledDiceBreakdown = diceBreakdown,
@@ -180,22 +219,23 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = assignedIndices,
                 IsManualMode = isManualMode,
                 SelectedScoreMethod = value,
+                CharacterLevel = State.CharacterLevel,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
             StateChanged?.Invoke(State);
         }
 
-        public void SetSelectedClass(string className)
+        public void SetSelectedClassId(string classId)
         {
-            if (State.SelectedClass == className)
+            if (State.SelectedClassId == classId)
                 return;
 
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClass = className ?? string.Empty,
-                SelectedRace = State.SelectedRace,
-                SelectedBackground = State.SelectedBackground,
+                SelectedClassId = classId ?? string.Empty,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
@@ -203,23 +243,24 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);
         }
 
-        public void SetSelectedRace(string raceName)
+        public void SetSelectedRaceId(string raceId)
         {
-            if (State.SelectedRace == raceName)
+            if (State.SelectedRaceId == raceId)
                 return;
 
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClass = State.SelectedClass,
-                SelectedRace = raceName ?? string.Empty,
-                SelectedBackground = State.SelectedBackground,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = raceId ?? string.Empty,
+                SelectedBackgroundId = State.SelectedBackgroundId,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
@@ -227,23 +268,24 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
             StateChanged?.Invoke(State);
         }
 
-        public void SetSelectedBackground(string backgroundName)
+        public void SetSelectedBackgroundId(string backgroundId)
         {
-            if (State.SelectedBackground == backgroundName)
+            if (State.SelectedBackgroundId == backgroundId)
                 return;
 
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClass = State.SelectedClass,
-                SelectedRace = State.SelectedRace,
-                SelectedBackground = backgroundName ?? string.Empty,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = backgroundId ?? string.Empty,
                 AbilityScores = State.AbilityScores,
                 RolledScores = State.RolledScores,
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
@@ -251,6 +293,7 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -273,9 +316,9 @@ namespace GameCore.UI.MainMenu
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClass = State.SelectedClass,
-                SelectedRace = State.SelectedRace,
-                SelectedBackground = State.SelectedBackground,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
                 AbilityScores = newScores,
                 RolledScores = State.RolledScores,
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
@@ -283,6 +326,7 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -309,9 +353,9 @@ namespace GameCore.UI.MainMenu
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClass = State.SelectedClass,
-                SelectedRace = State.SelectedRace,
-                SelectedBackground = State.SelectedBackground,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
                 AbilityScores = clampedScores,
                 RolledScores = State.RolledScores,
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
@@ -319,6 +363,7 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -349,9 +394,9 @@ namespace GameCore.UI.MainMenu
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClass = State.SelectedClass,
-                SelectedRace = State.SelectedRace,
-                SelectedBackground = State.SelectedBackground,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
                 AbilityScores = new int[] { -1, -1, -1, -1, -1, -1 }, // Reset to unassigned
                 RolledScores = clampedScores,
                 RolledDiceBreakdown = diceBreakdown,
@@ -359,6 +404,7 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = new int[] { -1, -1, -1, -1, -1, -1 }, // Reset assignments
                 IsManualMode = isManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -394,9 +440,9 @@ namespace GameCore.UI.MainMenu
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClass = State.SelectedClass,
-                SelectedRace = State.SelectedRace,
-                SelectedBackground = State.SelectedBackground,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
                 AbilityScores = newAbilityScores,
                 RolledScores = newScores,
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
@@ -404,6 +450,7 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = true,
                 SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -459,9 +506,9 @@ namespace GameCore.UI.MainMenu
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClass = State.SelectedClass,
-                SelectedRace = State.SelectedRace,
-                SelectedBackground = State.SelectedBackground,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
                 AbilityScores = newAbilityScores,
                 RolledScores = State.RolledScores,
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
@@ -469,6 +516,7 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = newAssignedIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -507,9 +555,9 @@ namespace GameCore.UI.MainMenu
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClass = State.SelectedClass,
-                SelectedRace = State.SelectedRace,
-                SelectedBackground = State.SelectedBackground,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
                 AbilityScores = newScores,
                 RolledScores = State.RolledScores,
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
@@ -517,6 +565,7 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 
@@ -542,9 +591,9 @@ namespace GameCore.UI.MainMenu
             State = new CharacterCreationState
             {
                 IsVisible = State.IsVisible,
-                SelectedClass = State.SelectedClass,
-                SelectedRace = State.SelectedRace,
-                SelectedBackground = State.SelectedBackground,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
                 AbilityScores = newAbilityScores,
                 RolledScores = State.RolledScores,
                 RolledDiceBreakdown = State.RolledDiceBreakdown,
@@ -552,6 +601,7 @@ namespace GameCore.UI.MainMenu
                 AssignedRolledScoreIndices = newAssignedIndices,
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
                 AbilityScoresLocked = State.AbilityScoresLocked
             };
 

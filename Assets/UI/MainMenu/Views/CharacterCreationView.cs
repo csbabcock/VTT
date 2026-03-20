@@ -1,10 +1,26 @@
 using System;
+using System.Collections.Generic;
 using GameCore.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GameCore.UI.MainMenu
 {
+    /// <summary>
+    /// One titled block for the character creation detail panel (e.g. D&amp;D Beyond–style class sections).
+    /// </summary>
+    public readonly struct CharacterDetailSection
+    {
+        public string Heading { get; }
+        public string Body { get; }
+
+        public CharacterDetailSection(string heading, string body)
+        {
+            Heading = heading ?? string.Empty;
+            Body = body ?? string.Empty;
+        }
+    }
+
     /// <summary>
     /// View for character creation UI.
     /// Follows MVP pattern - only handles UI display and user input, delegates logic to Presenter.
@@ -29,6 +45,7 @@ namespace GameCore.UI.MainMenu
         // Option button containers
         private VisualElement _classButtonsContainer;
         private VisualElement _raceButtonsContainer;
+        private VisualElement _backgroundButtonsContainer;
 
         // Ability score inputs (using Labels for display since they're read-only)
         private Label[] _abilityScoreLabels;
@@ -36,8 +53,14 @@ namespace GameCore.UI.MainMenu
         // Detail panel
         private Label _detailName;
         private Label _detailType;
+        private VisualElement _detailSectionsHost;
         private Label _detailContent;
         private VisualElement _featuresSection;
+        private Label _featuresSectionTitle;
+        private Button _characterLevelMinus;
+        private Button _characterLevelPlus;
+        private IntegerField _characterLevelField;
+        private bool _characterLevelControlsHooked;
 
         // Stats panel
         private VisualElement _abilityScoresGrid;
@@ -67,6 +90,7 @@ namespace GameCore.UI.MainMenu
         // Events - View only raises events, delegates all logic to Presenter
         public event System.Action<string> ClassSelected;
         public event System.Action<string> RaceSelected;
+        public event System.Action<string> BackgroundSelected;
         public event System.Action RollAbilitiesClicked;
         public event System.Action StandardArrayClicked;
         public event System.Action ManualClicked;
@@ -80,6 +104,8 @@ namespace GameCore.UI.MainMenu
         public event System.Action ConfirmScoresClicked;
         public event System.Action CancelClicked;
         public event System.Action CreateCharacterClicked;
+        /// <summary>Invoked when the user changes character level (1–20).</summary>
+        public event System.Action<int> CharacterLevelChanged;
 
         public VisualElement Root => _root;
 
@@ -124,21 +150,24 @@ namespace GameCore.UI.MainMenu
         private void QueryUIElements()
         {
             // Tab buttons and content
-            _tabButtons = new Button[2]
+            _tabButtons = new Button[3]
             {
                 _root.Q<Button>("tab-class"),
-                _root.Q<Button>("tab-race")
+                _root.Q<Button>("tab-race"),
+                _root.Q<Button>("tab-background")
             };
 
-            _tabContents = new VisualElement[2]
+            _tabContents = new VisualElement[3]
             {
                 _root.Q<VisualElement>("tab-class-content"),
-                _root.Q<VisualElement>("tab-race-content")
+                _root.Q<VisualElement>("tab-race-content"),
+                _root.Q<VisualElement>("tab-background-content")
             };
 
             // Option button containers
             _classButtonsContainer = _root.Q<VisualElement>("class-buttons-container");
             _raceButtonsContainer = _root.Q<VisualElement>("race-buttons-container");
+            _backgroundButtonsContainer = _root.Q<VisualElement>("background-buttons-container");
 
             // Ability score labels will be queried after they are created in InitializeAbilityStatRows
             _abilityScoreLabels = new Label[6];
@@ -146,8 +175,13 @@ namespace GameCore.UI.MainMenu
             // Detail panel
             _detailName = _root.Q<Label>("detail-name");
             _detailType = _root.Q<Label>("detail-type");
+            _detailSectionsHost = _root.Q<VisualElement>("detail-sections-host");
             _detailContent = _root.Q<Label>("detail-content");
             _featuresSection = _root.Q<VisualElement>("features-section");
+            _featuresSectionTitle = _root.Q<Label>("features-section-title");
+            _characterLevelMinus = _root.Q<Button>("character-level-minus");
+            _characterLevelPlus = _root.Q<Button>("character-level-plus");
+            _characterLevelField = _root.Q<IntegerField>("character-level-field");
 
             // Stats panel
             _abilityScoresGrid = _root.Q<VisualElement>("ability-scores-grid");
@@ -201,6 +235,54 @@ namespace GameCore.UI.MainMenu
                 _pointBuyButton.clicked += () => PointBuyClicked?.Invoke();
             if (_confirmScoresButton != null)
                 _confirmScoresButton.clicked += () => ConfirmScoresClicked?.Invoke();
+
+            SetupCharacterLevelControls();
+        }
+
+        private void SetupCharacterLevelControls()
+        {
+            if (_characterLevelControlsHooked)
+                return;
+            _characterLevelControlsHooked = true;
+
+            if (_characterLevelField != null)
+            {
+                _characterLevelField.label = string.Empty;
+                _characterLevelField.RegisterValueChangedCallback(evt =>
+                {
+                    int v = Mathf.Clamp(evt.newValue, CharacterCreationModel.MinCharacterLevel,
+                        CharacterCreationModel.MaxCharacterLevel);
+                    if (v != evt.newValue)
+                        _characterLevelField.SetValueWithoutNotify(v);
+                    CharacterLevelChanged?.Invoke(v);
+                });
+            }
+
+            if (_characterLevelMinus != null)
+            {
+                _characterLevelMinus.clicked += () =>
+                {
+                    int v = _characterLevelField != null
+                        ? _characterLevelField.value
+                        : CharacterCreationModel.MinCharacterLevel;
+                    int next = Mathf.Max(CharacterCreationModel.MinCharacterLevel, v - 1);
+                    _characterLevelField?.SetValueWithoutNotify(next);
+                    CharacterLevelChanged?.Invoke(next);
+                };
+            }
+
+            if (_characterLevelPlus != null)
+            {
+                _characterLevelPlus.clicked += () =>
+                {
+                    int v = _characterLevelField != null
+                        ? _characterLevelField.value
+                        : CharacterCreationModel.MinCharacterLevel;
+                    int next = Mathf.Min(CharacterCreationModel.MaxCharacterLevel, v + 1);
+                    _characterLevelField?.SetValueWithoutNotify(next);
+                    CharacterLevelChanged?.Invoke(next);
+                };
+            }
         }
 
         private void SwitchTab(int tabIndex)
@@ -241,11 +323,7 @@ namespace GameCore.UI.MainMenu
 
         private void InitializeUIElements()
         {
-            // Initialize option buttons from data service
-            InitializeOptionButtons(_classButtonsContainer, CharacterCreationDataService.AvailableClasses, 
-                (name) => ClassSelected?.Invoke(name));
-            InitializeOptionButtons(_raceButtonsContainer, CharacterCreationDataService.AvailableRaces, 
-                (name) => RaceSelected?.Invoke(name));
+            // Class / race / background option buttons: populated via BindRaceClassBackgroundOptions from the presenter.
 
             // Initialize stat display rows (created in UXML, just need to query labels)
             InitializeAbilityStatRows();
@@ -259,24 +337,53 @@ namespace GameCore.UI.MainMenu
             }
         }
 
-        private void InitializeOptionButtons(VisualElement container, string[] options, System.Action<string> onClick)
+        /// <summary>
+        /// Binds class, race, and background lists from ruleset content (stable ids; labels are display names).
+        /// </summary>
+        public void BindRaceClassBackgroundOptions(
+            System.Collections.Generic.IReadOnlyList<(string id, string displayName)> classes,
+            System.Collections.Generic.IReadOnlyList<(string id, string displayName)> races,
+            System.Collections.Generic.IReadOnlyList<(string id, string displayName)> backgrounds)
         {
-            if (container == null) return;
+            _classButtonsContainer?.Clear();
+            _raceButtonsContainer?.Clear();
+            _backgroundButtonsContainer?.Clear();
+            BindOptionList(_classButtonsContainer, classes, id => ClassSelected?.Invoke(id));
+            BindOptionList(_raceButtonsContainer, races, id => RaceSelected?.Invoke(id));
+            BindOptionList(_backgroundButtonsContainer, backgrounds, id => BackgroundSelected?.Invoke(id));
+        }
 
-            foreach (string optionName in options)
+        private void BindOptionList(
+            VisualElement container,
+            System.Collections.Generic.IReadOnlyList<(string id, string displayName)> options,
+            System.Action<string> onPick)
+        {
+            if (container == null || options == null)
+                return;
+            foreach ((string id, string displayName) in options)
             {
-                CreateOptionButton(container, optionName, () => onClick(optionName));
+                string capturedId = id;
+                CreateOptionButton(container, capturedId, displayName, () => onPick?.Invoke(capturedId));
             }
         }
 
-        private void CreateOptionButton(VisualElement parent, string name, System.Action onClick)
+        private static string SanitizeIdForElementName(string id)
         {
-            if (parent == null) return;
+            if (string.IsNullOrEmpty(id))
+                return "empty";
+            return id.Replace(".", "-").Replace(" ", "-").ToLowerInvariant();
+        }
+
+        private void CreateOptionButton(VisualElement parent, string id, string displayName, System.Action onClick)
+        {
+            if (parent == null)
+                return;
 
             Button button = new Button();
             button.AddToClassList("character-creation-option-button");
-            button.name = $"option-{name.ToLower().Replace(" ", "-")}";
-            button.text = name;
+            button.name = $"option-id-{SanitizeIdForElementName(id)}";
+            button.text = displayName;
+            button.userData = id;
             button.clicked += () => onClick?.Invoke();
 
             parent.Add(button);
@@ -451,9 +558,13 @@ namespace GameCore.UI.MainMenu
             else
                 Hide();
 
-            // Update selected options
-            UpdateOptionSelection(_classButtonsContainer, state.SelectedClass);
-            UpdateOptionSelection(_raceButtonsContainer, state.SelectedRace);
+            // Update selected options (content ids from ruleset JSON)
+            UpdateOptionSelection(_classButtonsContainer, state.SelectedClassId);
+            UpdateOptionSelection(_raceButtonsContainer, state.SelectedRaceId);
+            UpdateOptionSelection(_backgroundButtonsContainer, state.SelectedBackgroundId);
+
+            if (_characterLevelField != null && _characterLevelField.value != state.CharacterLevel)
+                _characterLevelField.SetValueWithoutNotify(state.CharacterLevel);
 
             // When locked: hide pool, method buttons, and confirm button; show only final ability scores
             if (state.AbilityScoresLocked)
@@ -515,23 +626,19 @@ namespace GameCore.UI.MainMenu
             }
         }
 
-        private void UpdateOptionSelection(VisualElement container, string selectedName)
+        private void UpdateOptionSelection(VisualElement container, string selectedId)
         {
-            if (container == null || string.IsNullOrEmpty(selectedName)) return;
+            if (container == null || string.IsNullOrEmpty(selectedId))
+                return;
 
             foreach (VisualElement element in container.Children())
             {
-                if (element is Button button)
+                if (element is Button button && button.userData is string uid)
                 {
-                    string normalizedName = selectedName.ToLower().Replace(" ", "-");
-                    if (button.name.Contains(normalizedName))
-                    {
+                    if (uid == selectedId)
                         button.AddToClassList("selected");
-                    }
                     else
-                    {
                         button.RemoveFromClassList("selected");
-                    }
                 }
             }
         }
@@ -631,11 +738,87 @@ namespace GameCore.UI.MainMenu
         /// Updates the detail panel with provided information.
         /// Called by Presenter with calculated data.
         /// </summary>
-        public void UpdateDetailPanel(string name, string type, string description, System.Collections.Generic.List<FeatureData> features)
+        public void UpdateDetailPanel(
+            string name,
+            string type,
+            string description,
+            List<FeatureData> features,
+            IReadOnlyList<CharacterDetailSection> detailSections = null,
+            string featuresSectionHeading = null)
         {
             if (_detailName != null) _detailName.text = name ?? string.Empty;
             if (_detailType != null) _detailType.text = type ?? string.Empty;
-            if (_detailContent != null) _detailContent.text = description ?? string.Empty;
+            if (_featuresSectionTitle != null)
+                _featuresSectionTitle.text = string.IsNullOrEmpty(featuresSectionHeading)
+                    ? "Special Features"
+                    : featuresSectionHeading;
+
+            bool useSections = detailSections != null && detailSections.Count > 0;
+            if (_detailSectionsHost != null)
+            {
+                _detailSectionsHost.Clear();
+                if (useSections)
+                {
+                    foreach (CharacterDetailSection s in detailSections)
+                    {
+                        if (string.IsNullOrEmpty(s.Heading) && string.IsNullOrEmpty(s.Body))
+                            continue;
+
+                        bool quickBuild = string.Equals(s.Heading, "Quick Build", StringComparison.OrdinalIgnoreCase);
+                        if (quickBuild)
+                        {
+                            var box = new VisualElement();
+                            box.AddToClassList("character-creation-detail-quick-build");
+                            if (!string.IsNullOrEmpty(s.Heading))
+                            {
+                                var ht = new Label(s.Heading);
+                                ht.AddToClassList("character-creation-detail-quick-build-title");
+                                box.Add(ht);
+                            }
+
+                            if (!string.IsNullOrEmpty(s.Body))
+                            {
+                                var bt = new Label(s.Body);
+                                bt.AddToClassList("character-creation-detail-section-body");
+                                box.Add(bt);
+                            }
+
+                            _detailSectionsHost.Add(box);
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(s.Heading))
+                            {
+                                var h = new Label(s.Heading);
+                                h.AddToClassList("character-creation-detail-section-heading");
+                                _detailSectionsHost.Add(h);
+                            }
+
+                            if (!string.IsNullOrEmpty(s.Body))
+                            {
+                                var b = new Label(s.Body);
+                                b.AddToClassList("character-creation-detail-section-body");
+                                _detailSectionsHost.Add(b);
+                            }
+                        }
+                    }
+
+                    if (_detailContent != null)
+                        _detailContent.style.display = DisplayStyle.None;
+                }
+                else
+                {
+                    if (_detailContent != null)
+                    {
+                        _detailContent.style.display = DisplayStyle.Flex;
+                        _detailContent.text = description ?? string.Empty;
+                    }
+                }
+            }
+            else if (_detailContent != null)
+            {
+                _detailContent.text = description ?? string.Empty;
+            }
 
             ClearFeatures();
             if (features != null)
@@ -721,6 +904,16 @@ namespace GameCore.UI.MainMenu
 
             UpdateStatLabel("spell-save-dc-value", spellSaveDC.HasValue ? spellSaveDC.Value.ToString() : "—", isModifier: false);
             UpdateStatLabel("spell-attack-value", spellAttack.HasValue ? (spellAttack.Value >= 0 ? $"+{spellAttack.Value}" : spellAttack.Value.ToString()) : "—", isModifier: true, modifierValue: spellAttack);
+        }
+
+        /// <summary>
+        /// Updates size, speed, and darkvision labels (e.g. from loaded race definition).
+        /// </summary>
+        public void UpdatePhysicalTraits(string size, string speed, string darkvision)
+        {
+            UpdateStatLabel("size-value", string.IsNullOrEmpty(size) ? "—" : size, isModifier: false);
+            UpdateStatLabel("speed-value", string.IsNullOrEmpty(speed) ? "—" : speed, isModifier: false);
+            UpdateStatLabel("darkvision-value", string.IsNullOrEmpty(darkvision) ? "—" : darkvision, isModifier: false);
         }
 
         private void UpdateStatLabel(string labelName, string value, bool isModifier = false, int? modifierValue = null)
