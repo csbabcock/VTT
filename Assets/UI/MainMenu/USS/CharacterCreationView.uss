@@ -406,7 +406,6 @@
     color: var(--color-blue);
     margin-bottom: 8px;
     letter-spacing: -0.28px;
-    text-transform: uppercase;
 }
 
 .character-creation-detail-content {
@@ -479,7 +478,9 @@
     border-color: var(--color-border-strong);
     border-radius: var(--radius-md);
     padding: 30px;
+    flex-direction: column;
     flex-shrink: 0;
+    flex-grow: 0;
     min-height: 0;
 }
 
@@ -771,18 +772,36 @@
     letter-spacing: -0.32px;
 }
 
-/* Ability Scores Grid (2 columns) */
+/* Two explicit rows (5 + CHA): avoids Yoga wrap bugs (lone flex line stretching / overlap) */
 .character-creation-ability-scores-grid {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex-grow: 0;
+    flex-shrink: 0;
     margin-bottom: 20px;
 }
 
-.character-creation-ability-scores-grid > * {
+/* class name must match AbilityScoresGridTraversal.RowHostUssClass (C#) */
+.character-creation-ability-scores-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    flex-grow: 0;
+    width: 100%;
+}
+
+/* USS does not support the + sibling combinator */
+.character-creation-ability-scores-row--second {
+    margin-top: 12px;
+}
+
+.character-creation-ability-scores-row > * {
     margin-right: 12px;
     margin-bottom: 12px;
     flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
     min-width: 200px;
+    max-width: 20%;
 }
 
 .character-creation-ability-stat-row {
@@ -795,7 +814,7 @@
     justify-content: space-between;
     align-items: center;
     min-width: 200px;
-    flex-grow: 1;
+    flex-shrink: 0;
 }
 
 .character-creation-ability-stat-name {
@@ -1023,13 +1042,13 @@
 }
 
 .character-creation-proficiency-tag {
-    background-color: var(--color-blue-25);
+    background-color: var(--color-bg-shade1);
     border-width: 1px;
     border-color: var(--color-blue);
     border-radius: var(--radius-sm);
     padding: 8px 14px;
     font-size: 14px;
-    color: var(--color-blue);
+    color: var(--color-text-n1);
     flex-direction: row;
     align-items: center;
     letter-spacing: -0.28px;
@@ -1037,6 +1056,7 @@
 
 .character-creation-proficiency-tag > * {
     margin-right: 8px;
+    color: var(--color-text-n1);
 }
 
 .character-creation-proficiency-tag .source {

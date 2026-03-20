@@ -125,19 +125,13 @@ namespace GameCore.UI.MainMenu.Services
         /// </summary>
         public void UpdateDropZoneFeedback(VisualElement highlightedRow)
         {
-            if (_abilityScoresGrid == null) return;
-
-            foreach (VisualElement row in _abilityScoresGrid.Children())
+            AbilityScoresGridTraversal.ForEachStatRow(_abilityScoresGrid, row =>
             {
                 if (row == highlightedRow)
-                {
                     row.AddToClassList("drag-over");
-                }
                 else
-                {
                     row.RemoveFromClassList("drag-over");
-                }
-            }
+            });
         }
 
         /// <summary>
@@ -145,18 +139,11 @@ namespace GameCore.UI.MainMenu.Services
         /// </summary>
         public void ClearDropZoneFeedback()
         {
-            if (_abilityScoresGrid != null)
-            {
-                foreach (VisualElement row in _abilityScoresGrid.Children())
-                {
-                    row.RemoveFromClassList("drag-over");
-                }
-            }
+            AbilityScoresGridTraversal.ForEachStatRow(_abilityScoresGrid,
+                row => row.RemoveFromClassList("drag-over"));
 
             if (_rolledScoresContainer != null)
-            {
                 _rolledScoresContainer.RemoveFromClassList("drag-over");
-            }
         }
 
         private VisualElement FindAncestorByClass(VisualElement element, string className)

@@ -57,7 +57,10 @@
                             <ui:Label name="point-buy-points-label" text="27" class="character-creation-point-buy-points"/>
                             <ui:VisualElement name="rolled-scores-container" class="character-creation-rolled-scores-container"/>
                         </ui:VisualElement>
-                        <ui:VisualElement name="ability-scores-grid" class="character-creation-ability-scores-grid"/>
+                        <ui:VisualElement name="ability-scores-grid" class="character-creation-ability-scores-grid">
+                            <ui:VisualElement name="ability-scores-row-primary" class="character-creation-ability-scores-row"/>
+                            <ui:VisualElement name="ability-scores-row-secondary" class="character-creation-ability-scores-row character-creation-ability-scores-row--second"/>
+                        </ui:VisualElement>
                         <ui:Button name="confirm-scores-button" text="Confirm Scores" class="character-creation-confirm-scores-button"/>
                         <ui:VisualElement name="score-method-buttons" class="character-creation-score-method-buttons">
                             <ui:Button name="roll-abilities-button" text="Roll" class="character-creation-roll-button"/>

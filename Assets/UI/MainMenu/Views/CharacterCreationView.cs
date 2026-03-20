@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GameCore.UI;
+using GameCore.UI.MainMenu.Services;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -33,6 +34,10 @@ namespace GameCore.UI.MainMenu
     {
         private static readonly string[] AbilityNamesShort = { "str", "dex", "con", "int", "wis", "cha" };
         private static readonly string[] AbilityNamesDisplay = { "STR", "DEX", "CON", "INT", "WIS", "CHA" };
+
+        private const int PrimaryRowAbilityCount = 5;
+        private const string AbilityScoresRowPrimaryName = "ability-scores-row-primary";
+        private const string AbilityScoresRowSecondaryName = "ability-scores-row-secondary";
 
         [Header("Assets")]
         [Tooltip("Optional: USS stylesheet for this view. If not assigned, it will still work if referenced from the UXML.")]
@@ -399,21 +404,36 @@ namespace GameCore.UI.MainMenu
         {
             if (_abilityScoresGrid == null) return;
 
-            // Create ability stat rows if they don't exist
-            if (_abilityScoresGrid.childCount == 0)
+            VisualElement rowPrimary = _root.Q<VisualElement>(AbilityScoresRowPrimaryName);
+            VisualElement rowSecondary = _root.Q<VisualElement>(AbilityScoresRowSecondaryName);
+
+            if (rowPrimary != null && rowSecondary != null)
+            {
+                PopulateSplitAbilityRowsIfEmpty(rowPrimary, rowSecondary);
+            }
+            else if (_abilityScoresGrid.childCount == 0)
             {
                 for (int i = 0; i < AbilityNamesDisplay.Length; i++)
-                {
-                    VisualElement row = CreateAbilityStatRow(AbilityNamesDisplay[i], i);
-                    _abilityScoresGrid.Add(row);
-                }
+                    _abilityScoresGrid.Add(CreateAbilityStatRow(AbilityNamesDisplay[i], i));
             }
 
-            // Query ability score labels after they are created
             for (int i = 0; i < AbilityNamesShort.Length; i++)
-            {
                 _abilityScoreLabels[i] = _root.Q<Label>($"ability-{AbilityNamesShort[i]}-score-label");
-            }
+        }
+
+        /// <summary>
+        /// Split UXML: first row STR–WIS, second row CHA (layout workaround for wrapped flex lines).
+        /// </summary>
+        private void PopulateSplitAbilityRowsIfEmpty(VisualElement rowPrimary, VisualElement rowSecondary)
+        {
+            if (rowPrimary.childCount != 0 || rowSecondary.childCount != 0)
+                return;
+
+            for (int i = 0; i < PrimaryRowAbilityCount; i++)
+                rowPrimary.Add(CreateAbilityStatRow(AbilityNamesDisplay[i], i));
+
+            int chaIndex = PrimaryRowAbilityCount;
+            rowSecondary.Add(CreateAbilityStatRow(AbilityNamesDisplay[chaIndex], chaIndex));
         }
 
         private VisualElement CreateAbilityStatRow(string abilityName, int abilityIndex)
@@ -1184,18 +1204,11 @@ namespace GameCore.UI.MainMenu
         /// </summary>
         public void ClearDropZoneHighlights()
         {
-            if (_abilityScoresGrid != null)
-            {
-                foreach (VisualElement row in _abilityScoresGrid.Children())
-                {
-                    row.RemoveFromClassList("drag-over");
-                }
-            }
+            AbilityScoresGridTraversal.ForEachStatRow(_abilityScoresGrid,
+                row => row.RemoveFromClassList("drag-over"));
 
             if (_rolledScoresContainer != null)
-            {
                 _rolledScoresContainer.RemoveFromClassList("drag-over");
-            }
         }
 
         /// <summary>

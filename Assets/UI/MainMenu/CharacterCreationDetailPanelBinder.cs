@@ -34,7 +34,7 @@ namespace GameCore.UI.MainMenu
                         box.AddToClassList("character-creation-detail-quick-build--live-stats");
                     if (!string.IsNullOrEmpty(s.Heading))
                     {
-                        var ht = new Label(s.Heading);
+                        var ht = new Label(FormatQuickBuildHeading(s.Heading));
                         ht.AddToClassList("character-creation-detail-quick-build-title");
                         configureRulesRichTextLabel(ht, false);
                         box.Add(ht);
@@ -72,5 +72,8 @@ namespace GameCore.UI.MainMenu
                 }
             }
         }
+
+        private static string FormatQuickBuildHeading(string heading) =>
+            string.IsNullOrEmpty(heading) ? string.Empty : heading.ToUpperInvariant();
     }
 }
