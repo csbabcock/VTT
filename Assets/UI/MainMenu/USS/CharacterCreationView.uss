@@ -629,10 +629,12 @@
     letter-spacing: -0.72px;
 }
 
-/* Rolled Scores Pool */
+/* Rolled Scores Pool — column header band; children centered on the cross axis */
 .character-creation-rolled-scores-pool {
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 14px;
-    padding: 12px;
+    padding: 14px 12px 16px;
     background-color: var(--color-bg-shade1);
     border-radius: var(--radius-sm);
     border-width: 1px;
@@ -640,19 +642,29 @@
 }
 
 .character-creation-rolled-scores-title {
-    color: var(--color-text-n2);
-    font-size: 13px;
+    align-self: stretch;
+    width: 100%;
+    -unity-text-align: middle-center;
+    color: var(--color-blue);
+    font-size: 16px;
     -unity-font-style: bold;
-    margin-bottom: 10px;
-    letter-spacing: -0.26px;
+    margin: 0 0 12px;
+    padding-bottom: 10px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--color-border-subtle);
+    letter-spacing: -0.48px;
 }
 
 /* Point Buy: available points display in pool */
 .character-creation-point-buy-points {
-    font-size: 16px;
+    align-self: stretch;
+    width: 100%;
+    -unity-text-align: middle-center;
+    font-size: 18px;
     -unity-font-style: bold;
     color: var(--color-text-primary);
-    margin-bottom: 6px;
+    margin: 0 0 4px;
+    padding: 4px 0;
 }
 
 /* Two equal halves; [−][score][+] centered in left half, mod centered in right (headers match in label row). */
@@ -794,14 +806,16 @@
 
 .character-creation-rolled-scores-container {
     flex-direction: row;
-    flex-wrap: nowrap;
-    min-height: 52px;
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
+    align-content: center;
+    width: 100%;
+    min-height: 64px;
 }
 
 .character-creation-rolled-scores-container > * {
-    margin-right: 14px;
-    margin-bottom: 0;
+    margin: 0 14px;
 }
 
 .character-creation-rolled-scores-container.drag-over {
@@ -813,10 +827,10 @@
 
 .character-creation-rolled-score-item {
     flex-direction: row;
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    min-height: 48px;
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
     background-color: var(--color-bg-primary);
     border-width: 2px;
     border-color: var(--color-border-strong);
@@ -850,8 +864,8 @@
 .character-creation-rolled-score-item--with-dice {
     flex-direction: column;
     align-items: center;
-    width: 72px;
-    min-width: 72px;
+    width: 88px;
+    min-width: 88px;
     flex-shrink: 0;
     height: auto;
     padding: 0;
@@ -861,10 +875,10 @@
 
 /* Score container stays fixed height, centered above dice row */
 .character-creation-rolled-score-value-box {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    min-height: 48px;
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
     background-color: var(--color-bg-primary);
     border-width: 2px;
     border-color: var(--color-border-strong);
@@ -893,24 +907,25 @@
     flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
-    margin-top: 6px;
+    margin-top: 8px;
 }
 
+/* Symmetric horizontal margin so 4× die chip + gaps fits within --with-dice column width */
 .character-creation-rolled-score-dice-row > * {
-    margin-right: 2px;
+    margin: 0 2px;
 }
 
 .character-creation-rolled-score-die-chip {
-    width: 16px;
-    height: 18px;
-    min-width: 16px;
-    min-height: 18px;
+    width: 18px;
+    height: 20px;
+    min-width: 18px;
+    min-height: 20px;
     background-color: var(--color-bg-shade1);
     border-width: 2px;
     border-color: var(--color-border-strong);
     border-radius: 3px;
     -unity-text-align: middle-center;
-    font-size: 11px;
+    font-size: 12px;
     -unity-font-style: bold;
 }
 
@@ -924,16 +939,16 @@
 }
 
 .character-creation-rolled-score-value {
-    font-size: 17px;
+    font-size: 20px;
     -unity-font-style: bold;
     color: var(--color-blue);
-    letter-spacing: -0.34px;
+    letter-spacing: -0.4px;
 }
 
 /* Manual mode: drag handle (left) - click and drag here to move the score */
 .character-creation-rolled-score-drag-handle {
-    width: 12px;
-    min-width: 12px;
+    width: 14px;
+    min-width: 14px;
     height: 100%;
     background-color: var(--color-bg-shade1);
     border-width: 1px;
@@ -950,7 +965,7 @@
 
 .character-creation-rolled-score-drag-handle-icon {
     color: var(--color-text-n3);
-    font-size: 12px;
+    font-size: 13px;
     -unity-text-align: middle-center;
 }
 
@@ -958,8 +973,8 @@
 .character-creation-rolled-score-item TextField.character-creation-rolled-score-value {
     flex-grow: 1;
     width: 100%;
-    min-width: 28px;
-    min-height: 28px;
+    min-width: 34px;
+    min-height: 34px;
     -unity-text-align: middle-center;
     border-width: 0;
     border-color: transparent;
@@ -973,7 +988,7 @@
     border-width: 0;
     border-color: transparent;
     background-color: transparent;
-    min-width: 24px;
+    min-width: 28px;
     padding: 2px 0;
 }
 
