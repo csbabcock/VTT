@@ -74,6 +74,7 @@
                     </ui:VisualElement>
                     <ui:VisualElement name="proficiency-panel" class="character-creation-proficiency-panel">
                         <ui:Label text="Proficiencies" class="character-creation-proficiency-title"/>
+                        <ui:VisualElement name="proficiency-list-host" class="character-creation-proficiency-list-host"/>
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>

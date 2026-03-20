@@ -1,6 +1,7 @@
 using GameCore.UI.InGame.Models;
 using GameCore.PlayerData;
 using GameCore.PlayerData.Rulesets;
+using GameCore.PlayerData.Rulesets.Definitions;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
@@ -45,6 +46,11 @@ namespace GameCore.UI.InGame
             object rulesetData = GetRulesetData(data, rulesetId);
 
             UpdateCharacterName(root, data);
+            if (rulesetId == "DnD5e" && rulesetData is DnD5eCharacterData dnd)
+            {
+                UpdateCombatHeader(root, dnd, calculator);
+            }
+
             UpdateAbilityScores(root, data, calculator, adapter, rulesetData);
             UpdateSkills(root, data, calculator, adapter, rulesetData);
             UpdateAttacks(root, data, calculator, adapter, rulesetData);
@@ -77,6 +83,54 @@ namespace GameCore.UI.InGame
             {
                 nameLabel.text = data.CharacterName;
             }
+        }
+
+        /// <summary>
+        /// Updates header combat stats (HP, AC, initiative, speed) and subtitle from class, level, and abilities.
+        /// </summary>
+        private static void UpdateCombatHeader(VisualElement root, DnD5eCharacterData data, IRulesetCalculator calculator)
+        {
+            if (root == null || data == null || calculator == null)
+                return;
+
+            IRulesetContentQuery query = RulesetContentQueryProvider.GetOrCreate("DnD5e");
+            ClassDefinition classDef = null;
+            if (!string.IsNullOrWhiteSpace(data.characterClass))
+                DnD5eDerivedStats.TryResolveClassDefinition(query.GetClasses(), data.characterClass, out classDef);
+
+            int level = Mathf.Max(1, data.level);
+            int maxHp = DnD5eDerivedStats.CalculateMaxHitPointsForLevel(classDef, data.constitutionModifier, level);
+            int ac = DnD5eDerivedStats.CalculateUnarmoredArmorClass(classDef,
+                data.dexterityModifier, data.constitutionModifier, data.wisdomModifier);
+
+            int displayCurrent = Mathf.Clamp(data.currentHitPoints, 0, maxHp);
+
+            SetLabelText(root, CharacterSheetUIMapper.GetHitPointsValueElementName(), $"{displayCurrent} / {maxHp}");
+            SetLabelText(root, CharacterSheetUIMapper.GetArmorClassValueElementName(), ac.ToString());
+            SetLabelText(root, CharacterSheetUIMapper.GetInitiativeValueElementName(),
+                FormatSignedModifier(data.dexterityModifier));
+            int speed = data.walkingSpeed > 0 ? data.walkingSpeed : 30;
+            SetLabelText(root, CharacterSheetUIMapper.GetSpeedValueElementName(), $"{speed} / {speed} ft");
+
+            var details = root.Q<Label>(CharacterSheetUIMapper.GetCharacterDetailsElementName());
+            if (details != null)
+            {
+                string race = string.IsNullOrEmpty(data.race) ? "Unknown" : data.race;
+                string cls = string.IsNullOrEmpty(data.characterClass) ? "Adventurer" : data.characterClass;
+                details.text = $"{race} {cls} {level}";
+            }
+        }
+
+        private static void SetLabelText(VisualElement root, string elementName, string text)
+        {
+            Label label = root.Q<Label>(elementName);
+            if (label != null)
+                label.text = text;
+        }
+
+        private static string FormatSignedModifier(int modifier)
+        {
+            return modifier >= 0 ? $"+{modifier}" : modifier.ToString();
         }
 
         /// <summary>

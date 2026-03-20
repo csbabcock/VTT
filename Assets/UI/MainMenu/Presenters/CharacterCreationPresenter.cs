@@ -4,6 +4,7 @@ using GameCore.PlayerData.Rulesets;
 using GameCore.PlayerData.Rulesets.Definitions;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -808,6 +809,10 @@ namespace GameCore.UI.MainMenu
 
             int level = Mathf.Clamp(state.CharacterLevel, CharacterCreationModel.MinCharacterLevel,
                 CharacterCreationModel.MaxCharacterLevel);
+            string hitDiceDisplay = null;
+            if (classDef != null && classDef.hitDie >= 4)
+                hitDiceDisplay = $"{level}d{classDef.hitDie}";
+
             int? hitPoints = null;
             if (state.AbilityScores[2] >= 0 && classDef != null)
             {
@@ -817,24 +822,34 @@ namespace GameCore.UI.MainMenu
 
             int? armorClass = null;
             int? initiative = null;
-            if (state.AbilityScores[1] >= 0) // DEX
+            if (state.AbilityScores[1] >= 0)
             {
                 int dexMod = _calculator.CalculateAbilityModifier(state.AbilityScores[1]);
-                armorClass = 10 + dexMod;
                 initiative = dexMod;
-            }
-
-            bool allAssigned = true;
-            for (int i = 0; i < 6; i++)
-            {
-                if (state.AbilityScores[i] < 0)
+                if (classDef != null)
                 {
-                    allAssigned = false;
-                    break;
+                    bool needCon = classDef.id != null &&
+                                   classDef.id.Equals("class.barbarian", StringComparison.OrdinalIgnoreCase);
+                    bool needWis = classDef.id != null &&
+                                   classDef.id.Equals("class.monk", StringComparison.OrdinalIgnoreCase);
+                    int conMod = state.AbilityScores[2] >= 0
+                        ? _calculator.CalculateAbilityModifier(state.AbilityScores[2])
+                        : 0;
+                    int wisMod = state.AbilityScores[4] >= 0
+                        ? _calculator.CalculateAbilityModifier(state.AbilityScores[4])
+                        : 0;
+                    if (needCon && state.AbilityScores[2] < 0)
+                        armorClass = null;
+                    else if (needWis && state.AbilityScores[4] < 0)
+                        armorClass = null;
+                    else
+                        armorClass = DnD5eDerivedStats.CalculateUnarmoredArmorClass(classDef, dexMod, conMod, wisMod);
                 }
+                else
+                    armorClass = 10 + dexMod;
             }
 
-            int? proficiencyBonus = allAssigned ? _calculator.CalculateProficiencyBonus(level) : (int?)null;
+            int? proficiencyBonus = classDef != null ? _calculator.CalculateProficiencyBonus(level) : (int?)null;
 
             int? spellSaveDC = null;
             int? spellAttack = null;
@@ -846,7 +861,8 @@ namespace GameCore.UI.MainMenu
                 spellAttack = prof + castingModifier;
             }
 
-            _view.UpdateDerivedStats(hitPoints, armorClass, initiative, proficiencyBonus, spellSaveDC, spellAttack);
+            _view.UpdateDerivedStats(hitPoints, armorClass, initiative, proficiencyBonus, spellSaveDC, spellAttack,
+                hitDiceDisplay);
 
             if (_contentQuery.TryGetRace(state.SelectedRaceId, out RaceDefinition race))
             {
@@ -857,6 +873,36 @@ namespace GameCore.UI.MainMenu
             {
                 _view.UpdatePhysicalTraits("—", "—", "—");
             }
+
+            _view.UpdateProficiencyPanel(BuildProficiencySections(classDef, state));
+        }
+
+        private List<CharacterProficiencySection> BuildProficiencySections(ClassDefinition cls, CharacterCreationState state)
+        {
+            BackgroundDefinition bg = null;
+            if (!string.IsNullOrEmpty(state.SelectedBackgroundId))
+                _contentQuery.TryGetBackground(state.SelectedBackgroundId, out bg);
+
+            var list = new List<CharacterProficiencySection>();
+            if (cls != null)
+            {
+                if (cls.savingThrowProficiencies != null && cls.savingThrowProficiencies.Count > 0)
+                    list.Add(new CharacterProficiencySection("Saving throws", cls.savingThrowProficiencies));
+                if (cls.armorProficiencies != null && cls.armorProficiencies.Count > 0)
+                    list.Add(new CharacterProficiencySection("Armor", cls.armorProficiencies));
+                if (cls.weaponProficiencies != null && cls.weaponProficiencies.Count > 0)
+                    list.Add(new CharacterProficiencySection("Weapons", cls.weaponProficiencies));
+            }
+
+            if (bg != null)
+            {
+                if (bg.skillProficiencies != null && bg.skillProficiencies.Count > 0)
+                    list.Add(new CharacterProficiencySection("Skills (background)", bg.skillProficiencies));
+                if (bg.toolProficiencies != null && bg.toolProficiencies.Count > 0)
+                    list.Add(new CharacterProficiencySection("Tools (background)", bg.toolProficiencies));
+            }
+
+            return list;
         }
 
         private static int AbilityCodeToIndex(string code)
@@ -897,26 +943,9 @@ namespace GameCore.UI.MainMenu
             return _calculator.CalculateAbilityModifier(abilityScores[idx]);
         }
 
-        /// <summary>D&amp;D 5e: max die + CON at 1st level, then fixed average + CON per additional level.</summary>
         private static int CalculateHitPointsForLevel(ClassDefinition classDef, int conModifier, int level)
         {
-            if (classDef == null || level < 1)
-                return 8 + conModifier;
-            int die = classDef.hitDie >= 4 ? classDef.hitDie : 8;
-            int avg = AverageHitDieIncrease(die);
-            return die + conModifier + (level - 1) * (avg + conModifier);
-        }
-
-        private static int AverageHitDieIncrease(int hitDie)
-        {
-            return hitDie switch
-            {
-                12 => 7,
-                10 => 6,
-                8 => 5,
-                6 => 4,
-                _ => Mathf.Max(1, hitDie / 2 + 1)
-            };
+            return DnD5eDerivedStats.CalculateMaxHitPointsForLevel(classDef, conModifier, level);
         }
     }
 }

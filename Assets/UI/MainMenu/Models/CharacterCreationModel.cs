@@ -1,9 +1,25 @@
 using System;
+using System.Collections.Generic;
 using GameCore.UI;
 using UnityEngine;
 
 namespace GameCore.UI.MainMenu
 {
+    /// <summary>
+    /// One titled group of proficiency strings for the character creation proficiencies panel.
+    /// </summary>
+    public readonly struct CharacterProficiencySection
+    {
+        public string CategoryTitle { get; }
+        public IReadOnlyList<string> Items { get; }
+
+        public CharacterProficiencySection(string categoryTitle, IReadOnlyList<string> items)
+        {
+            CategoryTitle = categoryTitle ?? string.Empty;
+            Items = items ?? Array.Empty<string>();
+        }
+    }
+
     /// <summary>
     /// Immutable snapshot of character creation state.
     /// </summary>

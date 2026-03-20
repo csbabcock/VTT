@@ -988,6 +988,18 @@
     letter-spacing: -0.8px;
 }
 
+.character-creation-proficiency-list-host {
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.character-creation-proficiency-placeholder {
+    color: var(--color-text-n3);
+    font-size: 14px;
+    white-space: normal;
+    letter-spacing: -0.28px;
+}
+
 .character-creation-proficiency-category {
     margin-bottom: 20px;
 }

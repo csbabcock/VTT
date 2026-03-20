@@ -70,6 +70,7 @@ namespace GameCore.UI.MainMenu
         private VisualElement _characterStatsGrid;
         private VisualElement _spellcastingStatsGrid;
         private VisualElement _physicalTraitsGrid;
+        private VisualElement _proficiencyListHost;
         private VisualElement _rolledScoresPool;
         private VisualElement _rolledScoresContainer;
 
@@ -191,6 +192,7 @@ namespace GameCore.UI.MainMenu
             _characterStatsGrid = _root.Q<VisualElement>("character-stats-grid");
             _spellcastingStatsGrid = _root.Q<VisualElement>("spellcasting-stats-grid");
             _physicalTraitsGrid = _root.Q<VisualElement>("physical-traits-grid");
+            _proficiencyListHost = _root.Q<VisualElement>("proficiency-list-host");
             _rolledScoresPool = _root.Q<VisualElement>("rolled-scores-pool");
             _rolledScoresContainer = _root.Q<VisualElement>("rolled-scores-container");
 
@@ -331,6 +333,7 @@ namespace GameCore.UI.MainMenu
             // Initialize stat display rows (created in UXML, just need to query labels)
             InitializeAbilityStatRows();
             InitializeCharacterStatItems();
+            EnsureHitDiceStatRow();
             SetupDragAndDrop();
             
             // Hide rolled scores pool by default
@@ -493,6 +496,7 @@ namespace GameCore.UI.MainMenu
             if (_characterStatsGrid != null && _characterStatsGrid.childCount == 0)
             {
                 CreateCharacterStatItem(_characterStatsGrid, "Hit Points", "—", "hp-value", isModifier: false);
+                CreateCharacterStatItem(_characterStatsGrid, "Hit Dice", "—", "hit-dice-value", isModifier: false);
                 CreateCharacterStatItem(_characterStatsGrid, "Armor Class", "—", "ac-value", isModifier: false);
                 CreateCharacterStatItem(_characterStatsGrid, "Initiative", "—", "initiative-value", isModifier: true);
                 CreateCharacterStatItem(_characterStatsGrid, "Proficiency", "—", "proficiency-value", isModifier: true);
@@ -515,7 +519,11 @@ namespace GameCore.UI.MainMenu
         private void CreateCharacterStatItem(VisualElement parent, string label, string value, string valueName, bool isModifier = false)
         {
             if (parent == null) return;
+            parent.Add(BuildCharacterStatRow(label, value, valueName, isModifier));
+        }
 
+        private static VisualElement BuildCharacterStatRow(string label, string value, string valueName, bool isModifier = false)
+        {
             VisualElement item = new VisualElement();
             item.AddToClassList("character-creation-char-stat-item");
 
@@ -530,7 +538,22 @@ namespace GameCore.UI.MainMenu
             valueElement.name = valueName;
             item.Add(valueElement);
 
-            parent.Add(item);
+            return item;
+        }
+
+        /// <summary>
+        /// Older layouts without a Hit Dice row get one inserted after Hit Points.
+        /// </summary>
+        private void EnsureHitDiceStatRow()
+        {
+            if (_characterStatsGrid == null || _root == null)
+                return;
+            if (_root.Q<Label>("hit-dice-value") != null)
+                return;
+            if (_characterStatsGrid.childCount == 0)
+                return;
+            VisualElement row = BuildCharacterStatRow("Hit Dice", "—", "hit-dice-value", isModifier: false);
+            _characterStatsGrid.Insert(1, row);
         }
 
         public void Show()
@@ -933,15 +956,66 @@ namespace GameCore.UI.MainMenu
         /// Called by Presenter with calculated data. Null values show "—" (dash).
         /// </summary>
         public void UpdateDerivedStats(int? hitPoints, int? armorClass, int? initiative, int? proficiencyBonus,
-            int? spellSaveDC = null, int? spellAttack = null)
+            int? spellSaveDC = null, int? spellAttack = null, string hitDiceDisplay = null)
         {
             UpdateStatLabel("hp-value", hitPoints.HasValue ? hitPoints.Value.ToString() : "—", isModifier: false);
+            UpdateStatLabel("hit-dice-value", string.IsNullOrEmpty(hitDiceDisplay) ? "—" : hitDiceDisplay, isModifier: false);
             UpdateStatLabel("ac-value", armorClass.HasValue ? armorClass.Value.ToString() : "—", isModifier: false);
             UpdateStatLabel("initiative-value", initiative.HasValue ? (initiative.Value >= 0 ? $"+{initiative.Value}" : initiative.Value.ToString()) : "—", isModifier: true, modifierValue: initiative);
             UpdateStatLabel("proficiency-value", proficiencyBonus.HasValue ? (proficiencyBonus.Value >= 0 ? $"+{proficiencyBonus.Value}" : proficiencyBonus.Value.ToString()) : "—", isModifier: true, modifierValue: proficiencyBonus);
 
             UpdateStatLabel("spell-save-dc-value", spellSaveDC.HasValue ? spellSaveDC.Value.ToString() : "—", isModifier: false);
             UpdateStatLabel("spell-attack-value", spellAttack.HasValue ? (spellAttack.Value >= 0 ? $"+{spellAttack.Value}" : spellAttack.Value.ToString()) : "—", isModifier: true, modifierValue: spellAttack);
+        }
+
+        /// <summary>
+        /// Renders class / background proficiencies as grouped tags. Pass null or empty for a placeholder.
+        /// </summary>
+        public void UpdateProficiencyPanel(IReadOnlyList<CharacterProficiencySection> sections)
+        {
+            if (_proficiencyListHost == null)
+                return;
+
+            _proficiencyListHost.Clear();
+            if (sections == null || sections.Count == 0)
+            {
+                var hint = new Label("Select a class or background to see proficiencies.");
+                hint.AddToClassList("character-creation-proficiency-placeholder");
+                _proficiencyListHost.Add(hint);
+                return;
+            }
+
+            foreach (CharacterProficiencySection section in sections)
+            {
+                if (string.IsNullOrEmpty(section.CategoryTitle))
+                    continue;
+
+                var cat = new VisualElement();
+                cat.AddToClassList("character-creation-proficiency-category");
+
+                var title = new Label(section.CategoryTitle);
+                title.AddToClassList("character-creation-proficiency-category-title");
+                cat.Add(title);
+
+                var list = new VisualElement();
+                list.AddToClassList("character-creation-proficiency-list");
+
+                if (section.Items != null)
+                {
+                    foreach (string item in section.Items)
+                    {
+                        if (string.IsNullOrEmpty(item))
+                            continue;
+                        var tag = new VisualElement();
+                        tag.AddToClassList("character-creation-proficiency-tag");
+                        tag.Add(new Label(item));
+                        list.Add(tag);
+                    }
+                }
+
+                cat.Add(list);
+                _proficiencyListHost.Add(cat);
+            }
         }
 
         /// <summary>

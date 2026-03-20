@@ -76,6 +76,14 @@ namespace GameCore.UI.InGame
         /// </summary>
         public static string GetCharacterDetailsElementName() => "character-details";
 
+        public static string GetHitPointsValueElementName() => "hp-value";
+
+        public static string GetArmorClassValueElementName() => "ac-value";
+
+        public static string GetInitiativeValueElementName() => "initiative-value";
+
+        public static string GetSpeedValueElementName() => "speed-value";
+
         /// <summary>
         /// Gets the class name for skill modifier labels.
         /// </summary>
