@@ -3,6 +3,7 @@ using GameCore.UI.InGame.Services;
 using GameCore.UI.InGame.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 #if ENABLE_INPUT_SYSTEM
@@ -15,7 +16,7 @@ namespace GameCore.UI.InGame
     /// Base view for in-game UI using UI Toolkit.
     /// Intended for diegetic-style HUD elements anchored in the world or screen.
     /// </summary>
-    [RequireComponent(typeof(UIDocument))]
+    [RequireComponent(typeof(PanelRenderer))]
     public class InGameUIView : MonoBehaviour, IUIView<InGameUIState>
     {
         #region Constants
@@ -36,7 +37,10 @@ namespace GameCore.UI.InGame
 
         #region Private Fields
 
-        private UIDocument _uiDocument;
+        private PanelRenderer _panelRenderer;
+        private bool _panelReloadRegistered;
+        private Coroutine _deferredBindCoroutine;
+        private bool _visualTreeBound;
         private VisualElement _root;
         private VisualElement _characterSheetPanel;
         private ScrollView _characterSheetScrollView;
@@ -53,6 +57,9 @@ namespace GameCore.UI.InGame
         // Animation state
         private bool? _targetVisibilityState = null; // Track what state we're animating to (null = not animating)
         private float _lastVisibilityChangeTime = 0f; // Track when we last changed visibility to prevent rapid toggling
+
+        private Button _moveButton;
+        private System.Action _moveButtonClickedHandler;
         #endregion
 
         #region Public Properties
@@ -80,7 +87,7 @@ namespace GameCore.UI.InGame
             if (!IsCharacterSheetOpen())
                 return false;
 
-            if (_uiDocument == null || _characterSheetPanel == null)
+            if (_root == null || _characterSheetPanel == null)
                 return false;
 
             // Get mouse position in screen coordinates (needed for Panel.Pick)
@@ -89,7 +96,7 @@ namespace GameCore.UI.InGame
                 return false;
 
             // Get the panel
-            var panel = _uiDocument.rootVisualElement.panel;
+            var panel = _root.panel;
             if (panel == null)
                 return false;
 
@@ -242,53 +249,260 @@ namespace GameCore.UI.InGame
 
         private void Awake()
         {
-            _uiDocument = GetComponent<UIDocument>();
+            _panelRenderer = GetComponent<PanelRenderer>();
         }
 
         private void OnEnable()
         {
-            if (_root == null)
-        {
-            Initialize();
-        }
+            if (_panelRenderer == null)
+            {
+                _panelRenderer = GetComponent<PanelRenderer>();
+            }
 
+            EnsurePanelReloadSubscription();
+            if (_panelRenderer != null)
+            {
+                ((IPanelComponent)_panelRenderer).PerformUpdate();
+            }
+
+            TrySyncRootFromPanel();
+            TryBindVisualTree();
+            ScheduleDeferredBindIfNeeded();
             Show();
         }
 
         private void OnDisable()
         {
-            // Unsubscribe from tab buttons
+            if (_deferredBindCoroutine != null)
+            {
+                StopCoroutine(_deferredBindCoroutine);
+                _deferredBindCoroutine = null;
+            }
+
+            ReleasePanelReloadSubscription();
+
+            TeardownBoundVisualTree();
+            _root = null;
+            Hide();
+        }
+
+        private void OnPanelUiReload(PanelRenderer _, VisualElement root)
+        {
+            // PanelRenderer replaces the visual tree; cached elements become invalid but
+            // TryBindVisualTree() no-ops while _visualTreeBound is true — tear down first.
+            TeardownBoundVisualTree();
+            _root = root;
+            TryBindVisualTree();
+            if (isActiveAndEnabled)
+            {
+                Show();
+                ScheduleDeferredBindIfNeeded();
+            }
+        }
+
+        private void EnsurePanelReloadSubscription()
+        {
+            if (_panelRenderer == null || _panelReloadRegistered)
+            {
+                return;
+            }
+
+            _panelRenderer.RegisterUIReloadCallback(OnPanelUiReload);
+            _panelReloadRegistered = true;
+        }
+
+        private void ReleasePanelReloadSubscription()
+        {
+            if (_panelRenderer == null || !_panelReloadRegistered)
+            {
+                return;
+            }
+
+            _panelRenderer.UnregisterUIReloadCallback(OnPanelUiReload);
+            _panelReloadRegistered = false;
+        }
+
+        /// <summary>
+        /// Clears Toolkit subscriptions and element caches so <see cref="TryBindVisualTree"/> can run again.
+        /// Uses try/catch around unsubscriptions because elements may already be disposed after a panel reload.
+        /// </summary>
+        private void TeardownBoundVisualTree()
+        {
+            DetachMoveButton();
+
             if (_tabButtons != null && _tabButtonHandlers != null)
             {
                 for (int i = 0; i < _tabButtons.Length; i++)
                 {
                     if (_tabButtons[i] != null && _tabButtonHandlers[i] != null)
                     {
-                        _tabButtons[i].clicked -= _tabButtonHandlers[i];
+                        try
+                        {
+                            _tabButtons[i].clicked -= _tabButtonHandlers[i];
+                        }
+                        catch
+                        {
+                            // Disposed or invalid after PanelRenderer tree swap.
+                        }
                     }
                 }
             }
 
-            // Cleanup component references
-            _tabCarouselView?.Cleanup();
+            try
+            {
+                _tabCarouselView?.Cleanup();
+            }
+            catch
+            {
+            }
 
-            Hide();
+            _tabCarouselView = null;
+            _buttonNavigationView = null;
+            _characterSheetPanel = null;
+            _characterSheetScrollView = null;
+            _characterSheetTabs = null;
+            _tabButtons = null;
+            _tabButtonHandlers = null;
+            _targetVisibilityState = null;
+            _visualTreeBound = false;
         }
 
-        public void Initialize()
+        private void DetachMoveButton()
         {
-            if (_uiDocument == null)
+            if (_moveButton != null && _moveButtonClickedHandler != null)
             {
-                _uiDocument = GetComponent<UIDocument>();
+                try
+                {
+                    _moveButton.clicked -= _moveButtonClickedHandler;
+                }
+                catch
+                {
+                }
             }
 
-            _root = _uiDocument.rootVisualElement;
+            _moveButton = null;
+            _moveButtonClickedHandler = null;
+        }
 
-            if (_root == null)
+        private static bool IsElementUnderRoot(VisualElement element, VisualElement root)
+        {
+            if (element == null || root == null)
+                return false;
+
+            try
             {
-                Debug.LogError("InGameUIView: UIDocument has no rootVisualElement. Make sure the UXML is assigned.");
+                for (VisualElement p = element; p != null; p = p.hierarchy.parent)
+                {
+                    if (p == root)
+                        return true;
+                }
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Ensures cached elements match the current <see cref="_root"/>; rebinds after a tree reload or missed callback.
+        /// </summary>
+        private bool EnsureVisualTreeReadyForUpdate()
+        {
+            TrySyncRootFromPanel();
+            if (_root == null && _panelRenderer != null)
+            {
+                _root = PanelRendererUtility.TryGetRootVisualElement(_panelRenderer);
+            }
+
+            bool treeSwapped = _visualTreeBound
+                && _root != null
+                && _characterSheetPanel != null
+                && !IsElementUnderRoot(_characterSheetPanel, _root);
+
+            if (treeSwapped)
+            {
+                TeardownBoundVisualTree();
+                _root = _panelRenderer != null
+                    ? PanelRendererUtility.TryGetRootVisualElement(_panelRenderer)
+                    : null;
+            }
+
+            if (!_visualTreeBound && _root != null)
+            {
+                TryBindVisualTree();
+            }
+
+            if (!_visualTreeBound)
+            {
+                ScheduleDeferredBindIfNeeded();
+                return false;
+            }
+
+            return _characterSheetPanel != null;
+        }
+
+        private void TrySyncRootFromPanel()
+        {
+            if (_root != null || _panelRenderer == null)
+            {
                 return;
             }
+
+            _root = PanelRendererUtility.TryGetRootVisualElement(_panelRenderer);
+        }
+
+        private void ScheduleDeferredBindIfNeeded()
+        {
+            if (_visualTreeBound || !isActiveAndEnabled)
+            {
+                return;
+            }
+
+            if (_deferredBindCoroutine != null)
+            {
+                StopCoroutine(_deferredBindCoroutine);
+            }
+
+            _deferredBindCoroutine = StartCoroutine(CoDeferredBindPanelTree());
+        }
+
+        private IEnumerator CoDeferredBindPanelTree()
+        {
+            try
+            {
+                for (int i = 0; i < 24; i++)
+                {
+                    if (_visualTreeBound)
+                    {
+                        yield break;
+                    }
+
+                    TrySyncRootFromPanel();
+                    TryBindVisualTree();
+                    if (_visualTreeBound)
+                    {
+                        yield break;
+                    }
+
+                    yield return null;
+                }
+            }
+            finally
+            {
+                _deferredBindCoroutine = null;
+            }
+        }
+
+        private void TryBindVisualTree()
+        {
+            if (_visualTreeBound || _root == null)
+            {
+                return;
+            }
+
+            _visualTreeBound = true;
 
             // Configure root element for input
             _root.pickingMode = PickingMode.Position;
@@ -425,11 +639,13 @@ namespace GameCore.UI.InGame
             // Game log view handles its own clear button wiring
 
             // Wire up Move button
-            var moveButton = _root.Q<Button>("move-button");
-            if (moveButton != null)
+            DetachMoveButton();
+            _moveButton = _root.Q<Button>("move-button");
+            if (_moveButton != null)
             {
-                moveButton.pickingMode = PickingMode.Position;
-                moveButton.clicked += () => MoveButtonClicked?.Invoke();
+                _moveButton.pickingMode = PickingMode.Position;
+                _moveButtonClickedHandler = () => MoveButtonClicked?.Invoke();
+                _moveButton.clicked += _moveButtonClickedHandler;
             }
 
             // Initialize component references (SOLID - Single Responsibility)
@@ -487,9 +703,29 @@ namespace GameCore.UI.InGame
 
             // Initialize button navigation view
             _buttonNavigationView = new ButtonNavigationView();
-            _buttonNavigationView.Initialize(_uiDocument, _root, _characterSheetTabs, _characterSheetScrollView, _tabButtons);
+            _buttonNavigationView.Initialize(_root, _characterSheetTabs, _characterSheetScrollView, _tabButtons);
         }
         #endregion
+
+        public void Initialize()
+        {
+            if (_panelRenderer == null)
+            {
+                _panelRenderer = GetComponent<PanelRenderer>();
+            }
+
+            if (_panelRenderer == null)
+            {
+                Debug.LogError("InGameUIView: PanelRenderer is missing.");
+                return;
+            }
+
+            EnsurePanelReloadSubscription();
+            ((IPanelComponent)_panelRenderer).PerformUpdate();
+            TrySyncRootFromPanel();
+            TryBindVisualTree();
+            ScheduleDeferredBindIfNeeded();
+        }
 
         #region IUIView Implementation
 
@@ -554,6 +790,11 @@ namespace GameCore.UI.InGame
         /// <param name="state">Snapshot of the in-game UI state.</param>
         public void UpdateView(InGameUIState state)
         {
+            if (!EnsureVisualTreeReadyForUpdate())
+            {
+                return;
+            }
+
             // If we're already animating to the target state, don't re-trigger
             // This prevents closing during opening animation
             if (_targetVisibilityState.HasValue && _targetVisibilityState.Value == state.IsCharacterSheetOpen)

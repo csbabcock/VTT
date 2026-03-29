@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using GameCore.UI;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace GameCore.UI.MainMenu
     /// Main Menu Controller - SpacetimeDB-Inspired Design
     /// Handles UI interactions, hover effects, and audio feedback
     /// </summary>
-    [RequireComponent(typeof(UIDocument))]
+    [RequireComponent(typeof(PanelRenderer))]
     public class MainMenuView : MonoBehaviour, IUIView<MainMenuState>
     {
         [Header("Assets")]
@@ -34,8 +35,10 @@ namespace GameCore.UI.MainMenu
         [Tooltip("Optional: Audio clip for button click sound")]
         [SerializeField] private AudioClip _clickSound;
 
-        // UI Document Reference
-        private UIDocument _uiDocument;
+        private PanelRenderer _panelRenderer;
+        private bool _panelReloadRegistered;
+        private Coroutine _deferredBindCoroutine;
+        private bool _visualTreeBound;
         private VisualElement _root;
         
         // Sidebar Navigation Items
@@ -94,7 +97,7 @@ namespace GameCore.UI.MainMenu
 
         private void Awake()
         {
-            _uiDocument = GetComponent<UIDocument>();
+            _panelRenderer = GetComponent<PanelRenderer>();
             
             // Setup audio source if audio clips are assigned
             if (_hoverSound != null || _clickSound != null)
@@ -107,25 +110,110 @@ namespace GameCore.UI.MainMenu
 
         private void OnEnable()
         {
-            if (_root == null)
+            if (_panelRenderer == null)
             {
-                Initialize();
+                _panelRenderer = GetComponent<PanelRenderer>();
+            }
+
+            EnsurePanelReloadSubscription();
+            if (_panelRenderer != null)
+            {
+                ((IPanelComponent)_panelRenderer).PerformUpdate();
+            }
+
+            TrySyncRootFromPanel();
+            TryBindVisualTree();
+            ScheduleDeferredBindIfNeeded();
+        }
+
+        private void OnPanelUiReload(PanelRenderer _, VisualElement root)
+        {
+            _root = root;
+            TryBindVisualTree();
+        }
+
+        private void EnsurePanelReloadSubscription()
+        {
+            if (_panelRenderer == null || _panelReloadRegistered)
+            {
+                return;
+            }
+
+            _panelRenderer.RegisterUIReloadCallback(OnPanelUiReload);
+            _panelReloadRegistered = true;
+        }
+
+        private void ReleasePanelReloadSubscription()
+        {
+            if (_panelRenderer == null || !_panelReloadRegistered)
+            {
+                return;
+            }
+
+            _panelRenderer.UnregisterUIReloadCallback(OnPanelUiReload);
+            _panelReloadRegistered = false;
+        }
+
+        private void TrySyncRootFromPanel()
+        {
+            if (_root != null || _panelRenderer == null)
+            {
+                return;
+            }
+
+            _root = PanelRendererUtility.TryGetRootVisualElement(_panelRenderer);
+        }
+
+        private void ScheduleDeferredBindIfNeeded()
+        {
+            if (_visualTreeBound || !isActiveAndEnabled)
+            {
+                return;
+            }
+
+            if (_deferredBindCoroutine != null)
+            {
+                StopCoroutine(_deferredBindCoroutine);
+            }
+
+            _deferredBindCoroutine = StartCoroutine(CoDeferredBindPanelTree());
+        }
+
+        private IEnumerator CoDeferredBindPanelTree()
+        {
+            try
+            {
+                for (int i = 0; i < 24; i++)
+                {
+                    if (_visualTreeBound)
+                    {
+                        yield break;
+                    }
+
+                    TrySyncRootFromPanel();
+                    TryBindVisualTree();
+                    if (_visualTreeBound)
+                    {
+                        yield break;
+                    }
+
+                    yield return null;
+                }
+            }
+            finally
+            {
+                _deferredBindCoroutine = null;
             }
         }
 
-        public void Initialize()
+        private void TryBindVisualTree()
         {
-            if (_uiDocument == null)
+            if (_visualTreeBound || _root == null)
             {
-                _uiDocument = GetComponent<UIDocument>();
-            }
-
-            _root = _uiDocument.rootVisualElement;
-            if (_root == null)
-            {
-                Debug.LogError("MainMenuView: UIDocument has no rootVisualElement.");
                 return;
             }
+
+            _visualTreeBound = true;
 
             // Add stylesheet if assigned
             if (_mainMenuStyleSheet != null && !_root.styleSheets.Contains(_mainMenuStyleSheet))
@@ -135,15 +223,35 @@ namespace GameCore.UI.MainMenu
 
             // Query UI Elements
             QueryUIElements();
-            
+
             // Apply Fonts
             ApplyFonts();
-            
+
             // Setup Event Handlers
             SetupEventHandlers();
-            
+
             // Setup Hover Effects
             SetupHoverEffects();
+        }
+
+        public void Initialize()
+        {
+            if (_panelRenderer == null)
+            {
+                _panelRenderer = GetComponent<PanelRenderer>();
+            }
+
+            if (_panelRenderer == null)
+            {
+                Debug.LogError("MainMenuView: PanelRenderer is missing.");
+                return;
+            }
+
+            EnsurePanelReloadSubscription();
+            ((IPanelComponent)_panelRenderer).PerformUpdate();
+            TrySyncRootFromPanel();
+            TryBindVisualTree();
+            ScheduleDeferredBindIfNeeded();
         }
         
         private void ApplyFonts()
@@ -318,9 +426,19 @@ namespace GameCore.UI.MainMenu
 
         private void OnDisable()
         {
+            if (_deferredBindCoroutine != null)
+            {
+                StopCoroutine(_deferredBindCoroutine);
+                _deferredBindCoroutine = null;
+            }
+
+            ReleasePanelReloadSubscription();
+
             UnregisterEventHandlers();
             ClearSceneCards();
             ClearCharacterCards();
+            _visualTreeBound = false;
+            _root = null;
         }
         
         private void UnregisterEventHandlers()

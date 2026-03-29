@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -72,21 +73,20 @@ namespace GameCore.UI.InGame.Services
         }
 
         /// <summary>
-        /// Validates that a UIDocument has proper Panel Settings configured.
+        /// Validates that a runtime panel component (<see cref="PanelRenderer"/> or legacy <see cref="UIDocument"/>)
+        /// has Panel Settings configured.
         /// </summary>
-        /// <param name="uiDocument">The UIDocument to validate.</param>
-        /// <returns>True if Panel Settings are configured, false otherwise.</returns>
-        public static bool ValidateUIDocument(UnityEngine.UIElements.UIDocument uiDocument)
+        public static bool ValidateRuntimePanel(IPanelComponent panel)
         {
-            if (uiDocument == null)
+            if (panel == null)
             {
-                Debug.LogError("UIInputValidator: UIDocument is null!");
+                Debug.LogError("UIInputValidator: IPanelComponent is null — add a Panel Renderer (or UIDocument) to this GameObject.");
                 return false;
             }
 
-            if (uiDocument.panelSettings == null)
+            if (panel.panelSettings == null)
             {
-                Debug.LogWarning("UIInputValidator: UIDocument has no Panel Settings assigned. UI input may not work.");
+                Debug.LogWarning("UIInputValidator: Panel component has no Panel Settings assigned. UI input may not work.");
                 return false;
             }
 

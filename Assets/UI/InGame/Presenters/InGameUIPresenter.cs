@@ -8,6 +8,7 @@ using GameCore.PlayerData;
 using GameCore.PlayerData.Rulesets;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Collections;
 using System.Collections.Generic;
 
 #if ENABLE_INPUT_SYSTEM
@@ -113,8 +114,7 @@ namespace GameCore.UI.InGame
             _view.Show();
 
             // Validate UI input system configuration
-            var uiDocument = _view.GetComponent<UIDocument>();
-            UIInputValidator.ValidateUIDocument(uiDocument);
+            UIInputValidator.ValidateRuntimePanel(_view.GetComponent<IPanelComponent>());
             UIInputValidator.ValidateInputSystem();
 
             _view.TabClicked += OnTabClicked;
@@ -132,10 +132,17 @@ namespace GameCore.UI.InGame
             // Push initial state to the view so it starts in sync with the model.
             // This will also configure input properly (UI starts closed, so input should be enabled)
             _view.UpdateView(Model.State);
-            
-            // Load initial character data and update UI
+
+            // PanelRenderer may attach the visual tree one frame after Initialize() when the reload callback fires.
             var initialData = _playerDataService.GetPlayerData();
-            UpdateCharacterSheetUI(initialData);
+            if (_view.Root != null)
+            {
+                UpdateCharacterSheetUI(initialData);
+            }
+            else
+            {
+                StartCoroutine(CoApplyInitialCharacterSheetWhenRootReady(initialData));
+            }
             
             // Explicitly ensure input is enabled on startup (character sheet starts closed)
             if (_playerInputs != null)
@@ -144,6 +151,24 @@ namespace GameCore.UI.InGame
             }
 
             _initialized = true;
+        }
+
+        private IEnumerator CoApplyInitialCharacterSheetWhenRootReady(CharacterData initialData)
+        {
+            int waited = 0;
+            while (_view != null && _view.Root == null && waited < 120)
+            {
+                waited++;
+                yield return null;
+            }
+
+            if (_view == null || !_initialized)
+            {
+                yield break;
+            }
+
+            UpdateCharacterSheetUI(initialData);
+            _view.UpdateView(Model.State);
         }
 
         public void Dispose()

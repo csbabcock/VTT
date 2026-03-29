@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using GameCore.UI;
 using GameCore.UI.MainMenu.Scrollbars;
@@ -30,7 +31,7 @@ namespace GameCore.UI.MainMenu
     /// View for character creation UI.
     /// Follows MVP: coordinates binding and events; ability stat tiles are built by <see cref="AbilityStatRowViewFactory"/>.
     /// </summary>
-    [RequireComponent(typeof(UIDocument))]
+    [RequireComponent(typeof(PanelRenderer))]
     public partial class CharacterCreationView : MonoBehaviour, IUIView<CharacterCreationState>
     {
         private static readonly string[] AbilityNamesShort = { "str", "dex", "con", "int", "wis", "cha" };
@@ -47,7 +48,10 @@ namespace GameCore.UI.MainMenu
         /// <summary>Custom pane scrollbars (USS + track/thumb in UXML); swappable for tests.</summary>
         private ICustomPaneScrollBarBinder _paneScrollBarBinder = new CharacterCreationPaneScrollBarBinder();
 
-        private UIDocument _uiDocument;
+        private PanelRenderer _panelRenderer;
+        private bool _panelReloadRegistered;
+        private Coroutine _deferredBindCoroutine;
+        private bool _visualTreeBound;
         private VisualElement _root;
 
         // Tab buttons
@@ -133,30 +137,128 @@ namespace GameCore.UI.MainMenu
 
         private void Awake()
         {
-            _uiDocument = GetComponent<UIDocument>();
+            _panelRenderer = GetComponent<PanelRenderer>();
         }
 
         private void OnEnable()
         {
-            if (_root == null)
+            if (_panelRenderer == null)
             {
-                Initialize();
+                _panelRenderer = GetComponent<PanelRenderer>();
+            }
+
+            EnsurePanelReloadSubscription();
+            if (_panelRenderer != null)
+            {
+                ((IPanelComponent)_panelRenderer).PerformUpdate();
+            }
+
+            TrySyncRootFromPanel();
+            TryBindVisualTree();
+            ScheduleDeferredBindIfNeeded();
+        }
+
+        private void OnDisable()
+        {
+            if (_deferredBindCoroutine != null)
+            {
+                StopCoroutine(_deferredBindCoroutine);
+                _deferredBindCoroutine = null;
+            }
+
+            ReleasePanelReloadSubscription();
+            _visualTreeBound = false;
+            _root = null;
+        }
+
+        private void OnPanelUiReload(PanelRenderer _, VisualElement root)
+        {
+            _root = root;
+            TryBindVisualTree();
+        }
+
+        private void EnsurePanelReloadSubscription()
+        {
+            if (_panelRenderer == null || _panelReloadRegistered)
+            {
+                return;
+            }
+
+            _panelRenderer.RegisterUIReloadCallback(OnPanelUiReload);
+            _panelReloadRegistered = true;
+        }
+
+        private void ReleasePanelReloadSubscription()
+        {
+            if (_panelRenderer == null || !_panelReloadRegistered)
+            {
+                return;
+            }
+
+            _panelRenderer.UnregisterUIReloadCallback(OnPanelUiReload);
+            _panelReloadRegistered = false;
+        }
+
+        private void TrySyncRootFromPanel()
+        {
+            if (_root != null || _panelRenderer == null)
+            {
+                return;
+            }
+
+            _root = PanelRendererUtility.TryGetRootVisualElement(_panelRenderer);
+        }
+
+        private void ScheduleDeferredBindIfNeeded()
+        {
+            if (_visualTreeBound || !isActiveAndEnabled)
+            {
+                return;
+            }
+
+            if (_deferredBindCoroutine != null)
+            {
+                StopCoroutine(_deferredBindCoroutine);
+            }
+
+            _deferredBindCoroutine = StartCoroutine(CoDeferredBindPanelTree());
+        }
+
+        private IEnumerator CoDeferredBindPanelTree()
+        {
+            try
+            {
+                for (int i = 0; i < 24; i++)
+                {
+                    if (_visualTreeBound)
+                    {
+                        yield break;
+                    }
+
+                    TrySyncRootFromPanel();
+                    TryBindVisualTree();
+                    if (_visualTreeBound)
+                    {
+                        yield break;
+                    }
+
+                    yield return null;
+                }
+            }
+            finally
+            {
+                _deferredBindCoroutine = null;
             }
         }
 
-        public void Initialize()
+        private void TryBindVisualTree()
         {
-            if (_uiDocument == null)
+            if (_visualTreeBound || _root == null)
             {
-                _uiDocument = GetComponent<UIDocument>();
-            }
-
-            _root = _uiDocument.rootVisualElement;
-            if (_root == null)
-            {
-                Debug.LogError("CharacterCreationView: UIDocument has no rootVisualElement.");
                 return;
             }
+
+            _visualTreeBound = true;
 
             // Add stylesheet if assigned
             if (_characterCreationStyleSheet != null && !_root.styleSheets.Contains(_characterCreationStyleSheet))
@@ -168,6 +270,26 @@ namespace GameCore.UI.MainMenu
             SetupEventHandlers();
             InitializeUIElements();
             _paneScrollBarBinder.BindTree(_root);
+        }
+
+        public void Initialize()
+        {
+            if (_panelRenderer == null)
+            {
+                _panelRenderer = GetComponent<PanelRenderer>();
+            }
+
+            if (_panelRenderer == null)
+            {
+                Debug.LogError("CharacterCreationView: PanelRenderer is missing.");
+                return;
+            }
+
+            EnsurePanelReloadSubscription();
+            ((IPanelComponent)_panelRenderer).PerformUpdate();
+            TrySyncRootFromPanel();
+            TryBindVisualTree();
+            ScheduleDeferredBindIfNeeded();
         }
 
         private void QueryUIElements()

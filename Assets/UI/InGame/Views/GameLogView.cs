@@ -26,6 +26,8 @@ namespace GameCore.UI.InGame
         private VisualElement _root;
         private VisualElement _gameLogPanel;
         private UIAnimationController _animationController;
+        private Button _clearLogButton;
+        private System.Action _clearLogClickedHandler;
         #endregion
 
         #region Events
@@ -47,6 +49,8 @@ namespace GameCore.UI.InGame
         /// </summary>
         public void Initialize(VisualElement root, UIAnimationController animationController)
         {
+            DetachClearButton();
+
             _root = root;
             _animationController = animationController;
             
@@ -73,12 +77,31 @@ namespace GameCore.UI.InGame
             LoadGameLogHeight();
 
             // Wire up clear button
-            var clearLogButton = _root.Q<Button>("game-log-clear-button");
-            if (clearLogButton != null)
+            _clearLogButton = _root.Q<Button>("game-log-clear-button");
+            if (_clearLogButton != null)
             {
-                clearLogButton.pickingMode = PickingMode.Position;
-                clearLogButton.clicked += () => ClearLogClicked?.Invoke();
+                _clearLogButton.pickingMode = PickingMode.Position;
+                _clearLogClickedHandler = () => ClearLogClicked?.Invoke();
+                _clearLogButton.clicked += _clearLogClickedHandler;
             }
+        }
+
+        private void DetachClearButton()
+        {
+            if (_clearLogButton != null && _clearLogClickedHandler != null)
+            {
+                try
+                {
+                    _clearLogButton.clicked -= _clearLogClickedHandler;
+                }
+                catch
+                {
+                    // Button may already be disposed after a panel reload.
+                }
+            }
+
+            _clearLogButton = null;
+            _clearLogClickedHandler = null;
         }
 
         /// <summary>

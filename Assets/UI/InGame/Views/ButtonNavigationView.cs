@@ -16,7 +16,6 @@ namespace GameCore.UI.InGame
     {
         #region Private Fields
         private VisualElement _root;
-        private UIDocument _uiDocument;
         private VisualElement[] _characterSheetTabs;
         private ScrollView _characterSheetScrollView;
         private Button[] _tabButtons;
@@ -27,10 +26,9 @@ namespace GameCore.UI.InGame
         /// <summary>
         /// Initializes the button navigation view.
         /// </summary>
-        public void Initialize(UIDocument uiDocument, VisualElement root, VisualElement[] characterSheetTabs, 
+        public void Initialize(VisualElement root, VisualElement[] characterSheetTabs,
             ScrollView characterSheetScrollView, Button[] tabButtons)
         {
-            _uiDocument = uiDocument;
             _root = root;
             _characterSheetTabs = characterSheetTabs;
             _characterSheetScrollView = characterSheetScrollView;
@@ -65,7 +63,7 @@ namespace GameCore.UI.InGame
         /// </summary>
         public int GetHoveredButtonIndex(int tabIndex)
         {
-            if (_uiDocument == null)
+            if (_root == null)
                 return -1;
 
             var buttons = GetButtonsInTab(tabIndex);

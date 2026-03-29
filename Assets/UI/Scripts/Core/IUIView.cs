@@ -13,7 +13,7 @@ namespace GameCore.UI
         VisualElement Root { get; }
 
         /// <summary>
-        /// Called once when the view is created and bound to a UIDocument.
+        /// Called once when the view is created and bound to a runtime panel (<see cref="T:UnityEngine.UIElements.PanelRenderer"/>).
         /// </summary>
         void Initialize();
 
