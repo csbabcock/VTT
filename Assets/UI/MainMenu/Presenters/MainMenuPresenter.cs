@@ -30,6 +30,8 @@ namespace GameCore.UI.MainMenu
 
         private void Awake()
         {
+            EnsureMenuCursorState();
+
             if (_view == null)
             {
                 _view = GetComponent<MainMenuView>();
@@ -50,6 +52,8 @@ namespace GameCore.UI.MainMenu
 
         private void OnEnable()
         {
+            EnsureMenuCursorState();
+
             if (!_initialized)
             {
                 Initialize();
@@ -65,6 +69,8 @@ namespace GameCore.UI.MainMenu
         {
             if (_initialized)
                 return;
+
+            EnsureMenuCursorState();
 
             if (_view == null)
             {
@@ -92,6 +98,12 @@ namespace GameCore.UI.MainMenu
             _view.UpdateView(Model.State);
 
             _initialized = true;
+        }
+
+        private static void EnsureMenuCursorState()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
 
         public void Dispose()

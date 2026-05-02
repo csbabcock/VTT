@@ -39,6 +39,8 @@ namespace GameCore.UI.MainMenu
         private bool _panelReloadRegistered;
         private Coroutine _deferredBindCoroutine;
         private bool _visualTreeBound;
+        private bool _hasLastState;
+        private MainMenuState _lastState;
         private VisualElement _root;
         
         // Sidebar Navigation Items
@@ -128,6 +130,7 @@ namespace GameCore.UI.MainMenu
 
         private void OnPanelUiReload(PanelRenderer _, VisualElement root)
         {
+            ResetBoundVisualTreeReferences();
             _root = root;
             TryBindVisualTree();
         }
@@ -232,6 +235,41 @@ namespace GameCore.UI.MainMenu
 
             // Setup Hover Effects
             SetupHoverEffects();
+
+            if (_hasLastState)
+            {
+                UpdateView(_lastState);
+            }
+        }
+
+        private void ResetBoundVisualTreeReferences()
+        {
+            _visualTreeBound = false;
+            _root = null;
+            _titleLabel = null;
+            _versionLabel = null;
+            _navHost = null;
+            _navJoin = null;
+            _navSettings = null;
+            _hostContent = null;
+            _joinContent = null;
+            _settingsContent = null;
+            _sceneGridScroll = null;
+            _sceneGridContainer = null;
+            _selectedSceneNameLabel = null;
+            _loadSceneButton = null;
+            _characterGridScroll = null;
+            _characterGridContainer = null;
+            _selectedCharacterNameLabel = null;
+            _createCharacterButton = null;
+            _joinSessionButton = null;
+            _exitButton = null;
+            _exitConfirmationDialog = null;
+            _dialogCancelButton = null;
+            _dialogConfirmButton = null;
+            _onNavHostClicked = null;
+            _onNavJoinClicked = null;
+            _onNavSettingsClicked = null;
         }
 
         public void Initialize()
@@ -434,11 +472,7 @@ namespace GameCore.UI.MainMenu
 
             ReleasePanelReloadSubscription();
 
-            UnregisterEventHandlers();
-            ClearSceneCards();
-            ClearCharacterCards();
-            _visualTreeBound = false;
-            _root = null;
+            ResetBoundVisualTreeReferences();
         }
         
         private void UnregisterEventHandlers()
@@ -516,6 +550,14 @@ namespace GameCore.UI.MainMenu
         /// </summary>
         public void UpdateView(MainMenuState state)
         {
+            _lastState = state;
+            _hasLastState = true;
+
+            if (!_visualTreeBound)
+            {
+                return;
+            }
+
             SetInteractable(state.IsInteractable);
             UpdateNavigation(state.CurrentSection);
             UpdateSceneList(state.AvailableScenes, state.SelectedSceneName);

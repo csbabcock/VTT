@@ -52,6 +52,12 @@ namespace GameCore.UI.MainMenu
         private bool _panelReloadRegistered;
         private Coroutine _deferredBindCoroutine;
         private bool _visualTreeBound;
+        private bool _isVisible;
+        private bool _hasLastState;
+        private CharacterCreationState _lastState;
+        private List<(string id, string displayName)> _lastClassOptions;
+        private List<(string id, string displayName)> _lastRaceOptions;
+        private List<(string id, string displayName)> _lastBackgroundOptions;
         private VisualElement _root;
 
         // Tab buttons
@@ -132,6 +138,7 @@ namespace GameCore.UI.MainMenu
         public event System.Action CreateCharacterClicked;
         /// <summary>Invoked when the user changes the selected class level (1–20).</summary>
         public event System.Action<int> SelectedClassLevelChanged;
+        public event System.Action VisualTreeBound;
 
         public VisualElement Root => _root;
 
@@ -168,11 +175,14 @@ namespace GameCore.UI.MainMenu
 
             ReleasePanelReloadSubscription();
             _visualTreeBound = false;
+            _detailClassLevelControlsHooked = false;
             _root = null;
         }
 
         private void OnPanelUiReload(PanelRenderer _, VisualElement root)
         {
+            _visualTreeBound = false;
+            _detailClassLevelControlsHooked = false;
             _root = root;
             TryBindVisualTree();
         }
@@ -270,6 +280,19 @@ namespace GameCore.UI.MainMenu
             SetupEventHandlers();
             InitializeUIElements();
             _paneScrollBarBinder.BindTree(_root);
+
+            RebindCachedOptionLists();
+            if (_hasLastState)
+            {
+                UpdateView(_lastState);
+            }
+
+            if (!_isVisible)
+            {
+                Hide();
+            }
+
+            VisualTreeBound?.Invoke();
         }
 
         public void Initialize()
@@ -499,12 +522,24 @@ namespace GameCore.UI.MainMenu
             System.Collections.Generic.IReadOnlyList<(string id, string displayName)> races,
             System.Collections.Generic.IReadOnlyList<(string id, string displayName)> backgrounds)
         {
+            _lastClassOptions = classes != null ? new List<(string id, string displayName)>(classes) : null;
+            _lastRaceOptions = races != null ? new List<(string id, string displayName)>(races) : null;
+            _lastBackgroundOptions = backgrounds != null ? new List<(string id, string displayName)>(backgrounds) : null;
+
+            RebindCachedOptionLists();
+        }
+
+        private void RebindCachedOptionLists()
+        {
+            if (!_visualTreeBound)
+                return;
+
             _classButtonsContainer?.Clear();
             _raceButtonsContainer?.Clear();
             _backgroundButtonsContainer?.Clear();
-            BindOptionList(_classButtonsContainer, classes, id => ClassSelected?.Invoke(id));
-            BindOptionList(_raceButtonsContainer, races, id => RaceSelected?.Invoke(id));
-            BindOptionList(_backgroundButtonsContainer, backgrounds, id => BackgroundSelected?.Invoke(id));
+            BindOptionList(_classButtonsContainer, _lastClassOptions, id => ClassSelected?.Invoke(id));
+            BindOptionList(_raceButtonsContainer, _lastRaceOptions, id => RaceSelected?.Invoke(id));
+            BindOptionList(_backgroundButtonsContainer, _lastBackgroundOptions, id => BackgroundSelected?.Invoke(id));
         }
 
         private void BindOptionList(
@@ -673,6 +708,8 @@ namespace GameCore.UI.MainMenu
 
         public void Show()
         {
+            _isVisible = true;
+
             if (_root != null)
             {
                 _root.style.display = DisplayStyle.Flex;
@@ -684,6 +721,8 @@ namespace GameCore.UI.MainMenu
 
         public void Hide()
         {
+            _isVisible = false;
+
             if (_root != null)
             {
                 _root.style.display = DisplayStyle.None;
@@ -693,7 +732,10 @@ namespace GameCore.UI.MainMenu
 
         public void UpdateView(CharacterCreationState state)
         {
-            if (_root == null) return;
+            _lastState = state;
+            _hasLastState = true;
+
+            if (_root == null || !_visualTreeBound) return;
 
             // Update visibility
             if (state.IsVisible)

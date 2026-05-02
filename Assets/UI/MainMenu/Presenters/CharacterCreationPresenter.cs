@@ -71,10 +71,8 @@ namespace GameCore.UI.MainMenu
                 return;
             }
 
+            _view.VisualTreeBound += HandleViewVisualTreeBound;
             _view.Initialize();
-
-            // Initialize drag and drop handler after view is initialized
-            InitializeDragAndDropHandler();
 
             // Subscribe to view events
             _view.ClassSelected += HandleClassSelected;
@@ -96,12 +94,6 @@ namespace GameCore.UI.MainMenu
             _view.CancelClicked += HandleCancelClicked;
             _view.CreateCharacterClicked += HandleCreateCharacterClicked;
 
-            // Register for pointer move to update drag preview
-            if (_view.Root != null)
-            {
-                _view.Root.RegisterCallback<PointerMoveEvent>(OnPointerMove);
-            }
-
             // Subscribe to model events
             Model.StateChanged += HandleModelStateChanged;
 
@@ -110,6 +102,7 @@ namespace GameCore.UI.MainMenu
             _view.UpdateView(Model.State);
 
             BindRaceClassBackgroundOptionsFromContent();
+            HandleViewVisualTreeBound();
             // Touch spell index once so large spell folders load in a predictable place (lazy load on first access).
             _ = _contentQuery.GetSpells();
 
@@ -141,6 +134,7 @@ namespace GameCore.UI.MainMenu
                 _view.ConfirmScoresClicked -= HandleConfirmScoresClicked;
                 _view.CancelClicked -= HandleCancelClicked;
                 _view.CreateCharacterClicked -= HandleCreateCharacterClicked;
+                _view.VisualTreeBound -= HandleViewVisualTreeBound;
 
                 if (_view.Root != null)
                 {
@@ -154,6 +148,18 @@ namespace GameCore.UI.MainMenu
             }
 
             _initialized = false;
+        }
+
+        private void HandleViewVisualTreeBound()
+        {
+            if (_view == null || _view.Root == null || Model == null)
+                return;
+
+            InitializeDragAndDropHandler();
+            _view.Root.UnregisterCallback<PointerMoveEvent>(OnPointerMove);
+            _view.Root.RegisterCallback<PointerMoveEvent>(OnPointerMove);
+            BindRaceClassBackgroundOptionsFromContent();
+            HandleModelStateChanged(Model.State);
         }
 
         public void Show()
