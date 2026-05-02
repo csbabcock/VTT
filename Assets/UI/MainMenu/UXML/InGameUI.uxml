@@ -1,4 +1,5 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/InGame/USS/InGameUI.uss?fileID=7433441132597879392&amp;guid=b2216ac57e27e33409a34847ef62657b&amp;type=3#InGameUI"/>
     <!-- Root HUD layer over gameplay -->
     <ui:VisualElement name="root" class="hud-root">
         <!-- Controls cheat sheet - anchored top-left -->
