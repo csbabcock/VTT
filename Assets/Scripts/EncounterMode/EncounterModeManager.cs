@@ -66,7 +66,6 @@ namespace GameCore.EncounterMode
         /// </summary>
         public bool IsMovementModeActive => _isMovementModeActive;
 
-        private PlayerInputs _playerInputs;
         private IGridGenerator _gridGenerator;
         private IGridRenderer _gridRenderer;
         private IGridSelector _gridSelector;
@@ -116,8 +115,6 @@ namespace GameCore.EncounterMode
             if (InGameUIPresenter == null)
                 InGameUIPresenter = FindAnyObjectByType<InGameUIPresenter>();
 
-            _playerInputs = PlayerController?.GetComponent<PlayerInputs>();
-
             // Set interface references
             _gridGenerator = GridGenerator;
             _gridRenderer = GridRenderer;
@@ -129,12 +126,6 @@ namespace GameCore.EncounterMode
 
         private void Start()
         {
-            // Subscribe to input events
-            if (_playerInputs != null)
-            {
-                _playerInputs.OnToggleEncounterMode += ToggleEncounterMode;
-            }
-
             // Initialize grid generator
             if (_gridGenerator != null && GridGenerator != null)
             {
@@ -159,11 +150,6 @@ namespace GameCore.EncounterMode
 
         private void OnDestroy()
         {
-            if (_playerInputs != null)
-            {
-                _playerInputs.OnToggleEncounterMode -= ToggleEncounterMode;
-            }
-
             if (GridSelector != null)
             {
                 GridSelector.OnCellSelected -= OnCellSelected;
@@ -185,6 +171,7 @@ namespace GameCore.EncounterMode
         public void ToggleEncounterMode()
         {
             IsEncounterModeActive = !IsEncounterModeActive;
+            Debug.Log($"[EncounterCameraDebug] EncounterModeManager toggled encounterActive={IsEncounterModeActive}, manager={name}");
             
             if (IsEncounterModeActive)
             {

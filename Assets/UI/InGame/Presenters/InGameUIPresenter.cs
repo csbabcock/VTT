@@ -211,19 +211,42 @@ namespace GameCore.UI.InGame
             if (!_initialized)
                 return;
 
-            // Update look input based on whether mouse is over UI
-            // This allows camera control when character sheet is open but mouse is not over it
-            if (Model != null && Model.IsCharacterSheetOpen && _playerInputs != null)
-            {
-                // Only disable look input when mouse is actually over UI
-                // This ensures camera control works when character sheet is open but mouse is not over it
-                _playerInputs.cursorInputForLook = !UIInteractionService.Instance.ShouldBlockCameraInput();
-            }
+            UpdateLookInputState();
 
 #if ENABLE_INPUT_SYSTEM
             HandleMouseMovement();
             HandleKeyboardInput();
 #endif
+        }
+
+        private void UpdateLookInputState()
+        {
+            if (_playerInputs == null)
+                return;
+
+            if (IsEncounterModeActive())
+            {
+                _playerInputs.cursorInputForLook = false;
+                return;
+            }
+
+            if (Model != null && Model.IsCharacterSheetOpen)
+            {
+                _playerInputs.cursorInputForLook = !UIInteractionService.Instance.ShouldBlockCameraInput();
+                return;
+            }
+
+            _playerInputs.cursorInputForLook = true;
+        }
+
+        private bool IsEncounterModeActive()
+        {
+            if (_encounterModeManager == null)
+            {
+                _encounterModeManager = FindAnyObjectByType<EncounterModeManager>();
+            }
+
+            return _encounterModeManager != null && _encounterModeManager.IsEncounterModeActive;
         }
 
 #if ENABLE_INPUT_SYSTEM
@@ -353,13 +376,12 @@ namespace GameCore.UI.InGame
                 StartCoroutine(RefreshUIAfterDelay(0.1f));
             }
             
-            // Don't disable all input when character sheet opens - we want camera control to work
-            // Only disable movement input, not look input
+            // Keep the action map enabled for UI Toolkit; look input is filtered separately.
             UpdatePlayerInput(state.IsCharacterSheetOpen);
             UpdateCursorState(state.IsCharacterSheetOpen);
             
-            // Restore cursor input for look when character sheet closes
-            if (!state.IsCharacterSheetOpen && _playerInputs != null)
+            // Restore cursor input for look when character sheet closes outside encounter mode.
+            if (!state.IsCharacterSheetOpen && _playerInputs != null && !IsEncounterModeActive())
             {
                 _playerInputs.cursorInputForLook = true;
             }
@@ -381,14 +403,13 @@ namespace GameCore.UI.InGame
         /// <summary>
         /// Updates cursor lock state and visibility based on character sheet state.
         /// Shows cursor when sheet opens, hides it when sheet closes.
-        /// Uses Confined mode when open to allow camera control while cursor is visible.
+        /// Uses Confined mode when open so UI and tactical controls remain clickable.
         /// </summary>
         private void UpdateCursorState(bool isCharacterSheetOpen)
         {
-            if (isCharacterSheetOpen)
+            if (isCharacterSheetOpen || IsEncounterModeActive())
             {
-                // Show cursor when character sheet opens
-                // Use Confined mode to allow camera control while cursor is visible
+                // Encounter mode keeps the cursor available for UI/tactical interaction.
                 UnityEngine.Cursor.lockState = CursorLockMode.Confined;
                 UnityEngine.Cursor.visible = true;
             }
@@ -402,7 +423,7 @@ namespace GameCore.UI.InGame
 
         /// <summary>
         /// Updates player input enabled state based on UI visibility.
-        /// In encounter mode, we keep look input enabled for camera control.
+        /// Look input is filtered separately so encounter mode can keep UI input without camera control.
         /// Movement input is handled by PlayerController which checks if character sheet is open.
         /// </summary>
         private void UpdatePlayerInput(bool isUIOpen)

@@ -129,6 +129,8 @@ namespace GameCore
         private ThirdPersonCameraController _thirdPersonCameraController;
 
         private const float _threshold = 0.01f;
+        private bool? _lastLoggedCameraLock;
+        private MovementMode? _lastLoggedMovementMode;
 
         private bool IsCurrentDeviceMouse
         {
@@ -306,7 +308,7 @@ namespace GameCore
             {
 #if ENABLE_INPUT_SYSTEM
                 _input.OnTogglePerspective += OnTogglePerspective;
-                _input.OnToggleEncounterMode += OnToggleEncounterMode;
+                _input.OnToggleEncounterMode += HandleToggleEncounterMode;
 #endif
             }
 
@@ -326,7 +328,7 @@ namespace GameCore
             {
 #if ENABLE_INPUT_SYSTEM
                 _input.OnTogglePerspective -= OnTogglePerspective;
-                _input.OnToggleEncounterMode -= OnToggleEncounterMode;
+                _input.OnToggleEncounterMode -= HandleToggleEncounterMode;
 #endif
             }
 
@@ -343,6 +345,8 @@ namespace GameCore
         private void Update()
         {
             if (_input == null) return;
+
+            SyncMovementModeWithEncounterState();
 
             // Update grounded state
             _groundedChecker.CheckGrounded();
@@ -469,13 +473,8 @@ namespace GameCore
                 _thirdPersonCameraController.UpdateClampValues(TopClamp, BottomClamp, CameraAngleOverride);
             }
 
-            // Check if mouse is over UI - if so, lock camera to prevent rotation
-            bool shouldLockCamera = LockCameraPosition;
-            if (!shouldLockCamera)
-            {
-                // Check if mouse is over character sheet UI using centralized service
-                shouldLockCamera = UIInteractionService.Instance.ShouldBlockCameraInput();
-            }
+            bool shouldLockCamera = ShouldLockCameraInput();
+            LogCameraLockState(shouldLockCamera);
 
             // Process camera rotation
             _cameraController.ProcessRotation(_input.look, shouldLockCamera);
@@ -492,6 +491,76 @@ namespace GameCore
                     _firstPersonCameraController.UpdateForwardOffset(FirstPersonForwardOffset);
                 }
             }
+        }
+
+        private bool ShouldLockCameraInput()
+        {
+            if (LockCameraPosition)
+                return true;
+
+            if (CurrentMovementMode == MovementMode.Encounter)
+                return true;
+
+            if (IsEncounterModeActive())
+                return true;
+
+            return UIInteractionService.Instance.ShouldBlockCameraInput();
+        }
+
+        private bool IsEncounterModeActive()
+        {
+            if (_encounterModeManager == null)
+            {
+                _encounterModeManager = FindAnyObjectByType<EncounterModeManager>();
+            }
+
+            return _encounterModeManager != null && _encounterModeManager.IsEncounterModeActive;
+        }
+
+        private void SyncMovementModeWithEncounterState()
+        {
+            if (_encounterModeManager == null)
+            {
+                _encounterModeManager = FindAnyObjectByType<EncounterModeManager>();
+            }
+
+            if (_encounterModeManager == null)
+                return;
+
+            MovementMode desiredMode = _encounterModeManager.IsEncounterModeActive
+                ? MovementMode.Encounter
+                : MovementMode.Normal;
+
+            if (CurrentMovementMode == desiredMode)
+                return;
+
+            CurrentMovementMode = desiredMode;
+            _encounterMovementHandler?.CancelMovement();
+            LogMovementModeState();
+        }
+
+        private void LogCameraLockState(bool shouldLockCamera)
+        {
+            if (_lastLoggedCameraLock.HasValue && _lastLoggedCameraLock.Value == shouldLockCamera)
+                return;
+
+            _lastLoggedCameraLock = shouldLockCamera;
+            Debug.Log(
+                $"[EncounterCameraDebug] PlayerController cameraLock={shouldLockCamera}, " +
+                $"movementMode={CurrentMovementMode}, encounterActive={IsEncounterModeActive()}, " +
+                $"look={(_input != null ? _input.look : Vector2.zero)}, cameraController={_cameraController?.GetType().Name}, " +
+                $"player={name}");
+        }
+
+        private void LogMovementModeState()
+        {
+            if (_lastLoggedMovementMode.HasValue && _lastLoggedMovementMode.Value == CurrentMovementMode)
+                return;
+
+            _lastLoggedMovementMode = CurrentMovementMode;
+            Debug.Log(
+                $"[EncounterCameraDebug] PlayerController movementMode={CurrentMovementMode}, " +
+                $"encounterActive={IsEncounterModeActive()}, player={name}");
         }
 
         // Removed - camera controller switching is now handled in OnTogglePerspective
@@ -569,7 +638,7 @@ namespace GameCore
             );
         }
 
-        private void OnToggleEncounterMode()
+        private void HandleToggleEncounterMode()
         {
             if (_encounterModeManager != null)
             {

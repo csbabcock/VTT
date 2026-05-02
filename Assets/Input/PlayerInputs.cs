@@ -1,4 +1,5 @@
 using UnityEngine;
+using GameCore.EncounterMode;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using PlayerInputComponent = UnityEngine.InputSystem.PlayerInput;
@@ -37,6 +38,9 @@ namespace GameCore
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
 		#endregion
+
+		private EncounterModeManager _encounterModeManager;
+		private bool? _lastLoggedShouldReadLookInput;
 
 #if ENABLE_INPUT_SYSTEM
 		#region Private Fields
@@ -231,7 +235,7 @@ namespace GameCore
 				move = _moveAction.ReadValue<Vector2>();
 			}
 
-			if (_lookAction != null && _lookAction.enabled && cursorInputForLook)
+			if (_lookAction != null && _lookAction.enabled && ShouldReadLookInput())
 			{
 				look = _lookAction.ReadValue<Vector2>();
 			}
@@ -253,17 +257,6 @@ namespace GameCore
 				sprint = false;
 			}
 
-			// Check if toggle perspective button was pressed this frame
-			if (_togglePerspectiveAction != null && _togglePerspectiveAction.WasPressedThisFrame())
-			{
-				OnTogglePerspective?.Invoke();
-			}
-
-			// Check if toggle encounter mode button was pressed this frame
-			if (_toggleEncounterModeAction != null && _toggleEncounterModeAction.WasPressedThisFrame())
-			{
-				OnToggleEncounterMode?.Invoke();
-			}
 		}
 		#endregion
 
@@ -275,9 +268,13 @@ namespace GameCore
 
 		private void OnLookPerformed(InputAction.CallbackContext context)
 		{
-			if (cursorInputForLook)
+			if (ShouldReadLookInput())
 			{
 				look = context.ReadValue<Vector2>();
+			}
+			else
+			{
+				look = Vector2.zero;
 			}
 		}
 
@@ -326,6 +323,12 @@ namespace GameCore
 		/// </summary>
 		public void LookInput(Vector2 newLookDirection)
 		{
+			if (!ShouldReadLookInput())
+			{
+				look = Vector2.zero;
+				return;
+			}
+
 			look = newLookDirection;
 		}
 
@@ -414,6 +417,35 @@ namespace GameCore
 		}
 		#endregion
 #endif
+
+		private bool ShouldReadLookInput()
+		{
+			bool shouldRead = cursorInputForLook && !IsEncounterModeActive();
+			LogLookInputState(shouldRead);
+			return shouldRead;
+		}
+
+		private bool IsEncounterModeActive()
+		{
+			if (_encounterModeManager == null)
+			{
+				_encounterModeManager = FindAnyObjectByType<EncounterModeManager>();
+			}
+
+			return _encounterModeManager != null && _encounterModeManager.IsEncounterModeActive;
+		}
+
+		private void LogLookInputState(bool shouldRead)
+		{
+			if (_lastLoggedShouldReadLookInput.HasValue && _lastLoggedShouldReadLookInput.Value == shouldRead)
+				return;
+
+			_lastLoggedShouldReadLookInput = shouldRead;
+			Debug.Log(
+				$"[EncounterCameraDebug] PlayerInputs shouldReadLook={shouldRead}, " +
+				$"cursorInputForLook={cursorInputForLook}, encounterActive={IsEncounterModeActive()}, " +
+				$"look={look}, playerInputs={name}");
+		}
 
 		#region Cursor Management
 		/// <summary>
