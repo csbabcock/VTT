@@ -1,0 +1,301 @@
+{
+  "id": "class.pugilist",
+  "name": "Pugilist",
+  "description": "Arrows rain down around her as she runs towards the hobgoblins. Desperate to close the distance, the half-orc fights through the sting of a dozen cuts to reach her foes. The pain only makes her stronger. As she descends on the snarling p...",
+  "descriptionSections": [
+    {
+      "heading": "",
+      "body": "Arrows rain down around her as she runs towards the hobgoblins. Desperate to close the distance, the half-orc fights through the sting of a dozen cuts to reach her foes. The pain only makes her stronger. As she descends on the snarling pack she swings wildly, knocking several hobgoblins off their feet and sending the rest scattering before her. The human braces himself for the impact as the orc rushes him. Then the monster makes a mistake, telegraphing its next move, and that's all the opening the human needs. He ducks beneath the orc's wide swing then raises both hands high above his head and brings them down on the orc's back, forcing the brute to the ground. The dwarf smiles broadly and chuckles as the petty noble raises his hand to strike him for the impudent remark. Quick as a flash, the dwarf shatters the bottle in his hand against the bar and brandishes it before the noble. The young dandy flinches, stumbles backward, and runs away as the dwarf turns back to the bar to order another round. Wherever they come from, pugilists live a rough and tumble life that leaves them full of determination and reckless, either from overconfidence or desperation. In a fight they can channel this strength of character to dig deep and fight off foes with greater strength of numbers, arms, or armor than anyone else would think possible."
+    },
+    {
+      "heading": "Swagger for Days",
+      "body": "Pugilists unconsciously tap into their own inner strength in the form of moxie. This is not an esoteric or mystical energy that flows through the multiverse, but the result of determination forged over a lifetime of hardship with a never-say-die attitude. You can teach someone how to fight but you could never teach someone how to be a pugilist. The secret of mastering moxie doesn't come from disciplined study or rigorous training, it comes from years of wanting and needing."
+    },
+    {
+      "heading": "Life on the Street",
+      "body": "Every city in the worlds of D&D has its back alleys, its underground fighting rackets, its ghettos. The pugilists who live in these places don't have time to consider the lofty ideals of philosophy or ponder the mysteries of the universe. The pugilists, growing up on the wrong side of the tracks, spend all their time chasing down their next meal or, if they're fortunate enough to have that, their next drink, bedfellow, or flophouse. For pugilists, becoming an adventurer might be the only way out of whatever miserable situation they've been stuck in since infancy. For others, getting lost out in the world is an escape from the tangled web of debt or enemies they've piled up. Other pugilists fight because it's the only thing they know how to do. Whatever the reason for their adventuring, pugilists are as excited by the prospect of throwing punches as they are spending every last gold coin they earn."
+    },
+    {
+      "heading": "Hardship",
+      "body": "No one becomes as tough as a pugilist without enduring terrible hardship and persevering. For a pugilist, suffering is a catalyst that reveals their unbreakable spirit and strength. These hardships also influence a pugilist in other ways. If you were raised on the street, you might have a special interest in looking after the poor and destitute. If you were jailed for a crime you didn't commit, your relationship with the town guard might be more antagonistic than the average adventurer. Like so many other pugilists, your will was forged in the fires of adversity. What did you learn about yourself when you came out the other side? How does that experience continue to influence you today?"
+    },
+    {
+      "heading": "Favorite Dive",
+      "body": "Every hard-fighting hero needs a refuge where they can relax and rejuvenate. For pugilists, these sanctuaries tend to be disreputable. You might head to your favorite dive to indulge in your vice of choice or fraternize with the common folk. Some pugilists find the only way they can truly unwind is by getting bloodied in a fight. Others have a quiet side that few outside their closest companions ever see. How long has your favorite dive been your go-to spot? Do you have any friends or rivals that frequent the same place?"
+    },
+    {
+      "heading": "Rumor",
+      "body": "Pugilists are frequent subjects of rumors and speculation. The combination of their resilience, might, and panache make them popular topics over a pint at the local tavern. Add to this most pugilists come from humble beginnings and it's easy to see why the public comes up with such colorful stories about them. Whether or not it's true, you have a particular rumor that follows you wherever you go. How do you feel about your reputation? Do you indulge rumormongers, or does the speculation about your background annoy you?"
+    },
+    {
+      "heading": "Creating a Pugilist",
+      "body": "As you build your pugilist, consider how you came to be a bare knuckle brawler. Did you learn to fight to defend yourself? Was scraping the natural result of your nose for trouble? Or did you learn to fight as a way of intimidating and controlling others? Were you fighting for the entertainment, or did you fight because you had to? Did you try to become a more traditional martial artist but just couldn't hack it? Pugilists are a rowdy bunch that like to brag about how they learned to fight, so you better have a good story to tell. What events in your life gave you the sheer determination and will that pugilists call on? Did you spend every day hustling on the street to make ends meet? Were you forgotten and ignored by your family? Were you an outsider in your community who had to constantly struggle against the ignorant stereotypes the people there had of you? The most important element of the pugilist is that they are driven. Once you have decided what events made you into the pugilist you are today, decide how that may shape the actions you take in the future. You can make a pugilist quickly by following these suggestions. First, make Strength your highest ability score, followed by Constitution. Second, choose the criminal or urchin background."
+    }
+  ],
+  "hitDie": 8,
+  "primaryAbility": "STR",
+  "spellcastingAbility": "",
+  "savingThrowProficiencies": [
+    "STR",
+    "CON"
+  ],
+  "armorProficiencies": [
+    "Light"
+  ],
+  "weaponProficiencies": [
+    "Simple",
+    "Improvised",
+    "Whip",
+    "Hand Crossbow"
+  ],
+  "featuresByLevel": [
+    {
+      "level": 1,
+      "feature": {
+        "id": "feature.pugilist.fisticuffs",
+        "name": "Fisticuffs",
+        "description": "At 1st level, your years of fighting in back alleys and taverns have given you mastery over combat styles that use unarmed strikes and pugilist weapons, which are simple melee weapons without the two-handed property, whips, and improvised weapons. You may not use the finesse property of a weapon while using it as a pugilist weapon. You gain the following benefits while you are unarmed or using only pugilist weapons and you are wearing light or no armor and not using a shield: - You can roll a d6 in place of the normal damage of your unarmed strike or pugilist weapon. This die changes as you gain pugilist levels, as shown in the Fisticuffs column on the Pugilist table. - When you use the Attack action with an unarmed strike or a pugilist weapon on your turn, you can make one unarmed strike or grapple as a bonus action."
+      }
+    },
+    {
+      "level": 1,
+      "feature": {
+        "id": "feature.pugilist.iron_chin",
+        "name": "Iron Chin",
+        "description": "Beginning at 1st level, while you are wearing light or no armor and not wielding a shield, your AC equals 12 + your Constitution modifier."
+      }
+    },
+    {
+      "level": 2,
+      "feature": {
+        "id": "feature.pugilist.moxie",
+        "name": "Moxie",
+        "description": "Starting at 2nd level, your experience laying the beatdown on others has given you a moxie you can channel in the midst of battle. This swagger is represented by a number of moxie points. Your pugilist level determines the maximum number of points you have, as shown in the Moxie Points column of the Pugilist table. You can spend these points to fuel various moxie features. You start knowing three such features: Brace Up, The Old One-Two, and Stick and Move. You learn more moxie features as you gain levels in this class. You regain all expended moxie points when you complete a short or long rest. Brace Up You can use a bonus action and spend 1 moxie point to brace for attacks. Roll your fisticuffs die + your pugilist level + your Constitution modifier and gain that many temporary hit points. The Old One-Two Immediately after you take the Attack action on your turn, you can spend 1 moxie point to make two unarmed strikes as a bonus action. Stick and Move You can use a bonus action and expend 1 moxie point to make a shove attack or take the Dash action."
+      }
+    },
+    {
+      "level": 2,
+      "feature": {
+        "id": "feature.pugilist.street_smart",
+        "name": "Street Smart",
+        "description": "You gain the Street Smart class feature."
+      }
+    },
+    {
+      "level": 3,
+      "feature": {
+        "id": "feature.pugilist.bloodied_but_unbowed",
+        "name": "Bloodied but Unbowed",
+        "description": "You gain the Bloodied but Unbowed class feature."
+      }
+    },
+    {
+      "level": 3,
+      "feature": {
+        "id": "feature.pugilist.fight_club",
+        "name": "Fight Club",
+        "description": "Starting at 3rd level, you choose a fight club that best exemplifies your style: Arena Royale, Bloodhound Bruisers, Dog & Hound, Hand of Dread, Piss & Vinegar, the Squared Circle, or the Sweet Science, all detailed at the end of the class description. Your fight club grants you features at 3rd level and again at 6th, 11th, and 17th level."
+      }
+    },
+    {
+      "level": 4,
+      "feature": {
+        "id": "feature.pugilist.ability_score_improvement",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 4,
+      "feature": {
+        "id": "feature.pugilist.dig_deep",
+        "name": "Dig Deep",
+        "description": "Starting at 4th level, you discover a strength inside you that can't be broken. As a bonus action, you gain resistance to bludgeoning, piercing, and slashing damage for one minute. At the end of that minute you gain a level of exhaustion."
+      }
+    },
+    {
+      "level": 5,
+      "feature": {
+        "id": "feature.pugilist.extra_attack",
+        "name": "Extra Attack",
+        "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+      }
+    },
+    {
+      "level": 5,
+      "feature": {
+        "id": "feature.pugilist.haymaker",
+        "name": "Haymaker",
+        "description": "Starting at 5th level, before you make an attack that does not already have disadvantage, you can declare you are swinging wild haymakers. You make all weapon attack rolls until the end of this turn with disadvantage and when you deal damage with a pugilist weapon or an unarmed strike you do not roll for the weapon's damage die, but use the maximum die result instead. Moxie-Fueled Fists Starting at 6th level, your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to non-magical attacks and damage."
+      }
+    },
+    {
+      "level": 6,
+      "feature": {
+        "id": "feature.pugilist.fight_club_feature",
+        "name": "Fight Club feature",
+        "description": "You gain the Fight Club feature class feature."
+      }
+    },
+    {
+      "level": 7,
+      "feature": {
+        "id": "feature.pugilist.fancy_footwork",
+        "name": "Fancy Footwork",
+        "description": "At 7th level, you gain proficiency in Dexterity saving throws."
+      }
+    },
+    {
+      "level": 7,
+      "feature": {
+        "id": "feature.pugilist.shake_it_off",
+        "name": "Shake It Off",
+        "description": "Starting at 7th level, you can use your action to end one effect on yourself that is causing you to be charmed or frightened."
+      }
+    },
+    {
+      "level": 8,
+      "feature": {
+        "id": "feature.pugilist.ability_score_improvement_8",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 9,
+      "feature": {
+        "id": "feature.pugilist.down_but_not_out",
+        "name": "Down but Not Out",
+        "description": "At 9th level, when you use your Bloodied But Unbowed feature you can choose to also use this feature. If you do, you add your proficiency bonus to your damage with unarmed attacks and pugilist weapons for the next minute. You can use this feature again after you complete a long rest."
+      }
+    },
+    {
+      "level": 10,
+      "feature": {
+        "id": "feature.pugilist.school_of_hard_knocks",
+        "name": "School of Hard Knocks",
+        "description": "By 10th level, you've graduated top of the class at the school of hard knocks and you took most of them on the head. You have resistance to psychic damage and gain advantage on saving throws against effects that would make you stunned or unconscious."
+      }
+    },
+    {
+      "level": 11,
+      "feature": {
+        "id": "feature.pugilist.fight_club_feature_11",
+        "name": "Fight Club feature",
+        "description": "You gain the Fight Club feature class feature."
+      }
+    },
+    {
+      "level": 12,
+      "feature": {
+        "id": "feature.pugilist.ability_score_improvement_12",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 13,
+      "feature": {
+        "id": "feature.pugilist.rabble_rouser",
+        "name": "Rabble Rouser",
+        "description": "Starting at 13th level, word of your exploits travels quickly in cities and other settlements. Once you have taken a long rest by carousing in a settlement, you gain advantage on all Charisma (Persuasion) and Charisma (Intimidation) rolls made against the people who live there."
+      }
+    },
+    {
+      "level": 14,
+      "feature": {
+        "id": "feature.pugilist.unbreakable",
+        "name": "Unbreakable",
+        "description": "Starting at 14th level, you gain advantage on Strength, Dexterity, and Constitution saving throws. Additionally, whenever you make a saving throw and fail, you can spend 1 moxie point to reroll it and take the second result."
+      }
+    },
+    {
+      "level": 15,
+      "feature": {
+        "id": "feature.pugilist.herculean",
+        "name": "Herculean",
+        "description": "At 15th level, your carrying capacity is doubled, and when you deal damage with a melee weapon or unarmed strike to an inanimate object that damage is doubled. Your standing jump distance is the same as your running start jump distance."
+      }
+    },
+    {
+      "level": 16,
+      "feature": {
+        "id": "feature.pugilist.ability_score_improvement_16",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 17,
+      "feature": {
+        "id": "feature.pugilist.fight_club_feature_17",
+        "name": "Fight Club feature",
+        "description": "You gain the Fight Club feature class feature."
+      }
+    },
+    {
+      "level": 18,
+      "feature": {
+        "id": "feature.pugilist.fighting_spirit",
+        "name": "Fighting Spirit",
+        "description": "Starting at 18th level, when you have 4 levels of exhaustion or fewer and are reduced to 0 hit points, you regain half of your maximum hit points, half of your maximum moxie points, and gain a level of exhaustion. You cannot use this feature again until you finish a long rest. Peak Physical Condition At 20th level, your Strength and Constitution ability scores increase by 2 to a maximum of 22. Additionally, when you take a long rest you recover 2 levels of exhaustion instead of 1 and you regain all your expended hit dice instead of half your expended hit dice. Fight Clubs Despite the name, fight clubs are not formal fraternities or sororities, but collections of pugilists who, by training or happenstance, share a similar style. In some D&D worlds, fight clubs can tell you a lot about where a person comes from, while in others there are representatives of many fighting styles in all metropolitan areas. Arena Royale Pugilists in the Arena Royale fight club travel the world earning their keep as equal parts performer and gladiator. Whether performing in staged physical competitions, or fighting it out in unscripted brawls, pugilists in the Arena Royale care as much about the theatrics of a fight as they do its outcome. Pugilists in this fight club also care deeply about their reputation and work to build up local and regional legends about their performing personas. Bonus Proficiency Starting when you choose this Fight Club at 3rd level, you gain proficiency in the Performance skill, if you don't have it already. If you do, you gain proficiency in your choice of the Intimidation or Persuasion skill. Persona Libre Also at 3rd level, you create an alternate persona that you can adopt or discard as a bonus action on your turn. When you create an alternate persona you should give the persona a striking name as well as some physical signifier (such as a mask, colorful cape, or another prominent idiosyncratic feature). Unless you tell a creature, or the creature sees you adopt your persona, they do not know you and the adopted persona are the same person. Additionally, you have a pool of persona points equal to 3 + your Charisma modifier (minimum 1). When you use an ability that costs moxie points, you can spend persona points instead. In addition, before you make a Charisma ability check you can spend a persona point to add your Strength modifier to the result. You can only use persona points while you have adopted your persona. You regain all expended persona points when you finish a long rest. Work the Crowd At 6th level, while you have adopted your alternate persona, you can use your action to inspire your choice of fear or adoration in those nearby. When you do, all creatures within 30 feet who can see you must succeed on a Wisdom saving throw (DC 8 + your proficiency bonus + your Strength modifier) or be charmed, if you chose adoration, or frightened if you chose fear. This effect lasts for one minute. Each time a creature takes damage from you or one of your allies it can repeat the saving throw, ending the effect on a success. You can use this feature again after you finish a long rest. High Flyer Starting at 11th level, your base movement increases by 10 feet, your jump distance is doubled, and you can use a bonus action on your turn to take the Dash action. Signature Move Starting at 17th level, you create a signature move that you can use while you have adopted your alternate persona. Give your signature move a name and a description. You can replace one of your unarmed attacks or attacks with a pugilist weapon on your turn with this signature move. When you use your signature move, you can jump in any direction up to your movement speed, make an attack roll with advantage against a creature in your reach and, if you hit, the attack is a critical and the creature is stunned until the end of your next turn. If you hit with your signature move, you must finish a long rest before you can use it again. If you miss with your signature move, you regain the use of it after 1 minute. Bloodhound Bruisers Pugilists in the Bloodhound Bruisers fight club are notorious for looking for trouble and finding it every time. Members of this fight club are highly observant of character traits and physical evidence and can form an almost supernatural connection to the cities they live in. Most use these abilities to become urban defenders of the downtrodden but others lend their talents to less savory organizations. Ever Vigilant When you choose this fight club at 3rd level, you have advantage on initiative rolls. During the first round of combat, you have advantage on attack rolls against creatures who haven't acted yet. Detective Work Also at 3rd level, you gain proficiency with two of the following skills of your choice: Insight, Investigation, or Perception. In addition, when you make an Intelligence (Investigation), Wisdom (Insight), or Wisdom (Perception) ability check you can spend 1 moxie point to gain advantage on that ability check. Scrap Like a Sleuth At 6th level, you can use a bonus action and expend 2 moxie points to hone in on the idiosyncrasies and bad habits of an enemy you can see within 30 feet. When you do, you have advantage on weapon attacks against the creature and you add your proficiency bonus to your AC against attacks made by that creature. These effects continue for 1 minute or until you use this feature again. Heart of the City Starting at 11th level, when you take a long rest in a settlement, you can choose to become familiar with the settlement. When you use this feature again, you replace your previous familiar settlement with the current one. You gain the following benefits while in a familiar settlement: - You cannot be surprised and you add your proficiency bonus to your initiative. - You have darkvision to a range of 120 feet. - When you make an ability check using the Insight, Investigation, or Perception skills that adds your proficiency bonus, add twice your proficiency bonus instead. - You cannot be lost by any means. - When you are not in combat, you can travel between any two points in the settlement twice as fast as your speed would normally allow. Eyes Wide Open Starting at 17th level, you can use a bonus action and spend 1 moxie point to open your senses to your surroundings for 1 minute. During this time, you have advantage on saving throws against being blinded or deafened and have truesight out to a distance of 30 feet. Dog & Hound You've never had a friend you could rely on that walked on two legs. Lucky for you, you've got the best fourlegged friend a body could ask for. Pugilists in the Dog & Hound fight club are as faithful to their canine companions as their canine companions are to them. Bonus Proficiency When you choose this fight club at 3rd level, you gain proficiency with the Animal Handling skill if you don't already have it. If you do, you gain proficiency in your choice of the Perception or Survival skill. Brawler's Best Friend Also at 3rd level, you gain a hound that accompanies you on your adventures and fights alongside you. Your hound can be any breed of dog or similar canine creature, but uses the statistics of a wolf (found in appendix A of the Monster Manual). You add your proficiency bonus to your hound's AC, saving throws, attack rolls, and damage rolls. For each level you gain after 3rd, your hound gains an additional d8 hit die and increases its hit points accordingly. You can use a bonus action on each of your turns to verbally command your hound to take the Attack, Dash, Disengage, Dodge, or Help action that turn. It does not have its own turn unless you are incapacitated or absent. If you are incapacitated or absent, the hound acts on its own (continuing to act on your turn, if you are incapacitated), focusing on protecting you and itself. The hound never requires your command to use its reaction, such as when making an opportunity attack. If your hound dies, you can obtain a new one by spending 8 hours bonding with a canine animal that isn't hostile to you. Mutt With Moxie At 3rd level, you share everything with your faithful hound: food, shelter, even moxie. When you use certain moxie abilities, your hound gains a benefit as well. Brace Up. When you gain temporary hit points as a result of using your Brace Up moxie ability, your hound gains the same number of temporary hit points. The Old One-Two. When you use your The Old OneTwo moxie ability, your hound can make one or both attacks instead of you. Stick and Move. When you use your Stick and Move moxie ability, your hound can take the Dash action. Arcanine Bite At 6th level, your hound's attacks count as magical for the purpose of overcoming resistance and immunity to non-magical attacks and damage. Coordinated Attack Also at 6th level, you and your canine companion form a more potent fighting team. When you use the Attack action on your turn, if your hound can see you, it can use its reaction to make a melee attack. Hound's Best Friend At 11th level, when a creature deals damage to your hound with an attack, you can use your reaction to make an opportunity attack against that creature if you are within range. Dire Hound Beginning at 17th level, you use the statistics for a dire wolf (found in appendix A of the Monster Manual), instead of a wolf, for your hound, except that its size remains Medium. These statistics are modified as described in your Brawler's Best Friend feature. Hand of Dread In your darkest hour you pleaded for the strength to take what you wanted from the world and a dread power took notice. At first, you may have relished the cathartic rush that came with channeling your dread power to claim what you felt you deserved. This pact, however, came with strings attached. In times of distress you hear the entity whispering in the back of your mind, encouraging you to indulge your most base impulses. Black Magic When you choose this fight club at 3rd level, you learn the blade ward, eldritch blast, and prestidigitation cantrips. Constitution is your spellcasting modifier for these spells since you channel the magic of dread powers through your body when you cast them. In addition, you learn to speak, read, and write one of the following languages of your choice: Abyssal, Infernal, or Sylvan. At the DM's discretion, you may choose another language more appropriate to your dread power. Dread Hand Also at 3rd level, you can use a bonus action on your turn to manifest the evidence of your foul pledge. When you do, one of your limbs (often an arm) transmogrifies into a monstrous appearance reminiscent of your dread power for 1 minute. - When you roll a 1 on a damage die for an unarmed strike attack you made, you can reroll the die and must use the new roll, even if the new roll is a 1. - The first time you miss with an unarmed strike attack each turn you can make an additional unarmed strike attack as part of the same action. - Immediately after you take the Attack action on your turn, you can spend 2 moxie points to make three unarmed strikes as a bonus action. You must finish a short or long rest before you can use this feature again. Deal With The Devil Starting at 6th level, you gain two eldritch invocations of your choice from among those available to the warlock class. When you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you meet the prerequisites for. Grotesque Growth At 11th Level, when you use your Dread Hand feature you can choose to grow into a towering misshapen form for one minute. When you do, your size increases by one category - from Medium to Large, for example. If there isn't enough room for you to grow to that size, you grow to the maximum possible size the space will allow. While enlarged in this way, you have advantage on Strength checks and Strength saving throws, your reach becomes 10 feet, and your melee weapon attacks deal 1d4 extra damage. When the minute is over, you suffer one level of exhaustion (as described in appendix A of the Player's Handbook). Fountain of Viscera At 17th level, you can use an action and expend 6 moxie points to attempt to execute a creature of your choice within reach by burrowing your hand into its body and extracting its innards. The creature must make a Dexterity saving throw (DC equal to 8 + your proficiency bonus + your Strength modifier). On a failure, the creature takes 100 piercing damage. On a success, the creature takes 50 piercing damage instead. If this damage reduces the target to 0 hit points or less, it immediately dies as you rip a hole through it, creating a stomach-turning fountain of viscera. When this happens, each creature within 30 feet of you who can see you must succeed on a Wisdom saving throw (DC equal to 8 + your proficiency bonus + your Strength modifier) or be frightened of you for 1 minute. A creature who fails the saving throw can make the Wisdom saving throw again at the end of each of its turns, ending the frightened condition early on a success. Once you use this feature, you must finish a long rest before you can use it again. Piss & Vinegar Pugilists in the Piss & Vinegar fight club revel in their reputations as heels. Widely despised for their obscene curses and dirty tricks, these pugilists take pride in their ability to provoke and fight to win at all costs. Bonus Proficiency Starting when you choose this fight club at 3rd level, you gain proficiency with the Intimidation skill if you don't have it already. Salty Salute Also at 3rd level, you have mastered the art of the enraging insult. You can use a bonus action on your turn to provoke a creature within 60 feet who can see or hear you. That creature must make a Wisdom saving throw. On a failure, the creature takes your fisticuff's damage die + your Charisma modifier in psychic damage and has disadvantage on any attack rolls it makes that do not include you as a target before the start of your next turn. For any of your Piss & Vinegar features that require your opponent to make a saving throw, the saving DC is calculated as follows: Piss & Vinegar save DC = 8 + your proficiency bonus + your Charisma modifier Dirty Tricks Starting at 6th level, you have a few tricks up your sleeve to even the odds when the going gets rough. You can each of these dirty tricks once and regain their use when you finish a short or long rest. Heelstomper. When you deal damage with an unarmed attack, you attempt to slow the creature you hit. The creature must make a Dexterity saving throw. On a failure, you gain 1 moxie point (up to your maximum) and its movement speed is halved for one minute. Dread Powers A dread power can be any powerful malevolent entity capable of bestowing a portion of its power onto a mortal. Archdemons, fey royalty, ancient liches, and unfathomable intelligences from beyond space and time are all possibilities. Low Blow. When you deal damage with an unarmed attack you can choose to hit them below the belt. The creature must make a Strength saving throw. On a failure, you gain 1 moxie point (up to your maximum) and it is knocked prone. Pocket Sand. You can use a bonus action to attempt to blind a creature within 5 feet. The creature must make a Constitution saving throw. On a failure, you gain 1 moxie point (up to your maximum) and it is blinded until the end of its next turn. Mean Old Cuss At 11th level, your threats and mean spirited tricks pack an extra punch. When you make a Charisma (Intimidation) ability check, you can use your reaction and spend 1 moxie to give yourself advantage on the roll. When a creature makes a saving throw against one of your Piss & Vinegar features, you can use your reaction and spend 1 moxie to give that roll disadvantage. The Uncouth Art Starting at 17th level, you gain the ability to offend every creature in the room with minimal effort. When you use your Salty Salute feature, you can choose to target a number of creatures within 60 feet who can see or hear you up to your level in this class instead of a single creature. You gain 1 moxie point (up to your maximum) the first time each creature targeted in this way hits you with an attack before the start of your next turn. You can use this feature again after you finish a long rest. The Squared Circle Pugilists who fight in the Squared Circle know you don't have to knock an opponent senseless to get them to submit. Of course, members of the Squared Circle do beat their opponents senseless, they just know they don't have to. Groundwork Starting when you choose this fight club at 3rd level, you gain the following additional moxie features. Compression Lock. When a creature attempts to break a grapple with you and succeeds, you can use your reaction and spend 1 moxie point to force the creature to roll again. The creature must use the second result. Quick Pin. When a hostile creature's movement provokes an opportunity attack from you, you can use your reaction and spend 1 moxie point to make a grapple attack instead of an opportunity attack. To the Mat. You can use a bonus action and spend 1 moxie point to make a grapple attack against a creature within range. If successful, the creature is also knocked prone. Meat Shield At 6th level, when you have an enemy creature grappled, you gain half cover against all attacks made against you by a creature you are not grappling. When a weapon attack made by a creature you are not grappling misses you, you may use your reaction and spend 1 moxie point to have that creature make the same attack with a new roll against an enemy creature you are grappling. Heavyweight At 11th level, you count as one size larger than you are for the purposes of grappling. In addition, you can move your full movement speed when you are dragging or carrying a grappled creature your size or smaller. Clean Finish At 17th level, your mastery of grappling reaches its peak. While you have a creature grappled, you gain advantage on all attacks against it. Additionally, when you make an unarmed strike or pugilist weapon attack against a creature you have grappled, you score a critical hit on a roll of 19 or 20. The Sweet Science Pugilists who practice the Sweet Science hit hard, fast, and often. This style is sometimes used by fighters who battle for the entertainment of the upper classes, but is just as often practiced in the back alleys and the bars by those whose next breath depends on a knockout. Cross Counter Starting when you choose this fight club at 3rd level, you can block the brunt of an attack and launch one of your own in the same fluid motion. You can use your reaction and spend 2 moxie points to reduce the damage of a melee weapon attack made against you by 1d10 + your Strength modifier + your pugilist level. If you reduce the damage to 0, you can make an unarmed strike, or pugilist weapon attack, against a creature within range as part of the same reaction. One, Two, Three, Floor At 6th level, when you use your bonus action to use the Old One-Two and hit the same creature with both attacks, you can spend 1 moxie to make an additional unarmed strike against that creature as part of the same bonus action. If you hit, the creature is knocked prone in addition to taking damage as normal for your unarmed strike. Float Like a Butterfly, Sting Like a Bee At 11th level, when you reduce damage from an attack to 0 and successfully hit an enemy creature using your Cross Counter feature you regain 1 moxie point (up to your maximum). Knock Out At 17th level, when you hit with an unarmed strike or pugilist weapon, you can spend 1 or more moxie points to try to knock out the opponent instead of dealing damage. Roll 3d12 + 2d12 for every moxie point spent after the first and add your pugilist level to the result; if the total is equal to or greater than the creature's remaining hit points, it is unconscious for 10 minutes. Pugilist & Multiclassing Pugilists follow all the normal rules for multiclassing. The following tables function as additions to those listed on page 163 and 164 of the Player's Handbook. Equipment DMs may wish to use the following new weapons and magic items in their campaigns. Weapons Your DM may allow the use of common brawling implements in her campaign. Introduced here are three such weapons. These weapons each have the unarmed weapon property, which is detailed below the Weapons table. Weapon Properties Many weapons have special properties related to their use, as shown in the Weapons table. The property presented here supplements those found in the Player's Handbook. Unarmed. When you make an unarmed attack you can choose to deal the damage of this weapon instead of your normal unarmed attack damage. Magic Items Magic items are presented in alphabetical order. A magic item's description gives the item's name, its category, its rarity, and its magical properties. Bonebreakers Weapon (brass knuckles), legendary (requires attunement by a pugilist) These unremarkable brass knuckles appear well used if not well loved. They are covered in dings and scratches accompanied by the odd stain. You gain a +3 bonus to attack and damage rolls made with this magic weapon. When you hit a creature with this weapon, you can use your reaction to attempt to maim them. When you do, the creature must succeed on a Constitution saving throw (DC 16) or be maimed in one of the following ways of your choice: - Broken Arm. The creature has disadvantage with weapon attack rolls. - Broken Leg. The creature's walking speed is halved. - Broken Ribs. The creature has disadvantage on Strength and Dexterity ability checks and saving throws. - Broken Skull. Attack rolls against the creature are considered one higher for the purposes of determining whether or not the result is a critical. The maimed condition ends on a creature only after they have received medical treatment from a trained professional and rested for one month or they are targeted by a greater restoration spell or similar magic. After you use this ability to attempt to maim a creature, you must finish a short or long rest before you can use it again. Bottle of Brew Tasting Wondrous item, rare This magic item is a glass bottle with a blank label. When a potion or other liquid is poured into the bottle, the contents and effects of the liquid will appear, written in Common, on the label. This writing fades when the bottle is emptied of its contents. If this bottle is broken, it loses the ability to identify liquids but instead functions as an improvised weapon with a +2 bonus to attack rolls and damage rolls. Club of Unconsciousness Weapon (club), rare (requires attunement) You gain a +1 bonus to attack and damage rolls made with this magic weapon. Additionally, this club has 5 charges. When you deal damage with this weapon, you can expend one or more charges to attempt to render the creature unconscious. When you do, roll 5d8 (+2d8 for each charge expended beyond the first). If the creature has a number of hit points remaining that is equal to or less than the total of your roll, the creature forgets everything it saw and Weapons Name Cost Damage Weight Properties Simple Melee Weapons Brass knuckles 1 gp 1d4 bludgeoning 1 lb. Light, unarmed Katar 3 gp 1d4 piercing 3 lb. Light, unarmed Knuckle knives 3 gp 1d4 slashing 2 lb. Light, unarmed Multiclassing Prerequisites Class Ability Score Minimum Pugilist Strength 13 and Constitution 13 Multiclassing Proficiencies Class Proficiencies Gained Pugilist Light armor, improvised weapons Everfull Stein Leather Jerkin heard over the last minute and is unconscious for 1 hour or until another person uses an action to shake or slap the sleeper awake. The club regains 1d3 + 1 expended charges daily at dawn. Coin of Easy Living Wondrous item, uncommon (requires attunement) This gold coin appears totally normal to mundane senses but, when flipped, always lands heads up. While you are attuned to this item, you can summon it to your palm at will. Enchanted Inks Potion, common (1st), uncommon (2nd), rare (3rd), very rare (4th), or legendary (5th) This set of inks can be used to make a single tattoo, which consumes the inks. When a creature is tattooed with enchanted inks, choose one spell. The spell's level cannot exceed the level determined by the rarity of the enchanted inks. The tattooed creature can cast this spell, using the tattoo as a spellcasting focus. Constitution is the spellcasting ability for this spell. After casting the spell with the tattoo, the creature cannot cast the spell in this way again until it finishes a long rest. Everfull Stein Wondrous item, uncommon This large ceramic stein is decorated with dwarven glyphs and topped with a brass metal lid that can be opened by thumb lever. While the lid is closed and the stein is empty, the owner need only name a non-magical ale, beer, or mead he has had before and the stein fills with that brew. Leather Jerkin, +1, +2, or +3 Wondrous item, rare (+1), very rare (+2), or legendary (+3) You have a bonus to AC while you are unarmored and wearing this garment. The bonus is determined by its rarity. Loaded Dice Wondrous item, rare (requires attunement) This set of six-sided dice is indistinguishable from mundane dice, but blessed with good fortune. After you make an ability check, attack roll, or saving throw, but before the DM declares success or failure, you can expend 1 charge to reroll the d20. Loaded dice can have up to 7 charges and regain 1d6+1 charges each week. Additionally, if used to play a dice game, the owner of the dice has advantage on any ability check to determine the winner of the game. Mage Mashers Weapon (brass knuckles), very rare (requires attunement) These brass knuckles are forged from a dull black ore that sparkles with a prism of colors when held to light. They feel heavier than they look like they should be, especially to creatures capable of casting spells. You gain a +2 bonus to attack and damage rolls made with this magic weapon. When you hit a creature with the spellcasting or pact magic trait, that creature takes an extra 1d6 force damage. In addition, any creature who makes a saving throw to maintain concentration on a spell as a result of damage you deal with these weapons has disadvantage on that saving throw. Medallion of Mettle Wondrous item, rare (requires attunement) This ostentatious medallion draws the eye of even casual onlookers. Whenever you gain temporary hit points, you gain an additional 1d6 temporary hit points. Mugfist Knuckles Weapon (brass knuckles), uncommon (requires attunement) These brass knuckles are plated with cheap faux gold that wouldn't fool even the most casual observer. You gain a +1 bonus to attack and damage rolls made with this magic weapon. When you attack a creature with this magic weapon and roll a 20, 1d6 gold pieces fall onto the ground in the creature's space. Penitent Pummelers Weapon (brass knuckles, knuckle knives, or katar), rare (requires attunement) These weapons are made of gold and etched with a holy symbol over each knuckle. You gain a +1 to attack and damage rolls with this magic weapon. When you hit a fiend or undead creature, that creature takes an extra 1d6 radiant damage. Enchanted Inks Medallion of Mettle Loaded Dice Poundwise Porter Potion, very rare This potion is thick and so dark brown it is nearly black. For one minute after consuming this potion, you gain +3 to damage with unarmed attacks. Prehensile Whip Weapon (whip), rare (requires attunement) When not in use this whip looks like any other but, when wielded by an attuned creature, the weapon moves with purpose and articulation that betrays its magical nature. You gain a +1 to attack and damage rolls with this magic weapon. When you hit a creature or object with this weapon you may use your reaction to make a grapple attack against it using the whip instead of a free hand. When grappling in this way, your reach is considered 10 feet. Punchdrunk Punters Weapon (brass knuckles, knuckle knives, katar), rare (requires attunement) These beat up and well worn weapons smell as if they've spent a week at the bottom of a forgotten cask in a busy tavern. You gain a +1 bonus to attack and damage rolls made with this magic weapon. Each time you deal damage to a creature, that creature gains a toxin point. It keeps the toxin point for one hour. You can use an action to cause a creature you can see to take 1d8 poison damage per toxin point it has, then it loses all toxin points. Ramuh's Katar Weapon (katar), very rare (requires attunement) This punching dagger style weapon is carved from a single chunk of superconductive, dark violet metal that binds to the fist and forearm with black leather straps. While you are attuned to and wearing this magical weapon, you have advantage on initiative rolls and your jumping distances are tripled. You gain a +2 bonus to attack and damage rolls made with this magic weapon. When you attack a creature with this magic weapon and roll a 20 on the attack roll, that creature takes an additional 8 lightning damage. Ratbite Weapon (knuckle knives), legendary (requires attunement) These pungent weapons are made of leather of dubious origin with clumps of fur still attached. The leather grip fits snugly over the knuckles, with rat teeth and bits of bone sticking out the outward facing side. It gives off a unpleasant odor. You gain a +3 bonus to attack and damage rolls made with these magic weapons. While you are attuned to these weapons, you are immune to disease. Any creature who takes damage from this weapon must succeed on a DC 11 Constitution saving throw or contract sewer plague (described in Chapter 8 of the Dungeon Master's Guide). When you attack a creature with this magic weapon and roll a 20, they take an additional 8 necrotic damage and have disadvantage on saving throws against diseases for one week. Salamander Sauce Potion, uncommon This potion is bright red and smells of peppers and spices. It is typically drizzled on food prior to being consumed but it is possible to consume it straight. A vial of salamander sauce typically has two doses. When you consume this potion, you choose how many doses to consume. If you consume one dose, you gain resistance to cold damage for 8 hours. If you consume two doses, you gain immunity to cold damage and vulnerability to fire damage for 8 hours. For each dose you consume beyond the first two, you must succeed on a Constitution saving throw (DC 14) or gain a level of exhaustion. Scyboo Snack Potion, uncommon This potion must be baked into a biscuit form before its magic can take effect. Its smell is slightly off-putting to humanoids, but is very enticing to beasts. When a beast consumes a biscuit made from this potion, its size increases by one category (from Medium to Large, for example) for 10 minutes. While the beast's size is increased, it has advantage on Strength checks and saving throws and its weapon attacks deal 1d4 extra damage. Spiked Collar Wondrous item, uncommon (+1), rare (+2), or very rare (+3) This collar comes in a variety of colors and sizes, all with metal spikes protruding around the outside of the collar. A beast wearing this wondrous item has a bonus to unarmed strike attack and damage rolls while wearing this collar. The bonus is determined by its rarity. Studded Collar Wondrous item, uncommon (+1), rare (+2), or very rare (+3) This collar comes in a variety of colors and sizes, all with crystalline studs decorating the outside of the collar. A beast wearing this wondrous item has a bonus to AC and saving throws while wearing this collar. The bonus is determined by its rarity. Thunder Knuckles Weapon (brass knuckles), very rare (requires attunement) These brass knuckles are made of blue cobalt rings with a silver knuckle guard in the shape of a cloudbank. Once attuned, the cloudbank darkens and shifts constantly across the knuckles of its wearer occasionally illuminating briefly as miniature lightning bolts harmlessly crackle within the clouds. Studded Collar You gain a +2 bonus to attack and damage rolls made with this magic weapon. When you attack a creature with this magic weapon and roll a 20 on the attack roll, it takes an additional 8 thunder damage and is knocked prone. Whistle of Dog Calling Wondrous item, rare You can use an action to blow this unassuming whistle that's inaudible to all creatures except canines. When you do, you cast the conjure animals spell but can only choose to summon two dire wolves or eight wolves. You do not need to maintain concentration, but the duration is 10 minutes instead of 1 hour. Once you do, this magic cannot be used again until dawn of the next day. Winter's Bite Weapon (katar), uncommon (requires attunement) This wool-lined, off-white leather glove is frigid to the touch, but comfortable when worn. Once attuned to this magic item, you can cause an icicle to grow from the glove, making it function like a katar. Alternatively, you can launch an icicle from the glove, acting like a hand crossbow. In both cases, these weapons deal cold damage instead of piercing damage. You gain a +1 bonus to attack and damage rolls made with this magic weapon. When you attack a creature with this magic weapon and roll a 20 its speed is halved until the end of its next turn. This does not affect creatures who are immune to cold damage. Nonplayer Characters Included here are several nonplayer characters that can serve as Pugilist inspired foes for use in your campaign. Brawler Medium humanoid, unaligned Armor Class 14 (leather armor) Hit Points 32 (5d8 + 10) Speed 30 ft. Senses passive Perception 9 Languages Common Challenge 1/2 (100 XP) Iron Chin. While the brawler is wearing light or no armor and not using a shield, it uses its Constitution modifier in place of its Dexterity modifier to determine its AC. Actions Multiattack. The brawler makes two fisticuffs attacks or one fisticuffs attack and uses brace up. Fisticuffs. Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) bludgeoning damage. Brace Up. The brawler gains 7 (1d6 + 4) temporary hit points. STR DEX CON INT WIS CHA 15 (+2) 11 (+0) 14 (+2) 10 (+0) 9 (-1) 12 (+1) Wrestler Medium humanoid, unaligned Armor Class 15 (leather armor) Hit Points 67 (9d8 + 27) Speed 30 ft. Skills Athletics +6 Saving Throws Strength +6, Constitution +5 Senses passive Perception 10 Languages Common Challenge 3(700 XP) Actions Multiattack. The wrestler makes three fisticuffs attacks and a wrestling attack or two fisticuff attacks, brace up, and a wrestling attack. Fisticuffs. Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) bludgeoning damage. Wrestling. Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: Creature is grappled or knocked prone, wrestler's choice. Brace Up. The wrestler gains 10 (1d8 + 6) temporary hit points. Reactions Quick Pin. When a creature provokes an opportunity attack from the wrestler, the wrestler can use its reaction to make two wrestling attacks against that creature. STR DEX CON INT WIS CHA 18 (+4) 10 (+0) 17 (+3) 12 (+1) 11 (+0) 13 (+1) Boxer Medium humanoid, unaligned Armor Class 16 (leather armor) Hit Points 85 (10d8 + 40) Speed 30 ft. Skills Athletics +7, Insight +2, Intimidation +4 Senses passive Perception 10 Languages Common Challenge 5 (1,800 XP) Actions Multiattack. The boxer makes four fisticuffs attacks or two fisticuff attacks and brace up. Fisticuffs. Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 10 (1d10 + 5) bludgeoning damage. Brace Up. The boxer gains 14 (1d10 + 9) temporary hit points. Reactions Cross Counter. When hit by a melee attack the boxer can use this reaction to reduce the damage taken by the attack by 14 (1d10 + 9). If this reduces the damage of the attack to 0 or lower, the boxer may make a fisticuffs attack against the creature who made the attack if they are within range."
+      }
+    },
+    {
+      "level": 19,
+      "feature": {
+        "id": "feature.pugilist.ability_score_improvement_19",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.pugilist.peak_physical_condition_street_smart_beginning_at_2nd_level",
+        "name": "Peak Physical Condition Street Smart Beginning at 2nd level",
+        "description": "You gain the Peak Physical Condition Street Smart Beginning at 2nd level class feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.pugilist.carousing",
+        "name": "carousing",
+        "description": "You gain the carousing class feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.pugilist.shadowboxing",
+        "name": "shadowboxing",
+        "description": "You gain the shadowboxing class feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.pugilist.sparring_all_count_as_light_activity_for_the_purposes_of_resting_for_you_additionally",
+        "name": "sparring all count as light activity for the purposes of resting for you. Additionally",
+        "description": "You gain the sparring all count as light activity for the purposes of resting for you. Additionally class feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.pugilist.once_you_have_caroused_in_a_settlement_for_8_hours_or_more",
+        "name": "once you have caroused in a settlement for 8 hours or more",
+        "description": "You gain the once you have caroused in a settlement for 8 hours or more class feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.pugilist.you_know_all_public",
+        "name": "you know all public",
+        "description": "You gain the you know all public class feature."
+      }
+    }
+  ]
+}

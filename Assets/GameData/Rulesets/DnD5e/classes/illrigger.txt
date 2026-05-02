@@ -1,0 +1,1007 @@
+T he archdevils who rule the Seven Cities of
+Hell scheme and plot endlessly, eternally.
+Each seeks to bring the others to heel. To
+ascend to the Throne of Hell, unite the
+seven cities and every infernal thing that
+lives there, and lead an infinite army of devils across
+the timescape until all worlds burn.
+Their elite shock troops, the terror-commandos
+of Hell, are the illriggers. Knights of Hell, they are
+charismatic counter-paladins who master devils, disrupt enemy organizations, and command
+Hell’s armies.
+The Order of Desolation
+Millennia ago, the Lords of Hell did something
+remarkable: they cooperated. They came together
+to create the Order of Desolation, knights sworn to
+serve Hell first, their patron archdevil second.
+Acceptance into the Order of Desolation makes
+you a comrade with every other illrigger, regardless
+of which archdevil you serve. Each archdevil has
+churches, underground fanes, secret societies, cults.
+All with leaders manically devoted to the archdevil
+who grants them their power. But this association of
+illriggers consider themselves above the petty political squabbles that divide the seven cities.
+Members of the Order of Desolation, also known
+as the Desolate, are expected to be intelligent,
+resourceful, tactical, manipulative. A temple or cult
+might conclude that the presence of an illrigger in
+their midst is a sign that their archdevil approves of
+their actions, but the illriggers are independent. The
+order was founded to give the Lords of Hell agents
+capable of acting across the timescape, free from
+the direct control of their patron. An illrigger has
+many powerful abilities granted by their archdevil,
+but more precious is their patron’s trust. Left to their
+own devices, the illrigger is expected to sow discord,
+pain, strife, deceit, and fear without instruction or
+supervision.
+It is not unusual, therefore, for a member of the
+Order of Desolation to rely on other members of
+the order first, even from illriggers who serve other
+archdevils, before going to any church, cult, or temple devoted to their own archdevil.
+Class Features
+As an illrigger, you gain the following class features.
+Hit Points
+Hit Dice: 1d10 per illrigger level
+Hit Points at 1st Level: 10 + your
+Constitution modifier
+Hit Points at Higher Levels: 1d10 (or 6) +
+your Constitution modifier per illrigger
+level after 1st
+Proficiencies
+Armor: Light armor, medium armor, shields
+Weapons: Simple weapons, martial weapons
+Tools: None
+Saving Throws: Constitution, Charisma
+Skills: Choose two from Arcana, Athletics,
+Deception, Insight, Intimidation, Investigation,
+Persuasion, and Religion
+Equipment
+You start with the following equipment, in addition
+to the equipment granted by your background:
+• (a) a martial weapon and a shield or
+(b) two martial weapons
+• (a) chain shirt or (b) leather armor, longbow,
+and 20 arrows
+• (a) a priest’s pack or (b) a dungeoneer’s pack
+• A holy symbol, two daggers, and five javelins
+6
+Multiclassing
+An existing character choosing to multiclass into
+illrigger must meet the following prerequisites:
+Charisma 13 and
+Strength 13 or Dexterity 13
+You gain the following proficiencies when you
+choose illrigger as a new class: light armor,
+medium armor, shields, simple weapons, and martial weapons.
+Multiclass characters divide their illrigger levels
+by three for the purposes of determining how many
+spell slots they get. This may result in an Architect
+of Ruin losing a spell level, but Asmodeus takes a
+dim view of Illriggers who stray from strict commitment to the path of Hell.
+Forked Tongue
+You have a facility with speech and know how to
+manipulate an audience. Whenever you make an
+ability check to persuade, deceive, or intimidate,
+you can treat a d20 roll of 7 or lower as an 8.
+Additionally you learn the Infernal language.
+Infernal Conduit
+There is a pool of infernal power within you that
+replenishes after you take a long rest. This pool is
+represented by dice, starting with 1d10 at 1st level.
+Your pool gains dice as shown on the Illrigger table.
+With these dice you can transfer hit points between
+your illrigger and other targets, healing allies at the
+expense of your own health or draining the life force
+of enemies to rejuvenate your own vitality.
+The Illrigger
+Level
+Proficiency
+Bonus Features
+Infernal
+Conduit Dice
+1st +2 Forked Tongue, Infernal Conduit 1
+2nd +2 Fighting Style, Baleful Interdict 1
+3rd +2 Hellsight, Diabolic Contract 2
+4th +2 Ability Score Improvement 2
+5th +3 Extra Attack 3
+6th +3 Baleful Interdict Improvement 3
+7th +3 Diabolic Contract Improvement 4
+8th +3 Ability Score Improvement 4
+9th +4 Diabolic Contract Improvement 5
+10th +4 Baleful Interdict Improvement 5
+11th +4 Improved Infernal Conduit 6
+12th +4 Ability Score Improvement 6
+13th +5 Diabolic Contract Improvement 7
+14th +5 Aura of Despair 7
+15th +5 Summon Hell 8
+16th +5 Ability Score Improvement 8
+17th +6 Diabolic Contract Improvement 9
+18th +6 Baleful Interdict Improvement 9
+19th +6 Ability Score Improvement 10
+20th +6 Infernal Contract Improvement 10
+7
+As an action, choose a number of dice from your
+remaining pool and touch another creature. If they
+are unwilling, this is a melee spell attack with which
+you are proficient, using Charisma as your spellcasting ability. If you miss, nothing happens—you
+do not roll or lose dice from your pool. If you hit,
+or if you’re targeting a willing creature, roll the
+chosen dice.
+The result of your roll is the number of hit
+points you transfer. If you’re touching an ally, they
+gain that many hit points, ignoring any hit points
+in excess of their maximum. You lose hit points
+equal to the number of hit points they gained.
+If your sacrifice reduces you to 0 hit points, you fall
+unconscious.
+If you’re touching an enemy, they take necrotic
+damage equal to your roll, and you gain that many
+hit points. If you would gain hit points in excess of
+your maximum, you gain that number of temporary
+hit points instead.
+Beginning at 11th level, in addition to draining
+the life force of an enemy, you can also inflict one
+level of exhaustion on them. They may recover this
+exhaustion normally. This ability does not work
+if the target already has three or more levels of
+exhaustion, or if you have no dice left in your pool,
+and you cannot choose to inflict exhaustion instead
+of draining life.
+Fighting Style
+At 2nd level, you choose an illrigger fighting style:
+Treachery
+When you attack an enemy who has none of
+your allies adjacent to it, you gain a +3 bonus
+to damage rolls.
+Bravado
+While you are not wearing any armor, your Armor
+Class equals 10 + your Dexterity modifier + your
+Charisma modifier. You can use a shield and still
+gain this benefit.
+Schemes
+While you wield a melee weapon in one hand
+and no other weapons, you can use your reaction
+after an adjacent enemy attacks you to move into
+any other unoccupied space within five feet of the
+1 This is not a reaction, it’s free.
+attacking enemy. This movement does not provoke
+an opportunity attack.
+Lies
+When you attack with a two-handed melee weapon,
+you can use your Charisma modifier, instead of
+your Strength modifier, for both the attack and
+damage rolls.
+Baleful Interdict
+When you reach 2nd level, you learn to use the
+power of Hell to censure other creatures. As a bonus
+action, you can place a seal on a target you can see
+within 30 feet. You can do this a number of times
+equal to your Charisma modifier. When you finish
+a short or long rest, you regain all your seals.
+When you or an ally hits a target you can see with
+any seals on it, you can consume the seals to make
+the attack deal an extra 2d6 necrotic damage to the
+target per seal consumed.1
+ If you are within 30 feet
+of the target, you regain 2 hit points for each die of
+damage your seals deals.
+A creature with a seal on them is an interdicted creature.
+Seals evaporate if not used after 1 minute. Only
+the illrigger who placed the seal knows it’s there;
+it appears to the illrigger as a glowing glyph on
+the creature’s forehead. If a creature with any of
+your seals on it dies, you can move all of its seals to
+another creature within range.
+When you reach 10th level, you feel your connection to your archdevil increase. Your seals deal an
+extra 1d6 damage.
+Your seals improve differently based on which
+contract you choose. These improvements are listed
+under “Diabolic Contract,” below.
+Hellsight
+When you reach 3rd level, your mastery of deception makes it easy for you to recognize the use of
+concealing sorcery. As an action, you extend your
+awareness out from you. Until the end of your next
+turn, you know the location of creatures within
+60 feet using magic to hide or disguise themselves.
+You can use this feature a number of times equal
+to your Charisma modifier. When you finish a long
+rest, you regain your expended uses.
+8
+Diabolic Contract
+When you reach 3rd level, you sign a diabolic contract with your archdevil who welcomes you into the
+Order of Desolation. You gain the Invoke Authority
+ability and choose either Painkiller (Dispater), Shadowmaster (Moloch), or Architect of Ruin (Asmodeus)
+as your archdevil.
+Furthermore, you are a noble knight in the lists
+of Hell and will be accorded fine treatment and
+hospitality anywhere in Hell you travel, even to
+cities ruled by enemy archdevils. More cosmopolitan cities in the timescape—like Alloy, the City of
+Brass—will also respect your noble rank.
+Invoke Authority
+You invoke the authority granted you by your archdevil, channelling baleful energy to fuel magical
+effects. Each Invoke Authority option provided by
+your archdevil explains how to use it.
+When you use your Invoke Authority, you choose
+which option to use. Once you use this feature, you
+must finish a long rest to use it again.
+Ability Score Improvement
+When you reach 4th level, and again at 8th, 12th,
+16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase
+two ability scores of your choice by 1. As normal,
+you can’t increase an ability score above 20 using
+this feature.
+Extra Attack
+Beginning at 5th level, you can attack twice, instead
+of once, whenever you take the Attack action on
+your turn.
+Aura of Despair
+Beginning at 14th level, you radiate a magical aura of evil. Whenever a hostile creature
+within 15 feet of you makes an attack roll
+or a saving throw, it must roll a d4 and subtract the number rolled from the result.
+Summon Hell
+Beginning at 15th level, as an action, you can
+summon a bone devil to serve you for 1 minute.
+The devil appears in an unoccupied space within
+30 feet. It is bound to you and must obey your commands to the best of its ability. It acts on the same
+initiative that you act on, and may both act and
+move on the turn you summon it. If you die or fall
+unconscious, the devil returns to Hell. Once you
+use this feature, you must wait 1 week before
+you can use it again.
+9
+Diabolic Contracts
+The knight who walks the path of Hell may gain
+access to the powers of the Illrigger purely through
+their own devotion. No oath is necessary, no mentor. A fledgling hellknight might not even be aware
+Hell’s Paladins exist.
+But acceptance into the Order of Desolation at
+3rd level means swearing an oath to a specific Lord
+of Hell and this usually requires a senior member
+of the order to perform an elaborate ritual. A dedicated knight, however, can attract the attention of
+one of the Infernal Dukes by doing deeds of great
+treachery on their own.
+Through ritual or deed, the young Illrigger eventually finds themselves face-to-face with one of the
+Lords of the Seven Cities…and the Contract must
+be signed. The contract that binds the itinerant
+knight to the Order and adds their names to
+the Lists of Hell. A contract signed in blood.
+Usually the knight’s.
+As intimidating an experience as this
+can be, the Lords of Hell are easy masters.
+They ask little from their chosen.
+Breaches of tenets are overlooked, as long as the knight
+sows discord and opposes the
+Celestial Host. The Dukes of
+the Seven Cities are busy and do not worry overmuch about the daily lives of their Illriggers.
+Indeed, this is what the order is for. Advancing
+Hell’s agenda, independent of the current political
+climate of the Seven Cities.
+Painkiller
+The heavily armored death troopers of Hell, the Painkillers serve Dispater, leading from the front of every
+major infernal battle.
+Dispater is the Lord of Dis, the City of War.
+When Hell invades another world, Dispater’s army
+does the fighting and the dying. His Painkillers
+are master strategists who lead from the front,
+inspiring terror and awe in their soldiers.
+They are full of pride and hubris and present themselves as lordly, often having a
+fastidious obsession with their personal
+appearance.
+The Painkillers are among the most chivalrous of
+the illriggers, but theirs is a twisted chivalry. They
+will accept and honor a challenge to single combat,
+and swiftly punish any who try to interfere. But they
+will cheat if losing and toy with an enemy before
+finishing them if winning.
+In a moment of weakness or desperation, a
+ruler in another World might see their army facing certain defeat and call upon Dispater. Seeing
+the opportunity to sow strife and discord, Dispater
+might send a Painkiller to lead the desperate
+lord’s armies.
+10
+Tenets of Pain
+The Painkillers swear an oath to Dispater when they
+join the Order of Desolation. The oath commits
+them to lead Hell’s armies and wage war against
+Good across the timescape.
+Lead from the Front. I am at the front of every
+battle. I charge in, inspiring my soldiers and causing fear in my enemy. I will not use stealth nor
+hide my face. Let them see their doom.
+Commander. Wherever I go, I command.
+I give orders, I do not take them.
+Victory at Any Cost. I respect the enemy leader
+and will treat them honorably. But once swords
+are drawn I will use every tool and trick in my
+arsenal to win, and they should do the same.
+Soldiers Die. I care not for the lives of my soldiers, for they exist to serve my victory. They are
+resources to be spent.
+Contract with Dispater
+Dispater’s heavy shock troops must be effective battlefield commanders, and quickly dispatch enemies.
+Invoke Authority: Devastator. As an action, you
+invoke the authority of Dispater. A number of
+allies equal to your Charisma modifier, whom you
+can see within 60 feet, and you, may use a reaction to make one weapon attack.
+Invoke Authority: Infernal Surge. Upon invoking Dispater’s authority, you gain an extra action
+in addition to your normal action and any possible
+bonus action.
+Bonus Proficiencies
+When you choose Dispater as your archdevil,
+you gain proficiency with heavy armor.
+By the Throat
+Starting at 7th level, you can, as an action, place a
+seal on an enemy within 30 feet. If they are Large
+or smaller, they must make a Wisdom saving throw
+(DC = 8 + your proficiency bonus + your Charisma
+modifier) or be grappled (escape DC 15), and the
+target is restrained until the grapple ends.
+Telekinetic Seal
+Starting at 9th level, you can, as a reaction to an
+enemy moving into a space adjacent to you, place a
+seal on them. If you do, they must make a Wisdom
+saving throw (DC = 8 + your proficiency bonus
++ your Charisma modifier). If they fail, they are
+thrown back 30 feet and knocked prone.
+You Die On My Command
+Starting at 13th level, when an ally within 30 feet
+who can hear you drops to 0 hit points but is not
+outright killed, you can use your reaction to shout
+an order at them, causing them to drop to 1 hit
+point instead. You cannot use this feature again
+until you complete a short or long rest.
+Steelmind
+Starting at 17th level, you gain advantage on Wisdom saving throws against spells and enemy abilities.
+Pain Devil
+Starting at 20th level, you can use your action to
+become a pain devil for 1 minute. Your size becomes
+Large. You gain +3 to hit and damage with melee
+weapons. You gain 100 temporary hit points.
+You emanate an aura of pain that forces every
+enemy starting their turn within 20 feet of you to
+make a DC 16 Constitution saving throw or suffer
+4d12 force damage on a failed save (half that on
+a successful saving throw) as wounds in their flesh
+spontaneously open. Once a creature saves, they are
+immune to this ability for 24 hours.
+While in this form, your type becomes fiend
+(devil) and Hell is your home plane. You cannot use
+this feature again until you complete a long rest.
+Interdict Improvements
+As your Painkiller levels up, Dispater’s interdiction
+carries more power.
+I Am Death. At 6th level, after placing a seal on
+a creature, your attacks against that creature have
+advantage until the end of your turn.
+Hell’s Fury. At 10th level, the bonus action you use
+to place a seal on a creature now also grants you
+a weapon attack against them.
+Deathstrike. At 18th level, when you consume
+a seal after a successful attack roll against an
+interdicted creature, you may use your reaction
+to make the attack score a critical hit.
+11
+Shadowmaster
+The hidden assassins of Hell, the Shadowmasters
+serve Moloch and excel at stealth and disguise.
+Moloch is the Lord of Styx, the City of Lies.
+He strives to rule Hell through subterfuge, deceit,
+and trickery. His illriggers are assassins, striking from the shadows or using deception to earn
+high-ranking positions close to powerful rulers.
+Many Shadowmasters run networks of spies and
+assassins who have no idea of the infernal provenance of their master.
+The Shadowmasters are sworn not to
+reveal themselves and to take their own lives
+before betraying their true allegiance. Many
+Shadowmasters have elaborate plans ready for
+their own assassination so that, should someone
+get close to discovering their true identity, they
+will be killed by their own assassins, preserving
+the truth. Of course, these killers have no idea
+who they were really working for…
+Tenets of Shadow
+The Shadowmasters swear an oath to Moloch
+when they join the Order of Desolation. The oath
+commits them to serve Moloch’s foes as allies
+before revealing themselves as enemies.
+Plans Within Plans. My enemies must never
+discover my true goals. I will sacrifice myself to
+protect my schemes.
+Create Chaos. Disorder is my goal. Where there is
+peace, I will create strife. Where there is certainty,
+I will create doubt. If there is war, it must
+never end.
+Power in Patience. I will study my enemy. I will
+prepare, research, slowly build trust, so that my
+loyalty is unquestioned and any thought of my
+betraying my lord unthinkable.
+Hesitation Is Failure. I am perfectly willing and
+able to kill swiftly and efficiently should the need
+arise. I may rely on agents, but when the opportunity presents itself I will kill without hesitation.
+12
+Contract with Moloch
+Moloch’s elite assassins must be able to
+survive to get close to their enemies and
+quickly eliminate them.
+Invoke Authority: Fade. As an action, you can
+become invisible and can, as part of this action,
+attempt to take the Hide action. The invisibility
+ends after 1 minute or if you make an attack or
+cast a spell.
+Invoke Authority: Moloch’s Blessing. As a bonus
+action, you can place all your remaining seals on
+a creature.
+Flash of Brimstone
+As a reaction to placing a seal on a target, you can
+teleport to an unoccupied space that you can see
+adjacent to the target.
+Bonus Proficiencies
+When you choose Moloch as your archdevil, you
+gain proficiency with Stealth, Acrobatics, and
+thieves’ tools.
+Dagger Adept
+Your training makes you skilled with certain light
+weapons. While two-weapon fighting with daggers
+and/or sickles, you can add your ability modifier to
+the damage of the second attack, and you can draw
+or stow two daggers or sickles when you would normally be able to draw or stow only one.
+At 5th level, your daggers and sickles do 1d6
+damage. At 11th level, your daggers and sickles do
+1d8 damage. At 17th level, your daggers and sickles
+do 1d10 damage.
+Relentless
+At 7th level, your movement increases by 10 feet.
+Only A Memory
+Starting at 9th level, your mastery of shadow grants
+you advantage on Dexterity (Stealth) checks when
+taking the Hide action, and Hide becomes a bonus
+action for you.
+Evasion
+Starting at 13th level, when you are prompted to
+make a Dexterity saving throw to take only half
+damage from an effect, you instead take no damage
+if you succeed on the saving throw, and only half
+damage if you fail.
+Shadowkiller
+At 17th level, you gain darkvision and can see
+normally in magical darkness. In addition you can
+see the exact location of any creatures within 60 feet
+using illusion spells to obfuscate their location, such
+as blur, mirror image, or invisibility.
+Shadowform
+Starting at 20th level, as an action, you can become
+a greater shadow for 1 minute. You gain damage
+resistance to acid, cold, fire, lightning, thunder,
+bludgeoning, piercing, and slashing damage. You
+gain Incorporeal Movement and a flying speed of
+50 feet. You can move through other creatures and
+objects as if they were difficult terrain. You take
+5 (1d10) force damage if you end your turn inside an
+object. Your weapon attacks deal necrotic damage,
+and successful attacks drain 1d4 Strength from the
+target. If this drain reduces the target’s Strength to
+0, it dies. Otherwise, the drain lasts until the target
+finishes a short or long rest. If a non-evil humanoid
+dies from this attack, a new shadow rises from the
+corpse 1d4 hours later. You cannot use this feature
+again until you complete a long rest.
+Interdict Improvements
+As your shadowmaster levels up, Moloch’s
+interdiction carries more power.
+Marked for Death. At 6th level, your connection
+to Moloch’s power deepens. If you hit an interdicted creature with a melee attack, you can mark
+them for death. The target has disadvantage on
+attack rolls that do not include you until the end
+of its next turn. While that creature is interdicted,
+it must make a Wisdom saving throw (DC equal
+to 8 + your proficiency bonus + your Charisma
+modifier) whenever it tries to leave your reach.
+On a failure, its speed instead becomes 0 until the
+start of its next turn. These effects last until it is no
+longer interdicted, you leave its reach, or it leaves
+your reach.
+He Is the Darkness. At 10th level, while within
+10 feet of an interdicted enemy, shadows envelop
+you and you gain the benefits of half cover.
+Hell’s Assassin. At 18th level, your seals do 3d10
+damage each, rather than 3d6.
+13
+14
+Architect of Ruin
+Hell’s Architects are cool and calculating arcane
+knights who deploy spell, steel, and subterfuge
+to win the battle at any cost.
+Asmodeus is the Lord of Acheron, the
+City of Fear. His illriggers scour the
+timescape collecting secrets and spells
+designed to deceive and terrify his opponents. The war he fights against the
+other Lords of Hell is one of deception
+and propaganda.
+Acheron’s illriggers work to make
+Hell’s enemies seem outnumbered
+and outmaneuvered. Half their strategy
+involves research and infiltration, the other
+half illusion and propaganda. When an Architect
+of Ruin finally confronts an enemy, the foe sees the
+illrigger’s forces as impossibly powerful, while their
+own allies betray them and their armies flee in fear.
+Architect of Ruin Spellcasting
+Illrigger
+Level
+Cantrips
+Known
+Spell Slots per Spell Level
+1st 2nd 3rd 4th 5th 6th
+3rd 2 2 — — — — —
+4th 2 3 — — — — —
+5th 2 3 2 — — — —
+6th 2 3 2 — — — —
+7th 2 4 2 2 — — —
+8th 3 4 3 2 — — —
+9th 3 4 3 2 1 — —
+10th 3 4 3 3 2 — —
+11th 3 4 3 3 3 1 —
+12th 3 4 3 3 3 1 —
+13th 3 4 3 3 3 1 —
+14th 3 4 3 3 3 1 —
+15th 3 4 3 3 3 1 1
+16th 3 4 3 3 3 1 1
+17th 3 4 3 3 3 1 1
+18th 3 4 3 3 3 1 1
+19th 3 4 3 3 3 2 1
+20th 3 4 3 3 3 2 1
+15
+Tenets of Ruin
+Hell’s Architects swear an oath to Asmodeus when
+they join the Order of Desolation. The oath commits them to destroy Asmodeus’ enemies by causing
+fear and sowing distrust.
+The Battlefield of the Mind. By the time my
+armies meet yours, you will be filled with terror
+and doubt your own strength. I won’t have to lift a
+finger to defeat you.
+The Proper Secret. Once I know your secrets,
+I know what you fear.
+Knowledge Is Power. Lore is as powerful as steel.
+I will learn every detail about my enemy so that,
+when I strike, I will know their every move. They
+will be checkmated before the game even begins.
+Perception Is Reality. Illusion is also as powerful
+as steel. I will spread so many rumors about my
+own powers, your friends will desert you, your
+soldiers will quake. So what if none of it’s true?
+And some of it is…
+Contract with Asmodeus
+Asmodeus’ fighting mages must be able to thwart an
+enemy’s spells as well as their plans.
+Invoke Authority: Veteran of Sorcery. As a reaction to failing a saving throw against a spell, you
+can choose to succeed instead.
+Invoke Authority: Spellbreaker. You call on
+Asmodeus’ authority to protect you from enemy
+magic. Any time you are targeted by a magic
+missile spell, a line spell, or a spell that requires
+a ranged attack roll, roll a d6. On a 1 to 5, you
+are unaffected. On a 6, your are unaffected and
+the effect is reflected back at the caster as though
+it originated from you, turning the caster into
+the target.
+Spellcasting
+When Asmodeus accepts you as an Architect of
+Ruin, you gain access to his infernal power and
+learn to access divine magic to cast illrigger spells.
+Cantrips. You learn two cantrips of your choice
+from the illrigger spell list. At 8th level, you learn an
+additional cantrip.
+Spell Slots. The Architect of Ruin Spellcasting
+table shows how many spell slots you have. To cast
+one of these spells, you must expend a slot of the
+spell’s level or higher. When you finish a long rest,
+you regain all expended spell slots.
+Spells Known of 1st Level and Higher. You
+prepare the list of illrigger spells that are available
+for you to cast, choosing from the illrigger spell list.
+When you do so, choose a number of illrigger spells
+equal to your Charisma modifier + half your illrigger level (rounded down), minimum of one spell.
+The spells must be of a level for which you have
+spell slots.
+For example, if you are a 5th-level illrigger, you
+have three 1st-level and two 2nd-level spell slots.
+With a Charisma of 14, your list of prepared spells
+can include four spells of 1st or 2nd level in any
+combination. If you prepare the 1st-level spell Hell’s
+lash, you can cast it using a 1st-level or 2nd-level slot.
+Casting the spell doesn’t remove it from your list of
+prepared spells.
+You can change your list of prepared spells when
+you finish a long rest. Preparing a new list of illrigger spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell
+on your list.
+Spellcasting Ability. Charisma is your spellcasting ability for your illrigger spells, since your
+power derives from your ability to command the
+attention of your patron archdevil. You use your
+Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma
+modifier when setting the saving throw DC for an
+illrigger spell you cast and when making an attack
+roll with one.
+Spell save DC = 8 + your proficiency bonus
++ your Charisma modifier
+Spell attack modifier = your proficiency bonus
++ your Charisma modifier
+Spellmaster
+Starting at 7th level, you have advantage on Constitution saving throws that you make to maintain
+your concentration on a spell.
+Instant Illusion
+Starting at 9th level, when you place a seal on an
+enemy, you can, as a reaction, cast an illusion spell
+that normally has a casting time of 1 action.
+16
+By Will Alone
+At 13th level, your illusion spells no longer require
+any components. When casting an illusion spell,
+there is no indication you are casting the spell. You
+can cast illusion spells while blind, while gagged,
+and with your hands bound.
+Asmoedus’s Blessing
+At 17th level, you can, as a reaction to taking
+damage, cast fire shield. The shield is always a warm
+shield, deals fire damage, and deals 4d8 damage
+instead of 2d8. You cannot use this feature again
+until you complete a long rest.
+Lore Devil
+Starting at 20th level, as an action, you can become
+a lore devil for 1 minute. You gain three extra seals.
+Enemies with seals on them automatically fail their
+saving throws against your spells. You emanate an
+interference aura, forcing any creature within 60
+feet trying to cast a spell to first succeed at a DC 18
+Intelligence saving throw or else the spell fails and
+they lose the spell slot.
+Whenever you use a spell slot to cast a spell, there
+is a 25% chance the spell works normally but you do
+not lose the spell slot.
+While in this form, your type becomes fiend
+(devil) and Hell is your home plane. You cannot
+use this feature again until you complete a long rest.
+At their discretion, your GM may choose one codex
+and grant you limited use of one of the abilities from
+that codex.
+Interdict Improvements
+As your Architect of Ruin levels up, Asmodeus’
+interdiction carries more power.
+Hellmage. Starting at 6th level, when you cast
+an illusion spell, you may choose to expend an
+unused seal instead of a spell slot.
+Submit! Starting at 10th level, as a reaction when
+you cast a spell, you can consume a seal on an
+interdicted creature to impose disadvantage on
+their saving throws against the spell.
+Magic Resistance. Starting at 18th level, you gain
+advantage on saving throws against spells and
+∂magical effects from interdicted creatures.
+Illrigger Spell List
+*
+ indicates a new spell.
+†
+ indicates a concentration spell.
+Italics indicate an illusion spell.
+Cantrips
+Chill Touch
+Dancing Lights
+Fire Bolt
+Light
+Message
+Minor Illusion
+Ray of Frost
+Thaumaturgy
+True Strike
+1st Level
+Charm Person
+Color Spray
+Command
+Comprehend Languages
+Detect Magic†
+Disguise Self
+Hellish Rebuke
+Hell’s Lash*†
+Shield of Faith†
+Silent Image†
+Single Combat*
+2nd Level
+Augury
+Blur†
+Darkness†
+Enthrall
+Hold Person†
+Invisibility†
+Lesser Restoration
+Ray of Enfeeblement†
+Suggestion†
+3rd Level
+Dispel Magic
+Fear†
+Fly†
+Major Image†
+Phantom Steed
+Remove Curse
+Revivify
+Mote of Hell*†
+Tongues
+Vampiric Touch†
+4th Level
+Banishment†
+Blight
+Death Ward
+Dimension Door
+Divination
+Greater Invisibility†
+Hallucinatory Terrain
+Phantasmal Killer†
+5th Level
+Aura of Desecration*†
+Contact Other Plane
+Dispel Evil and Good†
+Dream
+Hold Monster†
+Mislead†
+Wall of Death*†
+6th Level
+Circle of Death
+Mass Suggestion
+Planar Ally
+Programmed Illusion
+17
+18
+New Illrigger Spells
+The following spells are new and available only to
+the Architects of Ruin.
+Aura of Desecration
+5th-level abjuration
+Casting Time: 1 action
+Range: Self (30-foot radius)
+Components: V
+Duration: Concentration, up to 10 minutes
+Life-defiling energy radiates from you in an aura
+with a 30-foot radius. Until the spell ends, the aura
+moves with you, centered on you. When a creature
+enters the area or starts its turn there, it takes 1d6
+necrotic damage and you regain hit points equal to
+the damage dealt.
+Hell’s Lash
+1st-level evocation
+Casting Time: 1 action
+Range: 30 feet
+Components: V, S, M (the forked tongue of
+a serpent)
+Duration: Concentration, up to 1 minute
+You produce a whip of red electric energy that
+lashes out at a creature within range, creating a
+conduit between you and the target. Make a ranged
+spell attack against that creature. On a hit, the
+target takes 1d10 fire damage, and on each of your
+tums for the duration you can use your action to
+deal 1d10 fire damage to the target automatically.
+The spell ends if you use your action to do anything
+else. The spell also ends if the target is ever outside
+the spell’s range or if it has total cover from you.
+If the target has one of your seals on it, the infernal
+whip deals its maximum damage.
+At Higher Levels. When you cast this spell
+using a spell slot of 2nd level or higher, the initial damage increases by 1d10 for each slot level
+above 1st.
+Mote of Hell
+3rd-level conjuration
+Casting Time: 1 action
+Range: 150 feet
+Components: V, S, M (a piece of sulfur)
+Duration: Concentration, up to 1 minute
+You manifest a mote of Hell on the Mundane
+World. A 15-foot-radius sphere of darkness, brimstone, and blasting heat arrives, centered on a point
+within range and lasting for the duration of the
+spell. The cloud of hellfire echoes with the cries of
+damned souls that can be heard by anyone within
+30 feet of the cloud.
+No light, even magical light, can illuminate the
+area, and any creatures fully within the area are
+blinded. The cloud warps the timescape and the
+area is difficult terrain. Any creature that starts its
+turn in the area takes 2d6 fire damage. Any creature that ends its turn in the area must succeed on
+a Wisdom saving throw or take 2d6 psychic damage
+as the voices of the damned crowd their mind.
+Devils are immune to this damage, can see
+through the darkness, and regain 2d6 hit points if
+they start their turn in this area.
+19
+Single Combat
+1st-level enchantment
+Casting Time: 1 bonus action
+Range: 30 feet
+Components: V
+Duration: Up to 1 minute
+You offer a creature a challenge they might not
+be able to resist. If you have no allies adjacent to
+you, choose one creature within range who can see
+and hear you. They must make a Charisma saving
+throw. On a failed save, the creature falls for your
+ruse and must fight you. For the duration, they
+have disadvantage on attacks that do not include
+you, and must succeed on a Charisma save against
+your spellcasting DC each time they try to move
+away from you.
+This spell ends if you attack any other creature, if
+you cast a spell that doesn’t include the creature as a
+target, if an ally damages the target or targets them
+with a spell, or if you end your turn more than 30
+feet away from the target. The spell also ends if any
+of your allies end their turn adjacent to you.
+Wall of Death
+5th-level necromancy
+Casting Time: 1 action
+Range: 120 feet
+Components: V, S, M (a small piece of phosphorus)
+Duration: Concentration, up to 1 minute
+You create a wall of necrotic energy on a solid
+surface within range. You can make a wall up to
+60 feet long, 20 feet high, and 1 foot thick, or can
+make a ringed wall up to 20 feet in diameter, 20
+feet high, and 1 foot thick. The wall is opaque and
+lasts for the duration. When the wall appears, each
+creature within its area must make a Constitution
+saving throw. On a failed save, a creature takes
+5d8 necrotic damage and the first time it drops
+to 0 hit points within the next minute, it instantly
+fails a death saving throw; on a successful save, it
+takes half as much damage without the other effect.
+You regain hit points equal to half the amount of
+necrotic damage dealt. One side of the wall, selected
+by you when you cast this spell, deals 5d8 necrotic
+damage to each creature that ends its turn within 10
+feet of that side or inside the wall. A creature takes
+the same damage when it enters the wall for the first
+time on a turn or ends its turn there. The other side
+of the wall deals no damage.
+20
+Lady Dazran
+The Painkiller Lady Dazran could serve as an ally
+or enemy for the characters in your game. She is a
+ruthless, efficient killing machine. When combat
+begins, Lady Dazran targets an enemy in a healing
+or leadership role with By the Throat and Baleful
+Interdict and moves within 5 feet of it, positioning
+herself among as many enemies as possible to make
+maximum use of her Aura of Despair. If she needs
+allies, she next uses Summon Hell and Baleful Interdict to place another seal on the same target before
+focusing all her greatsword attacks on her chosen
+foe (and ordering her bone devil to do the same if
+summoned). Whenever she gets the chance to place
+or consume a seal on her target, she takes it, focused
+on killing that creature before moving on to the next.
+If other enemies attempt to intervene as Lady Dazran slaughters one of their own, she uses Telepathic
+Seal to send the sniveling welp away and wait its turn
+for her blade. When Lady Dazran’s hit points drop
+to 70 or fewer, she uses Infernal Conduit on a fresh
+target to regain as many hit points as possible.
+of her allies hits a target with at least one seal with
+a melee attack, she can consume the seals to deal an
+extra 10 (3d6) necrotic damage per seal consumed.
+ACTIONS
+Multiattack. Dazran makes three melee weapon
+attacks or two ranged weapon attacks.
+Javelin. Melee or Ranged Weapon Attack: +9 to hit,
+reach 5 ft. or range 30/120 ft., one target. Hit: 8 (1d6 +
+5) piercing damage.
+Steel Devil Rib Greatsword. Melee Weapon Attack:
++9 to hit, reach 5 ft., one target. Hit: 19 (4d6 + 5)
+slashing damage.
+Infernal Conduit (1/Day). Melee Spell Attack: +9 to
+hit, reach 5 ft., one creature. Hit: 44 (8d10) necrotic
+damage, and Dazran regains hit points equal to the
+damage taken. If fully healed, Dazran gains the excess
+as temporary hit points.
+By the Throat. Dazran uses Baleful Interdict to place
+a seal on a Large or smaller creature. The target must
+succeed on a DC 17 Wisdom saving throw or be
+grappled (escape DC 15). While grappled, the target
+is restrained.
+Hellsight (5/Day). Until the end of her next turn,
+Dazran knows the location of any creature within
+60 feet of her using magic to disguise or hide itself.
+Summon Hell (1/Week). Dazran summons a bone
+devil in an unoccupied space that she can see within
+30 feet of her. The devil follows her commands and
+acts immediately after her in the initiative order. The
+devil disappears when it drops to 0 hit points, Dazran
+dies or becomes unconscious, or 1 minute after it
+is summoned.
+REACTIONS
+Telepathic Seal. When a creature moves within
+5 feet of Dazran, she can use Baleful Interdict to place
+a seal on it. The target must succeed on a DC 17
+Wisdom saving throw or be pushed 30 feet away from
+Dazran and knocked prone.
+You Die on My Command (1/Short or Long Rest).
+When a creature that can hear Dazran within 30 feet
+of her drops to 0 hit points, Dazran shouts a command
+and the creature drops to 1 hit point instead.
+Lady Dazran
+Medium humanoid (human), lawful evil
+Armor Class 18 (plate)
+Hit Points 153 (18d8 + 72)
+Speed 30 ft.
+STR DEX CON INT WIS CHA
+20 (+5) 10 (+0) 18 (+4) 13 (+1) 15 (+2) 20 (+5)
+Saving Throws Con +8, Cha +9
+Skills Arcana +5, Athletics +9, Intimidation +9,
+Religion +5
+Senses passive Perception 12
+Languages Common, Infernal
+Challenge 12 (8,400 XP) Proficiency Bonus +4
+Aura of Despair. Whenever a creature Dazran
+chooses within 15 feet of her makes an attack roll or
+saving throw, that creature must subtract 1d4 from the
+result of the attack or save.
+Baleful Interdict (5/Short or Long Rest). As a
+bonus action, Dazran places a seal on a creature within
+30 feet of her that she can see. When Dazran or one
+21
+Retainers
+Rules for retainers appear in the “Followers” section of Strongholds & Followers. Using those rules,
+you can add the following Illrigger retainers to
+your game!
+Agent (Shadowmaster)
+Armor Light (AC 13)
+Primary Ability Dexterity, Charisma
+Saves Constitution, Charisma
+Skills Acrobatics, Stealth, Deception
+Signature Action Melee Weapon Attack: +6 to hit,
+reach 5 ft., one target. Hit: 10 (2d4 + 5) piercing damage
+3rd Level Special Action (3/Day, Reaction): Shadow
+Gate. When the Agent’s leader makes an attack against
+a target the Agent can see within 60 feet, the agent
+teleports into an unoccupied space within 5 feet of the
+target and grants the leader advantage on the attack roll.
+5th Level Special Action (1/Day): All Out. The
+Agent makes a signature attack then places seals on a
+creature they can see within 30 feet of them. The seals
+are consumed on the next successful attack against
+the target, and the target takes an additional 21 (6d6)
+necrotic damage.
+7th Level Special Action (3/day): Seal Fate. The agent
+makes two signature action attacks against a creature. If
+one or both attacks hit, the creature’s speed is reduced
+to 0 and they have disadvantage on attack rolls that don’t
+include the agent until the end of the agent’s next turn.
+Deceiver (Architect of Ruin)
+Armor Medium (AC 15)
+Primary Ability Charisma
+Saves Constitution, Charisma
+Skills Arcana, Persuasion, Deception
+Signature Action Melee Weapon Attack: +6 to hit,
+reach 5 ft., one target. Hit: 9 (2d6 + 2) slashing damage
+3rd Level Special Action (3/Day): Hell’s lash
+5th Level Special Action (1/Day): Armor of Deception.
+The Deceiver weaves a web of frightening illusions that last
+for 1 minute around another creature the deceiver can
+see. Creatures who take the attack action against the target
+while the illusions last must make a Wisdom saving throw
+or be frightened until the end of their next turn. Creatures
+who make the save are immune to this effect for 24 hours.
+7th Level Special Action (1/Day): mote of Hell
+Tyrant (Painkiller)
+Armor Heavy (AC 18)
+Primary Ability Strength, Charisma
+Saves Constitution, Charisma
+Skills Athletics, Intimidation
+Signature Action Melee Weapon Attack: +6 to hit,
+reach 5 ft., one target. Hit: 10 (2d6 + 3) slashing damage
+3rd Level Special Action (3/Day, Bonus Action): Shift
+Ranks. The Tyrant makes a signature attack and allows
+up to three allies within 30 feet of the Tyrant that can
+hear the Tyrant to move up to 10 feet without provoking
+opportunity attacks.
+5th Level Special Action (1/Day): Devastation.
+The Tyrant makes two signature attacks and allows up to
+three allies within 30 feet of the tyrant that can hear the
+Tyrant to use their reaction to make one weapon attack.
+7th Level Special Action (1/Day): Choke. The Tyrant
+makes a signature attack and uses magic to choke a
+creature within 30 feet of the tyrant that the Tyrant can
+see. The choked target must make a Wisdom saving
+throw or be grappled, and the target is restrained
+until the grapple ends.

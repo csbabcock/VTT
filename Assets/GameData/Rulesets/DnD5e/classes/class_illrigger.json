@@ -1,0 +1,257 @@
+{
+  "id": "class.illrigger",
+  "name": "Illrigger",
+  "description": "T he archdevils who rule the Seven Cities of Hell scheme and plot endlessly, eternally. Each seeks to bring the others to heel. To ascend to the Throne of Hell, unite the seven cities and every infernal thing that lives there, and lead a...",
+  "descriptionSections": [
+    {
+      "heading": "",
+      "body": "T he archdevils who rule the Seven Cities of Hell scheme and plot endlessly, eternally. Each seeks to bring the others to heel. To ascend to the Throne of Hell, unite the seven cities and every infernal thing that lives there, and lead an infinite army of devils across the timescape until all worlds burn. Their elite shock troops, the terror-commandos of Hell, are the illriggers. Knights of Hell, they are charismatic counter-paladins who master devils, disrupt enemy organizations, and command Hell's armies."
+    },
+    {
+      "heading": "The Order of Desolation",
+      "body": "Millennia ago, the Lords of Hell did something remarkable: they cooperated. They came together to create the Order of Desolation, knights sworn to serve Hell first, their patron archdevil second. Acceptance into the Order of Desolation makes you a comrade with every other illrigger, regardless of which archdevil you serve. Each archdevil has churches, underground fanes, secret societies, cults. All with leaders manically devoted to the archdevil who grants them their power. But this association of illriggers consider themselves above the petty political squabbles that divide the seven cities. Members of the Order of Desolation, also known as the Desolate, are expected to be intelligent, resourceful, tactical, manipulative. A temple or cult might conclude that the presence of an illrigger in their midst is a sign that their archdevil approves of their actions, but the illriggers are independent. The order was founded to give the Lords of Hell agents capable of acting across the timescape, free from the direct control of their patron. An illrigger has many powerful abilities granted by their archdevil, but more precious is their patron's trust. Left to their own devices, the illrigger is expected to sow discord, pain, strife, deceit, and fear without instruction or supervision. It is not unusual, therefore, for a member of the Order of Desolation to rely on other members of the order first, even from illriggers who serve other archdevils, before going to any church, cult, or temple devoted to their own archdevil."
+    }
+  ],
+  "hitDie": 10,
+  "primaryAbility": "CHA",
+  "spellcastingAbility": "CHA",
+  "savingThrowProficiencies": [
+    "CON",
+    "CHA"
+  ],
+  "armorProficiencies": [
+    "Light",
+    "Medium",
+    "Shield"
+  ],
+  "weaponProficiencies": [
+    "Simple",
+    "Martial"
+  ],
+  "featuresByLevel": [
+    {
+      "level": 1,
+      "feature": {
+        "id": "feature.illrigger.forked_tongue",
+        "name": "Forked Tongue",
+        "description": "You have a facility with speech and know how to manipulate an audience. Whenever you make an ability check to persuade, deceive, or intimidate, you can treat a d20 roll of 7 or lower as an 8. Additionally you learn the Infernal language."
+      }
+    },
+    {
+      "level": 1,
+      "feature": {
+        "id": "feature.illrigger.infernal_conduit",
+        "name": "Infernal Conduit",
+        "description": "There is a pool of infernal power within you that replenishes after you take a long rest. This pool is represented by dice, starting with 1d10 at 1st level. Your pool gains dice as shown on the Illrigger table. With these dice you can transfer hit points between your illrigger and other targets, healing allies at the expense of your own health or draining the life force of enemies to rejuvenate your own vitality."
+      }
+    },
+    {
+      "level": 2,
+      "feature": {
+        "id": "feature.illrigger.fighting_style",
+        "name": "Fighting Style",
+        "description": "At 2nd level, you choose an illrigger fighting style: Treachery When you attack an enemy who has none of your allies adjacent to it, you gain a +3 bonus to damage rolls. Bravado While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Charisma modifier. You can use a shield and still gain this benefit. Schemes While you wield a melee weapon in one hand and no other weapons, you can use your reaction after an adjacent enemy attacks you to move into any other unoccupied space within five feet of the 1 This is not a reaction, it's free. attacking enemy. This movement does not provoke an opportunity attack. Lies When you attack with a two-handed melee weapon, you can use your Charisma modifier, instead of your Strength modifier, for both the attack and damage rolls."
+      }
+    },
+    {
+      "level": 2,
+      "feature": {
+        "id": "feature.illrigger.baleful_interdict",
+        "name": "Baleful Interdict",
+        "description": "When you reach 2nd level, you learn to use the power of Hell to censure other creatures. As a bonus action, you can place a seal on a target you can see within 30 feet. You can do this a number of times equal to your Charisma modifier. When you finish a short or long rest, you regain all your seals. When you or an ally hits a target you can see with any seals on it, you can consume the seals to make the attack deal an extra 2d6 necrotic damage to the target per seal consumed.1 If you are within 30 feet of the target, you regain 2 hit points for each die of damage your seals deals. A creature with a seal on them is an interdicted creature. Seals evaporate if not used after 1 minute. Only the illrigger who placed the seal knows it's there; it appears to the illrigger as a glowing glyph on the creature's forehead. If a creature with any of your seals on it dies, you can move all of its seals to another creature within range. When you reach 10th level, you feel your connection to your archdevil increase. Your seals deal an extra 1d6 damage. Your seals improve differently based on which contract you choose. These improvements are listed under \"Diabolic Contract,\" below."
+      }
+    },
+    {
+      "level": 3,
+      "feature": {
+        "id": "feature.illrigger.hellsight",
+        "name": "Hellsight",
+        "description": "When you reach 3rd level, your mastery of deception makes it easy for you to recognize the use of concealing sorcery. As an action, you extend your awareness out from you. Until the end of your next turn, you know the location of creatures within 60 feet using magic to hide or disguise themselves. You can use this feature a number of times equal to your Charisma modifier. When you finish a long rest, you regain your expended uses."
+      }
+    },
+    {
+      "level": 3,
+      "feature": {
+        "id": "feature.illrigger.diabolic_contract",
+        "name": "Diabolic Contract",
+        "description": "When you reach 3rd level, you sign a diabolic contract with your archdevil who welcomes you into the Order of Desolation. You gain the Invoke Authority ability and choose either Painkiller (Dispater), Shadowmaster (Moloch), or Architect of Ruin (Asmodeus) as your archdevil. Furthermore, you are a noble knight in the lists of Hell and will be accorded fine treatment and hospitality anywhere in Hell you travel, even to cities ruled by enemy archdevils. More cosmopolitan cities in the timescape-like Alloy, the City of Brass-will also respect your noble rank. Invoke Authority You invoke the authority granted you by your archdevil, channelling baleful energy to fuel magical effects. Each Invoke Authority option provided by your archdevil explains how to use it. When you use your Invoke Authority, you choose which option to use. Once you use this feature, you must finish a long rest to use it again."
+      }
+    },
+    {
+      "level": 4,
+      "feature": {
+        "id": "feature.illrigger.ability_score_improvement",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 5,
+      "feature": {
+        "id": "feature.illrigger.extra_attack",
+        "name": "Extra Attack",
+        "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+      }
+    },
+    {
+      "level": 6,
+      "feature": {
+        "id": "feature.illrigger.baleful_interdict_improvement",
+        "name": "Baleful Interdict Improvement",
+        "description": "When you reach 2nd level, you learn to use the power of Hell to censure other creatures. As a bonus action, you can place a seal on a target you can see within 30 feet. You can do this a number of times equal to your Charisma modifier. When you finish a short or long rest, you regain all your seals. When you or an ally hits a target you can see with any seals on it, you can consume the seals to make the attack deal an extra 2d6 necrotic damage to the target per seal consumed.1 If you are within 30 feet of the target, you regain 2 hit points for each die of damage your seals deals. A creature with a seal on them is an interdicted creature. Seals evaporate if not used after 1 minute. Only the illrigger who placed the seal knows it's there; it appears to the illrigger as a glowing glyph on the creature's forehead. If a creature with any of your seals on it dies, you can move all of its seals to another creature within range. When you reach 10th level, you feel your connection to your archdevil increase. Your seals deal an extra 1d6 damage. Your seals improve differently based on which contract you choose. These improvements are listed under \"Diabolic Contract,\" below."
+      }
+    },
+    {
+      "level": 7,
+      "feature": {
+        "id": "feature.illrigger.diabolic_contract_improvement",
+        "name": "Diabolic Contract Improvement",
+        "description": "When you reach 3rd level, you sign a diabolic contract with your archdevil who welcomes you into the Order of Desolation. You gain the Invoke Authority ability and choose either Painkiller (Dispater), Shadowmaster (Moloch), or Architect of Ruin (Asmodeus) as your archdevil. Furthermore, you are a noble knight in the lists of Hell and will be accorded fine treatment and hospitality anywhere in Hell you travel, even to cities ruled by enemy archdevils. More cosmopolitan cities in the timescape-like Alloy, the City of Brass-will also respect your noble rank. Invoke Authority You invoke the authority granted you by your archdevil, channelling baleful energy to fuel magical effects. Each Invoke Authority option provided by your archdevil explains how to use it. When you use your Invoke Authority, you choose which option to use. Once you use this feature, you must finish a long rest to use it again."
+      }
+    },
+    {
+      "level": 8,
+      "feature": {
+        "id": "feature.illrigger.ability_score_improvement_8",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 9,
+      "feature": {
+        "id": "feature.illrigger.diabolic_contract_improvement_9",
+        "name": "Diabolic Contract Improvement",
+        "description": "When you reach 3rd level, you sign a diabolic contract with your archdevil who welcomes you into the Order of Desolation. You gain the Invoke Authority ability and choose either Painkiller (Dispater), Shadowmaster (Moloch), or Architect of Ruin (Asmodeus) as your archdevil. Furthermore, you are a noble knight in the lists of Hell and will be accorded fine treatment and hospitality anywhere in Hell you travel, even to cities ruled by enemy archdevils. More cosmopolitan cities in the timescape-like Alloy, the City of Brass-will also respect your noble rank. Invoke Authority You invoke the authority granted you by your archdevil, channelling baleful energy to fuel magical effects. Each Invoke Authority option provided by your archdevil explains how to use it. When you use your Invoke Authority, you choose which option to use. Once you use this feature, you must finish a long rest to use it again."
+      }
+    },
+    {
+      "level": 10,
+      "feature": {
+        "id": "feature.illrigger.baleful_interdict_improvement_10",
+        "name": "Baleful Interdict Improvement",
+        "description": "When you reach 2nd level, you learn to use the power of Hell to censure other creatures. As a bonus action, you can place a seal on a target you can see within 30 feet. You can do this a number of times equal to your Charisma modifier. When you finish a short or long rest, you regain all your seals. When you or an ally hits a target you can see with any seals on it, you can consume the seals to make the attack deal an extra 2d6 necrotic damage to the target per seal consumed.1 If you are within 30 feet of the target, you regain 2 hit points for each die of damage your seals deals. A creature with a seal on them is an interdicted creature. Seals evaporate if not used after 1 minute. Only the illrigger who placed the seal knows it's there; it appears to the illrigger as a glowing glyph on the creature's forehead. If a creature with any of your seals on it dies, you can move all of its seals to another creature within range. When you reach 10th level, you feel your connection to your archdevil increase. Your seals deal an extra 1d6 damage. Your seals improve differently based on which contract you choose. These improvements are listed under \"Diabolic Contract,\" below."
+      }
+    },
+    {
+      "level": 11,
+      "feature": {
+        "id": "feature.illrigger.improved_infernal_conduit",
+        "name": "Improved Infernal Conduit",
+        "description": "You gain the Improved Infernal Conduit class feature."
+      }
+    },
+    {
+      "level": 12,
+      "feature": {
+        "id": "feature.illrigger.ability_score_improvement_12",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 13,
+      "feature": {
+        "id": "feature.illrigger.diabolic_contract_improvement_13",
+        "name": "Diabolic Contract Improvement",
+        "description": "When you reach 3rd level, you sign a diabolic contract with your archdevil who welcomes you into the Order of Desolation. You gain the Invoke Authority ability and choose either Painkiller (Dispater), Shadowmaster (Moloch), or Architect of Ruin (Asmodeus) as your archdevil. Furthermore, you are a noble knight in the lists of Hell and will be accorded fine treatment and hospitality anywhere in Hell you travel, even to cities ruled by enemy archdevils. More cosmopolitan cities in the timescape-like Alloy, the City of Brass-will also respect your noble rank. Invoke Authority You invoke the authority granted you by your archdevil, channelling baleful energy to fuel magical effects. Each Invoke Authority option provided by your archdevil explains how to use it. When you use your Invoke Authority, you choose which option to use. Once you use this feature, you must finish a long rest to use it again."
+      }
+    },
+    {
+      "level": 14,
+      "feature": {
+        "id": "feature.illrigger.aura_of_despair",
+        "name": "Aura of Despair",
+        "description": "Beginning at 14th level, you radiate a magical aura of evil. Whenever a hostile creature within 15 feet of you makes an attack roll or a saving throw, it must roll a d4 and subtract the number rolled from the result."
+      }
+    },
+    {
+      "level": 15,
+      "feature": {
+        "id": "feature.illrigger.summon_hell",
+        "name": "Summon Hell",
+        "description": "Beginning at 15th level, as an action, you can summon a bone devil to serve you for 1 minute. The devil appears in an unoccupied space within 30 feet. It is bound to you and must obey your commands to the best of its ability. It acts on the same initiative that you act on, and may both act and move on the turn you summon it. If you die or fall unconscious, the devil returns to Hell. Once you use this feature, you must wait 1 week before you can use it again. Diabolic Contracts The knight who walks the path of Hell may gain access to the powers of the Illrigger purely through their own devotion. No oath is necessary, no mentor. A fledgling hellknight might not even be aware Hell's Paladins exist. But acceptance into the Order of Desolation at"
+      }
+    },
+    {
+      "level": 16,
+      "feature": {
+        "id": "feature.illrigger.ability_score_improvement_16",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 17,
+      "feature": {
+        "id": "feature.illrigger.diabolic_contract_improvement_17",
+        "name": "Diabolic Contract Improvement",
+        "description": "When you reach 3rd level, you sign a diabolic contract with your archdevil who welcomes you into the Order of Desolation. You gain the Invoke Authority ability and choose either Painkiller (Dispater), Shadowmaster (Moloch), or Architect of Ruin (Asmodeus) as your archdevil. Furthermore, you are a noble knight in the lists of Hell and will be accorded fine treatment and hospitality anywhere in Hell you travel, even to cities ruled by enemy archdevils. More cosmopolitan cities in the timescape-like Alloy, the City of Brass-will also respect your noble rank. Invoke Authority You invoke the authority granted you by your archdevil, channelling baleful energy to fuel magical effects. Each Invoke Authority option provided by your archdevil explains how to use it. When you use your Invoke Authority, you choose which option to use. Once you use this feature, you must finish a long rest to use it again."
+      }
+    },
+    {
+      "level": 18,
+      "feature": {
+        "id": "feature.illrigger.baleful_interdict_improvement_18",
+        "name": "Baleful Interdict Improvement",
+        "description": "When you reach 2nd level, you learn to use the power of Hell to censure other creatures. As a bonus action, you can place a seal on a target you can see within 30 feet. You can do this a number of times equal to your Charisma modifier. When you finish a short or long rest, you regain all your seals. When you or an ally hits a target you can see with any seals on it, you can consume the seals to make the attack deal an extra 2d6 necrotic damage to the target per seal consumed.1 If you are within 30 feet of the target, you regain 2 hit points for each die of damage your seals deals. A creature with a seal on them is an interdicted creature. Seals evaporate if not used after 1 minute. Only the illrigger who placed the seal knows it's there; it appears to the illrigger as a glowing glyph on the creature's forehead. If a creature with any of your seals on it dies, you can move all of its seals to another creature within range. When you reach 10th level, you feel your connection to your archdevil increase. Your seals deal an extra 1d6 damage. Your seals improve differently based on which contract you choose. These improvements are listed under \"Diabolic Contract,\" below."
+      }
+    },
+    {
+      "level": 19,
+      "feature": {
+        "id": "feature.illrigger.ability_score_improvement_19",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.illrigger.infernal_contract_improvement_10_as_an_action",
+        "name": "Infernal Contract Improvement 10 As an action",
+        "description": "You gain the Infernal Contract Improvement 10 As an action class feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.illrigger.choose_a_number_of_dice_from_your_remaining_pool",
+        "name": "choose a number of dice from your remaining pool",
+        "description": "You gain the choose a number of dice from your remaining pool class feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.illrigger.touch_another_creature_if_they_are_unwilling",
+        "name": "touch another creature. If they are unwilling",
+        "description": "You gain the touch another creature. If they are unwilling class feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.illrigger.this_is_a_melee_spell_attack_with_which_you_are_proficient",
+        "name": "this is a melee spell attack with which you are proficient",
+        "description": "You gain the this is a melee spell attack with which you are proficient class feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.illrigger.using_charisma_as_your_spellcasting_ability_if_you_miss",
+        "name": "using Charisma as your spellcasting ability. If you miss",
+        "description": "You gain the using Charisma as your spellcasting ability. If you miss class feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.illrigger.nothing_happens_you",
+        "name": "nothing happens-you",
+        "description": "You gain the nothing happens-you class feature."
+      }
+    }
+  ]
+}

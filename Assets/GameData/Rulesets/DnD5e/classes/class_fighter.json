@@ -1,22 +1,226 @@
 {
   "id": "class.fighter",
   "name": "Fighter",
-  "description": "Fighters share an unparalleled mastery with weapons and armor, and a thorough knowledge of the skills of combat.",
+  "description": "A human in clanging plate armor holds her shield before her as she runs toward the massed goblins. An elf behind her, clad in studded leather armor, peppers the goblins with arrows loosed from his exquisite bow. The half-orc nearby shout...",
+  "descriptionSections": [
+    {
+      "heading": "",
+      "body": "A human in clanging plate armor holds her shield before her as she runs toward the massed goblins. An elf behind her, clad in studded leather armor, peppers the goblins with arrows loosed from his exquisite bow. The half-orc nearby shouts orders, helping the two combatants coordinate their assault to the best advantage. A dwarf in chain mail interposes his shield between the ogre's club and his companion, knocking the deadly blow aside. His companion, a half-elf in scale armor, swings two scimitars in a blinding whirl as she circles the ogre, looking for a blind spot in its defenses. A gladiator fights for sport in an arena, a master with his trident and net, skilled at toppling foes and moving them around for the crowd's delight-and his own tactical advantage. His opponent's sword flares with blue light an instant before she sends lightning flashing forth to smite him. All of these heroes are fighters, perhaps the most diverse class of characters in the worlds of Dungeons & Dragons. Questing knights, conquering overlords, royal champions, elite foot soldiers, hardened mercenaries, and bandit kings-as fighters, they all share an unparalleled mastery with weapons and armor, and a thorough knowledge of the skills of combat. And they are well acquainted with death, both meting it out and staring it defiantly in the face."
+    },
+    {
+      "heading": "Well-Rounded Specialists",
+      "body": "Fighters learn the basics of all combat styles. Every fighter can swing an axe, fence with a rapier, wield a longsword or a greatsword, use a bow, and even trap foes in a net with some degree of skill. Likewise, a fighter is adept with shields and every form of armor. Beyond that basic degree of familiarity, each fighter specializes in a certain style of combat. Some concentrate on archery, some on fighting with two weapons at once, and some on augmenting their martial skills with magic. This combination of broad general ability and extensive specialization makes fighters superior combatants on battlefields and in dungeons alike."
+    },
+    {
+      "heading": "Trained for Danger",
+      "body": "Not every member of the city watch, the village militia, or the queen's army is a fighter. Most of these troops are relatively untrained soldiers with only the most basic combat knowledge. Veteran soldiers, military officers, trained bodyguards, dedicated knights, and similar figures are fighters. Some fighters feel drawn to use their training as adventurers. The dungeon delving, monster slaying, and other dangerous work common among adventurers is second nature for a fighter, not all that different from the life he or she left behind. There are greater risks, perhaps, but also much greater rewards-few fighters in the city watch have the opportunity to discover a magic flame tongue sword, for example."
+    },
+    {
+      "heading": "Creating a Fighter",
+      "body": "As you build your fighter, think about two related elements of your character's background: Where did you get your combat training, and what set you apart from the mundane warriors around you? Were you particularly ruthless? Did you get extra help from a mentor, perhaps because of your exceptional dedication? What drove you to this training in the first place? A threat to your homeland, a thirst for revenge, or a need to prove yourself might all have been factors. You might have enjoyed formal training in a noble's army or in a local militia. Perhaps you trained in a war academy, learning strategy, tactics, and military history. Or you might be self-taught-unpolished but well tested. Did you take up the sword as a way to escape the limits of life on a farm, or are you following a proud family tradition? Where did you acquire your weapons and armor? They might have been military issue or family heirlooms, or perhaps you scrimped and saved for years to buy them. Your armaments are now among your most important possessions-the only things that stand between you and death's embrace. You can make a fighter quickly by following these suggestions. First, make Strength or Dexterity your highest ability score, depending on whether you want to focus on melee weapons or on archery (or finesse weapons). Your next-highest score should be Constitution, or Intelligence if you plan to adopt the Eldritch Knight martial archetype. Second, choose the soldier background."
+    }
+  ],
   "hitDie": 10,
   "primaryAbility": "STR",
   "spellcastingAbility": "",
-  "savingThrowProficiencies": [ "STR", "CON" ],
-  "armorProficiencies": [ "Light", "Medium", "Heavy", "Shield" ],
-  "weaponProficiencies": [ "Simple", "Martial" ],
+  "savingThrowProficiencies": [
+    "STR",
+    "CON"
+  ],
+  "armorProficiencies": [
+    "Light",
+    "Medium",
+    "Heavy",
+    "Shield"
+  ],
+  "weaponProficiencies": [
+    "Simple",
+    "Martial"
+  ],
   "featuresByLevel": [
     {
       "level": 1,
       "feature": {
-        "id": "feature.fighting_style",
+        "id": "feature.fighter.fighting_style",
         "name": "Fighting Style",
-        "description": "You adopt a particular style of fighting as your specialty."
+        "description": "You adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again.\n\nArchery You gain a +2 bonus to attack rolls you make with ranged weapons.\n\nDefense While you are wearing armor, you gain a +1 bonus to AC.\n\nDueling When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon.\n\nGreat Weapon Fighting When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can reroll the die and must use the new roll, even if the new roll is a 1 or a 2. The weapon must have the two-handed or versatile property for you to gain this benefit.\n\nProtection When a creature you can see attacks a target other than you that is within 5 feet of you, you can use your reaction to impose disadvantage on the attack roll. You must be wielding a shield.\n\nTwo-Weapon Fighting When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack."
+      }
+    },
+    {
+      "level": 1,
+      "feature": {
+        "id": "feature.fighter.second_wind",
+        "name": "Second Wind",
+        "description": "You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once you use this feature, you must finish a short or long rest before you can use it again."
+      }
+    },
+    {
+      "level": 2,
+      "feature": {
+        "id": "feature.fighter.action_surge",
+        "name": "Action Surge (one use)",
+        "description": "Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action.\n\nOnce you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn."
+      }
+    },
+    {
+      "level": 3,
+      "feature": {
+        "id": "feature.fighter.martial_archetype",
+        "name": "Martial Archetype",
+        "description": "At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques. Choose Champion, Battle Master, or Eldritch Knight, all detailed at the end of the class description. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level."
+      }
+    },
+    {
+      "level": 4,
+      "feature": {
+        "id": "feature.fighter.ability_score_improvement",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.\n\nUsing the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."
+      }
+    },
+    {
+      "level": 5,
+      "feature": {
+        "id": "feature.fighter.extra_attack",
+        "name": "Extra Attack",
+        "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.\n\nThe number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class."
+      }
+    },
+    {
+      "level": 6,
+      "feature": {
+        "id": "feature.fighter.ability_score_improvement_6",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.\n\nUsing the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."
+      }
+    },
+    {
+      "level": 7,
+      "feature": {
+        "id": "feature.fighter.martial_archetype_feature",
+        "name": "Martial Archetype Feature",
+        "description": "You gain the Martial Archetype Feature class feature."
+      }
+    },
+    {
+      "level": 8,
+      "feature": {
+        "id": "feature.fighter.ability_score_improvement_8",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.\n\nUsing the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."
+      }
+    },
+    {
+      "level": 9,
+      "feature": {
+        "id": "feature.fighter.indomitable",
+        "name": "Indomitable (one use)",
+        "description": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest.\n\nYou can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level."
+      }
+    },
+    {
+      "level": 10,
+      "feature": {
+        "id": "feature.fighter.martial_archetype_feature_10",
+        "name": "Martial Archetype Feature",
+        "description": "You gain the Martial Archetype Feature class feature."
+      }
+    },
+    {
+      "level": 11,
+      "feature": {
+        "id": "feature.fighter.extra_attack_11",
+        "name": "Extra Attack (2)",
+        "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.\n\nThe number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class."
+      }
+    },
+    {
+      "level": 12,
+      "feature": {
+        "id": "feature.fighter.ability_score_improvement_12",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.\n\nUsing the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."
+      }
+    },
+    {
+      "level": 13,
+      "feature": {
+        "id": "feature.fighter.indomitable_13",
+        "name": "Indomitable (two uses)",
+        "description": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest.\n\nYou can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level."
+      }
+    },
+    {
+      "level": 14,
+      "feature": {
+        "id": "feature.fighter.ability_score_improvement_14",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.\n\nUsing the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."
+      }
+    },
+    {
+      "level": 15,
+      "feature": {
+        "id": "feature.fighter.martial_archetype_feature_15",
+        "name": "Martial Archetype Feature",
+        "description": "You gain the Martial Archetype Feature class feature."
+      }
+    },
+    {
+      "level": 16,
+      "feature": {
+        "id": "feature.fighter.ability_score_improvement_16",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.\n\nUsing the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."
+      }
+    },
+    {
+      "level": 17,
+      "feature": {
+        "id": "feature.fighter.action_surge_17",
+        "name": "Action Surge (two uses)",
+        "description": "Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action.\n\nOnce you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn."
+      }
+    },
+    {
+      "level": 17,
+      "feature": {
+        "id": "feature.fighter.indomitable_17",
+        "name": "Indomitable (three uses)",
+        "description": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest.\n\nYou can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level."
+      }
+    },
+    {
+      "level": 18,
+      "feature": {
+        "id": "feature.fighter.martial_archetype_feature_18",
+        "name": "Martial Archetype Feature",
+        "description": "You gain the Martial Archetype Feature class feature."
+      }
+    },
+    {
+      "level": 19,
+      "feature": {
+        "id": "feature.fighter.ability_score_improvement_19",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.\n\nUsing the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.fighter.extra_attack_class_features_as_a_fighter",
+        "name": "Extra Attack (3) Class Features As a fighter",
+        "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.\n\nThe number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.fighter.you_gain_the_following_class_features_hit_points_hit_dice_1d10_per_fighter_level_hit_points_at_1st_level_10_your_constitution_modifier",
+        "name": "you gain the following class features. Hit Points Hit Dice: 1d10 per fighter level Hit Points at 1st Level: 10 + your Constitution modifier",
+        "description": "You gain the you gain the following class features. Hit Points Hit Dice: 1d10 per fighter level Hit Points at 1st Level: 10 + your Constitution modifier class feature."
       }
     }
   ]
 }
-
