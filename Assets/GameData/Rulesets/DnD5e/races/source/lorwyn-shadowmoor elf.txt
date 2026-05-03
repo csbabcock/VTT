@@ -1,0 +1,57 @@
+Lorwyn-Shadowmoor Elf
+
+Elegant and imperious, the elves of Lorwyn act as a ruthless ruling class, unusually brutal compared to the many other races that call Lorwyn their home, and known for their obsession for destroying that which does not reach their standards of beauty.
+
+When the plane takes on its alternate guise of Shadowmoor, the elves change from callous destroyers to empathetic protectors, defending what last few beautiful things there are on the dark plane.
+
+Hunters to Saviors
+
+On Lorwyn, elven society is divided into four castes based on standards of beauty, ranging from the lowest, the Faultless, to the Immaculate, Exquisite, and Perfect, the last being the highest level of beauty for an elf, so venerated that they can only be addressed by those of the Exquisite caste directly below them. Along with obsessing over their own beauty, Lorwyn’s elves seek to destroy anything they deem not beautiful enough, known as the Eyeblight.
+
+On Shadowmoor, the elves act entirely differently. Their society’s rigid caste system is gone, and in its place, the elves are outwardly compassionate, going great lengths to protect the innocent trapped in the darkness of Shadowmoor.
+
+Elf Traits
+
+Your elf character has the following racial traits.
+
+Ability Score Increase. Your Wisdom score increases by 2.
+
+Age. Elves of Lorwyn and Shadowmoor live up to around 30-40 years.
+
+Alignment. Your alignment is dependent on your subrace.
+
+Size. Elves range from under 5 to over 6 feet tall and have slender builds. Your size is Medium.
+
+Speed. You have a base walking speed of 30 feet.
+
+Elf Weapon Training. You have proficiency with the longsword, shortsword, shortbow, and longbow.
+
+Fey Ancestry. You have advantage on saving throws against being charmed, and magic can’t put you to sleep.
+
+Keen Senses. You have proficiency in the Perception skill.
+
+Mask of the Wild. You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena.
+
+Languages. You speak common and Elvish.
+
+Subrace. Depending on whether you are from Lorwyn or Shadowmoor, your subrace will either be a Lorwyn Elf or a Shadowmoor Elf.
+
+Lorwyn Elf
+
+All elves on Lorwyn have the following additional racial traits:
+
+Alignment. Obsessed with the preservation of what they consider beautiful, and the destruction of all that is not, Lorwyn elves are generally neutral evil with some leaning towards lawful evil.
+
+Eyeblight Destroyer. When you make an attack against a non-elf creature, you may add your Wisdom modifier to the attack roll. You may use this ability once, and regain it when you finish a short rest.
+
+The Great Aurora. If you are present on Lorwyn during its transformation into shadowmoor, your subrace changes to Shadowmoor Elf.
+
+Shadowmoor Elf
+
+All elves on Shadowmoor have the following additional racial traits:
+
+Alignment. Elves of Shadowmoor often fight to protect the beautiful and the innocent, giving them a strong leaning towards good alignments.
+
+Innocence Preserver. When an attack is made against a creature within 10 feet of you, you may use your reaction to reduce the attack roll by an amount equal to your Wisdom modifier. You may use this ability once, and regain it when you finish a short rest.
+
+The Great Aurora. If you are present on Shadowmoor during its transformation into Lorwyn, your subrace changes to Lorwyn Elf.

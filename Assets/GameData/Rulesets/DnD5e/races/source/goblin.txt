@@ -1,0 +1,46 @@
+A subterranean folk, goblins can be found in every corner of the multiverse, often beside their bugbear and hobgoblin kin. Long before the god Maglubiyet conquered them, early goblins served in the court of the Queen of Air and Darkness, one of the Feywild’s archfey. Goblins thrived in her dangerous domain thanks to a special boon from her—a supernatural knack for finding the weak spots in foes larger than themselves and for getting out of trouble. Goblins brought this fey boon with them to worlds across the Material Plane, even if they don’t remember the fey realm they inhabited before Maglubiyet’s rise. Now many goblins pursue their own destinies, escaping the plots of both archfey and gods.
+
+Creating Your Character
+At 1st level, you choose whether your character is a member of the human race or of a fantastical race. If you select a fantastical race, follow these additional rules during character creation.
+
+Ability Score Increases
+When determining your character’s ability scores, increase one score by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy. The “Quick Build” section for your character’s class offers suggestions on which scores to increase. You can follow those suggestions or ignore them, but you can’t raise any of your scores above 20.
+
+Languages
+Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player’s Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
+
+Creature Type
+Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race tells you what your character’s creature type is.
+
+Here’s a list of the game’s creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don’t have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn’t work on a Construct or an Undead.
+
+Life Span
+The typical life span of a player character in the D&D multiverse is about a century, assuming the character doesn’t meet a violent end on an adventure. Members of some races, such as dwarves and elves, can live for centuries. If typical members of a race can live longer than a century, that fact is mentioned in the race’s description.
+
+Height and Weight
+Player characters, regardless of race, typically fall into the same ranges of height and weight that humans have in our world. If you’d like to determine your character’s height or weight randomly, consult the Random Height and Weight table in the Player’s Handbook, and choose the row in the table that best represents the build you imagine for your character.
+
+Goblin Traits
+As a goblin, you have the following racial traits.
+Creature Type
+You are a Humanoid. You are also considered a goblinoid for any prerequisite or effect that requires you to be a goblinoid.
+
+Size
+You are Small.
+
+Speed
+Your walking speed is 30 feet.
+
+Darkvision
+You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.
+
+Fey Ancestry
+You have advantage on saving throws you make to avoid or end the charmed condition on yourself.
+
+Fury of the Small
+When you damage a creature with an attack or a spell and the creature’s size is larger than yours, you can cause the attack or spell to deal extra damage to the creature. The extra damage equals your proficiency bonus.
+
+You can use this trait a number of times equal to your proficiency bonus, regaining all expended uses when you finish a long rest, and you can use it no more than once per turn.
+
+Nimble Escape
+You can take the Disengage or Hide action as a bonus action on each of your turns.

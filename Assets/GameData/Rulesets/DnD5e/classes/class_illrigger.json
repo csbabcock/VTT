@@ -1,11 +1,11 @@
 {
   "id": "class.illrigger",
   "name": "Illrigger",
-  "description": "T he archdevils who rule the Seven Cities of Hell scheme and plot endlessly, eternally. Each seeks to bring the others to heel. To ascend to the Throne of Hell, unite the seven cities and every infernal thing that lives there, and lead a...",
+  "description": "The archdevils who rule the Seven Cities of Hell scheme and plot endlessly, eternally. Each seeks to bring the others to heel. To ascend to the Throne of Hell, unite the seven cities and every infernal thing that lives there, and lead an...",
   "descriptionSections": [
     {
       "heading": "",
-      "body": "T he archdevils who rule the Seven Cities of Hell scheme and plot endlessly, eternally. Each seeks to bring the others to heel. To ascend to the Throne of Hell, unite the seven cities and every infernal thing that lives there, and lead an infinite army of devils across the timescape until all worlds burn. Their elite shock troops, the terror-commandos of Hell, are the illriggers. Knights of Hell, they are charismatic counter-paladins who master devils, disrupt enemy organizations, and command Hell's armies."
+      "body": "The archdevils who rule the Seven Cities of Hell scheme and plot endlessly, eternally. Each seeks to bring the others to heel. To ascend to the Throne of Hell, unite the seven cities and every infernal thing that lives there, and lead an infinite army of devils across the timescape until all worlds burn. Their elite shock troops, the terror-commandos of Hell, are the illriggers. Knights of Hell, they are charismatic counter-paladins who master devils, disrupt enemy organizations, and command Hell's armies."
     },
     {
       "heading": "The Order of Desolation",
@@ -170,7 +170,7 @@
       "feature": {
         "id": "feature.illrigger.summon_hell",
         "name": "Summon Hell",
-        "description": "Beginning at 15th level, as an action, you can summon a bone devil to serve you for 1 minute. The devil appears in an unoccupied space within 30 feet. It is bound to you and must obey your commands to the best of its ability. It acts on the same initiative that you act on, and may both act and move on the turn you summon it. If you die or fall unconscious, the devil returns to Hell. Once you use this feature, you must wait 1 week before you can use it again. Diabolic Contracts The knight who walks the path of Hell may gain access to the powers of the Illrigger purely through their own devotion. No oath is necessary, no mentor. A fledgling hellknight might not even be aware Hell's Paladins exist. But acceptance into the Order of Desolation at"
+        "description": "Beginning at 15th level, as an action, you can summon a bone devil to serve you for 1 minute. The devil appears in an unoccupied space within 30 feet. It is bound to you and must obey your commands to the best of its ability. It acts on the same initiative that you act on, and may both act and move on the turn you summon it. If you die or fall unconscious, the devil returns to Hell. Once you use this feature, you must wait 1 week before you can use it again."
       }
     },
     {

@@ -1,0 +1,54 @@
+The Feywild is home to many fantastic peoples, including fairies. Fairies are a wee folk, but not nearly as much so as their pixie and sprite friends. The first fairies spoke Elvish, Goblin, or Sylvan, and encounters with human visitors prompted many of them to learn Common as well.
+
+Infused with the magic of the Feywild, most fairies look like Small elves with insectile wings, but each fairy has a special physical characteristic that sets the fairy apart. For your fairy, roll on the Fey Characteristics table or choose an option from it. You’re also free to come up with your own characteristic if none of the suggestions below fit your character.
+
+Fey Characteristics
+d8	Characteristic
+1	Your wings are like those of a bird.
+2	You have shimmering, multicolored skin.
+3	You have exceptionally large ears.
+4	A glittering mist constantly surrounds you.
+5	You have a small spectral horn on your forehead, like a little unicorn horn.
+6	Your legs are insectile.
+7	You smell like fresh brownies.
+8	A noticeable, harmless chill surrounds you.
+Creating Your Character
+At 1st level, you choose whether your character is a member of the human race or of a fantastical race. If you select a fantastical race such as the fairy or the harengon in this section, follow these additional rules during character creation.
+
+Ability Score Increases
+When determining your character’s ability scores, increase one score by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy. The “Quick Build” section for your character’s class offers suggestions on which scores to increase. You can follow those suggestions or ignore them, but you can’t raise any of your scores above 20.
+
+Languages
+Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player’s Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
+
+Creature Type
+Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race in this chapter tells you what your character’s creature type is.
+
+Here’s a list of the game’s creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don’t have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn’t work on a Construct or an Undead.
+
+Life Span
+The typical life span of a player character in the D&D multiverse is about a century, assuming the character doesn’t meet a violent end on an adventure. Members of some races, such as dwarves and elves, can live for centuries. Fairies and harengons, however, have a life span of about a century.
+
+Height and Weight
+Player characters, regardless of race, typically fall into the same ranges of height and weight that humans have in our world. If you’d like to determine your character’s height or weight randomly, consult the Random Height and Weight table in the Player’s Handbook, and choose the row in the table that best represents the build you imagine for your character.
+
+Fairy Traits
+As a fairy, you have the following racial traits.
+Creature Type
+You are a Fey.
+
+Size
+You are Small.
+
+Speed
+Your walking speed is 30 feet.
+
+Fairy Magic
+You know the druidcraft cantrip.
+
+Starting at 3rd level, you can cast the faerie fire spell with this trait. Starting at 5th level, you can also cast the enlarge/reduce spell with this trait. Once you cast faerie fire or enlarge/reduce with this trait, you can’t cast that spell with it again until you finish a long rest. You can also cast either of those spells using any spell slots you have of the appropriate level.
+
+Intelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).
+
+Flight
+Because of your wings, you have a flying speed equal to your walking speed. You can’t use this flying speed if you’re wearing medium or heavy armor.

@@ -1,0 +1,51 @@
+Originally from the Elemental Plane of Water, many tritons entered the Material Plane centuries ago in response to the growing threat of evil elementals. Those tritons spread across the worlds’ oceans, protecting the surface from terrors in the deep. Over time, triton have extended their stewardship over the sea floor to the ocean’s surface.
+
+Tritons have webbed hands and feet, small fins on their calves, and coloration that favors blues and greens.
+
+Creating Your Character
+At 1st level, you choose whether your character is a member of the human race or of a fantastical race. If you select a fantastical race, follow these additional rules during character creation.
+
+Ability Score Increases
+When determining your character’s ability scores, increase one score by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy. The “Quick Build” section for your character’s class offers suggestions on which scores to increase. You can follow those suggestions or ignore them, but you can’t raise any of your scores above 20.
+
+Languages
+Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player’s Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
+
+Creature Type
+Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race tells you what your character’s creature type is.
+
+Here’s a list of the game’s creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don’t have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn’t work on a Construct or an Undead.
+
+Life Span
+The typical life span of a player character in the D&D multiverse is about a century, assuming the character doesn’t meet a violent end on an adventure. Members of some races, such as dwarves and elves, can live for centuries. If typical members of a race can live longer than a century, that fact is mentioned in the race’s description.
+
+Height and Weight
+Player characters, regardless of race, typically fall into the same ranges of height and weight that humans have in our world. If you’d like to determine your character’s height or weight randomly, consult the Random Height and Weight table in the Player’s Handbook, and choose the row in the table that best represents the build you imagine for your character.
+
+Triton Traits
+As a triton, you have the following racial traits.
+Creature Type
+You are a Humanoid.
+
+Size
+You are Medium.
+
+Speed
+Your walking speed is 30 feet, and you have a swimming speed equal to your walking speed.
+
+Amphibious
+You can breathe air and water.
+
+Control Air and Water
+You can cast fog cloud with this trait. Starting at 3rd level, you can cast the gust of wind spell with this trait. Starting at 5th level, you can also cast the water walk spell with it. Once you cast any of these spells with this trait, you can’t cast that spell with it again until you finish a long rest. You can also cast these spells using any spell slots you have of the appropriate level.
+
+Intelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).
+
+Darkvision
+You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.
+
+Emissary of the Sea
+You can communicate simple ideas to any Beast, Elemental, or Monstrosity that has a swimming speed. It can understand your words, though you have no special ability to understand it in return.
+
+Guardian of the Depths
+Adapted to the frigid ocean depths, you have resistance to cold damage.

@@ -1,0 +1,225 @@
+{
+  "id": "class.monsterhunter",
+  "name": "Monster Hunter",
+  "description": "\"Being a monster hunter was not something I was born into. My father told me to go out and get a trade... but I don't think this is what he had in mind...\" - J\u00fcrgen of the Black Arrow Monster hunters are skilled professionals, each speci...",
+  "descriptionSections": [
+    {
+      "heading": "",
+      "body": "\"Being a monster hunter was not something I was born into. My father told me to go out and get a trade... but I don't think this is what he had in mind...\" - J\u00fcrgen of the Black Arrow Monster hunters are skilled professionals, each specializing in identifying, seeking, and killing different types of creatures. Therefore, each monster hunter also specializes in different methods for doing so. While some hunters don heavy armor and carry shields to protect against crushing jaws and scything claws, others prefer to remain light and agile to keep distance between themselves and their quarry. You can make a monster hunter quickly by following these suggestions. First, make Strength or Dexterity your highest ability score, depending on whether you want to focus on melee weapons or on archery (or finesse weapons). Your next-highest score should be Intelligence. Second, choose a background that reflects your training and the monsters you specialize in hunting, or alternatively your background could reflect your character's life before they fell into the monster hunting profession."
+    },
+    {
+      "heading": "If you are using advanced backgrounds from",
+      "body": "Grim Hollow: The Campaign Guide, the Beast Hunter profession from the Outlander background is perfect for any lifelong monster hunter characters."
+    }
+  ],
+  "hitDie": 10,
+  "primaryAbility": "STR",
+  "spellcastingAbility": "",
+  "savingThrowProficiencies": [
+    "STR",
+    "DEX"
+  ],
+  "armorProficiencies": [
+    "Light",
+    "Medium",
+    "Shield"
+  ],
+  "weaponProficiencies": [
+    "Simple",
+    "Martial"
+  ],
+  "featuresByLevel": [
+    {
+      "level": 1,
+      "feature": {
+        "id": "feature.monsterhunter.fighting_style",
+        "name": "Fighting Style",
+        "description": "You adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again. Archery You gain +2 bonus to attack rolls you make with ranged weapons. Duelling When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon. Great Weapon Fighting When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can reroll the die and must use the new roll, even if the new roll is a 1 or a 2. The weapon must have the two-handed or versatile property for you to gain this benefit. Two-Weapon Fighting When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack."
+      }
+    },
+    {
+      "level": 1,
+      "feature": {
+        "id": "feature.monsterhunter.monster_grimoire",
+        "name": "Monster Grimoire",
+        "description": "Each monster hunter carries with them a grimoire of lore and research about the creatures they hunt. Choose two types of monsters that you are specialized in hunting from the following list: aberrations, beasts, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, undead, or humanoids (shape changers). You add your proficiency bonus to any Intelligence and Wisdom checks you make that relate to the monsters in your grimoire. For example, an Intelligence (History) check to recall lore about a creature you're investigating, or a Wisdom (Medicine) check to identify claw marks left on a corpse. If you are already proficient in a skill when asked to make an ability check relating to the monsters in your grimoire, you are treated as having expertise for the purposes of that ability check and double your proficiency bonus instead. When you gain this feature, you also learn one language of your choice that is spoken by one of the monster types in your grimoire. Other class features you gain also refer to the monsters in your grimoire. A monster hunter's grimoire is an object that is entirely unique to them. It may be a leather tome recovered from a dusty library with notes made in the margins, a frayed journal inherited from a previous hunter, or a precious stone with a communing spirit trapped within. If a monster hunter ever loses their grimoire, they have usually retained enough of the knowledge to not suffer any immediate disadvantages. However, they cannot further their research without one and therefore cannot take another monster hunter level at level up until a lost grimoire has been replaced. A grimoire can be recreated by spending 8 hours and 50 gp worth of materials such as pages, inks, or components to cast a ritual."
+      }
+    },
+    {
+      "level": 2,
+      "feature": {
+        "id": "feature.monsterhunter.hunter_s_instincts",
+        "name": "Hunter's Instincts",
+        "description": "At 2nd level, you gain the ability to analyze a creature and discern specific information about it. As a bonus action, choose one creature you can see within 60 feet of you, and make an Intelligence (Investigation) check where the DC equals 5 + the creature's CR. The check is automatically successful against creatures with a CR less than 1. If you are successful, you learn one of the following pieces of information. - The creature's type. - The creature's armor class. - Any damage resistances or immunities the creature has. - Any damage vulnerabilities the creature has. If you spend at least 1 minute observing or interacting with the target creature outside of combat, you can learn the first two pieces of information automatically, and the second two with a single Intelligence (Investigation) check of the same DC as described above. If the creature is concealing any of these pieces of information with magic, such as an illusion, you do not learn that piece of information with a successful ability check but instead become aware that the information is being concealed."
+      }
+    },
+    {
+      "level": 3,
+      "feature": {
+        "id": "feature.monsterhunter.hunting_guild",
+        "name": "Hunting Guild",
+        "description": "At 3rd level, you choose a hunting guild that best reflects the techniques you employ in tracking and slaying monsters. Choose between the Carver Guild or the Trapper Guild, both detailed below. The guild you choose grants you features at 3rd level and again at 7th, 10th, 15th and 18th level."
+      }
+    },
+    {
+      "level": 4,
+      "feature": {
+        "id": "feature.monsterhunter.ability_score_improvement",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 5,
+      "feature": {
+        "id": "feature.monsterhunter.extra_attack",
+        "name": "Extra Attack",
+        "description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+      }
+    },
+    {
+      "level": 5,
+      "feature": {
+        "id": "feature.monsterhunter.grave_strike",
+        "name": "Grave Strike",
+        "description": "When you reach 5th level, such is your learning in the weaknesses of monsters that you know patience and precision can often deal more damage than rapid strikes. You can use an action on your turn to perform a grave strike, which is a single weapon attack. When doing so your Intelligence modifier is added to the attack roll and if the attack hits the weapon deals additional damage equal to 1d8 times your Intelligence modifier (minimum of 1d8). A grave strike can also be performed as a reaction such as a readied action or an opportunity attack. You do not lose a use of this ability if the readied action is not performed. You may use this ability a number of times equal to your Intelligence modifier (minimum of one) and regain all expended uses when you finish a short or long rest."
+      }
+    },
+    {
+      "level": 6,
+      "feature": {
+        "id": "feature.monsterhunter.monster_grimoire_improvement",
+        "name": "Monster Grimoire Improvement",
+        "description": "Each monster hunter carries with them a grimoire of lore and research about the creatures they hunt. Choose two types of monsters that you are specialized in hunting from the following list: aberrations, beasts, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, undead, or humanoids (shape changers). You add your proficiency bonus to any Intelligence and Wisdom checks you make that relate to the monsters in your grimoire. For example, an Intelligence (History) check to recall lore about a creature you're investigating, or a Wisdom (Medicine) check to identify claw marks left on a corpse. If you are already proficient in a skill when asked to make an ability check relating to the monsters in your grimoire, you are treated as having expertise for the purposes of that ability check and double your proficiency bonus instead. When you gain this feature, you also learn one language of your choice that is spoken by one of the monster types in your grimoire. Other class features you gain also refer to the monsters in your grimoire. A monster hunter's grimoire is an object that is entirely unique to them. It may be a leather tome recovered from a dusty library with notes made in the margins, a frayed journal inherited from a previous hunter, or a precious stone with a communing spirit trapped within. If a monster hunter ever loses their grimoire, they have usually retained enough of the knowledge to not suffer any immediate disadvantages. However, they cannot further their research without one and therefore cannot take another monster hunter level at level up until a lost grimoire has been replaced. A grimoire can be recreated by spending 8 hours and 50 gp worth of materials such as pages, inks, or components to cast a ritual."
+      }
+    },
+    {
+      "level": 7,
+      "feature": {
+        "id": "feature.monsterhunter.hunting_guild_feature",
+        "name": "Hunting Guild feature",
+        "description": "At 3rd level, you choose a hunting guild that best reflects the techniques you employ in tracking and slaying monsters. Choose between the Carver Guild or the Trapper Guild, both detailed below. The guild you choose grants you features at 3rd level and again at 7th, 10th, 15th and 18th level."
+      }
+    },
+    {
+      "level": 8,
+      "feature": {
+        "id": "feature.monsterhunter.ability_score_improvement_8",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 9,
+      "feature": {
+        "id": "feature.monsterhunter.recognised_professional",
+        "name": "Recognised Professional",
+        "description": "You gain the Recognised Professional class feature."
+      }
+    },
+    {
+      "level": 10,
+      "feature": {
+        "id": "feature.monsterhunter.hunting_guild_feature_10",
+        "name": "Hunting Guild feature",
+        "description": "At 3rd level, you choose a hunting guild that best reflects the techniques you employ in tracking and slaying monsters. Choose between the Carver Guild or the Trapper Guild, both detailed below. The guild you choose grants you features at 3rd level and again at 7th, 10th, 15th and 18th level."
+      }
+    },
+    {
+      "level": 11,
+      "feature": {
+        "id": "feature.monsterhunter.rapid_grave_strike",
+        "name": "Rapid Grave Strike",
+        "description": "Once you reach 11th level, you are an expert at striking at the weaknesses of your prey. All your weapon attacks now deal an extra 1d8 of damage. You may also now choose to use Grave Strike as part of any Attack action instead of taking an entire action on its own."
+      }
+    },
+    {
+      "level": 12,
+      "feature": {
+        "id": "feature.monsterhunter.ability_score_improvement_12",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 13,
+      "feature": {
+        "id": "feature.monsterhunter.monster_grimoire_improvement_13",
+        "name": "Monster Grimoire Improvement",
+        "description": "Each monster hunter carries with them a grimoire of lore and research about the creatures they hunt. Choose two types of monsters that you are specialized in hunting from the following list: aberrations, beasts, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, undead, or humanoids (shape changers). You add your proficiency bonus to any Intelligence and Wisdom checks you make that relate to the monsters in your grimoire. For example, an Intelligence (History) check to recall lore about a creature you're investigating, or a Wisdom (Medicine) check to identify claw marks left on a corpse. If you are already proficient in a skill when asked to make an ability check relating to the monsters in your grimoire, you are treated as having expertise for the purposes of that ability check and double your proficiency bonus instead. When you gain this feature, you also learn one language of your choice that is spoken by one of the monster types in your grimoire. Other class features you gain also refer to the monsters in your grimoire. A monster hunter's grimoire is an object that is entirely unique to them. It may be a leather tome recovered from a dusty library with notes made in the margins, a frayed journal inherited from a previous hunter, or a precious stone with a communing spirit trapped within. If a monster hunter ever loses their grimoire, they have usually retained enough of the knowledge to not suffer any immediate disadvantages. However, they cannot further their research without one and therefore cannot take another monster hunter level at level up until a lost grimoire has been replaced. A grimoire can be recreated by spending 8 hours and 50 gp worth of materials such as pages, inks, or components to cast a ritual."
+      }
+    },
+    {
+      "level": 13,
+      "feature": {
+        "id": "feature.monsterhunter.knowledgeable_defence",
+        "name": "Knowledgeable Defence",
+        "description": "By 13th level, you have studied the ways in which your foes attack and trained your body and mind to resist them. You are considered proficient with any saving throw made against a creature written about in your Monster Grimoire. If you are already proficient when asked to make the saving throw, you may add your proficiency bonus a second time. Enhanced Hunter's Instincts Beginning at 14th level, you have honed your hunter's instincts to the point of only needing clues a creature has left behind to learn information about them. These clues could include tracks or claw marks, standing inside the monster's lair, the remains of one of their victims, or even an accurate description given by a witness. As an action you can make an Intelligence (Investigation) check while considering one of these clues. The DC equals 10 + the CR of the creature who left the clue, the check automatically successful against creatures with a CR less than 1. If you are successful, you learn one of the following pieces of information. - The creature's type. - The creature's armor class. - Any damage resistances or immunities the creature has. - Any damage vulnerabilities the creature has. If the clue is misleading in any way, such as being an illusion or an inaccurate witness account, you do not learn any information with a successful ability check but instead become aware that the clue is misleading."
+      }
+    },
+    {
+      "level": 14,
+      "feature": {
+        "id": "feature.monsterhunter.enhanced_hunters_instincts",
+        "name": "Enhanced Hunters Instincts",
+        "description": "You gain the Enhanced Hunters Instincts class feature."
+      }
+    },
+    {
+      "level": 15,
+      "feature": {
+        "id": "feature.monsterhunter.hunting_guild_feature_15",
+        "name": "Hunting Guild feature",
+        "description": "At 3rd level, you choose a hunting guild that best reflects the techniques you employ in tracking and slaying monsters. Choose between the Carver Guild or the Trapper Guild, both detailed below. The guild you choose grants you features at 3rd level and again at 7th, 10th, 15th and 18th level."
+      }
+    },
+    {
+      "level": 16,
+      "feature": {
+        "id": "feature.monsterhunter.ability_score_improvement_16",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 17,
+      "feature": {
+        "id": "feature.monsterhunter.monster_grimoire_improvement_17",
+        "name": "Monster Grimoire Improvement",
+        "description": "Each monster hunter carries with them a grimoire of lore and research about the creatures they hunt. Choose two types of monsters that you are specialized in hunting from the following list: aberrations, beasts, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, undead, or humanoids (shape changers). You add your proficiency bonus to any Intelligence and Wisdom checks you make that relate to the monsters in your grimoire. For example, an Intelligence (History) check to recall lore about a creature you're investigating, or a Wisdom (Medicine) check to identify claw marks left on a corpse. If you are already proficient in a skill when asked to make an ability check relating to the monsters in your grimoire, you are treated as having expertise for the purposes of that ability check and double your proficiency bonus instead. When you gain this feature, you also learn one language of your choice that is spoken by one of the monster types in your grimoire. Other class features you gain also refer to the monsters in your grimoire. A monster hunter's grimoire is an object that is entirely unique to them. It may be a leather tome recovered from a dusty library with notes made in the margins, a frayed journal inherited from a previous hunter, or a precious stone with a communing spirit trapped within. If a monster hunter ever loses their grimoire, they have usually retained enough of the knowledge to not suffer any immediate disadvantages. However, they cannot further their research without one and therefore cannot take another monster hunter level at level up until a lost grimoire has been replaced. A grimoire can be recreated by spending 8 hours and 50 gp worth of materials such as pages, inks, or components to cast a ritual."
+      }
+    },
+    {
+      "level": 18,
+      "feature": {
+        "id": "feature.monsterhunter.hunting_guild_feature_18",
+        "name": "Hunting Guild feature",
+        "description": "At 3rd level, you choose a hunting guild that best reflects the techniques you employ in tracking and slaying monsters. Choose between the Carver Guild or the Trapper Guild, both detailed below. The guild you choose grants you features at 3rd level and again at 7th, 10th, 15th and 18th level."
+      }
+    },
+    {
+      "level": 19,
+      "feature": {
+        "id": "feature.monsterhunter.ability_score_improvement_19",
+        "name": "Ability Score Improvement",
+        "description": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.monsterhunter.grave_execution_class_features_as_a_monster_hunter",
+        "name": "Grave Execution Class Features As a monster hunter",
+        "description": "You gain the Grave Execution Class Features As a monster hunter class feature."
+      }
+    },
+    {
+      "level": 20,
+      "feature": {
+        "id": "feature.monsterhunter.you_gain_the_following_class_features_hit_points_hit_dice_1d10_per_monster_hunter_level_hit_points_at_1st_level_10_your_constitution_modifier",
+        "name": "you gain the following class features. Hit Points Hit Dice: 1d10 per monster hunter level Hit Points at 1st Level: 10 + your Constitution modifier",
+        "description": "You gain the you gain the following class features. Hit Points Hit Dice: 1d10 per monster hunter level Hit Points at 1st Level: 10 + your Constitution modifier class feature."
+      }
+    }
+  ]
+}
