@@ -1,0 +1,17 @@
+{
+  "id": "race.genasi",
+  "name": "Genasi",
+  "parentId": "",
+  "sortName": "Genasi",
+  "sourceFile": "",
+  "description": "Elemental-touched people grouped here for character creation variants.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [],
+  "features": []
+}

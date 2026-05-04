@@ -77,6 +77,7 @@ namespace GameCore.UI.MainMenu
             // Subscribe to view events
             _view.ClassSelected += HandleClassSelected;
             _view.RaceSelected += HandleRaceSelected;
+            _view.RaceAbilityScoreChoiceSelected += HandleRaceAbilityScoreChoiceSelected;
             _view.BackgroundSelected += HandleBackgroundSelected;
             _view.SelectedClassLevelChanged += HandleSelectedClassLevelChanged;
             _view.RollAbilitiesClicked += HandleRollAbilitiesClicked;
@@ -118,6 +119,7 @@ namespace GameCore.UI.MainMenu
             {
                 _view.ClassSelected -= HandleClassSelected;
                 _view.RaceSelected -= HandleRaceSelected;
+                _view.RaceAbilityScoreChoiceSelected -= HandleRaceAbilityScoreChoiceSelected;
                 _view.BackgroundSelected -= HandleBackgroundSelected;
                 _view.SelectedClassLevelChanged -= HandleSelectedClassLevelChanged;
                 _view.RollAbilitiesClicked -= HandleRollAbilitiesClicked;
@@ -205,6 +207,13 @@ namespace GameCore.UI.MainMenu
         private void HandleRaceSelected(string raceId)
         {
             Model.SetSelectedRaceId(raceId);
+        }
+
+        private void HandleRaceAbilityScoreChoiceSelected(string choiceId, string abilityCode)
+        {
+            if (!IsValidRaceAbilityChoice(Model.State, choiceId, abilityCode))
+                return;
+            Model.SetRaceAbilityScoreChoice(choiceId, abilityCode);
         }
 
         private void HandleBackgroundSelected(string backgroundId)
@@ -774,14 +783,115 @@ namespace GameCore.UI.MainMenu
             return results;
         }
 
+        private void UpdateRaceAbilityChoiceControls(CharacterCreationState state, RaceDefinition race)
+        {
+            if (race?.abilityScoreChoices == null || race.abilityScoreChoices.Count == 0)
+            {
+                _view.BindRaceAbilityScoreChoices(null);
+                return;
+            }
+
+            var viewModels = new List<RaceAbilityScoreChoiceViewModel>();
+            foreach (AbilityScoreChoiceDefinition choice in race.abilityScoreChoices)
+            {
+                if (choice == null || string.IsNullOrEmpty(choice.id))
+                    continue;
+
+                string selected = string.Empty;
+                state.SelectedRaceAbilityChoices?.TryGetValue(choice.id, out selected);
+                string label = string.IsNullOrEmpty(choice.name)
+                    ? $"+{choice.bonus} ability"
+                    : $"{choice.name} (+{choice.bonus})";
+                IReadOnlyList<string> abilities = choice.abilities != null && choice.abilities.Count > 0
+                    ? choice.abilities
+                    : new[] { "STR", "DEX", "CON", "INT", "WIS", "CHA" };
+                viewModels.Add(new RaceAbilityScoreChoiceViewModel(choice.id, label, abilities, selected));
+            }
+
+            _view.BindRaceAbilityScoreChoices(viewModels);
+        }
+
+        private bool IsValidRaceAbilityChoice(CharacterCreationState state, string choiceId, string abilityCode)
+        {
+            if (string.IsNullOrEmpty(state.SelectedRaceId) ||
+                !_contentQuery.TryGetRace(state.SelectedRaceId, out RaceDefinition race) ||
+                race.abilityScoreChoices == null)
+                return false;
+
+            AbilityScoreChoiceDefinition choice = race.abilityScoreChoices
+                .FirstOrDefault(c => c != null && string.Equals(c.id, choiceId, StringComparison.OrdinalIgnoreCase));
+            if (choice == null || !DnD5eAbilityCodes.TryIndexFromCode(abilityCode, out _))
+                return false;
+
+            if (choice.abilities != null && choice.abilities.Count > 0 &&
+                !choice.abilities.Any(a => string.Equals(a, abilityCode, StringComparison.OrdinalIgnoreCase)))
+                return false;
+
+            if (!choice.requiresUniqueAbility || state.SelectedRaceAbilityChoices == null)
+                return true;
+
+            foreach (KeyValuePair<string, string> kv in state.SelectedRaceAbilityChoices)
+            {
+                if (!string.Equals(kv.Key, choiceId, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(kv.Value, abilityCode, StringComparison.OrdinalIgnoreCase))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private static int[] BuildEffectiveAbilityScores(CharacterCreationState state, RaceDefinition race)
+        {
+            if (state.AbilityScores == null || state.AbilityScores.Length != 6)
+                return state.AbilityScores;
+
+            int[] scores = new int[6];
+            Array.Copy(state.AbilityScores, scores, 6);
+            if (race == null)
+                return scores;
+
+            if (race.abilityScoreBonuses != null)
+            {
+                foreach (AbilityScoreBonusDefinition bonus in race.abilityScoreBonuses)
+                {
+                    if (bonus == null || !DnD5eAbilityCodes.TryIndexFromCode(bonus.ability, out int index))
+                        continue;
+                    if (scores[index] >= 0)
+                        scores[index] += bonus.bonus;
+                }
+            }
+
+            if (race.abilityScoreChoices != null && state.SelectedRaceAbilityChoices != null)
+            {
+                foreach (AbilityScoreChoiceDefinition choice in race.abilityScoreChoices)
+                {
+                    if (choice == null || string.IsNullOrEmpty(choice.id))
+                        continue;
+                    if (!state.SelectedRaceAbilityChoices.TryGetValue(choice.id, out string ability) ||
+                        !DnD5eAbilityCodes.TryIndexFromCode(ability, out int index))
+                        continue;
+                    if (scores[index] >= 0)
+                        scores[index] += choice.bonus;
+                }
+            }
+
+            return scores;
+        }
+
         private void UpdateCharacterStats(CharacterCreationState state)
         {
             if (state.AbilityScores == null || state.AbilityScores.Length != 6)
                 return;
 
+            RaceDefinition race = null;
+            if (!string.IsNullOrEmpty(state.SelectedRaceId))
+                _contentQuery.TryGetRace(state.SelectedRaceId, out race);
+            UpdateRaceAbilityChoiceControls(state, race);
+            int[] effectiveScores = BuildEffectiveAbilityScores(state, race);
+
             for (int i = 0; i < 6; i++)
             {
-                int score = state.AbilityScores[i];
+                int score = effectiveScores[i];
                 if (score < 0)
                 {
                     _view.UpdateAbilityScoreDisplay(i, -1, 0);
@@ -805,18 +915,22 @@ namespace GameCore.UI.MainMenu
             string hitDiceDisplay = CharacterCreationRulesPreview.FormatHitDicePool(classDef, classLevel);
 
             int? hitPoints = null;
-            if (state.AbilityScores[2] >= 0 && classDef != null)
+            if (effectiveScores[2] >= 0 && classDef != null)
             {
-                int conMod = _calculator.CalculateAbilityModifier(state.AbilityScores[2]);
+                int conMod = _calculator.CalculateAbilityModifier(effectiveScores[2]);
                 hitPoints = DnD5eDerivedStats.CalculateMaxHitPointsForLevel(classDef, conMod, classLevel);
             }
 
             int? armorClass = CharacterCreationRulesPreview.ComputeUnarmoredArmorClassPreview(
-                classDef, state.AbilityScores, _calculator);
+                classDef, effectiveScores, _calculator);
+            int? raceArmorClass = CharacterCreationRulesPreview.ComputeRaceArmorClassPreview(
+                race, effectiveScores, _calculator);
+            if (raceArmorClass.HasValue && (!armorClass.HasValue || raceArmorClass.Value > armorClass.Value))
+                armorClass = raceArmorClass;
 
             int? initiative = null;
-            if (state.AbilityScores[1] >= 0)
-                initiative = _calculator.CalculateAbilityModifier(state.AbilityScores[1]);
+            if (effectiveScores[1] >= 0)
+                initiative = _calculator.CalculateAbilityModifier(effectiveScores[1]);
 
             int? proficiencyBonus =
                 classDef != null ? _calculator.CalculateProficiencyBonus(totalLevel) : (int?)null;
@@ -824,7 +938,7 @@ namespace GameCore.UI.MainMenu
             int? spellSaveDC = null;
             int? spellAttack = null;
             if (CharacterCreationRulesPreview.TryGetSpellcastingPreview(
-                    classDef, state.AbilityScores, totalLevel, _calculator, out int dc, out int atk))
+                    classDef, effectiveScores, totalLevel, _calculator, out int dc, out int atk))
             {
                 spellSaveDC = dc;
                 spellAttack = atk;
@@ -833,10 +947,12 @@ namespace GameCore.UI.MainMenu
             _view.UpdateDerivedStats(hitPoints, armorClass, initiative, proficiencyBonus, spellSaveDC, spellAttack,
                 hitDiceDisplay);
 
-            if (_contentQuery.TryGetRace(state.SelectedRaceId, out RaceDefinition race))
+            if (race != null)
             {
-                string darkvisionLabel = race.hasDarkvision ? $"{race.darkvisionRange} ft" : "—";
-                _view.UpdatePhysicalTraits(race.size ?? "Medium", $"{race.speed} ft", darkvisionLabel);
+                _view.UpdatePhysicalTraits(
+                    race.size ?? "Medium",
+                    CharacterCreationRulesPreview.FormatRaceSpeed(race),
+                    CharacterCreationRulesPreview.FormatRaceSenses(race));
             }
             else
             {
@@ -848,7 +964,7 @@ namespace GameCore.UI.MainMenu
                 _contentQuery.TryGetBackground(state.SelectedBackgroundId, out background);
 
             _view.UpdateProficiencyPanel(
-                CharacterCreationRulesPreview.BuildProficiencySections(classDef, background));
+                CharacterCreationRulesPreview.BuildProficiencySections(classDef, background, race));
         }
 
     }

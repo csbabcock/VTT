@@ -1,0 +1,90 @@
+{
+  "id": "race.lotusden_halfling",
+  "name": "Lotusden Halfling",
+  "parentId": "race.halfling",
+  "sortName": "Lotusden Halfling",
+  "sourceFile": "halfling.txt",
+  "description": "Lotusden Halfling\nLong tied to the natural heart of the Lotusden Greenwood, these halflings have adapted to live synergistically with the chaotic laws of the wilds.",
+  "abilityScoreBonuses": [
+    {
+      "ability": "DEX",
+      "bonus": 2
+    },
+    {
+      "ability": "WIS",
+      "bonus": 1
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and Halfling",
+      "amount": 0
+    }
+  ],
+  "speed": 25,
+  "size": "Small",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Size",
+    "Speed",
+    "Lucky",
+    "Brave",
+    "Halfling Nimbleness",
+    "Child of the Wood",
+    "Timberwalk"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Dexterity score increases by 2.",
+      "id": "feature.lotusden_halfling.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "A halfling reaches adulthood at the age of 20 and generally lives into the middle of his or her second century.",
+      "id": "feature.lotusden_halfling.age"
+    },
+    {
+      "name": "Size",
+      "description": "Halflings average about 3 feet tall and weigh about 40 pounds. Your size is Small.",
+      "id": "feature.lotusden_halfling.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 25 feet.",
+      "id": "feature.lotusden_halfling.speed"
+    },
+    {
+      "name": "Lucky",
+      "description": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll.",
+      "id": "feature.lotusden_halfling.lucky"
+    },
+    {
+      "name": "Brave",
+      "description": "You have advantage on saving throws against being frightened.",
+      "id": "feature.lotusden_halfling.brave"
+    },
+    {
+      "name": "Halfling Nimbleness",
+      "description": "You can move through the space of any creature that is of a size larger than yours.",
+      "id": "feature.lotusden_halfling.halfling_nimbleness"
+    },
+    {
+      "name": "Child of the Wood",
+      "description": "You know the druidcraft cantrip. When you reach 3rd level, you can cast the entangle spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the spike growth spell once with this trait and regain the ability to do so when you finish a long rest. Casting these spells with this trait doesn't require material components. Wisdom is your spellcasting ability for these spells.",
+      "id": "feature.lotusden_halfling.child_of_the_wood"
+    },
+    {
+      "name": "Timberwalk",
+      "description": "Ability checks made to track you have disadvantage, and you can move across difficult terrain made of nonmagical plants and undergrowth without expending extra movement.",
+      "id": "feature.lotusden_halfling.timberwalk"
+    }
+  ]
+}

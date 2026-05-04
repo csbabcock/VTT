@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameCore.PlayerData.Rulesets;
+using GameCore.PlayerData.Rulesets.Definitions;
 
 namespace GameCore.UI.MainMenu.Services
 {
@@ -26,10 +27,7 @@ namespace GameCore.UI.MainMenu.Services
                 query.GetClasses(),
                 c => c.id,
                 c => c.name);
-            List<(string, string)> races = BuildSortedOptions(
-                query.GetRaces(),
-                r => r.id,
-                r => r.name);
+            List<(string, string)> races = BuildGroupedRaceOptions(query.GetRaces());
             List<(string, string)> backgrounds = BuildSortedOptions(
                 query.GetBackgrounds(),
                 b => b.id,
@@ -53,6 +51,52 @@ namespace GameCore.UI.MainMenu.Services
                     return (id, string.IsNullOrEmpty(name) ? id : name);
                 })
                 .ToList();
+        }
+
+        private static List<(string id, string displayName)> BuildGroupedRaceOptions(
+            IEnumerable<RaceDefinition> races)
+        {
+            var result = new List<(string id, string displayName)>();
+            if (races == null)
+                return result;
+
+            List<RaceDefinition> valid = races
+                .Where(r => r != null && !string.IsNullOrEmpty(r.id))
+                .ToList();
+
+            var byId = valid.ToDictionary(r => r.id, StringComparer.OrdinalIgnoreCase);
+            var childrenByParent = valid
+                .Where(r => !string.IsNullOrEmpty(r.parentId))
+                .GroupBy(r => r.parentId, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
+
+            foreach (RaceDefinition race in valid
+                         .Where(r => string.IsNullOrEmpty(r.parentId))
+                         .OrderBy(r => r.sortName ?? r.name ?? r.id, StringComparer.OrdinalIgnoreCase))
+            {
+                if (childrenByParent.TryGetValue(race.id, out List<RaceDefinition> children) && children.Count > 0)
+                {
+                    result.Add(($"__group:{race.id}", string.IsNullOrEmpty(race.name) ? race.id : race.name));
+                    foreach (RaceDefinition child in children
+                                 .OrderBy(r => r.sortName ?? r.name ?? r.id, StringComparer.OrdinalIgnoreCase))
+                    {
+                        result.Add((child.id, string.IsNullOrEmpty(child.name) ? child.id : child.name));
+                    }
+                }
+                else
+                {
+                    result.Add((race.id, string.IsNullOrEmpty(race.name) ? race.id : race.name));
+                }
+            }
+
+            foreach (RaceDefinition orphan in valid
+                         .Where(r => !string.IsNullOrEmpty(r.parentId) && !byId.ContainsKey(r.parentId))
+                         .OrderBy(r => r.sortName ?? r.name ?? r.id, StringComparer.OrdinalIgnoreCase))
+            {
+                result.Add((orphan.id, string.IsNullOrEmpty(orphan.name) ? orphan.id : orphan.name));
+            }
+
+            return result;
         }
     }
 }

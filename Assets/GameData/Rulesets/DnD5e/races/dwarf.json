@@ -1,0 +1,114 @@
+{
+  "id": "race.dwarf",
+  "name": "Dwarf",
+  "parentId": "",
+  "sortName": "Dwarf",
+  "sourceFile": "dwarf.txt",
+  "description": "\"Yer late, elf!\" came the rough edge of a familiar voice. Bruenor Battlehammer walked up the back of his dead foe, disregarding the fact that the heavy monster lay on top of his elven friend. In spite of the added discomfort, the dwarf's long, pointed, often-broken nose and gray-streaked though still-fiery red beard came as a welcome sight to Drizzt. \"Knew I'd find ye in trouble if I came out an' looked for ye!\"",
+  "abilityScoreBonuses": [
+    {
+      "ability": "CON",
+      "bonus": 2
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "resistance",
+      "name": "Poison Resistance",
+      "target": "poison",
+      "value": "Poison damage",
+      "amount": 0
+    },
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "weapon",
+      "value": "battleaxe, handaxe, light hammer",
+      "amount": 0
+    },
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "tool",
+      "value": "artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools",
+      "amount": 0
+    },
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "tool",
+      "value": "the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools",
+      "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and Dwarvish",
+      "amount": 0
+    }
+  ],
+  "speed": 25,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Size",
+    "Speed",
+    "Darkvision",
+    "Dwarven Resilience",
+    "Dwarven Combat Training",
+    "Tool Proficiency",
+    "Stonecunning"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Constitution score increases by 2.",
+      "id": "feature.dwarf.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "Dwarves mature at the same rate as humans, but they're considered young until they reach the age of 50. On average, they live about 350 years.",
+      "id": "feature.dwarf.age"
+    },
+    {
+      "name": "Size",
+      "description": "Dwarves stand between 4 and 5 feet tall and average about 150 pounds. Your size is Medium.",
+      "id": "feature.dwarf.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 25 feet. Your speed is not reduced by wearing heavy armor.",
+      "id": "feature.dwarf.speed"
+    },
+    {
+      "name": "Darkvision",
+      "description": "Accustomed to life underground, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "id": "feature.dwarf.darkvision"
+    },
+    {
+      "name": "Dwarven Resilience",
+      "description": "You have advantage on saving throws against poison, and you have resistance against poison damage (explained in the \"Combat\" section).",
+      "id": "feature.dwarf.dwarven_resilience"
+    },
+    {
+      "name": "Dwarven Combat Training",
+      "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer.",
+      "id": "feature.dwarf.dwarven_combat_training"
+    },
+    {
+      "name": "Tool Proficiency",
+      "description": "You gain proficiency with the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools.",
+      "id": "feature.dwarf.tool_proficiency"
+    },
+    {
+      "name": "Stonecunning",
+      "description": "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check, instead of your normal proficiency bonus.",
+      "id": "feature.dwarf.stonecunning"
+    }
+  ]
+}

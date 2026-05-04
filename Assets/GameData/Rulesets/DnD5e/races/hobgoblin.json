@@ -1,0 +1,78 @@
+{
+  "id": "race.hobgoblin",
+  "name": "Hobgoblin",
+  "parentId": "",
+  "sortName": "Hobgoblin",
+  "sourceFile": "hobgoblin.txt",
+  "description": "Hobgoblins are relentless soldiers that cleave to rigid tactics and orders. I fear their less-predictable scouts and spies more.",
+  "abilityScoreBonuses": [
+    {
+      "ability": "CON",
+      "bonus": 2
+    },
+    {
+      "ability": "INT",
+      "bonus": 1
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and Goblin",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Size",
+    "Speed",
+    "Darkvision",
+    "Martial Training",
+    "Saving Face"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Constitution score increases by 2, and your Intelligence score increases by 1.",
+      "id": "feature.hobgoblin.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "Hobgoblins mature at the same rate as humans and have lifespans similar in length to theirs.",
+      "id": "feature.hobgoblin.age"
+    },
+    {
+      "name": "Size",
+      "description": "Hobgoblins are between 5 and 6 feet tall and weigh between 150 and 200 pounds. Your size is Medium.",
+      "id": "feature.hobgoblin.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 30 feet.",
+      "id": "feature.hobgoblin.speed"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "id": "feature.hobgoblin.darkvision"
+    },
+    {
+      "name": "Martial Training",
+      "description": "You are proficient with two martial weapons of your choice and with light armor.",
+      "id": "feature.hobgoblin.martial_training"
+    },
+    {
+      "name": "Saving Face",
+      "description": "Hobgoblins are careful not to show weakness in front of their allies, for fear of losing status. If you miss with an attack roll or fail an ability check or a saving throw, you can gain a bonus to the roll equal to the number of allies you can see within 30 feet of you (maximum bonus of +5). Once you use this trait, you can't use it again until you finish a short or long rest.",
+      "id": "feature.hobgoblin.saving_face"
+    }
+  ]
+}

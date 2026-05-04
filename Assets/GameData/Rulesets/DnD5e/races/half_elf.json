@@ -1,0 +1,225 @@
+{
+  "id": "race.half_elf",
+  "name": "Half Elf",
+  "parentId": "",
+  "sortName": "Half Elf",
+  "sourceFile": "half-elf.txt",
+  "description": "Flint squinted into the setting sun. He thought he saw the figure of a man striding up the path. Standing, Flint drew back into the shadow of a tall pine to see better. The man's walk was marked by an easy grace-an elvish grace, Flint would have said; yet the man's body had the thickness and tight muscles of a human, while the facial hair was definitely humankind's. All the dwarf could see of the man's face beneath a green hood was tan skin and a brownish-red beard. A longbow was slung over one shoulder and a sword hung at his left side. He was dressed in soft leather, carefully tooled in the intricate designs the elves loved. But no elf in the world of Krynn could grow a beard\n. . . no elf, but . . .",
+  "abilityScoreBonuses": [
+    {
+      "ability": "DEX",
+      "bonus": 1
+    },
+    {
+      "ability": "WIS",
+      "bonus": 2
+    },
+    {
+      "ability": "CHA",
+      "bonus": 2
+    }
+  ],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose one other ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "speed",
+      "name": "Swim Speed",
+      "target": "swim",
+      "value": "30 ft",
+      "amount": 30
+    },
+    {
+      "type": "resistance",
+      "name": "Lightning Resistance",
+      "target": "lightning",
+      "value": "Lightning damage",
+      "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common, Elvish, and one extra language of your choice",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Size",
+    "Speed",
+    "Darkvision",
+    "Fey Ancestry",
+    "Skill Versatility",
+    "Aquatic Half-Elf",
+    "Aquatic Heritage",
+    "Drow Half-Elf",
+    "Drow Magic",
+    "High Half-Elf",
+    "High Elf Descent",
+    "Mark of Detection Half-Elf",
+    "House Medani",
+    "Deductive Intuition",
+    "Magical Detection",
+    "Spells of the Mark",
+    "Spell Level Spells",
+    "Mark of Storm Half-Elf",
+    "House Lyrandar",
+    "Windwright's Intuition",
+    "Storm's Boon",
+    "Headwinds",
+    "Wood Half-Elf",
+    "Wood Elf Descent"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Charisma score increases by 2, and two other ability scores of your choice increase by 1.",
+      "id": "feature.half_elf.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
+      "id": "feature.half_elf.age"
+    },
+    {
+      "name": "Size",
+      "description": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
+      "id": "feature.half_elf.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 30 feet.",
+      "id": "feature.half_elf.speed"
+    },
+    {
+      "name": "Darkvision",
+      "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "id": "feature.half_elf.darkvision"
+    },
+    {
+      "name": "Fey Ancestry",
+      "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
+      "id": "feature.half_elf.fey_ancestry"
+    },
+    {
+      "name": "Skill Versatility",
+      "description": "You gain proficiency in two skills of your choice.",
+      "id": "feature.half_elf.skill_versatility"
+    },
+    {
+      "name": "Aquatic Half-Elf",
+      "description": "Some half-elves in Faerûn have a racial trait in place of the Skill Versatility trait. If your DM allows it, your half-elf character can forgo Skill Versatility and instead take the elf trait Keen Senses or a trait based on your elf parentage.",
+      "id": "feature.half_elf.aquatic_half_elf"
+    },
+    {
+      "name": "Aquatic Heritage",
+      "description": "A half-elf of aquatic heritage can forgo Skill Versatility and instead choose a swimming speed of 30 feet.",
+      "id": "feature.half_elf.aquatic_heritage"
+    },
+    {
+      "name": "Drow Half-Elf",
+      "description": "Some half-elves in Faerûn have a racial trait in place of the Skill Versatility trait. If your DM allows it, your half-elf character can forgo Skill Versatility and instead take a trait based on your elf parentage.",
+      "id": "feature.half_elf.drow_half_elf"
+    },
+    {
+      "name": "Drow Magic",
+      "description": "A half-elf of drow descent can forgo Skill Versatility and instead choose the drow's Drow Magic:\n\nYou know the dancing lights cantrip. When you reach 3rd level, you can cast the faerie fire spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the darkness spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells.",
+      "id": "feature.half_elf.drow_magic"
+    },
+    {
+      "name": "High Half-Elf",
+      "description": "Some half-elves in Faerûn have a racial trait in place of the Skill Versatility trait. If your DM allows it, your half-elf character can forgo Skill Versatility and instead take a trait based on your elf parentage.",
+      "id": "feature.half_elf.high_half_elf"
+    },
+    {
+      "name": "High Elf Descent",
+      "description": "A half-elf of moon elf or sun elf descent can forego Skill Versatility and instead choose the high elf's Elf Weapon Training or Cantrip.",
+      "id": "feature.half_elf.high_elf_descent"
+    },
+    {
+      "name": "Mark of Detection Half-Elf",
+      "description": "If you want a wall of muscle to get between you and a blade, go to House Deneith. If you want someone to anticipate the threat and make sure you aren't even in the room with whoever's holding that blade, that's what we do.\n\n-Baron Trelib d'Medani\n\nThe Mark of Detection is an inquisitive's dream. It sharpens powers of observation and intuition, allowing the bearer to draw connections and interpret clues others might miss. By actively drawing on its powers, the bearer can detect poisons and study the energies of magic.",
+      "id": "feature.half_elf.mark_of_detection_half_elf"
+    },
+    {
+      "name": "House Medani",
+      "description": "Leader: Baron Trelib d'Medani\n\nHeadquarters: Tower of Inquisition (Wroat, Breland)\n\nRepresented by the basilisk's eye, the Warning Guild of House Medani brokers the services of bodyguards and inquisitives. Medani advisors specialize in risk assessment and management, protecting clients from both physical and social threats. While Medani overlaps with the inquisitives of House Tharashk and the bodyguards of House Deneith, the Warning Guild specializes in subtle threats and complex mysteries. Baron Trelib manages the guild's affairs from the Tower of Inquisition in Wroat, where the house also interrogates prisoners for King Boranel of Breland.\n\nThe members of House Medani are half-elves with deep roots in Breland. Medani has little interest in the power struggles that sometimes break out between the other dragonmarked houses. Many Medani heirs are more interested in helping their communities than in raw profit, and Medani heirs often work with local law enforcement or help those who can't afford their services.",
+      "id": "feature.half_elf.house_medani"
+    },
+    {
+      "name": "Deductive Intuition",
+      "description": "When you make an Intelligence (Investigation) or Wisdom (Insight) check, you can roll a d4 and add the number rolled to the ability check.",
+      "id": "feature.half_elf.deductive_intuition"
+    },
+    {
+      "name": "Magical Detection",
+      "description": "You can cast the detect magic and detect poison and disease spells with this trait. Starting at 3rd level, you can also cast the see invisibility spell with it. Once you cast any of these spells with this trait, you can't cast that spell with it again until you finish a long rest. Wisdom is your spellcasting ability for these spells, and you don't require material components for them.",
+      "id": "feature.half_elf.magical_detection"
+    },
+    {
+      "name": "Spells of the Mark",
+      "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Detection Spells table are added to the spell list of your spellcasting class.",
+      "id": "feature.half_elf.spells_of_the_mark"
+    },
+    {
+      "name": "Spell Level Spells",
+      "description": "1st detect evil and good, detect poison and disease\n\n2nd detect thoughts, find traps\n\n3rd clairvoyance, nondetection\n\n4th arcane eye, divination\n\n5th legend lore",
+      "id": "feature.half_elf.spell_level_spells"
+    },
+    {
+      "name": "Mark of Storm Half-Elf",
+      "description": "Sovereigns and Firstborn, grant me the four blessings promised to our people: dominion over the air, dominion over the water, fortune for my family, and fortune for my future.\n\n-From the Oath of Lyrandar\n\nWind and water welcome the half-elves who carry the Mark of Storm, and some learn to call on the power of the storm itself.",
+      "id": "feature.half_elf.mark_of_storm_half_elf"
+    },
+    {
+      "name": "House Lyrandar",
+      "description": "Leader: Esravash d'Lyrandar\n\nHeadquarters: Stormhome (Aundair)\n\nHouse Lyrandar has long ruled the seas. Their kraken-marked galleons harness air and water elementals and are faster than any mundane vessel. Control of sea and river trade gave Lyrandar considerable power. Now they reach out to the skies. Merely a decade old, Lyrandar airships have undermined the lightning rail's domination of overland travel.\n\nHouse Lyrandar also controls the air in a literal way. The Raincallers' Guild can use the Mark of Storms to control the weather for its clients.\n\nFor many of the house's members, the house is more than a family or business-its private island enclave, Stormhome, is the closest thing they have to a homeland. Baron Esravash is ambitious and often steers the house to act in what he sees as the interests of all half-elves. Lyrandar heirs help the Valenar elves run their young kingdom, and some believe that Valenar could become a true homeland for the Khoravar.",
+      "id": "feature.half_elf.house_lyrandar"
+    },
+    {
+      "name": "Windwright's Intuition",
+      "description": "When you make a Dexterity (Acrobatics) check or any ability check involving navigator's tools, you can roll a d4 and add the number rolled to the ability check.",
+      "id": "feature.half_elf.windwright_s_intuition"
+    },
+    {
+      "name": "Storm's Boon",
+      "description": "You have resistance to lightning damage.",
+      "id": "feature.half_elf.storm_s_boon"
+    },
+    {
+      "name": "Headwinds",
+      "description": "You know the gust cantrip. Starting at 3rd level, you can cast the gust of wind spell once with this trait, and you regain the ability to cast it when you finish a long rest. Charisma is your spellcasting ability for these spells.",
+      "id": "feature.half_elf.headwinds"
+    },
+    {
+      "name": "Wood Half-Elf",
+      "description": "Some half-elves in Faerûn have a racial trait in place of the Skill Versatility trait. If your DM allows it, your half-elf character can forgo Skill Versatility and instead take a trait based on your elf parentage.",
+      "id": "feature.half_elf.wood_half_elf"
+    },
+    {
+      "name": "Wood Elf Descent",
+      "description": "A half-elf of wood elf descent can forgo Skill Versatility and instead choose the wood elf's Elf Weapon Training, Fleet of Foot, or Mask of the Wild.",
+      "id": "feature.half_elf.wood_elf_descent"
+    }
+  ]
+}

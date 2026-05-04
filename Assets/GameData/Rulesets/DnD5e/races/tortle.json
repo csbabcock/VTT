@@ -1,0 +1,112 @@
+{
+  "id": "race.tortle",
+  "name": "Tortle",
+  "parentId": "",
+  "sortName": "Tortle",
+  "sourceFile": "tortle.txt",
+  "description": "Tortles have a saying: \"We wear our homes on our backs.\" These turtle folk live on many worlds, most often journeying up and down coasts, along waterways, and across the sea. Tortles don't have a unified story of how they were created, but they all have a sense of being mystically connected to the natural world. Carrying their shelter on their backs gives tortles a special feeling of security wherever they go, for even if they visit a far, unknown country, they have a place to lay their heads.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "naturalArmor",
+      "name": "Natural Armor",
+      "target": "armorClass",
+      "value": "Base AC 17",
+      "amount": 17
+    },
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "skill",
+      "value": "one of the following skills of your choice: Animal Handling, Medicine, Nature, Perception, Stealth, or Survival",
+      "amount": 0
+    },
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium or Small",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Size",
+    "Speed",
+    "Claws",
+    "Hold Breath",
+    "Natural Armor",
+    "Nature's Intuition",
+    "Shell Defense"
+  ],
+  "features": [
+    {
+      "name": "Size",
+      "description": "You are Medium or Small. You choose the size when you select this race.",
+      "id": "feature.tortle.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet.",
+      "id": "feature.tortle.speed"
+    },
+    {
+      "name": "Claws",
+      "description": "You have claws that you can use to make unarmed strikes. When you hit with them, the strike deals 1d6 + your Strength modifier slashing damage, instead of the bludgeoning damage normal for an unarmed strike.",
+      "id": "feature.tortle.claws"
+    },
+    {
+      "name": "Hold Breath",
+      "description": "You can hold your breath for up to 1 hour.",
+      "id": "feature.tortle.hold_breath"
+    },
+    {
+      "name": "Natural Armor",
+      "description": "Your shell provides you a base AC of 17 (your Dexterity modifier doesn't affect this number). You can't wear light, medium, or heavy armor, but if you are using a shield, you can apply the shield's bonus as normal.",
+      "id": "feature.tortle.natural_armor"
+    },
+    {
+      "name": "Nature's Intuition",
+      "description": "Thanks to your mystical connection to nature, you gain proficiency with one of the following skills of your choice: Animal Handling, Medicine, Nature, Perception, Stealth, or Survival.",
+      "id": "feature.tortle.nature_s_intuition"
+    },
+    {
+      "name": "Shell Defense",
+      "description": "You can withdraw into your shell as an action. Until you emerge, you gain a +4 bonus to your AC, and you have advantage on Strength and Constitution saving throws. While in your shell, you are prone, your speed is 0 and can't increase, you have disadvantage on Dexterity saving throws, you can't take reactions, and the only action you can take is a bonus action to emerge from your shell.",
+      "id": "feature.tortle.shell_defense"
+    }
+  ]
+}

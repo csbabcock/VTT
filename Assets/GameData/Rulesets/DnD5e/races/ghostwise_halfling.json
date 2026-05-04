@@ -1,0 +1,84 @@
+{
+  "id": "race.ghostwise_halfling",
+  "name": "Ghostwise Halfling",
+  "parentId": "race.halfling",
+  "sortName": "Ghostwise Halfling",
+  "sourceFile": "halfling.txt",
+  "description": "Ghostwise Halfling\nGhostwise halflings trace their ancestry back to a war among halfling tribes that sent their ancestors into flight from Luiren. Ghostwise halflings are the rarest of the hin, found only in the Chondalwood and a few other isolated forests, clustered in tight-knit clans.",
+  "abilityScoreBonuses": [
+    {
+      "ability": "DEX",
+      "bonus": 2
+    },
+    {
+      "ability": "WIS",
+      "bonus": 1
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and Halfling",
+      "amount": 0
+    }
+  ],
+  "speed": 25,
+  "size": "Small",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Size",
+    "Speed",
+    "Lucky",
+    "Brave",
+    "Halfling Nimbleness",
+    "Silent Speech"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Dexterity score increases by 2.",
+      "id": "feature.ghostwise_halfling.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "A halfling reaches adulthood at the age of 20 and generally lives into the middle of his or her second century.",
+      "id": "feature.ghostwise_halfling.age"
+    },
+    {
+      "name": "Size",
+      "description": "Halflings average about 3 feet tall and weigh about 40 pounds. Your size is Small.",
+      "id": "feature.ghostwise_halfling.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 25 feet.",
+      "id": "feature.ghostwise_halfling.speed"
+    },
+    {
+      "name": "Lucky",
+      "description": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll.",
+      "id": "feature.ghostwise_halfling.lucky"
+    },
+    {
+      "name": "Brave",
+      "description": "You have advantage on saving throws against being frightened.",
+      "id": "feature.ghostwise_halfling.brave"
+    },
+    {
+      "name": "Halfling Nimbleness",
+      "description": "You can move through the space of any creature that is of a size larger than yours.",
+      "id": "feature.ghostwise_halfling.halfling_nimbleness"
+    },
+    {
+      "name": "Silent Speech",
+      "description": "You can speak telepathically to any creature within 30 feet of you. The creature understands you only if the two of you share a language. You can speak telepathically in this way to one creature at a time.",
+      "id": "feature.ghostwise_halfling.silent_speech"
+    }
+  ]
+}

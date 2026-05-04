@@ -1,0 +1,110 @@
+{
+  "id": "race.feral_tiefling",
+  "name": "Feral Tiefling",
+  "parentId": "race.tiefling",
+  "sortName": "Feral Tiefling",
+  "sourceFile": "feral tiefling.txt",
+  "description": "\"But you do see the way people look at you, devil's child.\"",
+  "abilityScoreBonuses": [
+    {
+      "ability": "DEX",
+      "bonus": 2
+    },
+    {
+      "ability": "INT",
+      "bonus": 1
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "speed",
+      "name": "Fly Speed",
+      "target": "fly",
+      "value": "30 ft",
+      "amount": 30
+    },
+    {
+      "type": "resistance",
+      "name": "Fire Resistance",
+      "target": "fire",
+      "value": "Fire damage",
+      "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and Infernal",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Alignment",
+    "Size",
+    "Speed",
+    "Darkvision",
+    "Hellish Resistance",
+    "Infernal Legacy",
+    "Variant Feral Tiefling",
+    "Variant Tiefling"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Intelligence score increases by 1, and your Dexterity score increases by 2.",
+      "id": "feature.feral_tiefling.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "Tieflings mature at the same rate as humans but live a few years longer.",
+      "id": "feature.feral_tiefling.age"
+    },
+    {
+      "name": "Alignment",
+      "description": "Tieflings might not have an innate tendency toward evil, but many of them end up there. Evil or not, an independent nature inclines many tieflings toward a chaotic alignment.",
+      "id": "feature.feral_tiefling.alignment"
+    },
+    {
+      "name": "Size",
+      "description": "Tieflings are about the same size and build as humans. Your size is Medium.",
+      "id": "feature.feral_tiefling.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 30 feet.",
+      "id": "feature.feral_tiefling.speed"
+    },
+    {
+      "name": "Darkvision",
+      "description": "Thanks to your infernal heritage, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "id": "feature.feral_tiefling.darkvision"
+    },
+    {
+      "name": "Hellish Resistance",
+      "description": "You have resistance to fire damage.",
+      "id": "feature.feral_tiefling.hellish_resistance"
+    },
+    {
+      "name": "Infernal Legacy",
+      "description": "You know the thaumaturgy cantrip. When you reach 3rd level, you can cast the hellish rebuke spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the darkness spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells.",
+      "id": "feature.feral_tiefling.infernal_legacy"
+    },
+    {
+      "name": "Variant Feral Tiefling",
+      "description": "Since not all tieflings are of the blood of Asmodeus, some have traits that differ from those in the Player's Handbook. The Dungeon Master may permit the following variants for your tiefling character, although Devil's Tongue, Hellfire, and Winged are mutually exclusive.\n\nFeral. Your Intelligence score increases by 1, and your Dexterity score increases by 2. This trait replaces the Ability Score Increase trait.\n\nAppearance. Your tiefling might not look like other tieflings. Rather than having the physical characteristics described in the Player's Handbook, choose 1d4 + 1 of the following features: small horns; fangs or sharp teeth; a forked tongue; catlike eyes; six fingers on each hand; goat-like legs; cloven hoofs; a forked tail; leathery or scaly skin; red or dark blue skin; cast no shadow or reflection; exude a smell of brimstone.",
+      "id": "feature.feral_tiefling.variant_feral_tiefling"
+    },
+    {
+      "name": "Variant Tiefling",
+      "description": "Devil's Tongue. You know the vicious mockery cantrip. When you reach 3rd level, you can cast the charm person spell as a 2nd-level spell once with this trait. When you reach 5th level, you can cast the enthrall spell once with this trait. You must finish a long rest to cast these spells once again with this trait. Charisma is your spellcasting ability for them. This trait replaces the Infernal Legacy trait.\n\nHellfire. Once you reach 3rd level, you can cast the burning hands spell once per day as a 2nd-level spell. This trait replaces the hellish rebuke spell of the Infernal Legacy trait.\n\nWinged. Bat-like wings jut from your shoulder blades. You have a flying speed of 30 feet while you aren't wearing heavy armor.",
+      "id": "feature.feral_tiefling.variant_tiefling"
+    }
+  ]
+}

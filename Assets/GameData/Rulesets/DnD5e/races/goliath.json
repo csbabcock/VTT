@@ -1,0 +1,100 @@
+{
+  "id": "race.goliath",
+  "name": "Goliath",
+  "parentId": "",
+  "sortName": "Goliath",
+  "sourceFile": "goliath.txt",
+  "description": "The first goliaths lived on the highest mountain peaks-far above the tree line, where the air is thin and frigid winds howl. Distantly related to giants and infused with the supernatural essence of their ancestors' mountainous home, goliaths stand between 7 and 8 feet tall and have a wide array of skin tones resembling different types of stone.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "resistance",
+      "name": "Cold Resistance",
+      "target": "cold",
+      "value": "Cold damage",
+      "amount": 0
+    },
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "skill",
+      "value": "Athletics",
+      "amount": 0
+    },
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Size",
+    "Speed",
+    "Little Giant",
+    "Mountain Born",
+    "Stone's Endurance"
+  ],
+  "features": [
+    {
+      "name": "Size",
+      "description": "You are Medium.",
+      "id": "feature.goliath.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet.",
+      "id": "feature.goliath.speed"
+    },
+    {
+      "name": "Little Giant",
+      "description": "You have proficiency in the Athletics skill, and you count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.",
+      "id": "feature.goliath.little_giant"
+    },
+    {
+      "name": "Mountain Born",
+      "description": "You have resistance to cold damage. You also naturally acclimate to high altitudes, even if you've never been to one. This includes elevations above 20,000 feet.",
+      "id": "feature.goliath.mountain_born"
+    },
+    {
+      "name": "Stone's Endurance",
+      "description": "You can supernaturally draw on unyielding stone to shrug off harm. When you take damage, you can use your reaction to roll a d12. Add your Constitution modifier to the number rolled and reduce the damage by that total.\n\nYou can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+      "id": "feature.goliath.stone_s_endurance"
+    }
+  ]
+}

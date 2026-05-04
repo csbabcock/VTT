@@ -1,0 +1,86 @@
+{
+  "id": "race.earth_genasi",
+  "name": "Earth Genasi",
+  "parentId": "race.genasi",
+  "sortName": "Earth Genasi",
+  "sourceFile": "earth genasi.txt",
+  "description": "Tracing their ancestry to dao, the genies of the Elemental Plane of Earth, earth genasi inherit dao's steadfast strength and control over earth.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium or Small",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Size",
+    "Speed",
+    "Darkvision",
+    "Earth Walk",
+    "Merge with Stone"
+  ],
+  "features": [
+    {
+      "name": "Size",
+      "description": "You are Medium or Small. You choose the size when you select this race.",
+      "id": "feature.earth_genasi.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet.",
+      "id": "feature.earth_genasi.speed"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
+      "id": "feature.earth_genasi.darkvision"
+    },
+    {
+      "name": "Earth Walk",
+      "description": "You can move across difficult terrain without expending extra movement if you are using your walking speed on the ground or a floor.",
+      "id": "feature.earth_genasi.earth_walk"
+    },
+    {
+      "name": "Merge with Stone",
+      "description": "You know the blade ward cantrip. You can cast it as normal, and you can also cast it as a bonus action a number of times equal to your proficiency bonus, regaining all expended uses when you finish a long rest.\n\nStarting at 5th level, you can cast the pass without trace spell with this trait, without requiring a material component. Once you cast that spell with this trait, you can't do so again until you finish a long rest. You can also cast it using any spell slots you have of 2nd level or higher.\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
+      "id": "feature.earth_genasi.merge_with_stone"
+    }
+  ]
+}

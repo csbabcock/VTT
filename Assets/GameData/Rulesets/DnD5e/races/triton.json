@@ -1,0 +1,105 @@
+{
+  "id": "race.triton",
+  "name": "Triton",
+  "parentId": "",
+  "sortName": "Triton",
+  "sourceFile": "triton.txt",
+  "description": "Originally from the Elemental Plane of Water, many tritons entered the Material Plane centuries ago in response to the growing threat of evil elementals. Those tritons spread across the worlds' oceans, protecting the surface from terrors in the deep. Over time, triton have extended their stewardship over the sea floor to the ocean's surface.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "resistance",
+      "name": "Cold Resistance",
+      "target": "cold",
+      "value": "Cold damage",
+      "amount": 0
+    },
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Size",
+    "Speed",
+    "Amphibious",
+    "Control Air and Water",
+    "Darkvision",
+    "Emissary of the Sea",
+    "Guardian of the Depths"
+  ],
+  "features": [
+    {
+      "name": "Size",
+      "description": "You are Medium.",
+      "id": "feature.triton.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet, and you have a swimming speed equal to your walking speed.",
+      "id": "feature.triton.speed"
+    },
+    {
+      "name": "Amphibious",
+      "description": "You can breathe air and water.",
+      "id": "feature.triton.amphibious"
+    },
+    {
+      "name": "Control Air and Water",
+      "description": "You can cast fog cloud with this trait. Starting at 3rd level, you can cast the gust of wind spell with this trait. Starting at 5th level, you can also cast the water walk spell with it. Once you cast any of these spells with this trait, you can't cast that spell with it again until you finish a long rest. You can also cast these spells using any spell slots you have of the appropriate level.\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
+      "id": "feature.triton.control_air_and_water"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
+      "id": "feature.triton.darkvision"
+    },
+    {
+      "name": "Emissary of the Sea",
+      "description": "You can communicate simple ideas to any Beast, Elemental, or Monstrosity that has a swimming speed. It can understand your words, though you have no special ability to understand it in return.",
+      "id": "feature.triton.emissary_of_the_sea"
+    },
+    {
+      "name": "Guardian of the Depths",
+      "description": "Adapted to the frigid ocean depths, you have resistance to cold damage.",
+      "id": "feature.triton.guardian_of_the_depths"
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "id": "race.bugbear",
+  "name": "Bugbear",
+  "parentId": "",
+  "sortName": "Bugbear",
+  "sourceFile": "bugbear.txt",
+  "description": "Neither bugs nor bears, bugbears are the hulking cousins of goblins and hobgoblins. With roots in the Feywild, early bugbears resided in hidden places, in hard-to-reach and shadowed spaces. Long ago and from out of the corner of your eye, they came to the Material Plane, urged to spread throughout the multiverse by the conquering god Maglubiyet. Centuries later, they still bear a fey gift for lurking just out of sight, and many of them have sneaked away from that god's influence.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Size",
+    "Speed",
+    "Darkvision",
+    "Fey Ancestry",
+    "Long-Limbed",
+    "Powerful Build",
+    "Sneaky",
+    "Surprise Attack"
+  ],
+  "features": [
+    {
+      "name": "Size",
+      "description": "Your size is Medium.",
+      "id": "feature.bugbear.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet.",
+      "id": "feature.bugbear.speed"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
+      "id": "feature.bugbear.darkvision"
+    },
+    {
+      "name": "Fey Ancestry",
+      "description": "You have advantage on saving throws you make to avoid or end the charmed condition on yourself.",
+      "id": "feature.bugbear.fey_ancestry"
+    },
+    {
+      "name": "Long-Limbed",
+      "description": "When you make a melee attack on your turn, your reach for it is 5 feet greater than normal.",
+      "id": "feature.bugbear.long_limbed"
+    },
+    {
+      "name": "Powerful Build",
+      "description": "You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.",
+      "id": "feature.bugbear.powerful_build"
+    },
+    {
+      "name": "Sneaky",
+      "description": "You are proficient in the Stealth skill. In addition, without squeezing, you can move through and stop in a space large enough for a Small creature.",
+      "id": "feature.bugbear.sneaky"
+    },
+    {
+      "name": "Surprise Attack",
+      "description": "If you hit a creature with an attack roll, the creature takes an extra 2d6 damage if it hasn't taken a turn yet in the current combat.",
+      "id": "feature.bugbear.surprise_attack"
+    }
+  ]
+}

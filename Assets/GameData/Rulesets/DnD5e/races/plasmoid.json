@@ -1,0 +1,25 @@
+{
+  "id": "race.plasmoid",
+  "name": "Plasmoid",
+  "parentId": "",
+  "sortName": "Plasmoid",
+  "sourceFile": "plasmoid.txt",
+  "description": "Plasmoids are amorphous beings with no typical shape. In the presence of other folk, they often adopt a similar shape, but there's little chance of mistaking a plasmoid for anything else. They consume food by osmosis, the way an amoeba does, and excrete waste through tiny pores. They breathe by absorbing oxygen through another set of pores, and their limbs are strong and flexible enough to grasp and manipulate weapons and tools. Although most plasmoids are translucent gray, they can alter their color and translucence by absorbing dyes through their pores.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and one other language that you and your DM agree is appropriate",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium or Small",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [],
+  "features": []
+}

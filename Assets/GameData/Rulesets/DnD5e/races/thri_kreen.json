@@ -1,0 +1,25 @@
+{
+  "id": "race.thri_kreen",
+  "name": "Thri Kreen",
+  "parentId": "",
+  "sortName": "Thri Kreen",
+  "sourceFile": "thri-kreen.txt",
+  "description": "Thri-kreen have insectile features and two pairs of arms. Their bodies are encased in protective chitin. They can alter the coloration of this carapace to blend in with their natural surroundings.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and one other language that you and your DM agree is appropriate for the character",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium or Small",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [],
+  "features": []
+}

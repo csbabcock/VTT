@@ -1,0 +1,52 @@
+{
+  "id": "race.kithkin",
+  "name": "Kithkin",
+  "parentId": "",
+  "sortName": "Kithkin",
+  "sourceFile": "kithkin.txt",
+  "description": "Races of Lorwyn and Shadowmoor: Kithkin\nKithkin",
+  "abilityScoreBonuses": [
+    {
+      "ability": "DEX",
+      "bonus": 1
+    },
+    {
+      "ability": "WIS",
+      "bonus": 1
+    },
+    {
+      "ability": "CHA",
+      "bonus": 1
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "skill",
+      "value": "Medicine",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Small",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Lorwyn Kithkin",
+    "Shadowmoor Kithkin"
+  ],
+  "features": [
+    {
+      "name": "Lorwyn Kithkin",
+      "description": "All kithkin on Lorwyn have the following additional racial traits:\n\nAbility Score Increase. Your Charisma score increases by 1.\n\nAlignment. Kithkin of Lorwyn are typically the more lawful side of good, fighting to protect their communities, while also sharing their healing knowledge with the other races of Lorwyn.\n\nGenerous healing. When you take a short rest, characters that expend hit dice to recover hit points during that period may add your proficiency bonus to their hit dice rolls.\n\nThe Great Aurora. If you are present on Lorwyn during its transformation into shadowmoor, your subrace changes to Shadowmoor Kithkin.",
+      "id": "feature.kithkin.lorwyn_kithkin"
+    },
+    {
+      "name": "Shadowmoor Kithkin",
+      "description": "All kithkin on Shadowmoor have the following additional racial traits:\n\nAbility Score Increase. Your Wisdom score increases by 1.\n\nAlignment. Kithkin of Shadowmoor, tend towards the more lawful side of evil, zealously protecting their communities with a xenophobic hatred for outsiders.\n\nKeen Sight. You gain advantage on Wisdom (Perception) checks that rely on sight.\n\nThe Great Aurora. If you are present on Shadowmoor during its transformation into Lorwyn, your subrace changes to Lorwyn Kithkin.",
+      "id": "feature.kithkin.shadowmoor_kithkin"
+    }
+  ]
+}

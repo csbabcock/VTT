@@ -1,0 +1,99 @@
+{
+  "id": "race.duergar",
+  "name": "Duergar",
+  "parentId": "race.dwarf",
+  "sortName": "Duergar",
+  "sourceFile": "duergar.txt",
+  "description": "Duergar are dwarves whose ancestors were transformed by centuries living in the deepest places of the Underdark. That chthonic realm is saturated with strange magical energy, and over generations, early duergar absorbed traces of it. They were further altered when mind flayers and other Aberrations invaded and performed horrific experiments on them. Fueled by Underdark magic, those experiments left early duergar with psionic powers, which have been passed down to their descendants. In time, they liberated themselves from their aberrant tyrants and forged a new life for themselves in the Underdark and beyond.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "resistance",
+      "name": "Poison Resistance",
+      "target": "poison",
+      "value": "Poison damage",
+      "amount": 0
+    },
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 120,
+  "traits": [
+    "Size",
+    "Speed",
+    "Darkvision",
+    "Duergar Magic",
+    "Dwarven Resilience",
+    "Psionic Fortitude"
+  ],
+  "features": [
+    {
+      "name": "Size",
+      "description": "You are Medium.",
+      "id": "feature.duergar.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet.",
+      "id": "feature.duergar.speed"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 120 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
+      "id": "feature.duergar.darkvision"
+    },
+    {
+      "name": "Duergar Magic",
+      "description": "Starting at 3rd level, you can cast the enlarge/reduce spell on yourself with this trait, without requiring a material component. Starting at 5th level, you can also cast the invisibility spell on yourself with this trait, without requiring a material component. Once you cast either of these spells with this trait, you can't cast that spell with it again until you finish a long rest. You can also cast these spells using spell slots you have of the appropriate level.\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
+      "id": "feature.duergar.duergar_magic"
+    },
+    {
+      "name": "Dwarven Resilience",
+      "description": "You have advantage on saving throws you make to avoid or end the poisoned condition on yourself. You also have resistance to poison damage.",
+      "id": "feature.duergar.dwarven_resilience"
+    },
+    {
+      "name": "Psionic Fortitude",
+      "description": "You have advantage on saving throws you make to avoid or end the charmed or stunned condition on yourself.",
+      "id": "feature.duergar.psionic_fortitude"
+    }
+  ]
+}

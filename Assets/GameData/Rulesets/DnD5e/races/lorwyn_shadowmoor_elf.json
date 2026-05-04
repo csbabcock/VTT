@@ -1,0 +1,51 @@
+{
+  "id": "race.lorwyn_shadowmoor_elf",
+  "name": "Lorwyn Shadowmoor Elf",
+  "parentId": "race.elf",
+  "sortName": "Lorwyn Shadowmoor Elf",
+  "sourceFile": "lorwyn-shadowmoor elf.txt",
+  "description": "Elegant and imperious, the elves of Lorwyn act as a ruthless ruling class, unusually brutal compared to the many other races that call Lorwyn their home, and known for their obsession for destroying that which does not reach their standards of beauty.",
+  "abilityScoreBonuses": [
+    {
+      "ability": "WIS",
+      "bonus": 2
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "weapon",
+      "value": "longsword, shortsword, shortbow",
+      "amount": 0
+    },
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "skill",
+      "value": "Perception",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Lorwyn Elf",
+    "Shadowmoor Elf"
+  ],
+  "features": [
+    {
+      "name": "Lorwyn Elf",
+      "description": "All elves on Lorwyn have the following additional racial traits:\n\nAlignment. Obsessed with the preservation of what they consider beautiful, and the destruction of all that is not, Lorwyn elves are generally neutral evil with some leaning towards lawful evil.\n\nEyeblight Destroyer. When you make an attack against a non-elf creature, you may add your Wisdom modifier to the attack roll. You may use this ability once, and regain it when you finish a short rest.\n\nThe Great Aurora. If you are present on Lorwyn during its transformation into shadowmoor, your subrace changes to Shadowmoor Elf.",
+      "id": "feature.lorwyn_shadowmoor_elf.lorwyn_elf"
+    },
+    {
+      "name": "Shadowmoor Elf",
+      "description": "All elves on Shadowmoor have the following additional racial traits:\n\nAlignment. Elves of Shadowmoor often fight to protect the beautiful and the innocent, giving them a strong leaning towards good alignments.\n\nInnocence Preserver. When an attack is made against a creature within 10 feet of you, you may use your reaction to reduce the attack roll by an amount equal to your Wisdom modifier. You may use this ability once, and regain it when you finish a short rest.\n\nThe Great Aurora. If you are present on Shadowmoor during its transformation into Lorwyn, your subrace changes to Lorwyn Elf.",
+      "id": "feature.lorwyn_shadowmoor_elf.shadowmoor_elf"
+    }
+  ]
+}

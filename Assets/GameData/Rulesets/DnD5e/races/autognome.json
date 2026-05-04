@@ -1,0 +1,39 @@
+{
+  "id": "race.autognome",
+  "name": "Autognome",
+  "parentId": "",
+  "sortName": "Autognome",
+  "sourceFile": "autognome.txt",
+  "description": "Autognomes are mechanical beings built by rock gnomes. Sometimes, because of a malfunction or a unique circumstance, an autognome becomes separated from its creator and strikes out on its own.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "resistance",
+      "name": "Poison Resistance",
+      "target": "poison",
+      "value": "Poison damage",
+      "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and one other language that you and your DM agree is appropriate",
+      "amount": 0
+    },
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Construct",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [],
+  "features": []
+}

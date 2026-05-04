@@ -1,0 +1,70 @@
+{
+  "id": "race.kenku",
+  "name": "Kenku",
+  "parentId": "",
+  "sortName": "Kenku",
+  "sourceFile": "kenku.txt",
+  "description": "The map we found showed the entrance to the Priest King's treasure cache right in the middle of the ruined section of the city. We approached our destination without issue, but as we arrived at the burned-out building, a sudden cacophony erupted around us. Birds squawked, cats hissed, and dogs growled. Lidda hustled us back to the city's safer avenues. Only when we were back within the area patrolled by the guard did she explain that the noises indicated that the wingless folk had claimed that area, and that to trespass would be to court death.",
+  "abilityScoreBonuses": [
+    {
+      "ability": "DEX",
+      "bonus": 2
+    },
+    {
+      "ability": "WIS",
+      "bonus": 1
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Size",
+    "Speed",
+    "Expert Forgery",
+    "Kenku Training",
+    "Mimicry"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Dexterity score increases by 2, and your Wisdom score increases by 1.",
+      "id": "feature.kenku.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "Kenku have shorter lifespans than humans. They reach maturity at about 12 years old and can live to 60.",
+      "id": "feature.kenku.age"
+    },
+    {
+      "name": "Size",
+      "description": "Kenku are around 5 feet tall and weigh between 90 and 120 pounds. Your size is Medium.",
+      "id": "feature.kenku.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 30 feet.",
+      "id": "feature.kenku.speed"
+    },
+    {
+      "name": "Expert Forgery",
+      "description": "You can duplicate other creatures' handwriting and craftwork. You have advantage on all checks made to produce forgeries or duplicates of existing objects.",
+      "id": "feature.kenku.expert_forgery"
+    },
+    {
+      "name": "Kenku Training",
+      "description": "You are proficient in your choice of two of the following skills: Acrobatics, Deception, Stealth, and Sleight of Hand.",
+      "id": "feature.kenku.kenku_training"
+    },
+    {
+      "name": "Mimicry",
+      "description": "You can mimic sounds you have heard, including voices. A creature that hears the sounds you make can tell they are imitations with a successful Wisdom (Insight) check opposed by your Charisma (Deception) check.",
+      "id": "feature.kenku.mimicry"
+    }
+  ]
+}

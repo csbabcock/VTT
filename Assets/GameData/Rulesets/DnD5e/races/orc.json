@@ -1,0 +1,84 @@
+{
+  "id": "race.orc",
+  "name": "Orc",
+  "parentId": "",
+  "sortName": "Orc",
+  "sourceFile": "orc.txt",
+  "description": "Lord Dagult Neverember once told me, during a drunken tirade, that orcs are fearful of their gods, and, if one plays one's cards right, they can be controlled through that fear and made to dance to any tune.",
+  "abilityScoreBonuses": [
+    {
+      "ability": "STR",
+      "bonus": 2
+    },
+    {
+      "ability": "CON",
+      "bonus": 1
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and Orc",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Size",
+    "Speed",
+    "Darkvision",
+    "Aggressive",
+    "Primal Intuition",
+    "Powerful Build"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Strength score increases by 2 and your Constitution score increases by 1.",
+      "id": "feature.orc.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "Orcs reach adulthood at age 12 and live up to 50 years.",
+      "id": "feature.orc.age"
+    },
+    {
+      "name": "Size",
+      "description": "Orcs are usually over 6 feet tall and weigh between 230 and 280 pounds. Your size is Medium.",
+      "id": "feature.orc.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 30 feet.",
+      "id": "feature.orc.speed"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "id": "feature.orc.darkvision"
+    },
+    {
+      "name": "Aggressive",
+      "description": "As a bonus action, you can move up to your speed toward an enemy of your choice that you can see or hear. You must end this move closer to the enemy than you started.",
+      "id": "feature.orc.aggressive"
+    },
+    {
+      "name": "Primal Intuition",
+      "description": "You have proficiency in two of the following skills of your choice: Animal Handling, Insight, Intimidation, Medicine, Nature, Perception, and Survival.",
+      "id": "feature.orc.primal_intuition"
+    },
+    {
+      "name": "Powerful Build",
+      "description": "You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.",
+      "id": "feature.orc.powerful_build"
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "id": "race.chromatic_dragonborn",
+  "name": "Chromatic Dragonborn",
+  "parentId": "race.dragonborn",
+  "sortName": "Chromatic Dragonborn",
+  "sourceFile": "dragonborn.txt",
+  "description": "Chromatic Dragonborn\nDragonborn with chromatic ancestry claim the raw elemental power of chromatic dragons. The vibrant colors of black, blue, green, red, and white dragons gleam in those dragonborn's scaled skin and in the deadly energy of their breath weapons. Theirs is the raw elemental fury of the volcano, of biting arctic winds, and of raging lightning storms, as well as the subtle whisper of swamp and forest, toxic and corrosive.",
+  "abilityScoreBonuses": [
+    {
+      "ability": "STR",
+      "bonus": 2
+    },
+    {
+      "ability": "CHA",
+      "bonus": 1
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and Draconic",
+      "amount": 0
+    },
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Size",
+    "Speed",
+    "Draconic Ancestry",
+    "Dragon Damage Type Breath Weapon",
+    "Breath Weapon",
+    "Damage Resistance",
+    "Chromatic Ancestry",
+    "Draconic Resistance",
+    "Chromatic Warding"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Strength score increases by 2, and your Charisma score increases by 1.",
+      "id": "feature.chromatic_dragonborn.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "Young dragonborn grow quickly. They walk hours after hatching, attain the size and development of a 10-year-old human child by the age of 3, and reach adulthood by 15. They live to be around 80.",
+      "id": "feature.chromatic_dragonborn.age"
+    },
+    {
+      "name": "Size",
+      "description": "Dragonborn are taller and heavier than humans, standing well over 6 feet tall and averaging almost 250 pounds. Your size is Medium.",
+      "id": "feature.chromatic_dragonborn.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 30 feet.",
+      "id": "feature.chromatic_dragonborn.speed"
+    },
+    {
+      "name": "Draconic Ancestry",
+      "description": "You have draconic ancestry. Choose one type of dragon from the Draconic Ancestry table. Your breath weapon and damage resistance are determined by the dragon type, as shown in the table.",
+      "id": "feature.chromatic_dragonborn.draconic_ancestry"
+    },
+    {
+      "name": "Dragon Damage Type Breath Weapon",
+      "description": "Black Acid 5 by 30 ft. line (Dex. save)\n\nBlue Lightning 5 by 30 ft. line (Dex. save)\n\nBrass Fire 5 by 30 ft. line (Dex. save)\n\nBronze Lightning 5 by 30 ft. line (Dex. save)\n\nCopper Acid 5 by 30 ft. line (Dex. save)\n\nGold Fire 15 ft. cone (Dex. save)\n\nGreen Poison 15 ft. cone (Con. save)\n\nRed Fire 15 ft. cone (Dex. save)\n\nSilver Cold 15 ft. cone (Con. save)\n\nWhite Cold 15 ft. cone (Con. save)",
+      "id": "feature.chromatic_dragonborn.dragon_damage_type_breath_weapon"
+    },
+    {
+      "name": "Breath Weapon",
+      "description": "You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation. When you use your breath weapon, each creature in the area of the exhalation must make a saving throw, the type of which is determined by your draconic ancestry. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes 2d6 damage on a failed save, and half as much damage on a successful one. The damage increases to 3d6 at 6th level, 4d6 at 11th level, and 5d6 at 16th level. After you use your breath weapon, you can't use it again until you complete a short or long rest.",
+      "id": "feature.chromatic_dragonborn.breath_weapon"
+    },
+    {
+      "name": "Damage Resistance",
+      "description": "You have resistance to the damage type associated with your draconic ancestry.",
+      "id": "feature.chromatic_dragonborn.damage_resistance"
+    },
+    {
+      "name": "Chromatic Ancestry",
+      "description": "You have a chromatic dragon ancestor, granting you a special magical affinity. Choose one kind of dragon from the Chromatic Ancestry table. This determines the damage type for your other traits, as shown in the table.",
+      "id": "feature.chromatic_dragonborn.chromatic_ancestry"
+    },
+    {
+      "name": "Draconic Resistance",
+      "description": "You have resistance to the damage type associated with your Chromatic Ancestry.",
+      "id": "feature.chromatic_dragonborn.draconic_resistance"
+    },
+    {
+      "name": "Chromatic Warding",
+      "description": "Starting at 5th level, as an action, you can channel your draconic energy to protect yourself. For 1 minute, you become immune to the damage type associated with your Chromatic Ancestry. Once you use this trait, you can't do so again until you finish a long rest.",
+      "id": "feature.chromatic_dragonborn.chromatic_warding"
+    }
+  ]
+}

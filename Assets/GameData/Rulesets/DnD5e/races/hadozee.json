@@ -1,0 +1,32 @@
+{
+  "id": "race.hadozee",
+  "name": "Hadozee",
+  "parentId": "",
+  "sortName": "Hadozee",
+  "sourceFile": "hadozee.txt",
+  "description": "Hadozees' progenitors were mammals no bigger than housecats. Hunted by larger natural predators, they took to the trees and evolved wing-like flaps that enabled them to glide from branch to branch.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and one other language that you and your DM agree is appropriate",
+      "amount": 0
+    },
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium or Small",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [],
+  "features": []
+}

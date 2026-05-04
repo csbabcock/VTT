@@ -1,0 +1,118 @@
+{
+  "id": "race.sea_elf",
+  "name": "Sea Elf",
+  "parentId": "race.elf",
+  "sortName": "Sea Elf",
+  "sourceFile": "sea elf.txt",
+  "description": "Sea elves fell in love with the wild beauty of the ocean in the earliest days of the multiverse. While other elves traveled from realm to realm, sea elves navigated the currents and explored the waters of many worlds. Today these elves can be found wherever oceans exist, as well as in the Elemental Plane of Water.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "resistance",
+      "name": "Cold Resistance",
+      "target": "cold",
+      "value": "Cold damage",
+      "amount": 0
+    },
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "skill",
+      "value": "Perception",
+      "amount": 0
+    },
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Size",
+    "Speed",
+    "Child of the Sea",
+    "Darkvision",
+    "Fey Ancestry",
+    "Friend of the Sea",
+    "Keen Senses",
+    "Trance"
+  ],
+  "features": [
+    {
+      "name": "Size",
+      "description": "You are Medium.",
+      "id": "feature.sea_elf.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet, and you have a swimming speed equal to your walking speed.",
+      "id": "feature.sea_elf.speed"
+    },
+    {
+      "name": "Child of the Sea",
+      "description": "You can breathe air and water, and you have resistance to cold damage.",
+      "id": "feature.sea_elf.child_of_the_sea"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
+      "id": "feature.sea_elf.darkvision"
+    },
+    {
+      "name": "Fey Ancestry",
+      "description": "You have advantage on saving throws you make to avoid or end the charmed condition on yourself.",
+      "id": "feature.sea_elf.fey_ancestry"
+    },
+    {
+      "name": "Friend of the Sea",
+      "description": "Aquatic animals have an extraordinary affinity with your people. You can communicate simple ideas to any Beast that has a swimming speed. It can understand your words, though you have no special ability to understand it in return.",
+      "id": "feature.sea_elf.friend_of_the_sea"
+    },
+    {
+      "name": "Keen Senses",
+      "description": "You have proficiency in the Perception skill.",
+      "id": "feature.sea_elf.keen_senses"
+    },
+    {
+      "name": "Trance",
+      "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a long rest in 4 hours if you spend those hours in a trancelike meditation, during which you retain consciousness.\n\nWhenever you finish this trance, you can gain two proficiencies that you don't have, each one with a weapon or a tool of your choice selected from the Player's Handbook. You mystically acquire these proficiencies by drawing them from shared elven memory, and you retain them until you finish your next long rest.",
+      "id": "feature.sea_elf.trance"
+    }
+  ]
+}

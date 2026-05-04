@@ -1,0 +1,42 @@
+{
+  "id": "race.leonin",
+  "name": "Leonin",
+  "parentId": "",
+  "sortName": "Leonin",
+  "sourceFile": "leonin.txt",
+  "description": "The leonin guard the shining lands of Oreskos, a golden plain where even the gods rarely trespass. Prides of these nomadic, lion-like humanoids rarely interact with other peoples, having all they need in their shimmering homeland and knowing the treachery of strangers. Still, some leonin wonder what lies beyond Oreskos's border mountains and seek to test themselves in a wider world.",
+  "abilityScoreBonuses": [
+    {
+      "ability": "STR",
+      "bonus": 1
+    },
+    {
+      "ability": "CON",
+      "bonus": 2
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and Leonin",
+      "amount": 0
+    }
+  ],
+  "speed": 35,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Source: Mythic Odysseys of Theros"
+  ],
+  "features": [
+    {
+      "name": "Source: Mythic Odysseys of Theros",
+      "description": "Ability Score Increase. Your Constitution score increases by 2, and your Strength score increases by 1.\n\nAge. Leonin mature and age at about the same rate as humans.\n\nAlignment. Leonin tend toward good alignments. Leonin who are focused on the pride lean toward lawful good.\n\nSize. Leonin are typically over 6 feet tall, with some standing over 7 feet. Your size is Medium.\n\nSpeed. Your base walking speed is 35 feet.\n\nDarkvision. You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.\n\nClaws. Your claws are natural weapons, which you can use to make unarmed strikes. If you hit with them, you can deal slashing damage equal to 1d4 + your Strength modifier.\n\nHunter's Instincts. You have proficiency in one of the following skills of your choice: Athletics, Intimidation, Perception, or Survival.\n\nDaunting Roar. As a bonus action, you can let out an especially menacing roar. Creatures of your choice within 10 feet of you that can hear you must succeed on a Wisdom saving throw or become frightened of you until the end of your next turn. The DC of the save equals 8 + your proficiency bonus + your Constitution modifier. Once you use this trait, you can't use it again until you finish a short or long rest.\n\nLanguages. You can speak, read, and write Common and Leonin.",
+      "id": "feature.leonin.source_mythic_odysseys_of_theros"
+    }
+  ]
+}

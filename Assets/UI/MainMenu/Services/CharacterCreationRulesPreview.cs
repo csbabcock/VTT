@@ -61,7 +61,8 @@ namespace GameCore.UI.MainMenu.Services
         /// </summary>
         public static List<CharacterProficiencySection> BuildProficiencySections(
             ClassDefinition classDef,
-            BackgroundDefinition background)
+            BackgroundDefinition background,
+            RaceDefinition race = null)
         {
             var list = new List<CharacterProficiencySection>();
             AddIfNonEmpty(list, "Saving throws", classDef?.savingThrowProficiencies);
@@ -69,7 +70,87 @@ namespace GameCore.UI.MainMenu.Services
             AddIfNonEmpty(list, "Weapons", classDef?.weaponProficiencies);
             AddIfNonEmpty(list, "Skills (background)", background?.skillProficiencies);
             AddIfNonEmpty(list, "Tools (background)", background?.toolProficiencies);
+            AddRaceProficiencies(list, race);
             return list;
+        }
+
+        public static string FormatRaceSpeed(RaceDefinition race)
+        {
+            if (race == null)
+                return "—";
+
+            var parts = new List<string>();
+            if (race.speed > 0)
+                parts.Add($"{race.speed} ft");
+
+            if (race.mechanicalEffects != null)
+            {
+                foreach (MechanicalEffectDefinition effect in race.mechanicalEffects)
+                {
+                    if (effect == null || !IsEffectType(effect, "speed"))
+                        continue;
+                    string mode = string.IsNullOrEmpty(effect.target) ? "speed" : effect.target;
+                    string value = !string.IsNullOrEmpty(effect.value)
+                        ? effect.value
+                        : effect.amount > 0 ? $"{effect.amount} ft" : string.Empty;
+                    if (!string.IsNullOrEmpty(value))
+                        parts.Add($"{mode}: {value}");
+                }
+            }
+
+            return parts.Count > 0 ? string.Join(", ", parts) : "—";
+        }
+
+        public static string FormatRaceSenses(RaceDefinition race)
+        {
+            if (race == null)
+                return "—";
+
+            var parts = new List<string>();
+            if (race.hasDarkvision)
+                parts.Add($"Darkvision {race.darkvisionRange} ft");
+
+            if (race.mechanicalEffects != null)
+            {
+                foreach (MechanicalEffectDefinition effect in race.mechanicalEffects)
+                {
+                    if (effect == null || !IsEffectType(effect, "sense"))
+                        continue;
+                    string name = string.IsNullOrEmpty(effect.name) ? effect.target : effect.name;
+                    string value = !string.IsNullOrEmpty(effect.value)
+                        ? effect.value
+                        : effect.amount > 0 ? $"{effect.amount} ft" : string.Empty;
+                    if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(value))
+                        parts.Add($"{name} {value}");
+                    else if (!string.IsNullOrEmpty(name))
+                        parts.Add(name);
+                }
+            }
+
+            return parts.Count > 0 ? string.Join(", ", parts) : "—";
+        }
+
+        public static int? ComputeRaceArmorClassPreview(
+            RaceDefinition race,
+            int[] abilityScores,
+            IRulesetCalculator calculator)
+        {
+            if (race?.mechanicalEffects == null || abilityScores == null ||
+                abilityScores.Length < AbilityCount || calculator == null)
+                return null;
+
+            foreach (MechanicalEffectDefinition effect in race.mechanicalEffects)
+            {
+                if (effect == null || !IsEffectType(effect, "naturalArmor"))
+                    continue;
+                int baseAc = effect.amount > 0 ? effect.amount : 13;
+                int dexMod = abilityScores[DexterityIndex] >= 0
+                    ? calculator.CalculateAbilityModifier(abilityScores[DexterityIndex])
+                    : 0;
+                return baseAc + dexMod;
+            }
+
+            return null;
         }
 
         private static void AddIfNonEmpty(
@@ -81,6 +162,91 @@ namespace GameCore.UI.MainMenu.Services
                 return;
             destination.Add(new CharacterProficiencySection(title, items));
         }
+
+        private static void AddRaceProficiencies(
+            List<CharacterProficiencySection> destination,
+            RaceDefinition race)
+        {
+            if (race?.mechanicalEffects == null)
+                return;
+
+            var skills = new List<string>();
+            var tools = new List<string>();
+            var weapons = new List<string>();
+            var armor = new List<string>();
+            var defenses = new List<string>();
+            var languages = new List<string>();
+            foreach (MechanicalEffectDefinition effect in race.mechanicalEffects)
+            {
+                if (effect == null)
+                    continue;
+                if (IsEffectType(effect, "proficiency"))
+                {
+                    string display = !string.IsNullOrEmpty(effect.value)
+                        ? effect.value
+                        : !string.IsNullOrEmpty(effect.name) ? effect.name : effect.target;
+                    AddRaceEffectToBucket(effect.target, display, skills, tools, weapons, armor);
+                }
+                else if (IsEffectType(effect, "resistance") || IsEffectType(effect, "defense"))
+                {
+                    string display = !string.IsNullOrEmpty(effect.value)
+                        ? effect.value
+                        : !string.IsNullOrEmpty(effect.target) ? effect.target : effect.name;
+                    if (!string.IsNullOrEmpty(display))
+                        defenses.Add(display);
+                }
+                else if (IsEffectType(effect, "language"))
+                {
+                    string display = !string.IsNullOrEmpty(effect.value) ? effect.value : effect.target;
+                    if (!string.IsNullOrEmpty(display))
+                        languages.Add(display);
+                }
+            }
+
+            AddIfNonEmpty(destination, "Skills (race)", skills);
+            AddIfNonEmpty(destination, "Tools (race)", tools);
+            AddIfNonEmpty(destination, "Weapons (race)", weapons);
+            AddIfNonEmpty(destination, "Armor (race)", armor);
+            AddIfNonEmpty(destination, "Defenses (race)", defenses);
+            AddIfNonEmpty(destination, "Languages (race)", languages);
+        }
+
+        private static void AddRaceEffectToBucket(
+            string target,
+            string display,
+            List<string> skills,
+            List<string> tools,
+            List<string> weapons,
+            List<string> armor)
+        {
+            if (string.IsNullOrEmpty(display))
+                return;
+            switch ((target ?? string.Empty).Trim().ToLowerInvariant())
+            {
+                case "skill":
+                case "skills":
+                    skills.Add(display);
+                    break;
+                case "tool":
+                case "tools":
+                    tools.Add(display);
+                    break;
+                case "weapon":
+                case "weapons":
+                    weapons.Add(display);
+                    break;
+                case "armor":
+                    armor.Add(display);
+                    break;
+                default:
+                    skills.Add(display);
+                    break;
+            }
+        }
+
+        private static bool IsEffectType(MechanicalEffectDefinition effect, string type) =>
+            effect?.type != null &&
+            effect.type.Equals(type, StringComparison.OrdinalIgnoreCase);
 
         private static bool IsBarbarian(ClassDefinition classDef) =>
             classDef?.id != null &&

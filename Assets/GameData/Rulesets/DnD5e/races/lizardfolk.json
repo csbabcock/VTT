@@ -1,0 +1,105 @@
+{
+  "id": "race.lizardfolk",
+  "name": "Lizardfolk",
+  "parentId": "",
+  "sortName": "Lizardfolk",
+  "sourceFile": "lizardfolk.txt",
+  "description": "The saurian lizardfolk are thought by some sages to be distant cousins of dragonborn and kobolds. Despite their resemblance to those other scaled folk, however, lizardfolk are their own people and have lived on the worlds of the Material Plane since the worlds' creation. Gifted by the gods with remarkable physical defenses and a mystical connection to the natural world, lizardfolk can survive with just their wits in situations that would be deadly for other folk. Because of that fact, many lizardfolk myths state that their people were placed by the gods in the Material Plane to guard its natural wonders.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "skill",
+      "value": "two of the following skills of your choice: Animal Handling, Medicine, Nature, Perception, Stealth, or Survival",
+      "amount": 0
+    },
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Size",
+    "Speed",
+    "Bite",
+    "Hold Breath",
+    "Hungry Jaws",
+    "Natural Armor",
+    "Nature's Intuition"
+  ],
+  "features": [
+    {
+      "name": "Size",
+      "description": "You are Medium.",
+      "id": "feature.lizardfolk.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet, and you have a swimming speed equal to your walking speed.",
+      "id": "feature.lizardfolk.speed"
+    },
+    {
+      "name": "Bite",
+      "description": "You have a fanged maw that you can use to make unarmed strikes. When you hit with it, the strike deals 1d6 + your Strength modifier slashing damage, instead of the bludgeoning damage normal for an unarmed strike.",
+      "id": "feature.lizardfolk.bite"
+    },
+    {
+      "name": "Hold Breath",
+      "description": "You can hold your breath for up to 15 minutes at a time.",
+      "id": "feature.lizardfolk.hold_breath"
+    },
+    {
+      "name": "Hungry Jaws",
+      "description": "You can throw yourself into a feeding frenzy. As a bonus action, you can make a special attack with your Bite. If the attack hits, it deals its normal damage, and you gain temporary hit points equal to your proficiency bonus. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+      "id": "feature.lizardfolk.hungry_jaws"
+    },
+    {
+      "name": "Natural Armor",
+      "description": "You have tough, scaly skin. When you aren't wearing armor, your base AC is 13 + your Dexterity modifier. You can use your natural armor to determine your AC if the armor you wear would leave you with a lower AC. A shield's benefits apply as normal while you use your natural armor.",
+      "id": "feature.lizardfolk.natural_armor"
+    },
+    {
+      "name": "Nature's Intuition",
+      "description": "Thanks to your mystical connection to nature, you gain proficiency with two of the following skills of your choice: Animal Handling, Medicine, Nature, Perception, Stealth, or Survival.",
+      "id": "feature.lizardfolk.nature_s_intuition"
+    }
+  ]
+}

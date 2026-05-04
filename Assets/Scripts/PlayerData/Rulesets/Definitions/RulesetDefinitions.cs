@@ -15,6 +15,32 @@ namespace GameCore.PlayerData.Rulesets.Definitions
     }
 
     /// <summary>
+    /// Selectable ability score increase option, e.g. choose any ability for +2.
+    /// </summary>
+    [Serializable]
+    public class AbilityScoreChoiceDefinition
+    {
+        public string id;
+        public string name;
+        public int bonus;
+        public bool requiresUniqueAbility = true;
+        public List<string> abilities; // Empty/null means any STR/DEX/CON/INT/WIS/CHA.
+    }
+
+    /// <summary>
+    /// Structured race/species effect for previews beyond descriptive feature text.
+    /// </summary>
+    [Serializable]
+    public class MechanicalEffectDefinition
+    {
+        public string type;     // e.g., "speed", "proficiency", "resistance", "sense", "naturalArmor"
+        public string name;     // Display/source trait name
+        public string target;   // e.g., "skill", "weapon", "swim", "fire"
+        public string value;    // Display value or formula
+        public int amount;      // Numeric amount where useful
+    }
+
+    /// <summary>
     /// Generic feature definition used by races, classes, backgrounds, etc.
     /// </summary>
     [Serializable]
@@ -35,10 +61,15 @@ namespace GameCore.PlayerData.Rulesets.Definitions
     {
         public string id;                   // e.g., "race.hill_dwarf"
         public string name;                 // e.g., "Hill Dwarf"
+        public string parentId;             // e.g., "race.dwarf" for grouped subraces
+        public string sortName;             // Optional stable sort key inside grouped UI
+        public string sourceFile;           // Optional import traceability
         [TextArea]
         public string description;
 
         public List<AbilityScoreBonusDefinition> abilityScoreBonuses;
+        public List<AbilityScoreChoiceDefinition> abilityScoreChoices;
+        public List<MechanicalEffectDefinition> mechanicalEffects;
         public int speed;                   // Base walking speed in feet
         public string size;                 // e.g., "Small", "Medium"
 

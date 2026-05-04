@@ -1,0 +1,99 @@
+{
+  "id": "race.harengon",
+  "name": "Harengon",
+  "parentId": "",
+  "sortName": "Harengon",
+  "sourceFile": "harengons.txt",
+  "description": "Harengons originated in the Feywild, where they spoke Sylvan and embodied the spirit of freedom and travel. In time, these rabbitfolk hopped into other worlds, bringing the fey realm's exuberance with them and learning new languages as they went.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "skill",
+      "value": "Perception",
+      "amount": 0
+    },
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium or Small",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Size",
+    "Speed",
+    "Hare-Trigger",
+    "Leporine Senses",
+    "Lucky Footwork",
+    "Rabbit Hop"
+  ],
+  "features": [
+    {
+      "name": "Size",
+      "description": "You are Medium or Small. You choose the size when you select this race.",
+      "id": "feature.harengon.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet.",
+      "id": "feature.harengon.speed"
+    },
+    {
+      "name": "Hare-Trigger",
+      "description": "You can add your proficiency bonus to your initiative rolls.",
+      "id": "feature.harengon.hare_trigger"
+    },
+    {
+      "name": "Leporine Senses",
+      "description": "You have proficiency in the Perception skill.",
+      "id": "feature.harengon.leporine_senses"
+    },
+    {
+      "name": "Lucky Footwork",
+      "description": "When you fail a Dexterity saving throw, you can use your reaction to roll a d4 and add it to the save, potentially turning the failure into a success. You can't use this reaction if you're prone or your speed is 0.",
+      "id": "feature.harengon.lucky_footwork"
+    },
+    {
+      "name": "Rabbit Hop",
+      "description": "As a bonus action, you can jump a number of feet equal to five times your proficiency bonus, without provoking opportunity attacks. You can use this trait only if your speed is greater than 0. You can use it a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+      "id": "feature.harengon.rabbit_hop"
+    }
+  ]
+}

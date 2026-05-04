@@ -1,0 +1,25 @@
+{
+  "id": "race.boggart",
+  "name": "Boggart",
+  "parentId": "",
+  "sortName": "Boggart",
+  "sourceFile": "boggart.txt",
+  "description": "Boggarts are Small, squat goblinoids found in the realm of Lorwyn-Shadowmoor. They possess bestial physical features, including horns and animal-like snouts. Beyond these commonalities, boggart appearances vary widely. One boggart may look like a hedgehog, with spiky fur and beady eyes, while another might sport the snout and fleshy ears of a swine. Boggarts tend to love crafting potions and commonly gravitate to specific areas of expertise, as noted in the sections below.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [],
+  "features": []
+}

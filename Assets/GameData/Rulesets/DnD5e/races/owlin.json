@@ -1,0 +1,71 @@
+{
+  "id": "race.owlin",
+  "name": "Owlin",
+  "parentId": "",
+  "sortName": "Owlin",
+  "sourceFile": "owlin.txt",
+  "description": "Distant kin of giant owls from the Feywild, owlin come in many shapes and sizes, from petite and fluffy to wide-winged and majestic. Owlin have arms and legs like other Humanoids, as well as wings that extend from their back and shoulders.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "speed",
+      "name": "Fly Speed",
+      "target": "fly",
+      "value": "equal to walking speed",
+      "amount": 0
+    },
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "skill",
+      "value": "Stealth",
+      "amount": 0
+    },
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Humanoid",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium or Small",
+  "hasDarkvision": true,
+  "darkvisionRange": 120,
+  "traits": [
+    "Size",
+    "Speed",
+    "Darkvision",
+    "Flight",
+    "Silent Feathers"
+  ],
+  "features": [
+    {
+      "name": "Size",
+      "description": "You are Medium or Small. You choose the size when you select this race.",
+      "id": "feature.owlin.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet.",
+      "id": "feature.owlin.speed"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 120 feet of yourself as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
+      "id": "feature.owlin.darkvision"
+    },
+    {
+      "name": "Flight",
+      "description": "Thanks to your wings, you have a flying speed equal to your walking speed. You can't use this flying speed if you're wearing medium or heavy armor.",
+      "id": "feature.owlin.flight"
+    },
+    {
+      "name": "Silent Feathers",
+      "description": "You have proficiency in the Stealth skill.",
+      "id": "feature.owlin.silent_feathers"
+    }
+  ]
+}

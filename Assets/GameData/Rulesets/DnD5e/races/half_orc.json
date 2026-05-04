@@ -1,0 +1,137 @@
+{
+  "id": "race.half_orc",
+  "name": "Half Orc",
+  "parentId": "",
+  "sortName": "Half Orc",
+  "sourceFile": "half-orc.txt",
+  "description": "The warchief Mhurren roused himself from his sleeping-furs and his women and pulled a short hauberk of heavy steel rings over his thick, well-muscled torso. He usually rose before most of his warriors, since he had a strong streak of human blood in him, and he found the daylight less bothersome than most of his tribe did. Among the Bloody Skulls, a warrior was judged by his strength, his fierceness, and his wits. Human ancestry was no blemish against a warrior-provided he was every bit as strong, enduring, and bloodthirsty as his full-blooded kin. Half-orcs who were weaker than their orc comrades didn't last long among the Bloody Skulls or any other orc tribe for that matter. But it was often true that a bit of human blood gave a warrior just the right mix of cunning, ambition, and self-discipline to go far indeed, as Mhurren had. He was master of a tribe that could muster two thousand s",
+  "abilityScoreBonuses": [
+    {
+      "ability": "STR",
+      "bonus": 2
+    },
+    {
+      "ability": "CON",
+      "bonus": 1
+    },
+    {
+      "ability": "WIS",
+      "bonus": 2
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "skill",
+      "value": "Intimidation",
+      "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and Orc",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Size",
+    "Speed",
+    "Darkvision",
+    "Menacing",
+    "Relentless Endurance",
+    "Savage Attacks",
+    "Mark of Finding Half-Orc",
+    "House Tharashk",
+    "Headquarters: Zarash'ak, Shadow Marches",
+    "Hunter's Intuition",
+    "Finder's Magic",
+    "Spells of the Mark",
+    "Spell Level Spells"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Strength score increases by 2, and your Constitution score increases by 1.",
+      "id": "feature.half_orc.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "Half-orcs mature a little faster than humans, reaching adulthood around age 14. They age noticeably faster and rarely live longer than 75 years.",
+      "id": "feature.half_orc.age"
+    },
+    {
+      "name": "Size",
+      "description": "Half-orcs are somewhat larger and bulkier than humans, and they range from 5 to well over 6 feet tall. Your size is Medium.",
+      "id": "feature.half_orc.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 30 feet.",
+      "id": "feature.half_orc.speed"
+    },
+    {
+      "name": "Darkvision",
+      "description": "Thanks to your orc blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "id": "feature.half_orc.darkvision"
+    },
+    {
+      "name": "Menacing",
+      "description": "You gain proficiency in the Intimidation skill.",
+      "id": "feature.half_orc.menacing"
+    },
+    {
+      "name": "Relentless Endurance",
+      "description": "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. You can't use this feature again until you finish a long rest.",
+      "id": "feature.half_orc.relentless_endurance"
+    },
+    {
+      "name": "Savage Attacks",
+      "description": "When you score a critical hit with a melee weapon attack, you can roll one of the weapon's damage dice one additional time and add it to the extra damage of the critical hit.",
+      "id": "feature.half_orc.savage_attacks"
+    },
+    {
+      "name": "Mark of Finding Half-Orc",
+      "description": "My ancestors used their gift to track beasts in the swamps. I use mine to find fugitives in the slums of Sharn. I'm still a hunter. I always find my mark.\n\n- Hondar'Aashta, Tharashk bounty hunter\n\nThe Mark of Finding sharpens the senses, guiding the hunter to prey. Alone among the dragonmarks, the Mark of Finding is carried by two races: humans and half-orcs. It first appeared in the Shadow Marches, where clan hunters used it to find their prey.",
+      "id": "feature.half_orc.mark_of_finding_half_orc"
+    },
+    {
+      "name": "House Tharashk",
+      "description": "Leader: The Triumvirate (Maagrim Torrn, Khandar'aashta, and Daric Velderan)",
+      "id": "feature.half_orc.house_tharashk"
+    },
+    {
+      "name": "Headquarters: Zarash'ak, Shadow Marches",
+      "description": "House Tharashk traditionally licenses inquisitives and bounty hunters. Recently the house's Finder's Guild has expanded into dragonshard prospecting. As dragonshards are the lifeblood of the magical economy, the house's talent has given them new wealth and influence.\n\nTharashk is the youngest of the dragonmarked houses and hasn't embraced all the customs of the others. The distinct clans that united to form the house remain important, and heirs of the family usually retain their family names rather than adopting \"d'Tharashk\" as tradition dictates. Each of the three major clans-the Aashta, the Torrn, and the Velderan-has a representative on the Triumvirate that governs the house, and the city of Zarash'ak in the Shadow Marches. Together, they stand as one under the emblem of the dragonne (a lion-dragon hybrid).",
+      "id": "feature.half_orc.headquarters_zarash_ak_shadow_marches"
+    },
+    {
+      "name": "Hunter's Intuition",
+      "description": "When you make a Wisdom (Perception) or Wisdom (Survival) check, you can roll a d4 and add the number rolled to the ability check.",
+      "id": "feature.half_orc.hunter_s_intuition"
+    },
+    {
+      "name": "Finder's Magic",
+      "description": "You can cast the hunter's mark spell with this trait. Starting at 3rd level, you can also cast the locate object spell with it. Once you cast either spell with this trait, you can't cast that spell with it again until you finish a long rest. Wisdom is your spellcasting ability for these spells.",
+      "id": "feature.half_orc.finder_s_magic"
+    },
+    {
+      "name": "Spells of the Mark",
+      "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Finding Spells table are added to the spell list of your spellcasting class.",
+      "id": "feature.half_orc.spells_of_the_mark"
+    },
+    {
+      "name": "Spell Level Spells",
+      "description": "1st faerie fire, longstrider\n\n2nd locate animals or plants, locate object\n\n3rd clairvoyance, speak with plants\n\n4th divination, locate creature\n\n5th commune with nature",
+      "id": "feature.half_orc.spell_level_spells"
+    }
+  ]
+}

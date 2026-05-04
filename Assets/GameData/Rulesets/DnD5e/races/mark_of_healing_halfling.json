@@ -1,0 +1,102 @@
+{
+  "id": "race.mark_of_healing_halfling",
+  "name": "Mark of Healing Halfling",
+  "parentId": "race.halfling",
+  "sortName": "Mark of Healing Halfling",
+  "sourceFile": "halfling.txt",
+  "description": "Mark of Healing Halfling\nWhat's the price of a life? Well, I've got a rate sheet right over here. I'd be happy to discuss it.",
+  "abilityScoreBonuses": [
+    {
+      "ability": "DEX",
+      "bonus": 2
+    },
+    {
+      "ability": "WIS",
+      "bonus": 1
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and Halfling",
+      "amount": 0
+    }
+  ],
+  "speed": 25,
+  "size": "Small",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Size",
+    "Speed",
+    "Lucky",
+    "Brave",
+    "Halfling Nimbleness",
+    "Medical Intuition",
+    "Healing Touch",
+    "Spells of the Mark",
+    "Spell Level Spells"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Dexterity score increases by 2.",
+      "id": "feature.mark_of_healing_halfling.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "A halfling reaches adulthood at the age of 20 and generally lives into the middle of his or her second century.",
+      "id": "feature.mark_of_healing_halfling.age"
+    },
+    {
+      "name": "Size",
+      "description": "Halflings average about 3 feet tall and weigh about 40 pounds. Your size is Small.",
+      "id": "feature.mark_of_healing_halfling.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 25 feet.",
+      "id": "feature.mark_of_healing_halfling.speed"
+    },
+    {
+      "name": "Lucky",
+      "description": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll.",
+      "id": "feature.mark_of_healing_halfling.lucky"
+    },
+    {
+      "name": "Brave",
+      "description": "You have advantage on saving throws against being frightened.",
+      "id": "feature.mark_of_healing_halfling.brave"
+    },
+    {
+      "name": "Halfling Nimbleness",
+      "description": "You can move through the space of any creature that is of a size larger than yours.",
+      "id": "feature.mark_of_healing_halfling.halfling_nimbleness"
+    },
+    {
+      "name": "Medical Intuition",
+      "description": "When you make a Wisdom (Medicine) check or an ability check using an herbalism kit, you can roll a d4 and add the number rolled to the ability check.",
+      "id": "feature.mark_of_healing_halfling.medical_intuition"
+    },
+    {
+      "name": "Healing Touch",
+      "description": "You can cast the cure wounds spell with this trait. Starting at 3rd level, you can also cast lesser restoration with it. Once you cast either spell with this trait, you can't cast that spell with it again until you finish a long rest. Wisdom is your spellcasting ability for these spells.",
+      "id": "feature.mark_of_healing_halfling.healing_touch"
+    },
+    {
+      "name": "Spells of the Mark",
+      "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Healing Spells table are added to the spell list of your spellcasting class.",
+      "id": "feature.mark_of_healing_halfling.spells_of_the_mark"
+    },
+    {
+      "name": "Spell Level Spells",
+      "description": "1st cure wounds, healing word\n\n2nd lesser restoration, prayer of healing\n\n3rd aura of vitality, mass healing word\n\n4th aura of purity, aura of life\n\n5th greater restoration",
+      "id": "feature.mark_of_healing_halfling.spell_level_spells"
+    }
+  ]
+}

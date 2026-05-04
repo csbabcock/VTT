@@ -27,6 +27,26 @@ namespace GameCore.UI.MainMenu
         }
     }
 
+    public readonly struct RaceAbilityScoreChoiceViewModel
+    {
+        public string ChoiceId { get; }
+        public string Label { get; }
+        public IReadOnlyList<string> AbilityCodes { get; }
+        public string SelectedAbility { get; }
+
+        public RaceAbilityScoreChoiceViewModel(
+            string choiceId,
+            string label,
+            IReadOnlyList<string> abilityCodes,
+            string selectedAbility)
+        {
+            ChoiceId = choiceId ?? string.Empty;
+            Label = label ?? string.Empty;
+            AbilityCodes = abilityCodes;
+            SelectedAbility = selectedAbility ?? string.Empty;
+        }
+    }
+
     /// <summary>
     /// View for character creation UI.
     /// Follows MVP: coordinates binding and events; ability stat tiles are built by <see cref="AbilityStatRowViewFactory"/>.
@@ -58,6 +78,7 @@ namespace GameCore.UI.MainMenu
         private List<(string id, string displayName)> _lastClassOptions;
         private List<(string id, string displayName)> _lastRaceOptions;
         private List<(string id, string displayName)> _lastBackgroundOptions;
+        private List<RaceAbilityScoreChoiceViewModel> _lastRaceAbilityScoreChoices;
         private VisualElement _root;
 
         // Tab buttons
@@ -67,6 +88,7 @@ namespace GameCore.UI.MainMenu
         // Option button containers
         private VisualElement _classButtonsContainer;
         private VisualElement _raceButtonsContainer;
+        private VisualElement _raceAbilityChoicesContainer;
         private VisualElement _backgroundButtonsContainer;
 
         // Ability score inputs (using Labels for display since they're read-only)
@@ -121,6 +143,7 @@ namespace GameCore.UI.MainMenu
         // Events - View only raises events, delegates all logic to Presenter
         public event System.Action<string> ClassSelected;
         public event System.Action<string> RaceSelected;
+        public event System.Action<string, string> RaceAbilityScoreChoiceSelected;
         public event System.Action<string> BackgroundSelected;
         public event System.Action RollAbilitiesClicked;
         public event System.Action StandardArrayClicked;
@@ -176,6 +199,7 @@ namespace GameCore.UI.MainMenu
             ReleasePanelReloadSubscription();
             _visualTreeBound = false;
             _detailClassLevelControlsHooked = false;
+            ResetDynamicElementReferences();
             _root = null;
         }
 
@@ -183,8 +207,16 @@ namespace GameCore.UI.MainMenu
         {
             _visualTreeBound = false;
             _detailClassLevelControlsHooked = false;
+            ResetDynamicElementReferences();
             _root = root;
+            if (!_isVisible && _root != null)
+                _root.style.display = DisplayStyle.None;
             TryBindVisualTree();
+        }
+
+        private void ResetDynamicElementReferences()
+        {
+            _raceAbilityChoicesContainer = null;
         }
 
         private void EnsurePanelReloadSubscription()
@@ -335,6 +367,7 @@ namespace GameCore.UI.MainMenu
             // Option button containers
             _classButtonsContainer = _root.Q<VisualElement>("class-buttons-container");
             _raceButtonsContainer = _root.Q<VisualElement>("race-buttons-container");
+            EnsureRaceAbilityChoicesContainer();
             _backgroundButtonsContainer = _root.Q<VisualElement>("background-buttons-container");
 
             // Ability score labels will be queried after they are created in InitializeAbilityStatRows
@@ -539,6 +572,7 @@ namespace GameCore.UI.MainMenu
             _backgroundButtonsContainer?.Clear();
             BindOptionList(_classButtonsContainer, _lastClassOptions, id => ClassSelected?.Invoke(id));
             BindOptionList(_raceButtonsContainer, _lastRaceOptions, id => RaceSelected?.Invoke(id));
+            RebuildRaceAbilityChoiceControls();
             BindOptionList(_backgroundButtonsContainer, _lastBackgroundOptions, id => BackgroundSelected?.Invoke(id));
         }
 
@@ -551,9 +585,100 @@ namespace GameCore.UI.MainMenu
                 return;
             foreach ((string id, string displayName) in options)
             {
+                if (IsOptionGroupHeader(id))
+                {
+                    CreateOptionGroupHeader(container, displayName);
+                    continue;
+                }
                 string capturedId = id;
                 CreateOptionButton(container, capturedId, displayName, () => onPick?.Invoke(capturedId));
             }
+        }
+
+        public void BindRaceAbilityScoreChoices(
+            System.Collections.Generic.IReadOnlyList<RaceAbilityScoreChoiceViewModel> choices)
+        {
+            _lastRaceAbilityScoreChoices = choices != null
+                ? new List<RaceAbilityScoreChoiceViewModel>(choices)
+                : null;
+            RebuildRaceAbilityChoiceControls();
+        }
+
+        private void EnsureRaceAbilityChoicesContainer()
+        {
+            if (_raceButtonsContainer == null)
+                return;
+            if (_raceAbilityChoicesContainer != null)
+            {
+                if (_raceAbilityChoicesContainer.parent != _raceButtonsContainer)
+                    _raceButtonsContainer.Add(_raceAbilityChoicesContainer);
+                return;
+            }
+
+            _raceAbilityChoicesContainer = new VisualElement();
+            _raceAbilityChoicesContainer.name = "race-ability-choices-container";
+            _raceAbilityChoicesContainer.AddToClassList("character-creation-race-asi-container");
+            _raceButtonsContainer.Add(_raceAbilityChoicesContainer);
+        }
+
+        private void RebuildRaceAbilityChoiceControls()
+        {
+            EnsureRaceAbilityChoicesContainer();
+            if (_raceAbilityChoicesContainer == null)
+                return;
+
+            _raceAbilityChoicesContainer.Clear();
+            if (_lastRaceAbilityScoreChoices == null || _lastRaceAbilityScoreChoices.Count == 0)
+            {
+                _raceAbilityChoicesContainer.style.display = DisplayStyle.None;
+                return;
+            }
+
+            _raceAbilityChoicesContainer.style.display = DisplayStyle.Flex;
+            var title = new Label("Ability Score Choices");
+            title.AddToClassList("character-creation-race-asi-title");
+            _raceAbilityChoicesContainer.Add(title);
+
+            foreach (RaceAbilityScoreChoiceViewModel choice in _lastRaceAbilityScoreChoices)
+            {
+                if (string.IsNullOrEmpty(choice.ChoiceId))
+                    continue;
+
+                var row = new VisualElement();
+                row.AddToClassList("character-creation-race-asi-row");
+                var label = new Label(choice.Label);
+                label.AddToClassList("character-creation-race-asi-label");
+                row.Add(label);
+
+                IReadOnlyList<string> abilities = choice.AbilityCodes ?? AbilityNamesDisplay;
+                foreach (string ability in abilities)
+                {
+                    if (string.IsNullOrEmpty(ability))
+                        continue;
+                    string capturedChoiceId = choice.ChoiceId;
+                    string capturedAbility = ability;
+                    var button = new Button();
+                    button.text = ability;
+                    button.userData = $"{capturedChoiceId}:{capturedAbility}";
+                    button.AddToClassList("character-creation-race-asi-button");
+                    if (string.Equals(choice.SelectedAbility, ability, StringComparison.OrdinalIgnoreCase))
+                        button.AddToClassList("selected");
+                    button.clicked += () => RaceAbilityScoreChoiceSelected?.Invoke(capturedChoiceId, capturedAbility);
+                    row.Add(button);
+                }
+
+                _raceAbilityChoicesContainer.Add(row);
+            }
+        }
+
+        private static bool IsOptionGroupHeader(string id) =>
+            !string.IsNullOrEmpty(id) && id.StartsWith("__group:", StringComparison.Ordinal);
+
+        private static void CreateOptionGroupHeader(VisualElement parent, string displayName)
+        {
+            var header = new Label(displayName ?? string.Empty);
+            header.AddToClassList("character-creation-option-group-header");
+            parent.Add(header);
         }
 
         private static string SanitizeIdForElementName(string id)

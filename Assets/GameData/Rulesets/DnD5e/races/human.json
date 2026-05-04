@@ -1,0 +1,306 @@
+{
+  "id": "race.human",
+  "name": "Human",
+  "parentId": "",
+  "sortName": "Human",
+  "sourceFile": "human.txt",
+  "description": "These were the stories of a restless people who long ago took to the seas and rivers in longboats, first to pillage and terrorize, then to settle. Yet there was an energy, a love of adventure, that sang from every page. Long into the night Liriel read, lighting candle after precious candle.",
+  "abilityScoreBonuses": [
+    {
+      "ability": "STR",
+      "bonus": 1
+    },
+    {
+      "ability": "DEX",
+      "bonus": 1
+    },
+    {
+      "ability": "CON",
+      "bonus": 1
+    },
+    {
+      "ability": "INT",
+      "bonus": 1
+    },
+    {
+      "ability": "WIS",
+      "bonus": 1
+    },
+    {
+      "ability": "CHA",
+      "bonus": 1
+    },
+    {
+      "ability": "DEX",
+      "bonus": 2
+    },
+    {
+      "ability": "CON",
+      "bonus": 2
+    },
+    {
+      "ability": "INT",
+      "bonus": 2
+    },
+    {
+      "ability": "WIS",
+      "bonus": 2
+    }
+  ],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose one other ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "tool",
+      "value": "one type of artisan's tools of your choice",
+      "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and one extra language of your choice",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Size",
+    "Speed",
+    "Mark of Finding Human",
+    "House Tharashk",
+    "Headquarters: Zarash'ak, Shadow Marches",
+    "Abillity Score Increase",
+    "Darkvision",
+    "Hunter's Intuition",
+    "Finder's Magic",
+    "Spells of the Mark",
+    "Spell Level Spells",
+    "Mark of Handling Human",
+    "House Vadalis",
+    "Wild Intuition",
+    "Primal Connection",
+    "The Bigger They Are",
+    "Mark of Making Human",
+    "House Cannith",
+    "Artisan's Intuition",
+    "Maker's Gift",
+    "Spellsmith",
+    "Mark of Passage Human",
+    "House Orien",
+    "Courier's Speed",
+    "Intuitive Motion",
+    "Magical Passage",
+    "Mark of Sentinel Human",
+    "House Deneith",
+    "Sentinel's Intuition",
+    "Guardian's Shield",
+    "Vigilant Guardian",
+    "Legacy",
+    "Skills",
+    "Feat"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your ability scores each increase by 1.",
+      "id": "feature.human.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "Humans reach adulthood in their late teens and live less than a century.",
+      "id": "feature.human.age"
+    },
+    {
+      "name": "Size",
+      "description": "Humans vary widely in height and build, from barely 5 feet to well over 6 feet tall. Regardless of your position in that range, your size is Medium.",
+      "id": "feature.human.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 30 feet.",
+      "id": "feature.human.speed"
+    },
+    {
+      "name": "Mark of Finding Human",
+      "description": "My ancestors used their gift to track beasts in the swamps. I use mine to find fugitives in the slums of Sharn. I'm still a hunter. I always find my mark.\n\n-Hondar'Aashta, Tharashk bounty hunter\n\nThe Mark of Finding sharpens the senses, guiding the hunter to prey. Alone among the dragonmarks, the Mark of Finding is carried by two races: humans and half-orcs. It first appeared in the Shadow Marches, where clan hunters used it to find their prey.",
+      "id": "feature.human.mark_of_finding_human"
+    },
+    {
+      "name": "House Tharashk",
+      "description": "Leader: The Triumvirate (Maagrim Torrn, Khandar'aashta, and Daric Velderan)",
+      "id": "feature.human.house_tharashk"
+    },
+    {
+      "name": "Headquarters: Zarash'ak, Shadow Marches",
+      "description": "House Tharashk traditionally licenses inquisitives and bounty hunters. Recently the house's Finder's Guild has expanded into dragonshard prospecting. As dragonshards are the lifeblood of the magical economy, the house's talent has given them new wealth and influence.\n\nTharashk is the youngest of the dragonmarked houses and hasn't embraced all the customs of the others. The distinct clans that united to form the house remain important, and heirs of the family usually retain their family names rather than adopting \"d'Tharashk\" as tradition dictates. Each of the three major clans-the Aashta, the Torrn, and the Velderan-has a representative on the Triumvirate that governs the house, and the city of Zarash'ak in the Shadow Marches. Together, they stand as one under the emblem of the dragonne (a lion-dragon hybrid).",
+      "id": "feature.human.headquarters_zarash_ak_shadow_marches"
+    },
+    {
+      "name": "Abillity Score Increase",
+      "description": "Your Wisdom score increases by 2, and your Constitution score increases by 1.",
+      "id": "feature.human.abillity_score_increase"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "id": "feature.human.darkvision"
+    },
+    {
+      "name": "Hunter's Intuition",
+      "description": "When you make a Wisdom (Perception) or Wisdom (Survival) check, you can roll a d4 and add the number rolled to the ability check.",
+      "id": "feature.human.hunter_s_intuition"
+    },
+    {
+      "name": "Finder's Magic",
+      "description": "You can cast the hunter's mark spell with this trait. Starting at 3rd level, you can also cast the locate object spell with it. Once you cast either spell with this trait, you can't cast that spell with it again until you finish a long rest. Wisdom is your spellcasting ability for these spells.",
+      "id": "feature.human.finder_s_magic"
+    },
+    {
+      "name": "Spells of the Mark",
+      "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Finding Spells table are added to the spell list of your spellcasting class.",
+      "id": "feature.human.spells_of_the_mark"
+    },
+    {
+      "name": "Spell Level Spells",
+      "description": "1st faerie fire, longstrider\n\n2nd locate animals or plants, locate object\n\n3rd clairvoyance, speak with plants\n\n4th divination, locate creature\n\n5th commune with nature",
+      "id": "feature.human.spell_level_spells"
+    },
+    {
+      "name": "Mark of Handling Human",
+      "description": "Don't get sentimental. A beast is a tool. Our role is to find the right tool for the task and to make sure they're of the finest quality. Nature is our kingdom; never forget that we were born to rule it.\n\n-Dalin d'Vadalis\n\nThe Mark of Handling gives its bearer a primal connection to beasts and the natural world, granting the power to calm and coax. This extends beyond purely natural animals; the mark allows its bearer to guide a hippogriff as easily as a horse.",
+      "id": "feature.human.mark_of_handling_human"
+    },
+    {
+      "name": "House Vadalis",
+      "description": "Leader: Dalin d'Vadalis\n\nHeadquarters: Foalswood (near Varna, Eldeen Reaches)\n\nRepresented by the hippogriff, House Vadalis plays an important role in daily life, offering meat, mounts, and more. Vadalis isn't one of the most powerful houses, but its barons are generally content; they're more interested in discovering new monstrosities than engaging in politics. The current head of the house, Dalin d'Vadalis, disdains the use of a title and has no aspirations to nobility or greatness for himself or his house.\n\nHouse Vadalis breeds and trains beasts for a wide range of purposes. While the house maintains vast cattle ranches and trains horses and hounds, the Mark of Handling allows Vadalis to work with more exotic creatures as well. Griffons, hippogriffs, and even bulettes can be bred and trained. Even with the Mark of Handling, this is dangerous work; there's a lot of turnover at the bulette ranch. But these exotic creatures aren't enough to satisfy the most innovative members of the house, leading to the practice of magebreeding. Using dragonshard focus items, Vadalis has found ways to create magical creatures. Typically, this results in a superior version of a creature-an animal that is stronger, faster, and smarter. But rumors claim that Vadalis has crafted monsters of its own. Some rumors even insist that Vadalis is trying to magebreed better humans.",
+      "id": "feature.human.house_vadalis"
+    },
+    {
+      "name": "Wild Intuition",
+      "description": "When you make a Wisdom (Animal Handling) or Intelligence (Nature) check, you can roll a d4 and add the number rolled to the ability check.",
+      "id": "feature.human.wild_intuition"
+    },
+    {
+      "name": "Primal Connection",
+      "description": "You can cast the animal friendship and speak with animals spells with this trait, requiring no material component. Once you cast either spell with this trait, you can't cast that spell with it again until you finish a short or long rest. Wisdom is your spellcasting ability for these spells.",
+      "id": "feature.human.primal_connection"
+    },
+    {
+      "name": "The Bigger They Are",
+      "description": "Starting at 3rd level, you can target a beast or monstrosity when you cast animal friendship or speak with animals, provided the creature's Intelligence score is 3 or lower.",
+      "id": "feature.human.the_bigger_they_are"
+    },
+    {
+      "name": "Mark of Making Human",
+      "description": "My house built the modern world. Orien may drive the lightning rail, but it's Cannith who builds the cars and lays the stones it travels on. Cannith makes the everbright lanterns hold the night at bay. Smith, carpenter, alchemist-the best all carry my seal.\n\n-Baron Merrix d'Cannith\n\nThe Mark of Making guides its bearer through any act of creation. The bearer of the mark can mend broken things with a touch, and always has a minor magic item they've been working on. An artificer or a wizard will get the most out of the mark, but anyone can find a use for an enchanted blade.",
+      "id": "feature.human.mark_of_making_human"
+    },
+    {
+      "name": "House Cannith",
+      "description": "Leaders: Cannith East, Zorlan d'Cannith; Cannith West, Jorlanna d'Cannith; Cannith South, Merrix d'Cannith\n\nHeadquarters: Cannith East, Korth Enclave (Karrnath); Cannith West, Aundair Enclave (near Fairhaven, Aundair); Cannith South, Cannith Tower (Sharn, Breland)\n\nHouse Cannith dominates all forms of manufacturing, both mystical and mundane. Gorgon-marked Cannith forgeholds use streamlined forms of production to quickly produce common goods. Even independent artisans often learn their trade at Cannith academies and adhere to Cannith standards. The House of Making builds the tools the other houses rely upon, and it has always been the unspoken leader of the Twelve.\n\nThe Last War was a time of great opportunity for Cannith. Every nation wanted weapons and warforged, along with mundane arms and armor. The war raised the house up, and then tore it down. House Cannith was based in Cyre, and the Mourning destroyed the house leadership and key facilities. Now three barons jockey to fill the leadership vacuum: the alchemist Jorlanna of Fairhaven, weaponsmith Zorlan of Korth, and Merrix of Sharn, innovator of warforged. It remains to be seen whether one of these leaders will unite the house, or if it will shatter under the strain. If you're an heir of House Cannith, you should decide which of these barons you serve or if you have other ideas about the house's future.",
+      "id": "feature.human.house_cannith"
+    },
+    {
+      "name": "Artisan's Intuition",
+      "description": "When you make an Arcana check or an ability check involving artisan's tools, you can roll a d4 and add the number rolled to the ability check.",
+      "id": "feature.human.artisan_s_intuition"
+    },
+    {
+      "name": "Maker's Gift",
+      "description": "You gain proficiency with one type of artisan's tools of your choice.",
+      "id": "feature.human.maker_s_gift"
+    },
+    {
+      "name": "Spellsmith",
+      "description": "You know the mending cantrip. You can also cast the magic weapon spell with this trait. When you do so, the spell lasts for 1 hour and doesn't require concentration. Once you cast the spell with this trait, you can't do so again until you finish a long rest. Intelligence is your spellcasting ability for these spells.",
+      "id": "feature.human.spellsmith"
+    },
+    {
+      "name": "Mark of Passage Human",
+      "description": "We get things where they need to go. It doesn't matter if it's a letter, a person, or a hundred tons of steel. Whether we have to cross mountains, rivers, or the Mournland itself, Orien finds a way.\n\n-Bali d'Orien, veteran courier\n\nThe Mark of Passage governs motion, allowing its bearer to move with uncanny speed. The bearer of the mark can even slip through space in the blink of an eye.",
+      "id": "feature.human.mark_of_passage_human"
+    },
+    {
+      "name": "House Orien",
+      "description": "Leader: Kwanti d'Orien\n\nHeadquarters: Journey's Home (Passage, Aundair)\n\nThe House of Passage manages land transportation. The lightning rail is the house's most dramatic tool, but Orien also runs caravans and coaches across the length of Khorvaire. Dragonshard focus items ensure that the fastest vehicles are those driven by heirs with the Mark of Passage, but the house also licenses unmarked teamsters. The Courier's Guild of House Orien delivers mail and packages and has a branch that handles more covert and dangerous deliveries.\n\nOrien has dominated transportation for centuries, but now the house is facing challenges. The Mournland is a dramatic obstacle for ground transportation, and Baron Kwanti d'Orien has had tremendous difficulty securing funds to rebuild the lightning rail line across the blasted landscape. Indeed, he spends most of his time away from his headquarters in Aundair, trying to raise funds for the project while keeping an eye on house operations. He travels across western Khorvaire in his personal lightning rail coach, the Silver Unicorn-a reference to the house's unicorn emblem.\n\nHouse Orien's problems don't end with the Mournland, though. The expanding role of Lyrandar airships threatens the house's business. Baron Kwanti would like to be able to offer more instantaneous transportation, but long-distance teleportation is a service only the strongest Orien dragonmarks can provide. So the house is working with House Cannith in an effort to unlock and enhance this gift of the Mark of Passage. Orien heirs might be caught up in these experiments or in the rivalry with House Lyrandar.",
+      "id": "feature.human.house_orien"
+    },
+    {
+      "name": "Courier's Speed",
+      "description": "Your base walking speed increases to 35 ft.",
+      "id": "feature.human.courier_s_speed"
+    },
+    {
+      "name": "Intuitive Motion",
+      "description": "When you make a Dexterity (Acrobatics) check or any ability check to operate or maintain a land vehicle, you can roll a d4 and add the number rolled to the ability check.",
+      "id": "feature.human.intuitive_motion"
+    },
+    {
+      "name": "Magical Passage",
+      "description": "You can cast the misty step spell once with this trait, and you regain the ability to cast it when you finish a long rest. Dexterity is your spellcasting ability for this spell.",
+      "id": "feature.human.magical_passage"
+    },
+    {
+      "name": "Mark of Sentinel Human",
+      "description": "Protection is my purpose. I defend the innocent from those who would do them harm. For my siblings, this is a job; for me, it's a calling.\n\n-Harric d'Deneith, Sentinel Marshal\n\nThe Mark of Sentinel warns and protects. It heightens senses and reflexes, allowing an heir to respond to threats with uncanny speed. It can shield its bearer from harm. Whether on the battlefield or the ballroom, someone who carries the Mark of Sentinel is prepared for danger.",
+      "id": "feature.human.mark_of_sentinel_human"
+    },
+    {
+      "name": "House Deneith",
+      "description": "Leader: Breven d'Deneith\n\nHeadquarters: Sentinel Tower (Karrlakton, Karrnath)\n\nHouse Deneith was born in Karrnath, and war flows in its veins. For centuries, the Blademarks Guild of House Deneith has governed the mercenary trade. While warriors with the Mark of Sentinel are among its most elite forces, House Deneith brokers the services of a wide range of soldiers, including Valenar war bands and the goblins of Droaam. Beyond the battlefield, the Defender's Guild provides exceptional bodyguards for those who can afford their services. House Deneith is also renowned for its Sentinel Marshals, agents who hold the authority to pursue criminals and enforce the law across the length of Khorvaire. The Sentinel Marshals hold the honor of the house in their hands. Being a Marshal is a privilege, and it comes with high expectations.\n\nDespite its might and the desire of some house members to flex their military muscles, House Deneith has always maintained absolute neutrality, selling its services to all sides of a conflict. Baron Breven d'Deneith shows no inclination of using the massive, chimera-marked military forces of his house for his own ends, but he's surrounded by aggressive advisors who would like to see a Deneith ruling all Khorvaire. House Deneith is also caught in an escalating rivalry with House Tharashk, as it edges into the mercenary trade.",
+      "id": "feature.human.house_deneith"
+    },
+    {
+      "name": "Sentinel's Intuition",
+      "description": "When you make a Wisdom (Insight) or Wisdom (Perception) check, you can roll a d4 and add the number rolled to the ability check.",
+      "id": "feature.human.sentinel_s_intuition"
+    },
+    {
+      "name": "Guardian's Shield",
+      "description": "You can cast the shield spell once with this trait, and you regain the ability to cast it after you finish a long rest. Wisdom is your spellcasting ability for this spell.",
+      "id": "feature.human.guardian_s_shield"
+    },
+    {
+      "name": "Vigilant Guardian",
+      "description": "When a creature you can see within 5 feet of you is hit by an attack roll, you can use your reaction to swap places with that creature, and you are hit by the attack instead. Once you use this trait, you can't do so again until you finish a long rest.",
+      "id": "feature.human.vigilant_guardian"
+    },
+    {
+      "name": "Legacy",
+      "description": "If your campaign uses the optional feat rules from the Player's Handbook, your Dungeon Master might allow these variant traits, all of which replace the human's Ability Score Increase trait.",
+      "id": "feature.human.legacy"
+    },
+    {
+      "name": "Skills",
+      "description": "You gain proficiency in one skill of your choice.",
+      "id": "feature.human.skills"
+    },
+    {
+      "name": "Feat",
+      "description": "You gain one feat of your choice.",
+      "id": "feature.human.feat"
+    }
+  ]
+}

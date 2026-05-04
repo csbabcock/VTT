@@ -1,0 +1,142 @@
+{
+  "id": "race.mark_of_warding_dwarf",
+  "name": "Mark of Warding Dwarf",
+  "parentId": "race.dwarf",
+  "sortName": "Mark of Warding Dwarf",
+  "sourceFile": "dwarf.txt",
+  "description": "Mark of Warding Dwarf\nMy family has the finest vaults you can imagine. They forge the locks that secure royal jewels. And I learned to pick those locks when I was barely out of the crib.",
+  "abilityScoreBonuses": [
+    {
+      "ability": "CON",
+      "bonus": 2
+    },
+    {
+      "ability": "INT",
+      "bonus": 1
+    }
+  ],
+  "abilityScoreChoices": [],
+  "mechanicalEffects": [
+    {
+      "type": "resistance",
+      "name": "Poison Resistance",
+      "target": "poison",
+      "value": "Poison damage",
+      "amount": 0
+    },
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "weapon",
+      "value": "battleaxe, handaxe, light hammer",
+      "amount": 0
+    },
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "tool",
+      "value": "artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools",
+      "amount": 0
+    },
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "tool",
+      "value": "the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools",
+      "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Languages",
+      "target": "language",
+      "value": "Common and Dwarvish",
+      "amount": 0
+    }
+  ],
+  "speed": 25,
+  "size": "Medium",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Ability Score Increase",
+    "Age",
+    "Size",
+    "Speed",
+    "Darkvision",
+    "Dwarven Resilience",
+    "Dwarven Combat Training",
+    "Tool Proficiency",
+    "Stonecunning",
+    "Warder's Intuition",
+    "Wards and Seals",
+    "Spells of the Mark",
+    "Spell Level Spells"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Constitution score increases by 2.",
+      "id": "feature.mark_of_warding_dwarf.ability_score_increase"
+    },
+    {
+      "name": "Age",
+      "description": "Dwarves mature at the same rate as humans, but they're considered young until they reach the age of 50. On average, they live about 350 years.",
+      "id": "feature.mark_of_warding_dwarf.age"
+    },
+    {
+      "name": "Size",
+      "description": "Dwarves stand between 4 and 5 feet tall and average about 150 pounds. Your size is Medium.",
+      "id": "feature.mark_of_warding_dwarf.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 25 feet. Your speed is not reduced by wearing heavy armor.",
+      "id": "feature.mark_of_warding_dwarf.speed"
+    },
+    {
+      "name": "Darkvision",
+      "description": "Accustomed to life underground, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "id": "feature.mark_of_warding_dwarf.darkvision"
+    },
+    {
+      "name": "Dwarven Resilience",
+      "description": "You have advantage on saving throws against poison, and you have resistance against poison damage (explained in the \"Combat\" section).",
+      "id": "feature.mark_of_warding_dwarf.dwarven_resilience"
+    },
+    {
+      "name": "Dwarven Combat Training",
+      "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer.",
+      "id": "feature.mark_of_warding_dwarf.dwarven_combat_training"
+    },
+    {
+      "name": "Tool Proficiency",
+      "description": "You gain proficiency with the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools.",
+      "id": "feature.mark_of_warding_dwarf.tool_proficiency"
+    },
+    {
+      "name": "Stonecunning",
+      "description": "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check, instead of your normal proficiency bonus.",
+      "id": "feature.mark_of_warding_dwarf.stonecunning"
+    },
+    {
+      "name": "Warder's Intuition",
+      "description": "When you make an Intelligence (Investigation) check or an ability check using thieves' tools, you can roll a d4 and add the number rolled to the ability check.",
+      "id": "feature.mark_of_warding_dwarf.warder_s_intuition"
+    },
+    {
+      "name": "Wards and Seals",
+      "description": "You can cast the alarm and mage armor spells with this trait. Starting at 3rd level, you can also cast the arcane lock spell with it. Once you cast any of these spells with this trait, you can't cast that spell with it again until you finish a long rest. Intelligence is your spellcasting ability for these spells, and you don't need material components for them when you cast them with this trait.",
+      "id": "feature.mark_of_warding_dwarf.wards_and_seals"
+    },
+    {
+      "name": "Spells of the Mark",
+      "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Warding Spells table are added to the spell list of your spellcasting class.",
+      "id": "feature.mark_of_warding_dwarf.spells_of_the_mark"
+    },
+    {
+      "name": "Spell Level Spells",
+      "description": "1st alarm, armor of Agathys\n\n2nd arcane lock, knock\n\n3rd glyph of warding, magic circle\n\n4th Leomund's secret chest, Mordenkainen's faithful hound\n\n5th antilife shell",
+      "id": "feature.mark_of_warding_dwarf.spell_level_spells"
+    }
+  ]
+}

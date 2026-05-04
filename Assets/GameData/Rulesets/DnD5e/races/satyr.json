@@ -1,0 +1,99 @@
+{
+  "id": "race.satyr",
+  "name": "Satyr",
+  "parentId": "",
+  "sortName": "Satyr",
+  "sourceFile": "satyr.txt",
+  "description": "Originating in the Feywild-a realm of pure emotion- satyrs thrive on the energy of merriment. They resemble elves but have goatlike legs, cloven hooves, and ram or goat horns. The magic of the fey realm has given them an innate ability to perform, to delight, and to resist magical intrusion. While they're usually found in the Feywild, satyrs do wander to other planes of existence, most often to the Material Plane. There they seek to bring a bit of their home plane's splendor to other worlds.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "proficiency",
+      "name": "Race Proficiency",
+      "target": "weapon",
+      "value": "Performance",
+      "amount": 0
+    },
+    {
+      "type": "creatureType",
+      "name": "Creature Type",
+      "target": "creatureType",
+      "value": "Fey",
+      "amount": 0
+    }
+  ],
+  "speed": 35,
+  "size": "Medium",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Size",
+    "Speed",
+    "Ram",
+    "Magic Resistance",
+    "Mirthful Leaps",
+    "Reveler"
+  ],
+  "features": [
+    {
+      "name": "Size",
+      "description": "You are Medium.",
+      "id": "feature.satyr.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 35 feet.",
+      "id": "feature.satyr.speed"
+    },
+    {
+      "name": "Ram",
+      "description": "You can use your head and horns to make unarmed strikes. When you hit with them, the strike deals 1d6 + your Strength modifier bludgeoning damage, instead of the bludgeoning damage normal for an unarmed strike.",
+      "id": "feature.satyr.ram"
+    },
+    {
+      "name": "Magic Resistance",
+      "description": "You have advantage on saving throws against spells.",
+      "id": "feature.satyr.magic_resistance"
+    },
+    {
+      "name": "Mirthful Leaps",
+      "description": "Whenever you make a long jump or a high jump, you can roll a d8 and add the number rolled to the number of feet you cover, even when making a standing jump. This extra distance costs movement as normal.",
+      "id": "feature.satyr.mirthful_leaps"
+    },
+    {
+      "name": "Reveler",
+      "description": "As an embodiment of revelry, you have proficiency in the Performance and Persuasion skills, and you have proficiency with one musical instrument of your choice.",
+      "id": "feature.satyr.reveler"
+    }
+  ]
+}

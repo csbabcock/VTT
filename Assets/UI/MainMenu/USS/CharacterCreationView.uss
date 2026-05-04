@@ -391,6 +391,63 @@
     -unity-font-style: bold;
 }
 
+.character-creation-option-group-header {
+    width: 100%;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    -unity-font-style: bold;
+    margin-top: 6px;
+    margin-bottom: 2px;
+}
+
+.character-creation-race-asi-container {
+    width: 100%;
+    flex-direction: column;
+    background-color: var(--color-bg-secondary);
+    border-width: 1px;
+    border-color: var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+}
+
+.character-creation-race-asi-title {
+    color: var(--color-text-primary);
+    font-size: 13px;
+    -unity-font-style: bold;
+    margin-bottom: 8px;
+}
+
+.character-creation-race-asi-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.character-creation-race-asi-label {
+    width: 100%;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.character-creation-race-asi-button {
+    height: 30px;
+    min-width: 44px;
+    margin-right: 6px;
+    background-color: var(--color-bg-shade1);
+    border-width: 1px;
+    border-color: var(--color-border-strong);
+    color: var(--color-text-n3);
+    font-size: 12px;
+}
+
+.character-creation-race-asi-button.selected {
+    background-color: var(--color-blue);
+    border-color: var(--color-blue);
+    color: var(--color-text-primary);
+}
+
 .character-creation-score-method-buttons {
     flex-direction: row;
     flex-wrap: wrap;
