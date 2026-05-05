@@ -2,12 +2,21 @@
   "id": "race.dragonborn",
   "name": "Dragonborn",
   "parentId": "",
-  "sortName": "Dragonborn",
-  "sourceFile": "dragonborn.txt",
-  "description": "Her father stood on the first of the three stairs that led down from the portal, unmoving. The scales of his face had grown paler around the edges, but Clanless Mehen still looked as if he could wrestle down a dire bear himself. His familiar well-worn armor was gone, replaced by violet-tinted scale armor with bright silvery tracings. There was a blazon on his arm as well, the mark of some foreign house. The sword at his back was the same, though, the one he had carried since even before he had found the twins left in swaddling at the gates of Arush Vayem.",
+  "sortName": "0070",
+  "sourceFile": "Dragonborn.txt",
+  "isGroupOnly": false,
+  "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
   "abilityScoreBonuses": [
     {
       "ability": "STR",
+      "bonus": 2
+    },
+    {
+      "ability": "CON",
+      "bonus": 1
+    },
+    {
+      "ability": "INT",
       "bonus": 2
     },
     {
@@ -16,28 +25,63 @@
     }
   ],
   "abilityScoreChoices": [],
+  "selectableChoices": [],
   "mechanicalEffects": [
     {
+      "type": "speed",
+      "name": "Fly Speed",
+      "target": "fly",
+      "value": "equal to walking speed",
+      "amount": 0
+    },
+    {
       "type": "language",
-      "name": "Languages",
+      "name": "Language",
       "target": "language",
-      "value": "Common and Draconic",
+      "value": "Common",
+      "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Language",
+      "target": "language",
+      "value": "Draconic",
       "amount": 0
     }
   ],
   "speed": 30,
   "size": "Medium",
-  "hasDarkvision": false,
-  "darkvisionRange": 0,
+  "hasDarkvision": true,
+  "darkvisionRange": 30,
   "traits": [
     "Ability Score Increase",
-    "Age",
+    "Young dragonborn grow quickly",
     "Size",
     "Speed",
-    "Draconic Ancestry",
+    "You have draconic ancestry",
     "Dragon Damage Type Breath Weapon",
+    "You can use your action to exhale destructive energy",
+    "Damage Resistance",
+    "Chromatic Dragonborn",
+    "Ability Score Increases",
+    "Chromatic Ancestry",
     "Breath Weapon",
-    "Damage Resistance"
+    "Draconic Resistance",
+    "Chromatic Warding",
+    "Gem Dragonborn",
+    "Gem Ancestry",
+    "Psionic Mind",
+    "Gem Flight",
+    "Metallic Dragonborn",
+    "Metallic Ancestry",
+    "Metallic Breath Weapon",
+    "Enervating Breath",
+    "Repulsion Breath",
+    "Draconblood Dragonborn",
+    "Darkvision",
+    "Forceful Presence",
+    "Ravenites have no tails and a hearty physique",
+    "Vengeful Assault"
   ],
   "features": [
     {
@@ -46,9 +90,9 @@
       "id": "feature.dragonborn.ability_score_increase"
     },
     {
-      "name": "Age",
-      "description": "Young dragonborn grow quickly. They walk hours after hatching, attain the size and development of a 10-year-old human child by the age of 3, and reach adulthood by 15. They live to be around 80.",
-      "id": "feature.dragonborn.age"
+      "name": "Young dragonborn grow quickly",
+      "description": "They walk hours after hatching, attain the size and development of a 10-year-old human child by the age of 3, and reach adulthood by 15. They live to be around 80.",
+      "id": "feature.dragonborn.young_dragonborn_grow_quickly"
     },
     {
       "name": "Size",
@@ -61,9 +105,9 @@
       "id": "feature.dragonborn.speed"
     },
     {
-      "name": "Draconic Ancestry",
-      "description": "You have draconic ancestry. Choose one type of dragon from the Draconic Ancestry table. Your breath weapon and damage resistance are determined by the dragon type, as shown in the table.",
-      "id": "feature.dragonborn.draconic_ancestry"
+      "name": "You have draconic ancestry",
+      "description": "Choose one type of dragon from the Draconic Ancestry table. Your breath weapon and damage resistance are determined by the dragon type, as shown in the table.",
+      "id": "feature.dragonborn.you_have_draconic_ancestry"
     },
     {
       "name": "Dragon Damage Type Breath Weapon",
@@ -71,14 +115,114 @@
       "id": "feature.dragonborn.dragon_damage_type_breath_weapon"
     },
     {
-      "name": "Breath Weapon",
-      "description": "You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation. When you use your breath weapon, each creature in the area of the exhalation must make a saving throw, the type of which is determined by your draconic ancestry. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes 2d6 damage on a failed save, and half as much damage on a successful one. The damage increases to 3d6 at 6th level, 4d6 at 11th level, and 5d6 at 16th level. After you use your breath weapon, you can't use it again until you complete a short or long rest.",
-      "id": "feature.dragonborn.breath_weapon"
+      "name": "You can use your action to exhale destructive energy",
+      "description": "Your draconic ancestry determines the size, shape, and damage type of the exhalation. When you use your breath weapon, each creature in the area of the exhalation must make a saving throw, the type of which is determined by your draconic ancestry. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes 2d6 damage on a failed save, and half as much damage on a successful one. The damage increases to 3d6 at 6th level, 4d6 at 11th level, and 5d6 at 16th level. After you use your breath weapon, you can't use it again until you complete a short or long rest.",
+      "id": "feature.dragonborn.you_can_use_your_action_to_exhale_destructive_energy"
     },
     {
       "name": "Damage Resistance",
       "description": "You have resistance to the damage type associated with your draconic ancestry.",
       "id": "feature.dragonborn.damage_resistance"
+    },
+    {
+      "name": "Chromatic Dragonborn",
+      "description": "Dragonborn with chromatic ancestry claim the raw elemental power of chromatic dragons. The vibrant colors of black, blue, green, red, and white dragons gleam in those dragonborn's scaled skin and in the deadly energy of their breath weapons. Theirs is the raw elemental fury of the volcano, of biting arctic winds, and of raging lightning storms, as well as the subtle whisper of swamp and forest, toxic and corrosive.",
+      "id": "feature.dragonborn.chromatic_dragonborn"
+    },
+    {
+      "name": "Ability Score Increases",
+      "description": "When determining your character's ability scores, increase one of those scores by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy.\n\nThe \"Quick Build\" section for your character's class offers suggestions on which scores to increase. You're free to follow those suggestions or to ignore them. Whichever scores you decide to increase, none of the scores can be raised above 20.",
+      "id": "feature.dragonborn.ability_score_increases"
+    },
+    {
+      "name": "Chromatic Ancestry",
+      "description": "You have a chromatic dragon ancestor, granting you a special magical affinity. Choose one kind of dragon from the Chromatic Ancestry table. This determines the damage type for your other traits, as shown in the table.",
+      "id": "feature.dragonborn.chromatic_ancestry"
+    },
+    {
+      "name": "Breath Weapon",
+      "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in a 30-foot line that is 5 feet wide. Each creature in that area must make a Dexterity saving throw (DC = 8 + your Constitution modifier + your proficiency bonus). On a failed save, the creature takes 1d10 damage of the type associated with your Chromatic Ancestry. On a successful save, it takes half as much damage. This damage increases by 1d10 when you reach 5th level (2d10), 11th level (3d10), and 17th level (4d10).\n\nYou can use your Breath Weapon a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+      "id": "feature.dragonborn.breath_weapon"
+    },
+    {
+      "name": "Draconic Resistance",
+      "description": "You have resistance to the damage type associated with your Chromatic Ancestry.",
+      "id": "feature.dragonborn.draconic_resistance"
+    },
+    {
+      "name": "Chromatic Warding",
+      "description": "Starting at 5th level, as an action, you can channel your draconic energy to protect yourself. For 1 minute, you become immune to the damage type associated with your Chromatic Ancestry. Once you use this trait, you can't do so again until you finish a long rest.",
+      "id": "feature.dragonborn.chromatic_warding"
+    },
+    {
+      "name": "Gem Dragonborn",
+      "description": "Gem dragonborn partake of the heritage of gem dragons, who claim to be heirs of Sardior, the Ruby Dragon. The colors and mysterious powers of gem dragons-amethyst, crystal, emerald, sapphire, and topaz-gleam in these dragonborn's scaled skin and course through their veins. Theirs are the wonders of the mind, the force of will, the brilliant light of insight, and the resounding echo of discovery-but also the desiccation of despair.",
+      "id": "feature.dragonborn.gem_dragonborn"
+    },
+    {
+      "name": "Gem Ancestry",
+      "description": "You have a gem dragon ancestor, granting you a special magical affinity. Choose one kind of dragon from the Gem Ancestry table. This determines the damage type for your other traits, as shown in the table.",
+      "id": "feature.dragonborn.gem_ancestry"
+    },
+    {
+      "name": "Psionic Mind",
+      "description": "You can send telepathic messages to any creature you can see within 30 feet of you. You don't need to share a language with the creature for it to understand these messages, but it must be able to understand at least one language to comprehend them.",
+      "id": "feature.dragonborn.psionic_mind"
+    },
+    {
+      "name": "Gem Flight",
+      "description": "Starting at 5th level, you can use a bonus action to manifest spectral wings on your body. These wings last for 1 minute. For the duration, you gain a flying speed equal to your walking speed and can hover. Once you use this trait, you can't do so again until you finish a long rest.",
+      "id": "feature.dragonborn.gem_flight"
+    },
+    {
+      "name": "Metallic Dragonborn",
+      "description": "Dragonborn with metallic ancestry lay claim to the tenacity of metallic dragons-brass, bronze, copper, gold, and silver-whose hues glint in their scales. Theirs is the fire of hearth and forge, the cold of high mountain air, the spark of inspiration, and the scouring touch of acid that purifies.",
+      "id": "feature.dragonborn.metallic_dragonborn"
+    },
+    {
+      "name": "Metallic Ancestry",
+      "description": "You have a metallic dragon ancestor, granting you a special magical affinity. Choose one kind of dragon from the Metallic Ancestry table. This determines the damage type for your other traits, as shown in the table.",
+      "id": "feature.dragonborn.metallic_ancestry"
+    },
+    {
+      "name": "Metallic Breath Weapon",
+      "description": "At 5th level, you gain a second breath weapon. When you take the Attack action on your turn, you can replace one of your attacks with an exhalation in a 15-foot cone. The save DC for this breath is 8 + your Constitution modifier + your proficiency bonus. Whenever you use this trait, choose one:",
+      "id": "feature.dragonborn.metallic_breath_weapon"
+    },
+    {
+      "name": "Enervating Breath",
+      "description": "Each creature in the cone must succeed on a Constitution saving throw or become incapacitated until the start of your next turn.",
+      "id": "feature.dragonborn.enervating_breath"
+    },
+    {
+      "name": "Repulsion Breath",
+      "description": "Each creature in the cone must succeed on a Strength saving throw or be pushed 20 feet away from you and be knocked prone.\n\nOnce you use your Metallic Breath Weapon, you can't do so again until you finish a long rest.",
+      "id": "feature.dragonborn.repulsion_breath"
+    },
+    {
+      "name": "Draconblood Dragonborn",
+      "description": "Draconbloods possess long tails and a knack for social manipulation. They remember the days when they were once mighty conquerors.\n\nA draconblood uses the dragonborn traits in the Player's Handbook, with the following traits replacing the Ability Score Increase and Damage Resistance traits.",
+      "id": "feature.dragonborn.draconblood_dragonborn"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "id": "feature.dragonborn.darkvision"
+    },
+    {
+      "name": "Forceful Presence",
+      "description": "You can use your understanding of creative diplomacy or intimidation to guide a conversation in your favor. When you make a Charisma (Intimidation or Persuasion) check, you can do so with advantage. Once you use this trait, you can't do so again until you finish a short or long rest.",
+      "id": "feature.dragonborn.forceful_presence"
+    },
+    {
+      "name": "Ravenites have no tails and a hearty physique",
+      "description": "They remember the days when they were slaves to the draconblood, as well as the day when they overthrew their masters.\n\nA ravenite uses the dragonborn traits in the Player's Handbook, with the following traits replacing the Ability Score Increase and Damage Resistance traits.",
+      "id": "feature.dragonborn.ravenites_have_no_tails_and_a_hearty_physique"
+    },
+    {
+      "name": "Vengeful Assault",
+      "description": "When you take damage from a creature in range of a weapon you are wielding, you can use your reaction to make an attack with the weapon against that creature. Once you use this trait, you can't do so again until you finish a short or long rest.",
+      "id": "feature.dragonborn.vengeful_assault"
     }
   ]
 }

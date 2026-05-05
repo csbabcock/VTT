@@ -1,9 +1,10 @@
 {
   "id": "race.githyanki",
   "name": "Githyanki",
-  "parentId": "",
-  "sortName": "Githyanki",
-  "sourceFile": "githyanki.txt",
+  "parentId": "race.gith",
+  "sortName": "015001",
+  "sourceFile": "Githyanki.txt",
+  "isGroupOnly": false,
   "description": "Once members of a people who escaped servitude to mind flayers, githyanki split from their cousins, githzerai, and fled to the Astral Plane. In that timeless, silvery realm, githyanki honed their psionic powers and built a great city called Tu'narath. They have since spread throughout the multiverse, starting in outposts outside the Astral Plane, called creches, where time passes and their children can reach adulthood.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,19 +37,96 @@
       ]
     }
   ],
+  "selectableChoices": [
+    {
+      "id": "choice.skill.any",
+      "type": "skill",
+      "name": "Choose a skill proficiency",
+      "count": 1,
+      "options": [
+        "Acrobatics",
+        "Animal Handling",
+        "Arcana",
+        "Athletics",
+        "Deception",
+        "History",
+        "Insight",
+        "Intimidation",
+        "Investigation",
+        "Medicine",
+        "Nature",
+        "Perception",
+        "Performance",
+        "Persuasion",
+        "Religion",
+        "Sleight of Hand",
+        "Stealth",
+        "Survival"
+      ]
+    },
+    {
+      "id": "choice.tool",
+      "type": "tool",
+      "name": "Choose a tool or weapon proficiency",
+      "count": 1,
+      "options": [
+        "Battleaxe",
+        "Handaxe",
+        "Light hammer",
+        "Warhammer",
+        "Longsword",
+        "Shortsword",
+        "Shortbow",
+        "Longbow",
+        "Rapier",
+        "Hand crossbow",
+        "Spear",
+        "Trident",
+        "Light crossbow",
+        "Net",
+        "Alchemist's supplies",
+        "Brewer's supplies",
+        "Calligrapher's supplies",
+        "Carpenter's tools",
+        "Cartographer's tools",
+        "Cobbler's tools",
+        "Cook's utensils",
+        "Glassblower's tools",
+        "Jeweler's tools",
+        "Leatherworker's tools",
+        "Mason's tools",
+        "Painter's supplies",
+        "Potter's tools",
+        "Smith's tools",
+        "Tinker's tools",
+        "Weaver's tools",
+        "Woodcarver's tools",
+        "Thieves' tools",
+        "Disguise kit",
+        "Forgery kit",
+        "Herbalism kit",
+        "Navigator's tools",
+        "Poisoner's kit"
+      ]
+    },
+    {
+      "id": "choice.spellcasting_ability",
+      "type": "spellcastingAbility",
+      "name": "Choose spellcasting ability",
+      "count": 1,
+      "options": [
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
   "mechanicalEffects": [
     {
       "type": "resistance",
       "name": "Psychic Resistance",
       "target": "psychic",
       "value": "Psychic damage",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
       "amount": 0
     }
   ],

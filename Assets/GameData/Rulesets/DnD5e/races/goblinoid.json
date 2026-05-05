@@ -1,0 +1,19 @@
+{
+  "id": "race.goblinoid",
+  "name": "Goblinoid",
+  "parentId": "",
+  "sortName": "0170",
+  "sourceFile": "",
+  "isGroupOnly": true,
+  "description": "Related goblin kin sharing roots in goblinoid ancestry.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [],
+  "selectableChoices": [],
+  "mechanicalEffects": [],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [],
+  "features": []
+}

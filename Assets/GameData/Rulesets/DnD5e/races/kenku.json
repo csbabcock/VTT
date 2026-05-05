@@ -2,68 +2,78 @@
   "id": "race.kenku",
   "name": "Kenku",
   "parentId": "",
-  "sortName": "Kenku",
-  "sourceFile": "kenku.txt",
-  "description": "The map we found showed the entrance to the Priest King's treasure cache right in the middle of the ruined section of the city. We approached our destination without issue, but as we arrived at the burned-out building, a sudden cacophony erupted around us. Birds squawked, cats hissed, and dogs growled. Lidda hustled us back to the city's safer avenues. Only when we were back within the area patrolled by the guard did she explain that the noises indicated that the wingless folk had claimed that area, and that to trespass would be to court death.",
-  "abilityScoreBonuses": [
+  "sortName": "0240",
+  "sourceFile": "Kenku.txt",
+  "isGroupOnly": false,
+  "description": "Feathered folk who resemble ravens, kenku are blessed with keen observation and supernaturally accurate memories. None of them can remember the origin of the first kenku, however, and they often joke that there are as many kenku origin stories as there are kenku. Some of them paint their genesis as a curse, being a flightless bird people doomed to mimic other people's creations. Other kenku recite cryptic but beautiful poems about their advent being a blessed event in which they were sent into the multiverse to observe and catalog its many wonders.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
     {
-      "ability": "DEX",
-      "bonus": 2
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     },
     {
-      "ability": "WIS",
-      "bonus": 1
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     }
   ],
-  "abilityScoreChoices": [],
+  "selectableChoices": [],
   "mechanicalEffects": [],
   "speed": 30,
-  "size": "Medium",
+  "size": "Medium or Small",
   "hasDarkvision": false,
   "darkvisionRange": 0,
   "traits": [
-    "Ability Score Increase",
-    "Age",
-    "Size",
+    "Your size is Medium or Small",
     "Speed",
-    "Expert Forgery",
-    "Kenku Training",
+    "Expert Duplication",
+    "Kenku Recall",
     "Mimicry"
   ],
   "features": [
     {
-      "name": "Ability Score Increase",
-      "description": "Your Dexterity score increases by 2, and your Wisdom score increases by 1.",
-      "id": "feature.kenku.ability_score_increase"
-    },
-    {
-      "name": "Age",
-      "description": "Kenku have shorter lifespans than humans. They reach maturity at about 12 years old and can live to 60.",
-      "id": "feature.kenku.age"
-    },
-    {
-      "name": "Size",
-      "description": "Kenku are around 5 feet tall and weigh between 90 and 120 pounds. Your size is Medium.",
-      "id": "feature.kenku.size"
+      "name": "Your size is Medium or Small",
+      "description": "You choose the size when you select this race.",
+      "id": "feature.kenku.your_size_is_medium_or_small"
     },
     {
       "name": "Speed",
-      "description": "Your base walking speed is 30 feet.",
+      "description": "Your walking speed is 30 feet.",
       "id": "feature.kenku.speed"
     },
     {
-      "name": "Expert Forgery",
-      "description": "You can duplicate other creatures' handwriting and craftwork. You have advantage on all checks made to produce forgeries or duplicates of existing objects.",
-      "id": "feature.kenku.expert_forgery"
+      "name": "Expert Duplication",
+      "description": "When you copy writing or craftwork produced by yourself or someone else, you have advantage on any ability checks you make to produce an exact duplicate.",
+      "id": "feature.kenku.expert_duplication"
     },
     {
-      "name": "Kenku Training",
-      "description": "You are proficient in your choice of two of the following skills: Acrobatics, Deception, Stealth, and Sleight of Hand.",
-      "id": "feature.kenku.kenku_training"
+      "name": "Kenku Recall",
+      "description": "Thanks to your supernaturally good memory, you have proficiency in two skills of your choice.\n\nMoreover, when you make an ability check using any skill in which you have proficiency, you can give yourself advantage on the check before rolling the d20. You can give yourself advantage in this way a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+      "id": "feature.kenku.kenku_recall"
     },
     {
       "name": "Mimicry",
-      "description": "You can mimic sounds you have heard, including voices. A creature that hears the sounds you make can tell they are imitations with a successful Wisdom (Insight) check opposed by your Charisma (Deception) check.",
+      "description": "You can accurately mimic sounds you have heard, including voices. A creature that hears the sounds you make can tell they are imitations only with a successful Wisdom (Insight) check against a DC of 8 + your proficiency bonus + your Charisma modifier.",
       "id": "feature.kenku.mimicry"
     }
   ]

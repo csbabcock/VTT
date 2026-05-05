@@ -2,8 +2,9 @@
   "id": "race.aarakocra",
   "name": "Aarakocra",
   "parentId": "",
-  "sortName": "Aarakocra",
-  "sourceFile": "aarakocra.txt",
+  "sortName": "0010",
+  "sourceFile": "Aarakocra.txt",
+  "isGroupOnly": false,
   "description": "A winged people who originated on the Elemental Plane of Air, aarakocra soar through the sky wherever they wander. The first aarakocra served the Wind Dukes of Aaqa-mighty beings of air-and were imbued with a measure of their masters' power over winds. Their descendants still command echoes of that power.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,19 +37,25 @@
       ]
     }
   ],
+  "selectableChoices": [
+    {
+      "id": "choice.spellcasting_ability",
+      "type": "spellcastingAbility",
+      "name": "Choose spellcasting ability",
+      "count": 1,
+      "options": [
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
   "mechanicalEffects": [
     {
       "type": "speed",
       "name": "Fly Speed",
       "target": "fly",
       "value": "equal to walking speed",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
       "amount": 0
     }
   ],
@@ -60,7 +67,7 @@
     "Size",
     "Speed",
     "Flight",
-    "Talons",
+    "You have talons that you can use to make unarmed strikes",
     "Wind Caller"
   ],
   "features": [
@@ -80,9 +87,9 @@
       "id": "feature.aarakocra.flight"
     },
     {
-      "name": "Talons",
-      "description": "You have talons that you can use to make unarmed strikes. When you hit with them, the strike deals 1d6 + your Strength modifier slashing damage, instead of the bludgeoning damage normal for an unarmed strike.",
-      "id": "feature.aarakocra.talons"
+      "name": "You have talons that you can use to make unarmed strikes",
+      "description": "When you hit with them, the strike deals 1d6 + your Strength modifier slashing damage, instead of the bludgeoning damage normal for an unarmed strike.",
+      "id": "feature.aarakocra.you_have_talons_that_you_can_use_to_make_unarmed_strikes"
     },
     {
       "name": "Wind Caller",

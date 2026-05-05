@@ -2,97 +2,18 @@
   "id": "race.tiefling",
   "name": "Tiefling",
   "parentId": "",
-  "sortName": "Tiefling",
-  "sourceFile": "tiefling.txt",
-  "description": "\"But you do see the way people look at you, devil's child.\"",
-  "abilityScoreBonuses": [
-    {
-      "ability": "INT",
-      "bonus": 1
-    },
-    {
-      "ability": "CHA",
-      "bonus": 2
-    }
-  ],
+  "sortName": "0370",
+  "sourceFile": "",
+  "isGroupOnly": true,
+  "description": "Mortals touched by infernal or planar heritage.",
+  "abilityScoreBonuses": [],
   "abilityScoreChoices": [],
-  "mechanicalEffects": [
-    {
-      "type": "speed",
-      "name": "Fly Speed",
-      "target": "fly",
-      "value": "30 ft",
-      "amount": 30
-    },
-    {
-      "type": "resistance",
-      "name": "Fire Resistance",
-      "target": "fire",
-      "value": "Fire damage",
-      "amount": 0
-    },
-    {
-      "type": "language",
-      "name": "Languages",
-      "target": "language",
-      "value": "Common and Infernal",
-      "amount": 0
-    }
-  ],
+  "selectableChoices": [],
+  "mechanicalEffects": [],
   "speed": 30,
   "size": "Medium",
-  "hasDarkvision": true,
-  "darkvisionRange": 60,
-  "traits": [
-    "Ability Score Increase",
-    "Age",
-    "Size",
-    "Speed",
-    "Darkvision",
-    "Hellish Resistance",
-    "Infernal Legacy",
-    "Variant Tiefling"
-  ],
-  "features": [
-    {
-      "name": "Ability Score Increase",
-      "description": "Your Intelligence score increases by 1, and your Charisma score increases by 2.",
-      "id": "feature.tiefling.ability_score_increase"
-    },
-    {
-      "name": "Age",
-      "description": "Tieflings mature at the same rate as humans but live a few years longer.",
-      "id": "feature.tiefling.age"
-    },
-    {
-      "name": "Size",
-      "description": "Tieflings are about the same size and build as humans. Your size is Medium.",
-      "id": "feature.tiefling.size"
-    },
-    {
-      "name": "Speed",
-      "description": "Your base walking speed is 30 feet.",
-      "id": "feature.tiefling.speed"
-    },
-    {
-      "name": "Darkvision",
-      "description": "Thanks to your infernal heritage, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
-      "id": "feature.tiefling.darkvision"
-    },
-    {
-      "name": "Hellish Resistance",
-      "description": "You have resistance to fire damage.",
-      "id": "feature.tiefling.hellish_resistance"
-    },
-    {
-      "name": "Infernal Legacy",
-      "description": "You know the thaumaturgy cantrip. When you reach 3rd level, you can cast the hellish rebuke spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the darkness spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells.",
-      "id": "feature.tiefling.infernal_legacy"
-    },
-    {
-      "name": "Variant Tiefling",
-      "description": "Since not all tieflings are of the blood of Asmodeus, some have traits that differ from those in the Player's Handbook. The Dungeon Master may permit the following variants for your tiefling character, although Devil's Tongue, Hellfire, and Winged are mutually exclusive.\n\nAppearance. Your tiefling might not look like other tieflings. Rather than having the physical characteristics described in the Player's Handbook, choose 1d4 + 1 of the following features: small horns; fangs or sharp teeth; a forked tongue; catlike eyes; six fingers on each hand; goat-like legs; cloven hoofs; a forked tail; leathery or scaly skin; red or dark blue skin; cast no shadow or reflection; exude a smell of brimstone.",
-      "id": "feature.tiefling.variant_tiefling"
-    }
-  ]
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [],
+  "features": []
 }

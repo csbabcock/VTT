@@ -2,97 +2,85 @@
   "id": "race.tabaxi",
   "name": "Tabaxi",
   "parentId": "",
-  "sortName": "Tabaxi",
-  "sourceFile": "tabaxi.txt",
-  "description": "We had a tabaxi come through once, a few winters back. She kept the taproom packed each night with her stories and spent most days napping in a chair in front of the fireplace. We thought she was lazy, but when Linene came around looking for a missing broach, she was out the door before I could blink an eye.",
-  "abilityScoreBonuses": [
+  "sortName": "0350",
+  "sourceFile": "Tabaxi.txt",
+  "isGroupOnly": false,
+  "description": "Created by the Cat Lord-a divine being of the Upper Planes-to blend the qualities of humanoids and cats, tabaxi are a varied people in both attitude and appearance. In some lands, tabaxi live like the cats they resemble, naturally curious and at home in playful environments. In other places, tabaxi live as other folk do, not exhibiting the feline behavior the Cat Lord intended.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
     {
-      "ability": "DEX",
-      "bonus": 2
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     },
     {
-      "ability": "CHA",
-      "bonus": 1
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     }
   ],
-  "abilityScoreChoices": [],
-  "mechanicalEffects": [
-    {
-      "type": "speed",
-      "name": "Climb Speed",
-      "target": "climb",
-      "value": "20 ft",
-      "amount": 20
-    },
-    {
-      "type": "proficiency",
-      "name": "Race Proficiency",
-      "target": "skill",
-      "value": "Perception",
-      "amount": 0
-    },
-    {
-      "type": "language",
-      "name": "Languages",
-      "target": "language",
-      "value": "Common and one other language of your choice",
-      "amount": 0
-    }
-  ],
+  "selectableChoices": [],
+  "mechanicalEffects": [],
   "speed": 30,
-  "size": "Medium",
+  "size": "Medium or Small",
   "hasDarkvision": true,
   "darkvisionRange": 60,
   "traits": [
-    "Ability Score Increase",
-    "Age",
-    "Size",
+    "You are Medium or Small",
     "Speed",
+    "You can use your claws to make unarmed strikes",
+    "Cat's Talent",
     "Darkvision",
-    "Feline Agility",
-    "Cat's Claws",
-    "Cat's Talent"
+    "Feline Agility"
   ],
   "features": [
     {
-      "name": "Ability Score Increase",
-      "description": "Your Dexterity score increases by 2, and your Charisma score increases by 1.",
-      "id": "feature.tabaxi.ability_score_increase"
-    },
-    {
-      "name": "Age",
-      "description": "Tabaxi have lifespans equivalent to humans.",
-      "id": "feature.tabaxi.age"
-    },
-    {
-      "name": "Size",
-      "description": "Tabaxi are taller on average than humans and relatively slender. Your size is Medium.",
-      "id": "feature.tabaxi.size"
+      "name": "You are Medium or Small",
+      "description": "You choose the size when you select this race.",
+      "id": "feature.tabaxi.you_are_medium_or_small"
     },
     {
       "name": "Speed",
-      "description": "Your base walking speed is 30 feet.",
+      "description": "Your walking speed is 30 feet, and you have a climbing speed equal to your walking speed.",
       "id": "feature.tabaxi.speed"
     },
     {
+      "name": "You can use your claws to make unarmed strikes",
+      "description": "When you hit with them, the strike deals 1d6 + your Strength modifier slashing damage, instead of the bludgeoning damage normal for an unarmed strike.",
+      "id": "feature.tabaxi.you_can_use_your_claws_to_make_unarmed_strikes"
+    },
+    {
+      "name": "Cat's Talent",
+      "description": "You have proficiency in the Perception and Stealth skills.",
+      "id": "feature.tabaxi.cat_s_talent"
+    },
+    {
       "name": "Darkvision",
-      "description": "You have a cat's keen senses, especially in the dark. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
       "id": "feature.tabaxi.darkvision"
     },
     {
       "name": "Feline Agility",
       "description": "Your reflexes and agility allow you to move with a burst of speed. When you move on your turn in combat, you can double your speed until the end of the turn. Once you use this trait, you can't use it again until you move 0 feet on one of your turns.",
       "id": "feature.tabaxi.feline_agility"
-    },
-    {
-      "name": "Cat's Claws",
-      "description": "Because of your claws, you have a climbing speed of 20 feet. In addition, your claws are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal slashing damage equal to 1d4 + your Strength modifier, instead of the bludgeoning damage normal for an unarmed strike.",
-      "id": "feature.tabaxi.cat_s_claws"
-    },
-    {
-      "name": "Cat's Talent",
-      "description": "You have proficiency in the Perception and Stealth skills.",
-      "id": "feature.tabaxi.cat_s_talent"
     }
   ]
 }

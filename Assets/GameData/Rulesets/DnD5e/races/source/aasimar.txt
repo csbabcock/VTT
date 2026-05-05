@@ -14,21 +14,21 @@ Creating Your Character
 At 1st level, you choose whether your character is a member of the human race or of a fantastical race. If you select a fantastical race, follow these additional rules during character creation.
 
 Ability Score Increases
-When determining your character’s ability scores, increase one score by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy. The “Quick Build” section for your character’s class offers suggestions on which scores to increase. You can follow those suggestions or ignore them, but you can’t raise any of your scores above 20.
+When determining your character's ability scores, increase one score by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy. The "Quick Build" section for your character's class offers suggestions on which scores to increase. You can follow those suggestions or ignore them, but you can't raise any of your scores above 20.
 
 Languages
-Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player’s Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
+Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player's Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
 
 Creature Type
-Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race tells you what your character’s creature type is.
+Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race tells you what your character's creature type is.
 
-Here’s a list of the game’s creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don’t have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn’t work on a Construct or an Undead.
+Here's a list of the game's creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don't have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn't work on a Construct or an Undead.
 
 Life Span
-The typical life span of a player character in the D&D multiverse is about a century, assuming the character doesn’t meet a violent end on an adventure. Members of some races, such as dwarves and elves, can live for centuries. If typical members of a race can live longer than a century, that fact is mentioned in the race’s description.
+The typical life span of a player character in the D&D multiverse is about a century, assuming the character doesn't meet a violent end on an adventure. Members of some races, such as dwarves and elves, can live for centuries. If typical members of a race can live longer than a century, that fact is mentioned in the race's description.
 
 Height and Weight
-Player characters, regardless of race, typically fall into the same ranges of height and weight that humans have in our world. If you’d like to determine your character’s height or weight randomly, consult the Random Height and Weight table in the Player’s Handbook, and choose the row in the table that best represents the build you imagine for your character.
+Player characters, regardless of race, typically fall into the same ranges of height and weight that humans have in our world. If you'd like to determine your character's height or weight randomly, consult the Random Height and Weight table in the Player's Handbook, and choose the row in the table that best represents the build you imagine for your character.
 
 Aasimar Traits
 As an aasimar, you have the following racial traits.
@@ -48,18 +48,16 @@ Darkvision
 You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.
 
 Healing Hands
-As an action, you can touch a creature and roll a number of d4s equal to your proficiency bonus. The creature regains a number of hit points equal to the total rolled. Once you use this trait, you can’t use it again until you finish a long rest.
+As an action, you can touch a creature and roll a number of d4s equal to your proficiency bonus. The creature regains a number of hit points equal to the total rolled. Once you use this trait, you can't use it again until you finish a long rest.
 
 Light Bearer
 You know the light cantrip. Charisma is your spellcasting ability for it.
 
 Celestial Revelation
-When you reach 3rd level, choose one of the revelation options below. Thereafter, you can use a bonus action to unleash the celestial energy within yourself, gaining the benefits of that revelation. Your transformation lasts for 1 minute or until you end it as a bonus action. Once you transform using your revelation below, you can’t use it again until you finish a long rest:
+When you reach 3rd level, choose one of the revelation options below. Thereafter, you can use a bonus action to unleash the celestial energy within yourself, gaining the benefits of that revelation. Your transformation lasts for 1 minute or until you end it as a bonus action. Once you transform using your revelation below, you can't use it again until you finish a long rest:
 
 Necrotic Shroud. Your eyes briefly become pools of darkness, and ghostly, flightless wings sprout from your back temporarily. Creatures other than your allies within 10 feet of you that can see you must succeed on a Charisma saving throw (DC 8 + your proficiency bonus + your Charisma modifier) or become frightened of you until the end of your next turn. Until the transformation ends, once on each of your turns, you can deal extra necrotic damage to one target when you deal damage to it with an attack or a spell. The extra damage equals your proficiency bonus.
 
 Radiant Consumption. Searing light temporarily radiates from your eyes and mouth. For the duration, you shed bright light in a 10-foot radius and dim light for an additional 10 feet, and at the end of each of your turns, each creature within 10 feet of you takes radiant damage equal to your proficiency bonus. Until the transformation ends, once on each of your turns, you can deal extra radiant damage to one target when you deal damage to it with an attack or a spell. The extra damage equals your proficiency bonus.
 
 Radiant Soul. Two luminous, spectral wings sprout from your back temporarily. Until the transformation ends, you have a flying speed equal to your walking speed, and once on each of your turns, you can deal extra radiant damage to one target when you deal damage to it with an attack or a spell. The extra damage equals your proficiency bonus.
-
-Mordenkainen Presents: Monsters of the Multiverse, pg. 7

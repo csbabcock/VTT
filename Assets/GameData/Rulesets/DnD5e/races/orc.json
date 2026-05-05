@@ -2,83 +2,85 @@
   "id": "race.orc",
   "name": "Orc",
   "parentId": "",
-  "sortName": "Orc",
-  "sourceFile": "orc.txt",
-  "description": "Lord Dagult Neverember once told me, during a drunken tirade, that orcs are fearful of their gods, and, if one plays one's cards right, they can be controlled through that fear and made to dance to any tune.",
-  "abilityScoreBonuses": [
+  "sortName": "0290",
+  "sourceFile": "Orc.txt",
+  "isGroupOnly": false,
+  "description": "Orcs trace their creation to the one-eyed god Gruumsh, an unstoppable warrior and powerful leader. The divine qualities of Gruumsh resonate within orcs, granting them a reflection of his toughness and tenacity that can't be matched, and the god equipped his children to be able to live above or below ground.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
     {
-      "ability": "STR",
-      "bonus": 2
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     },
     {
-      "ability": "CON",
-      "bonus": 1
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     }
   ],
-  "abilityScoreChoices": [],
-  "mechanicalEffects": [
-    {
-      "type": "language",
-      "name": "Languages",
-      "target": "language",
-      "value": "Common and Orc",
-      "amount": 0
-    }
-  ],
+  "selectableChoices": [],
+  "mechanicalEffects": [],
   "speed": 30,
   "size": "Medium",
   "hasDarkvision": true,
   "darkvisionRange": 60,
   "traits": [
-    "Ability Score Increase",
-    "Age",
     "Size",
     "Speed",
+    "You can take the Dash action as a bonus action",
     "Darkvision",
-    "Aggressive",
-    "Primal Intuition",
-    "Powerful Build"
+    "Powerful Build",
+    "Relentless Endurance"
   ],
   "features": [
     {
-      "name": "Ability Score Increase",
-      "description": "Your Strength score increases by 2 and your Constitution score increases by 1.",
-      "id": "feature.orc.ability_score_increase"
-    },
-    {
-      "name": "Age",
-      "description": "Orcs reach adulthood at age 12 and live up to 50 years.",
-      "id": "feature.orc.age"
-    },
-    {
       "name": "Size",
-      "description": "Orcs are usually over 6 feet tall and weigh between 230 and 280 pounds. Your size is Medium.",
+      "description": "You are Medium.",
       "id": "feature.orc.size"
     },
     {
       "name": "Speed",
-      "description": "Your base walking speed is 30 feet.",
+      "description": "Your walking speed is 30 feet.",
       "id": "feature.orc.speed"
     },
     {
+      "name": "You can take the Dash action as a bonus action",
+      "description": "You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest. Whenever you use this trait, you gain a number of temporary hit points equal to your proficiency bonus.",
+      "id": "feature.orc.you_can_take_the_dash_action_as_a_bonus_action"
+    },
+    {
       "name": "Darkvision",
-      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
       "id": "feature.orc.darkvision"
-    },
-    {
-      "name": "Aggressive",
-      "description": "As a bonus action, you can move up to your speed toward an enemy of your choice that you can see or hear. You must end this move closer to the enemy than you started.",
-      "id": "feature.orc.aggressive"
-    },
-    {
-      "name": "Primal Intuition",
-      "description": "You have proficiency in two of the following skills of your choice: Animal Handling, Insight, Intimidation, Medicine, Nature, Perception, and Survival.",
-      "id": "feature.orc.primal_intuition"
     },
     {
       "name": "Powerful Build",
       "description": "You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.",
       "id": "feature.orc.powerful_build"
+    },
+    {
+      "name": "Relentless Endurance",
+      "description": "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. Once you use this trait, you can't do so again until you finish a long rest.",
+      "id": "feature.orc.relentless_endurance"
     }
   ]
 }

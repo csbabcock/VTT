@@ -2,86 +2,18 @@
   "id": "race.elf",
   "name": "Elf",
   "parentId": "",
-  "sortName": "Elf",
-  "sourceFile": "elf.txt",
-  "description": "\"I have never imagined such beauty existed,\" Goldmoon said softly. The day's march had been difficult, but the reward at the end was beyond their dreams. The companions stood on a high cliff over the fabled city of Qualinost.",
-  "abilityScoreBonuses": [
-    {
-      "ability": "DEX",
-      "bonus": 2
-    }
-  ],
+  "sortName": "0090",
+  "sourceFile": "",
+  "isGroupOnly": true,
+  "description": "Elves are a magical people of otherworldly grace, living in the world but not entirely part of it. They live in places of ethereal beauty, in the midst of ancient forests or in silvery spires glittering with faerie light, where soft music drifts through the air and gentle fragrances waft on the breeze. Elves love nature and magic, art and artistry, music and poetry, and the good things of the world.",
+  "abilityScoreBonuses": [],
   "abilityScoreChoices": [],
-  "mechanicalEffects": [
-    {
-      "type": "proficiency",
-      "name": "Race Proficiency",
-      "target": "skill",
-      "value": "Perception",
-      "amount": 0
-    },
-    {
-      "type": "language",
-      "name": "Languages",
-      "target": "language",
-      "value": "Common and Elvish",
-      "amount": 0
-    }
-  ],
+  "selectableChoices": [],
+  "mechanicalEffects": [],
   "speed": 30,
   "size": "Medium",
-  "hasDarkvision": true,
-  "darkvisionRange": 60,
-  "traits": [
-    "Ability Score Increase",
-    "Age",
-    "Size",
-    "Speed",
-    "Darkvision",
-    "Keen Senses",
-    "Fey Ancestry",
-    "Trance"
-  ],
-  "features": [
-    {
-      "name": "Ability Score Increase",
-      "description": "Your Dexterity score increases by 2.",
-      "id": "feature.elf.ability_score_increase"
-    },
-    {
-      "name": "Age",
-      "description": "Although elves reach physical maturity at about the same age as humans, the elven understanding of adulthood goes beyond physical growth to encompass worldly experience. An elf typically claims adulthood and an adult name around the age of 100 and can live to be 750 years old.",
-      "id": "feature.elf.age"
-    },
-    {
-      "name": "Size",
-      "description": "Elves range from under 5 to over 6 feet tall and have slender builds. Your size is Medium.",
-      "id": "feature.elf.size"
-    },
-    {
-      "name": "Speed",
-      "description": "Your base walking speed is 30 feet.",
-      "id": "feature.elf.speed"
-    },
-    {
-      "name": "Darkvision",
-      "description": "Accustomed to twilit forests and the night sky, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
-      "id": "feature.elf.darkvision"
-    },
-    {
-      "name": "Keen Senses",
-      "description": "You have proficiency in the Perception skill.",
-      "id": "feature.elf.keen_senses"
-    },
-    {
-      "name": "Fey Ancestry",
-      "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
-      "id": "feature.elf.fey_ancestry"
-    },
-    {
-      "name": "Trance",
-      "description": "Elves don't need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day. (The Common word for such meditation is \"trance.\") While meditating, you can dream after a fashion; such dreams are actually mental exercises that have become reflexive through years of practice. After resting in this way, you gain the same benefit that a human does from 8 hours of sleep.",
-      "id": "feature.elf.trance"
-    }
-  ]
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [],
+  "features": []
 }

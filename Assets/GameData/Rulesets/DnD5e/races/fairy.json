@@ -2,8 +2,9 @@
   "id": "race.fairy",
   "name": "Fairy",
   "parentId": "",
-  "sortName": "Fairy",
-  "sourceFile": "fairy.txt",
+  "sortName": "0100",
+  "sourceFile": "Fairy.txt",
+  "isGroupOnly": false,
   "description": "The Feywild is home to many fantastic peoples, including fairies. Fairies are a wee folk, but not nearly as much so as their pixie and sprite friends. The first fairies spoke Elvish, Goblin, or Sylvan, and encounters with human visitors prompted many of them to learn Common as well.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,6 +37,19 @@
       ]
     }
   ],
+  "selectableChoices": [
+    {
+      "id": "choice.spellcasting_ability",
+      "type": "spellcastingAbility",
+      "name": "Choose spellcasting ability",
+      "count": 1,
+      "options": [
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
   "mechanicalEffects": [
     {
       "type": "speed",
@@ -43,17 +57,10 @@
       "target": "fly",
       "value": "equal to walking speed",
       "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Fey",
-      "amount": 0
     }
   ],
   "speed": 30,
-  "size": "Medium",
+  "size": "Small",
   "hasDarkvision": false,
   "darkvisionRange": 0,
   "traits": [

@@ -1,24 +1,16 @@
-Her father stood on the first of the three stairs that led down from the portal, unmoving. The scales of his face had grown paler around the edges, but Clanless Mehen still looked as if he could wrestle down a dire bear himself. His familiar well-worn armor was gone, replaced by violet-tinted scale armor with bright silvery tracings. There was a blazon on his arm as well, the mark of some foreign house. The sword at his back was the same, though, the one he had carried since even before he had found the twins left in swaddling at the gates of Arush Vayem.
-
-For all her life, Farideh had known that reading her father’s face was a skill she’d been fortunate to learn. A human who couldn’t spot the shift of her eyes or Havilar’s would certainly see only the indifference of a dragon in Clanless Mehen’s face. But the shift of scales, the arch of a ridge, the set of his eyes, the gape of his teeth—her father’s face spoke volumes.
-
-But every scale of it, this time, seemed completely still—the indifference of a dragon, even to Farideh.
-
-— Erin M. Evans, The Adversary
-
 Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.
 
 Proud Dragon Kin
 Dragonborn look very much like dragons standing erect in humanoid form, though they lack wings or a tail. The first dragonborn had scales of vibrant hues matching the colors of their dragon kin, but generations of interbreeding have created a more uniform appearance. Their small, fine scales are usually brass or bronze in color, sometimes ranging to scarlet, rust, gold, or copper-green. They are tall and strongly built, often standing close to 6½ feet tall and weighing 300 pounds or more. Their hands and feet are strong, talonlike claws with three fingers and a thumb on each hand.
 
-The blood of a particular type of dragon runs very strong through some dragonborn clans. These dragonborn often boast scales that more closely match those of their dragon ancestor—bright red, green, blue, or white, lustrous black, or gleaming metallic gold, silver, brass, copper, or bronze.
+The blood of a particular type of dragon runs very strong through some dragonborn clans. These dragonborn often boast scales that more closely match those of their dragon ancestor-bright red, green, blue, or white, lustrous black, or gleaming metallic gold, silver, brass, copper, or bronze.
 
 Self-Sufficient Clans
-To any dragonborn, the clan is more important than life itself. Dragonborn owe their devotion and respect to their clan above all else, even the gods. Each dragonborn’s conduct reflects on the honor of his or her clan, and bringing dishonor to the clan can result in expulsion and exile. Each dragonborn knows his or her station and duties within the clan, and honor demands maintaining the bounds of that position.
+To any dragonborn, the clan is more important than life itself. Dragonborn owe their devotion and respect to their clan above all else, even the gods. Each dragonborn's conduct reflects on the honor of his or her clan, and bringing dishonor to the clan can result in expulsion and exile. Each dragonborn knows his or her station and duties within the clan, and honor demands maintaining the bounds of that position.
 
 A continual drive for self-improvement reflects the self-sufficiency of the race as a whole. Dragonborn value skill and excellence in all endeavors. They hate to fail, and they push themselves to extreme efforts before they give up on something. A dragonborn holds mastery of a particular skill as a lifetime goal. Members of other races who share the same commitment find it easy to earn the respect of a dragonborn.
 
-Though all dragonborn strive to be self-sufficient, they recognize that help is sometimes needed in difficult situations. But the best source for such help is the clan, and when a clan needs help, it turns to another dragonborn clan before seeking aid from other races—or even from the gods.
+Though all dragonborn strive to be self-sufficient, they recognize that help is sometimes needed in difficult situations. But the best source for such help is the clan, and when a clan needs help, it turns to another dragonborn clan before seeking aid from other races-or even from the gods.
 
 Dragonborn Names
 Dragonborn have personal names given at birth, but they put their clan names first as a mark of honor. A childhood name or nickname is often used among clutchmates as a descriptive term or a term of endearment. The name might recall an event or center on a habit.
@@ -65,7 +57,7 @@ Red	Fire	15 ft. cone (Dex. save)
 Silver	Cold	15 ft. cone (Con. save)
 White	Cold	15 ft. cone (Con. save)
 Breath Weapon
-You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation. When you use your breath weapon, each creature in the area of the exhalation must make a saving throw, the type of which is determined by your draconic ancestry. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes 2d6 damage on a failed save, and half as much damage on a successful one. The damage increases to 3d6 at 6th level, 4d6 at 11th level, and 5d6 at 16th level. After you use your breath weapon, you can’t use it again until you complete a short or long rest.
+You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation. When you use your breath weapon, each creature in the area of the exhalation must make a saving throw, the type of which is determined by your draconic ancestry. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes 2d6 damage on a failed save, and half as much damage on a successful one. The damage increases to 3d6 at 6th level, 4d6 at 11th level, and 5d6 at 16th level. After you use your breath weapon, you can't use it again until you complete a short or long rest.
 
 Damage Resistance
 You have resistance to the damage type associated with your draconic ancestry.
@@ -74,23 +66,23 @@ Languages
 You can speak, read, and write Common and Draconic. Draconic is thought to be one of the oldest languages and is often used in the study of magic. The language sounds harsh to most other creatures and includes numerous hard consonants and sibilants.
 
 Chromatic Dragonborn
-Dragonborn with chromatic ancestry claim the raw elemental power of chromatic dragons. The vibrant colors of black, blue, green, red, and white dragons gleam in those dragonborn’s scaled skin and in the deadly energy of their breath weapons. Theirs is the raw elemental fury of the volcano, of biting arctic winds, and of raging lightning storms, as well as the subtle whisper of swamp and forest, toxic and corrosive.
+Dragonborn with chromatic ancestry claim the raw elemental power of chromatic dragons. The vibrant colors of black, blue, green, red, and white dragons gleam in those dragonborn's scaled skin and in the deadly energy of their breath weapons. Theirs is the raw elemental fury of the volcano, of biting arctic winds, and of raging lightning storms, as well as the subtle whisper of swamp and forest, toxic and corrosive.
 
 Creating Your Character
-When you create your D&D character, you decide whether your character is a member of the human race or one of the game’s fantastical races. If you select one of the dragonborn races in this chapter, follow these additional rules during character creation.
+When you create your D&D character, you decide whether your character is a member of the human race or one of the game's fantastical races. If you select one of the dragonborn races in this chapter, follow these additional rules during character creation.
 
 Ability Score Increases
-When determining your character’s ability scores, increase one of those scores by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy.
+When determining your character's ability scores, increase one of those scores by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy.
 
-The “Quick Build” section for your character’s class offers suggestions on which scores to increase. You’re free to follow those suggestions or to ignore them. Whichever scores you decide to increase, none of the scores can be raised above 20.
+The "Quick Build" section for your character's class offers suggestions on which scores to increase. You're free to follow those suggestions or to ignore them. Whichever scores you decide to increase, none of the scores can be raised above 20.
 
 Languages
-Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player’s Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
+Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player's Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
 
 Creature Type
-Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race option presented here tells you what your character’s creature type is.
+Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race option presented here tells you what your character's creature type is.
 
-Here’s a list of the game’s creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don’t have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn’t work on a Construct or an Undead.
+Here's a list of the game's creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don't have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn't work on a Construct or an Undead.
 
 Creature Type
 You are a Humanoid.
@@ -120,26 +112,26 @@ Draconic Resistance
 You have resistance to the damage type associated with your Chromatic Ancestry.
 
 Chromatic Warding
-Starting at 5th level, as an action, you can channel your draconic energy to protect yourself. For 1 minute, you become immune to the damage type associated with your Chromatic Ancestry. Once you use this trait, you can’t do so again until you finish a long rest.
+Starting at 5th level, as an action, you can channel your draconic energy to protect yourself. For 1 minute, you become immune to the damage type associated with your Chromatic Ancestry. Once you use this trait, you can't do so again until you finish a long rest.
 
 Gem Dragonborn
-Gem dragonborn partake of the heritage of gem dragons, who claim to be heirs of Sardior, the Ruby Dragon. The colors and mysterious powers of gem dragons—amethyst, crystal, emerald, sapphire, and topaz—gleam in these dragonborn’s scaled skin and course through their veins. Theirs are the wonders of the mind, the force of will, the brilliant light of insight, and the resounding echo of discovery—but also the desiccation of despair.
+Gem dragonborn partake of the heritage of gem dragons, who claim to be heirs of Sardior, the Ruby Dragon. The colors and mysterious powers of gem dragons-amethyst, crystal, emerald, sapphire, and topaz-gleam in these dragonborn's scaled skin and course through their veins. Theirs are the wonders of the mind, the force of will, the brilliant light of insight, and the resounding echo of discovery-but also the desiccation of despair.
 
 Creating Your Character
-When you create your D&D character, you decide whether your character is a member of the human race or one of the game’s fantastical races. If you select one of the dragonborn races in this chapter, follow these additional rules during character creation.
+When you create your D&D character, you decide whether your character is a member of the human race or one of the game's fantastical races. If you select one of the dragonborn races in this chapter, follow these additional rules during character creation.
 
 Ability Score Increases
-When determining your character’s ability scores, increase one of those scores by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy.
+When determining your character's ability scores, increase one of those scores by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy.
 
-The “Quick Build” section for your character’s class offers suggestions on which scores to increase. You’re free to follow those suggestions or to ignore them. Whichever scores you decide to increase, none of the scores can be raised above 20.
+The "Quick Build" section for your character's class offers suggestions on which scores to increase. You're free to follow those suggestions or to ignore them. Whichever scores you decide to increase, none of the scores can be raised above 20.
 
 Languages
-Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player’s Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
+Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player's Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
 
 Creature Type
-Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race option presented here tells you what your character’s creature type is.
+Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race option presented here tells you what your character's creature type is.
 
-Here’s a list of the game’s creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don’t have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn’t work on a Construct or an Undead.
+Here's a list of the game's creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don't have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn't work on a Construct or an Undead.
 
 Creature Type
 You are a Humanoid.
@@ -169,29 +161,29 @@ Draconic Resistance
 You have resistance to the damage type associated with your Gem Ancestry.
 
 Psionic Mind
-You can send telepathic messages to any creature you can see within 30 feet of you. You don’t need to share a language with the creature for it to understand these messages, but it must be able to understand at least one language to comprehend them.
+You can send telepathic messages to any creature you can see within 30 feet of you. You don't need to share a language with the creature for it to understand these messages, but it must be able to understand at least one language to comprehend them.
 
 Gem Flight
-Starting at 5th level, you can use a bonus action to manifest spectral wings on your body. These wings last for 1 minute. For the duration, you gain a flying speed equal to your walking speed and can hover. Once you use this trait, you can’t do so again until you finish a long rest.
+Starting at 5th level, you can use a bonus action to manifest spectral wings on your body. These wings last for 1 minute. For the duration, you gain a flying speed equal to your walking speed and can hover. Once you use this trait, you can't do so again until you finish a long rest.
 
 Metallic Dragonborn
-Dragonborn with metallic ancestry lay claim to the tenacity of metallic dragons—brass, bronze, copper, gold, and silver—whose hues glint in their scales. Theirs is the fire of hearth and forge, the cold of high mountain air, the spark of inspiration, and the scouring touch of acid that purifies.
+Dragonborn with metallic ancestry lay claim to the tenacity of metallic dragons-brass, bronze, copper, gold, and silver-whose hues glint in their scales. Theirs is the fire of hearth and forge, the cold of high mountain air, the spark of inspiration, and the scouring touch of acid that purifies.
 
 Creating Your Character
-When you create your D&D character, you decide whether your character is a member of the human race or one of the game’s fantastical races. If you select one of the dragonborn races in this chapter, follow these additional rules during character creation.
+When you create your D&D character, you decide whether your character is a member of the human race or one of the game's fantastical races. If you select one of the dragonborn races in this chapter, follow these additional rules during character creation.
 
 Ability Score Increases
-When determining your character’s ability scores, increase one of those scores by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy.
+When determining your character's ability scores, increase one of those scores by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy.
 
-The “Quick Build” section for your character’s class offers suggestions on which scores to increase. You’re free to follow those suggestions or to ignore them. Whichever scores you decide to increase, none of the scores can be raised above 20.
+The "Quick Build" section for your character's class offers suggestions on which scores to increase. You're free to follow those suggestions or to ignore them. Whichever scores you decide to increase, none of the scores can be raised above 20.
 
 Languages
-Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player’s Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
+Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player's Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
 
 Creature Type
-Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race option presented here tells you what your character’s creature type is.
+Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race option presented here tells you what your character's creature type is.
 
-Here’s a list of the game’s creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don’t have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn’t work on a Construct or an Undead.
+Here's a list of the game's creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don't have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn't work on a Construct or an Undead.
 
 Creature Type
 You are a Humanoid.
@@ -227,32 +219,32 @@ Enervating Breath. Each creature in the cone must succeed on a Constitution savi
 
 Repulsion Breath. Each creature in the cone must succeed on a Strength saving throw or be pushed 20 feet away from you and be knocked prone.
 
-Once you use your Metallic Breath Weapon, you can’t do so again until you finish a long rest.
+Once you use your Metallic Breath Weapon, you can't do so again until you finish a long rest.
 
 Draconblood Dragonborn
 Draconbloods possess long tails and a knack for social manipulation. They remember the days when they were once mighty conquerors.
 
-A draconblood uses the dragonborn traits in the Player’s Handbook, with the following traits replacing the Ability Score Increase and Damage Resistance traits.
+A draconblood uses the dragonborn traits in the Player's Handbook, with the following traits replacing the Ability Score Increase and Damage Resistance traits.
 
 Ability Score Increase
 Your Intelligence score increases by 2, and your Charisma score increases by 1.
 
 Darkvision
-You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can’t discern color in darkness, only shades of gray.
+You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.
 
 Forceful Presence
-You can use your understanding of creative diplomacy or intimidation to guide a conversation in your favor. When you make a Charisma (Intimidation or Persuasion) check, you can do so with advantage. Once you use this trait, you can’t do so again until you finish a short or long rest.
+You can use your understanding of creative diplomacy or intimidation to guide a conversation in your favor. When you make a Charisma (Intimidation or Persuasion) check, you can do so with advantage. Once you use this trait, you can't do so again until you finish a short or long rest.
 
 Ravenite Dragonborn
 Ravenites have no tails and a hearty physique. They remember the days when they were slaves to the draconblood, as well as the day when they overthrew their masters.
 
-A ravenite uses the dragonborn traits in the Player’s Handbook, with the following traits replacing the Ability Score Increase and Damage Resistance traits.
+A ravenite uses the dragonborn traits in the Player's Handbook, with the following traits replacing the Ability Score Increase and Damage Resistance traits.
 
 Ability Score Increase
 Your Strength score increases by 2, and your Constitution score increases by 1.
 
 Darkvision
-You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can’t discern color in darkness, only shades of gray.
+You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.
 
 Vengeful Assault
-When you take damage from a creature in range of a weapon you are wielding, you can use your reaction to make an attack with the weapon against that creature. Once you use this trait, you can’t do so again until you finish a short or long rest.
+When you take damage from a creature in range of a weapon you are wielding, you can use your reaction to make an attack with the weapon against that creature. Once you use this trait, you can't do so again until you finish a short or long rest.

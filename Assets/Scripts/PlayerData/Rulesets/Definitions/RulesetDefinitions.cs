@@ -41,6 +41,19 @@ namespace GameCore.PlayerData.Rulesets.Definitions
     }
 
     /// <summary>
+    /// A non-ASI race choice such as a language, cantrip, skill, tool, or weapon selection.
+    /// </summary>
+    [Serializable]
+    public class SelectableChoiceDefinition
+    {
+        public string id;
+        public string type;     // e.g., "language", "cantrip", "skill", "tool", "weapon"
+        public string name;
+        public int count = 1;
+        public List<string> options;
+    }
+
+    /// <summary>
     /// Generic feature definition used by races, classes, backgrounds, etc.
     /// </summary>
     [Serializable]
@@ -64,11 +77,13 @@ namespace GameCore.PlayerData.Rulesets.Definitions
         public string parentId;             // e.g., "race.dwarf" for grouped subraces
         public string sortName;             // Optional stable sort key inside grouped UI
         public string sourceFile;           // Optional import traceability
+        public bool isGroupOnly;            // Non-selectable parent used only to group child races
         [TextArea]
         public string description;
 
         public List<AbilityScoreBonusDefinition> abilityScoreBonuses;
         public List<AbilityScoreChoiceDefinition> abilityScoreChoices;
+        public List<SelectableChoiceDefinition> selectableChoices;
         public List<MechanicalEffectDefinition> mechanicalEffects;
         public int speed;                   // Base walking speed in feet
         public string size;                 // e.g., "Small", "Medium"

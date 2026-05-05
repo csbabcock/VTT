@@ -2,11 +2,74 @@
   "id": "race.owlin",
   "name": "Owlin",
   "parentId": "",
-  "sortName": "Owlin",
-  "sourceFile": "owlin.txt",
-  "description": "Distant kin of giant owls from the Feywild, owlin come in many shapes and sizes, from petite and fluffy to wide-winged and majestic. Owlin have arms and legs like other Humanoids, as well as wings that extend from their back and shoulders.",
+  "sortName": "0300",
+  "sourceFile": "Owlin.txt",
+  "isGroupOnly": false,
+  "description": "Distant kin of giant owls from the Feywild, owlin come in many shapes and sizes, from petite and fluffy to wide-winged and majestic. Owlin have arms and legs like other Humanoids, as well as wings that extend from their back and shoulders.\nLike owls, owlin are graced with feathers that make no sound when they move or fly, making it easy for them to sneak up on you in the library.\nYour owlin character might be nocturnal. Or perhaps your character is simply prone to rise later, embodying the common nickname of night owl.",
   "abilityScoreBonuses": [],
-  "abilityScoreChoices": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "selectableChoices": [
+    {
+      "id": "choice.language.extra",
+      "type": "language",
+      "name": "Choose an extra language",
+      "count": 1,
+      "options": [
+        "Dwarvish",
+        "Elvish",
+        "Giant",
+        "Gnomish",
+        "Goblin",
+        "Halfling",
+        "Orc",
+        "Abyssal",
+        "Celestial",
+        "Draconic",
+        "Deep Speech",
+        "Infernal",
+        "Primordial",
+        "Sylvan",
+        "Undercommon",
+        "Aquan",
+        "Auran",
+        "Ignan",
+        "Terran",
+        "Leonin",
+        "Loxodon",
+        "Minotaur",
+        "Vedalken"
+      ]
+    }
+  ],
   "mechanicalEffects": [
     {
       "type": "speed",
@@ -16,17 +79,17 @@
       "amount": 0
     },
     {
-      "type": "proficiency",
-      "name": "Race Proficiency",
-      "target": "skill",
-      "value": "Stealth",
-      "amount": 0
-    },
-    {
       "type": "creatureType",
       "name": "Creature Type",
       "target": "creatureType",
       "value": "Humanoid",
+      "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Language",
+      "target": "language",
+      "value": "Common",
       "amount": 0
     }
   ],
@@ -35,6 +98,7 @@
   "hasDarkvision": true,
   "darkvisionRange": 120,
   "traits": [
+    "Ability Score Increase",
     "Size",
     "Speed",
     "Darkvision",
@@ -42,6 +106,11 @@
     "Silent Feathers"
   ],
   "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Increase one ability score by 2, and increase a different one by 1.",
+      "id": "feature.owlin.ability_score_increase"
+    },
     {
       "name": "Size",
       "description": "You are Medium or Small. You choose the size when you select this race.",

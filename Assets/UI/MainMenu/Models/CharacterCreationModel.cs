@@ -45,6 +45,7 @@ namespace GameCore.UI.MainMenu
         public string SelectedScoreMethod; // "Roll", "StandardArray", "Manual", "PointBuy", or ""
         public bool AbilityScoresLocked; // When true, pool and method buttons are hidden; only final ability scores shown
         public Dictionary<string, string> SelectedRaceAbilityChoices; // choice id -> ability code
+        public Dictionary<string, string> SelectedRaceChoices; // non-ASI race choice id -> selected option
     }
 
     /// <summary>
@@ -124,7 +125,8 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = false,
                 SelectedScoreMethod = string.Empty,
                 AbilityScoresLocked = false,
-                SelectedRaceAbilityChoices = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                SelectedRaceAbilityChoices = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                SelectedRaceChoices = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             };
         }
 
@@ -149,7 +151,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
 
             StateChanged?.Invoke(State);
@@ -195,7 +198,8 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
             StateChanged?.Invoke(State);
         }
@@ -234,7 +238,9 @@ namespace GameCore.UI.MainMenu
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
-                AbilityScoresLocked = locked
+                AbilityScoresLocked = locked,
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
             StateChanged?.Invoke(State);
         }
@@ -278,7 +284,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
             StateChanged?.Invoke(State);
         }
@@ -316,7 +323,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = characterLevel,
                 ClassLevels = newLevels,
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
 
             StateChanged?.Invoke(State);
@@ -360,7 +368,8 @@ namespace GameCore.UI.MainMenu
                 IsManualMode = State.IsManualMode,
                 SelectedScoreMethod = State.SelectedScoreMethod,
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
             StateChanged?.Invoke(State);
             return true;
@@ -442,7 +451,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                SelectedRaceChoices = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             };
 
             StateChanged?.Invoke(State);
@@ -476,10 +486,53 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = choices
+                SelectedRaceAbilityChoices = choices,
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
 
             StateChanged?.Invoke(State);
+        }
+
+
+        public void SetRaceChoice(string choiceId, string selectedOption)
+        {
+            if (string.IsNullOrEmpty(choiceId) || string.IsNullOrEmpty(selectedOption))
+                return;
+
+            Dictionary<string, string> choices = CloneRaceChoices(State.SelectedRaceChoices);
+            if (choices.TryGetValue(choiceId, out string current) &&
+                string.Equals(current, selectedOption, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            choices[choiceId] = selectedOption;
+            State = new CharacterCreationState
+            {
+                IsVisible = State.IsVisible,
+                SelectedClassId = State.SelectedClassId,
+                SelectedRaceId = State.SelectedRaceId,
+                SelectedBackgroundId = State.SelectedBackgroundId,
+                AbilityScores = State.AbilityScores,
+                RolledScores = State.RolledScores,
+                RolledDiceBreakdown = State.RolledDiceBreakdown,
+                RolledDroppedIndices = State.RolledDroppedIndices,
+                AssignedRolledScoreIndices = State.AssignedRolledScoreIndices,
+                IsManualMode = State.IsManualMode,
+                SelectedScoreMethod = State.SelectedScoreMethod,
+                CharacterLevel = State.CharacterLevel,
+                ClassLevels = CloneClassLevels(State.ClassLevels),
+                AbilityScoresLocked = State.AbilityScoresLocked,
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = choices
+            };
+
+            StateChanged?.Invoke(State);
+        }
+
+        private static Dictionary<string, string> CloneRaceChoices(Dictionary<string, string> choices)
+        {
+            return choices != null
+                ? new Dictionary<string, string>(choices, StringComparer.OrdinalIgnoreCase)
+                : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         private static Dictionary<string, string> CloneRaceAbilityChoices(Dictionary<string, string> choices)
@@ -510,7 +563,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
 
             StateChanged?.Invoke(State);
@@ -545,7 +599,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
 
             StateChanged?.Invoke(State);
@@ -584,7 +639,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
 
             StateChanged?.Invoke(State);
@@ -627,7 +683,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
 
             StateChanged?.Invoke(State);
@@ -666,7 +723,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
 
             StateChanged?.Invoke(State);
@@ -714,7 +772,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
 
             StateChanged?.Invoke(State);
@@ -782,7 +841,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
 
             StateChanged?.Invoke(State);
@@ -833,7 +893,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
 
             StateChanged?.Invoke(State);
@@ -871,7 +932,8 @@ namespace GameCore.UI.MainMenu
                 CharacterLevel = State.CharacterLevel,
                 ClassLevels = CloneClassLevels(State.ClassLevels),
                 AbilityScoresLocked = State.AbilityScoresLocked,
-                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices)
+                SelectedRaceAbilityChoices = CloneRaceAbilityChoices(State.SelectedRaceAbilityChoices),
+                SelectedRaceChoices = CloneRaceChoices(State.SelectedRaceChoices)
             };
 
             StateChanged?.Invoke(State);

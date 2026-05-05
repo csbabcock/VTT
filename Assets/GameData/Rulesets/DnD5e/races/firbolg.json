@@ -2,36 +2,60 @@
   "id": "race.firbolg",
   "name": "Firbolg",
   "parentId": "",
-  "sortName": "Firbolg",
-  "sourceFile": "firbolg.txt",
-  "description": "We spent three months tracking the green dragon before locating the forest in which it sought refuge. On our second day in that place, we woke to find the dragon's head placed in the center of our camp. Soveliss told me that firbolgs must have claimed the forest, and they wanted to show us we had no further business there. If we lingered, he assured me, our heads would be next.",
-  "abilityScoreBonuses": [
+  "sortName": "0110",
+  "sourceFile": "Firbolg.txt",
+  "isGroupOnly": false,
+  "description": "Distant cousins of giants, the first firbolgs wandered the primeval forests of the multiverse, and the magic of those forests entwined itself with the firbolgs' souls. Centuries later, that magic still thrums inside a firbolg, even one who has never lived under the boughs of a great forest.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
     {
-      "ability": "STR",
-      "bonus": 1
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     },
     {
-      "ability": "WIS",
-      "bonus": 2
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     }
   ],
-  "abilityScoreChoices": [],
-  "mechanicalEffects": [
+  "selectableChoices": [
     {
-      "type": "language",
-      "name": "Languages",
-      "target": "language",
-      "value": "Common, Elvish, and Giant",
-      "amount": 0
+      "id": "choice.spellcasting_ability",
+      "type": "spellcastingAbility",
+      "name": "Choose spellcasting ability",
+      "count": 1,
+      "options": [
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     }
   ],
+  "mechanicalEffects": [],
   "speed": 30,
   "size": "Medium",
   "hasDarkvision": false,
   "darkvisionRange": 0,
   "traits": [
-    "Ability Score Increase",
-    "Age",
     "Size",
     "Speed",
     "Firbolg Magic",
@@ -41,33 +65,23 @@
   ],
   "features": [
     {
-      "name": "Ability Score Increase",
-      "description": "Your Wisdom score increases by 2, and your Strength score increases by 1.",
-      "id": "feature.firbolg.ability_score_increase"
-    },
-    {
-      "name": "Age",
-      "description": "As humanoids related to the fey, firbolg have long lifespans. A firbolg reaches adulthood around 30, and the oldest of them can live for 500 years.",
-      "id": "feature.firbolg.age"
-    },
-    {
       "name": "Size",
-      "description": "Firbolg are between 7 and 8 feet tall and weigh between 240 and 300 pounds. Your size is Medium.",
+      "description": "You are Medium.",
       "id": "feature.firbolg.size"
     },
     {
       "name": "Speed",
-      "description": "Your base walking speed is 30 feet.",
+      "description": "Your walking speed is 30 feet.",
       "id": "feature.firbolg.speed"
     },
     {
       "name": "Firbolg Magic",
-      "description": "You can cast detect magic and disguise self with this trait, using Wisdom as your spellcasting ability for them. Once you cast either spell, you can't cast it again with this trait until you finish a short or long rest. When you use this version of disguise self, you can seem up to 3 feet shorter than normal, allowing you to more easily blend in with humans and elves.",
+      "description": "You can cast the detect magic and disguise self spells with this trait. When you use this version of disguise self, you can seem up to 3 feet shorter or taller. Once you cast either of these spells with this trait, you can't cast that spell with it again until you finish a long rest. You can also cast these spells using any spell slots you have.\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
       "id": "feature.firbolg.firbolg_magic"
     },
     {
       "name": "Hidden Step",
-      "description": "As a bonus action, you can magically turn invisible until the start of your next turn or until you attack, make a damage roll, or force someone to make a saving throw. Once you use this trait, you can't use it again until you finish a short or long rest.",
+      "description": "As a bonus action, you can magically turn invisible until the start of your next turn or until you attack, make a damage roll, or force someone to make a saving throw. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
       "id": "feature.firbolg.hidden_step"
     },
     {
@@ -77,7 +91,7 @@
     },
     {
       "name": "Speech of Beast and Leaf",
-      "description": "You have the ability to communicate in a limited manner with beasts and plants. They can understand the meaning of your words, though you have no special ability to understand them in return. You have advantage on all Charisma checks you make to influence them.",
+      "description": "You have the ability to communicate in a limited manner with Beasts, Plants, and vegetation. They can understand the meaning of your words, though you have no special ability to understand them in return. You have advantage on all Charisma checks you make to influence them.",
       "id": "feature.firbolg.speech_of_beast_and_leaf"
     }
   ]

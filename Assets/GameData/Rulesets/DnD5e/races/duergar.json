@@ -2,8 +2,9 @@
   "id": "race.duergar",
   "name": "Duergar",
   "parentId": "race.dwarf",
-  "sortName": "Duergar",
-  "sourceFile": "duergar.txt",
+  "sortName": "008001",
+  "sourceFile": "Duergar.txt",
+  "isGroupOnly": false,
   "description": "Duergar are dwarves whose ancestors were transformed by centuries living in the deepest places of the Underdark. That chthonic realm is saturated with strange magical energy, and over generations, early duergar absorbed traces of it. They were further altered when mind flayers and other Aberrations invaded and performed horrific experiments on them. Fueled by Underdark magic, those experiments left early duergar with psionic powers, which have been passed down to their descendants. In time, they liberated themselves from their aberrant tyrants and forged a new life for themselves in the Underdark and beyond.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,19 +37,25 @@
       ]
     }
   ],
+  "selectableChoices": [
+    {
+      "id": "choice.spellcasting_ability",
+      "type": "spellcastingAbility",
+      "name": "Choose spellcasting ability",
+      "count": 1,
+      "options": [
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
   "mechanicalEffects": [
     {
       "type": "resistance",
       "name": "Poison Resistance",
       "target": "poison",
       "value": "Poison damage",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
       "amount": 0
     }
   ],
@@ -57,6 +64,7 @@
   "hasDarkvision": true,
   "darkvisionRange": 120,
   "traits": [
+    "You are a Humanoid",
     "Size",
     "Speed",
     "Darkvision",
@@ -65,6 +73,11 @@
     "Psionic Fortitude"
   ],
   "features": [
+    {
+      "name": "You are a Humanoid",
+      "description": "You are also considered a dwarf for any prerequisite or effect that requires you to be a dwarf.",
+      "id": "feature.duergar.you_are_a_humanoid"
+    },
     {
       "name": "Size",
       "description": "You are Medium.",

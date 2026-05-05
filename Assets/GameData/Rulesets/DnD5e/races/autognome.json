@@ -2,12 +2,113 @@
   "id": "race.autognome",
   "name": "Autognome",
   "parentId": "",
-  "sortName": "Autognome",
-  "sourceFile": "autognome.txt",
+  "sortName": "0030",
+  "sourceFile": "Autognome.txt",
+  "isGroupOnly": false,
   "description": "Autognomes are mechanical beings built by rock gnomes. Sometimes, because of a malfunction or a unique circumstance, an autognome becomes separated from its creator and strikes out on its own.",
   "abilityScoreBonuses": [],
-  "abilityScoreChoices": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "selectableChoices": [
+    {
+      "id": "choice.language.extra",
+      "type": "language",
+      "name": "Choose an extra language",
+      "count": 1,
+      "options": [
+        "Dwarvish",
+        "Elvish",
+        "Giant",
+        "Gnomish",
+        "Goblin",
+        "Halfling",
+        "Orc",
+        "Abyssal",
+        "Celestial",
+        "Draconic",
+        "Deep Speech",
+        "Infernal",
+        "Primordial",
+        "Sylvan",
+        "Undercommon",
+        "Aquan",
+        "Auran",
+        "Ignan",
+        "Terran",
+        "Leonin",
+        "Loxodon",
+        "Minotaur",
+        "Vedalken"
+      ]
+    },
+    {
+      "id": "choice.tool",
+      "type": "tool",
+      "name": "Choose a tool or weapon proficiency",
+      "count": 1,
+      "options": [
+        "Alchemist's supplies",
+        "Brewer's supplies",
+        "Calligrapher's supplies",
+        "Carpenter's tools",
+        "Cartographer's tools",
+        "Cobbler's tools",
+        "Cook's utensils",
+        "Glassblower's tools",
+        "Jeweler's tools",
+        "Leatherworker's tools",
+        "Mason's tools",
+        "Painter's supplies",
+        "Potter's tools",
+        "Smith's tools",
+        "Tinker's tools",
+        "Weaver's tools",
+        "Woodcarver's tools",
+        "Thieves' tools",
+        "Disguise kit",
+        "Forgery kit",
+        "Herbalism kit",
+        "Navigator's tools",
+        "Poisoner's kit"
+      ]
+    }
+  ],
   "mechanicalEffects": [
+    {
+      "type": "naturalArmor",
+      "name": "Natural Armor",
+      "target": "armorClass",
+      "value": "Base AC 13",
+      "amount": 13
+    },
     {
       "type": "resistance",
       "name": "Poison Resistance",
@@ -16,24 +117,80 @@
       "amount": 0
     },
     {
-      "type": "language",
-      "name": "Languages",
-      "target": "language",
-      "value": "Common and one other language that you and your DM agree is appropriate",
-      "amount": 0
-    },
-    {
       "type": "creatureType",
       "name": "Creature Type",
       "target": "creatureType",
       "value": "Construct",
       "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Language",
+      "target": "language",
+      "value": "Common",
+      "amount": 0
     }
   ],
   "speed": 30,
-  "size": "Medium",
+  "size": "Small",
   "hasDarkvision": false,
   "darkvisionRange": 0,
-  "traits": [],
-  "features": []
+  "traits": [
+    "Ability Score Increase",
+    "Size",
+    "Speed",
+    "Armored Casing",
+    "Built for Success",
+    "Healing Machine",
+    "Mechanical Nature",
+    "Sentry's Rest",
+    "Specialized Design"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Increase one ability score by 2, and increase a different one by 1, or increase three different scores by 1.",
+      "id": "feature.autognome.ability_score_increase"
+    },
+    {
+      "name": "Size",
+      "description": "You are Small.",
+      "id": "feature.autognome.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet.",
+      "id": "feature.autognome.speed"
+    },
+    {
+      "name": "Armored Casing",
+      "description": "You are encased in a thin metal or some other durable material. While you aren't wearing armor, your base Armor Class is 13 + your Dexterity modifier.",
+      "id": "feature.autognome.armored_casing"
+    },
+    {
+      "name": "Built for Success",
+      "description": "You can add a d4 to one attack roll, ability check, or saving throw you make, and you can do so after seeing the d20 roll but before the effects of the roll are resolved. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+      "id": "feature.autognome.built_for_success"
+    },
+    {
+      "name": "Healing Machine",
+      "description": "If the Mending spell is cast on you, you can spend a Hit Die, roll it, and regain a number of hit points equal to the roll plus your Constitution modifier (minimum of 1 hit point). In addition, your creator designed you to benefit from several spells that preserve life but that normally don't affect Constructs: Cure Wounds, Healing Word, Mass Cure Wounds, Mass Healing Word, and Spare the Dying.",
+      "id": "feature.autognome.healing_machine"
+    },
+    {
+      "name": "Mechanical Nature",
+      "description": "You have resistance to poison damage and immunity to disease, and you have advantage on saving throws against being paralyzed or poisoned. You don't need to eat, drink, or breathe.",
+      "id": "feature.autognome.mechanical_nature"
+    },
+    {
+      "name": "Sentry's Rest",
+      "description": "When you take a long rest, you spend at least 6 hours in an inactive, motionless state, instead of sleeping. In this state, you appear inert, but you remain conscious.",
+      "id": "feature.autognome.sentry_s_rest"
+    },
+    {
+      "name": "Specialized Design",
+      "description": "You gain two tool proficiencies of your choice, selected from the Player's Handbook.",
+      "id": "feature.autognome.specialized_design"
+    }
+  ]
 }

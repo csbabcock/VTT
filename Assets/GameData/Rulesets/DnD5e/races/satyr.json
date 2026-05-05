@@ -2,8 +2,9 @@
   "id": "race.satyr",
   "name": "Satyr",
   "parentId": "",
-  "sortName": "Satyr",
-  "sourceFile": "satyr.txt",
+  "sortName": "0330",
+  "sourceFile": "Satyr.txt",
+  "isGroupOnly": false,
   "description": "Originating in the Feywild-a realm of pure emotion- satyrs thrive on the energy of merriment. They resemble elves but have goatlike legs, cloven hooves, and ram or goat horns. The magic of the fey realm has given them an innate ability to perform, to delight, and to resist magical intrusion. While they're usually found in the Feywild, satyrs do wander to other planes of existence, most often to the Material Plane. There they seek to bring a bit of their home plane's splendor to other worlds.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,22 +37,8 @@
       ]
     }
   ],
-  "mechanicalEffects": [
-    {
-      "type": "proficiency",
-      "name": "Race Proficiency",
-      "target": "weapon",
-      "value": "Performance",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Fey",
-      "amount": 0
-    }
-  ],
+  "selectableChoices": [],
+  "mechanicalEffects": [],
   "speed": 35,
   "size": "Medium",
   "hasDarkvision": false,
@@ -59,7 +46,7 @@
   "traits": [
     "Size",
     "Speed",
-    "Ram",
+    "You can use your head and horns to make unarmed strikes",
     "Magic Resistance",
     "Mirthful Leaps",
     "Reveler"
@@ -76,9 +63,9 @@
       "id": "feature.satyr.speed"
     },
     {
-      "name": "Ram",
-      "description": "You can use your head and horns to make unarmed strikes. When you hit with them, the strike deals 1d6 + your Strength modifier bludgeoning damage, instead of the bludgeoning damage normal for an unarmed strike.",
-      "id": "feature.satyr.ram"
+      "name": "You can use your head and horns to make unarmed strikes",
+      "description": "When you hit with them, the strike deals 1d6 + your Strength modifier bludgeoning damage, instead of the bludgeoning damage normal for an unarmed strike.",
+      "id": "feature.satyr.you_can_use_your_head_and_horns_to_make_unarmed_strikes"
     },
     {
       "name": "Magic Resistance",

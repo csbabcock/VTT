@@ -2,8 +2,9 @@
   "id": "race.earth_genasi",
   "name": "Earth Genasi",
   "parentId": "race.genasi",
-  "sortName": "Earth Genasi",
-  "sourceFile": "earth genasi.txt",
+  "sortName": "012002",
+  "sourceFile": "Earth Genasi.txt",
+  "isGroupOnly": false,
   "description": "Tracing their ancestry to dao, the genies of the Elemental Plane of Earth, earth genasi inherit dao's steadfast strength and control over earth.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,31 +37,36 @@
       ]
     }
   ],
-  "mechanicalEffects": [
+  "selectableChoices": [
     {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
-      "amount": 0
+      "id": "choice.spellcasting_ability",
+      "type": "spellcastingAbility",
+      "name": "Choose spellcasting ability",
+      "count": 1,
+      "options": [
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     }
   ],
+  "mechanicalEffects": [],
   "speed": 30,
   "size": "Medium or Small",
   "hasDarkvision": true,
   "darkvisionRange": 60,
   "traits": [
-    "Size",
+    "You are Medium or Small",
     "Speed",
     "Darkvision",
     "Earth Walk",
-    "Merge with Stone"
+    "You know the blade ward cantrip"
   ],
   "features": [
     {
-      "name": "Size",
-      "description": "You are Medium or Small. You choose the size when you select this race.",
-      "id": "feature.earth_genasi.size"
+      "name": "You are Medium or Small",
+      "description": "You choose the size when you select this race.",
+      "id": "feature.earth_genasi.you_are_medium_or_small"
     },
     {
       "name": "Speed",
@@ -78,9 +84,9 @@
       "id": "feature.earth_genasi.earth_walk"
     },
     {
-      "name": "Merge with Stone",
-      "description": "You know the blade ward cantrip. You can cast it as normal, and you can also cast it as a bonus action a number of times equal to your proficiency bonus, regaining all expended uses when you finish a long rest.\n\nStarting at 5th level, you can cast the pass without trace spell with this trait, without requiring a material component. Once you cast that spell with this trait, you can't do so again until you finish a long rest. You can also cast it using any spell slots you have of 2nd level or higher.\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
-      "id": "feature.earth_genasi.merge_with_stone"
+      "name": "You know the blade ward cantrip",
+      "description": "You can cast it as normal, and you can also cast it as a bonus action a number of times equal to your proficiency bonus, regaining all expended uses when you finish a long rest.\n\nStarting at 5th level, you can cast the pass without trace spell with this trait, without requiring a material component. Once you cast that spell with this trait, you can't do so again until you finish a long rest. You can also cast it using any spell slots you have of 2nd level or higher.\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
+      "id": "feature.earth_genasi.you_know_the_blade_ward_cantrip"
     }
   ]
 }

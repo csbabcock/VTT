@@ -1,9 +1,10 @@
 {
   "id": "race.goblin",
   "name": "Goblin",
-  "parentId": "",
-  "sortName": "Goblin",
-  "sourceFile": "goblin.txt",
+  "parentId": "race.goblinoid",
+  "sortName": "017002",
+  "sourceFile": "Goblin.txt",
+  "isGroupOnly": false,
   "description": "A subterranean folk, goblins can be found in every corner of the multiverse, often beside their bugbear and hobgoblin kin. Long before the god Maglubiyet conquered them, early goblins served in the court of the Queen of Air and Darkness, one of the Feywild's archfey. Goblins thrived in her dangerous domain thanks to a special boon from her-a supernatural knack for finding the weak spots in foes larger than themselves and for getting out of trouble. Goblins brought this fey boon with them to worlds across the Material Plane, even if they don't remember the fey realm they inhabited before Maglubiyet's rise. Now many goblins pursue their own destinies, escaping the plots of both archfey and gods.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,20 +37,14 @@
       ]
     }
   ],
-  "mechanicalEffects": [
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
-      "amount": 0
-    }
-  ],
+  "selectableChoices": [],
+  "mechanicalEffects": [],
   "speed": 30,
-  "size": "Medium",
+  "size": "Small",
   "hasDarkvision": true,
   "darkvisionRange": 60,
   "traits": [
+    "You are a Humanoid",
     "Size",
     "Speed",
     "Darkvision",
@@ -58,6 +53,11 @@
     "Nimble Escape"
   ],
   "features": [
+    {
+      "name": "You are a Humanoid",
+      "description": "You are also considered a goblinoid for any prerequisite or effect that requires you to be a goblinoid.",
+      "id": "feature.goblin.you_are_a_humanoid"
+    },
     {
       "name": "Size",
       "description": "You are Small.",

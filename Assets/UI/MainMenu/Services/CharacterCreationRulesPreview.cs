@@ -62,7 +62,8 @@ namespace GameCore.UI.MainMenu.Services
         public static List<CharacterProficiencySection> BuildProficiencySections(
             ClassDefinition classDef,
             BackgroundDefinition background,
-            RaceDefinition race = null)
+            RaceDefinition race = null,
+            IReadOnlyDictionary<string, string> selectedRaceChoices = null)
         {
             var list = new List<CharacterProficiencySection>();
             AddIfNonEmpty(list, "Saving throws", classDef?.savingThrowProficiencies);
@@ -71,6 +72,7 @@ namespace GameCore.UI.MainMenu.Services
             AddIfNonEmpty(list, "Skills (background)", background?.skillProficiencies);
             AddIfNonEmpty(list, "Tools (background)", background?.toolProficiencies);
             AddRaceProficiencies(list, race);
+            AddSelectedRaceChoices(list, race, selectedRaceChoices);
             return list;
         }
 
@@ -209,6 +211,59 @@ namespace GameCore.UI.MainMenu.Services
             AddIfNonEmpty(destination, "Armor (race)", armor);
             AddIfNonEmpty(destination, "Defenses (race)", defenses);
             AddIfNonEmpty(destination, "Languages (race)", languages);
+        }
+
+        private static void AddSelectedRaceChoices(
+            List<CharacterProficiencySection> destination,
+            RaceDefinition race,
+            IReadOnlyDictionary<string, string> selectedChoices)
+        {
+            if (race?.selectableChoices == null || selectedChoices == null || selectedChoices.Count == 0)
+                return;
+
+            var languages = new List<string>();
+            var cantrips = new List<string>();
+            var skills = new List<string>();
+            var tools = new List<string>();
+            var weapons = new List<string>();
+            var other = new List<string>();
+
+            foreach (SelectableChoiceDefinition choice in race.selectableChoices)
+            {
+                if (choice == null || string.IsNullOrEmpty(choice.id) ||
+                    !selectedChoices.TryGetValue(choice.id, out string selected) ||
+                    string.IsNullOrEmpty(selected))
+                    continue;
+
+                switch ((choice.type ?? string.Empty).Trim().ToLowerInvariant())
+                {
+                    case "language":
+                        languages.Add(selected);
+                        break;
+                    case "cantrip":
+                        cantrips.Add(selected);
+                        break;
+                    case "skill":
+                        skills.Add(selected);
+                        break;
+                    case "tool":
+                        tools.Add(selected);
+                        break;
+                    case "weapon":
+                        weapons.Add(selected);
+                        break;
+                    default:
+                        other.Add(selected);
+                        break;
+                }
+            }
+
+            AddIfNonEmpty(destination, "Languages (selected)", languages);
+            AddIfNonEmpty(destination, "Cantrips (race)", cantrips);
+            AddIfNonEmpty(destination, "Skills (selected)", skills);
+            AddIfNonEmpty(destination, "Tools (selected)", tools);
+            AddIfNonEmpty(destination, "Weapons (selected)", weapons);
+            AddIfNonEmpty(destination, "Race choices", other);
         }
 
         private static void AddRaceEffectToBucket(

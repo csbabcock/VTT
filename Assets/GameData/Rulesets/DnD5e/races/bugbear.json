@@ -1,9 +1,10 @@
 {
   "id": "race.bugbear",
   "name": "Bugbear",
-  "parentId": "",
-  "sortName": "Bugbear",
-  "sourceFile": "bugbear.txt",
+  "parentId": "race.goblinoid",
+  "sortName": "017001",
+  "sourceFile": "Bugbear.txt",
+  "isGroupOnly": false,
   "description": "Neither bugs nor bears, bugbears are the hulking cousins of goblins and hobgoblins. With roots in the Feywild, early bugbears resided in hidden places, in hard-to-reach and shadowed spaces. Long ago and from out of the corner of your eye, they came to the Material Plane, urged to spread throughout the multiverse by the conquering god Maglubiyet. Centuries later, they still bear a fey gift for lurking just out of sight, and many of them have sneaked away from that god's influence.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,30 +37,29 @@
       ]
     }
   ],
-  "mechanicalEffects": [
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
-      "amount": 0
-    }
-  ],
+  "selectableChoices": [],
+  "mechanicalEffects": [],
   "speed": 30,
   "size": "Medium",
   "hasDarkvision": true,
   "darkvisionRange": 60,
   "traits": [
+    "You are a Humanoid",
     "Size",
     "Speed",
     "Darkvision",
     "Fey Ancestry",
     "Long-Limbed",
     "Powerful Build",
-    "Sneaky",
+    "You are proficient in the Stealth skill",
     "Surprise Attack"
   ],
   "features": [
+    {
+      "name": "You are a Humanoid",
+      "description": "You are also considered a goblinoid for any prerequisite or effect that requires you to be a goblinoid.",
+      "id": "feature.bugbear.you_are_a_humanoid"
+    },
     {
       "name": "Size",
       "description": "Your size is Medium.",
@@ -91,9 +91,9 @@
       "id": "feature.bugbear.powerful_build"
     },
     {
-      "name": "Sneaky",
-      "description": "You are proficient in the Stealth skill. In addition, without squeezing, you can move through and stop in a space large enough for a Small creature.",
-      "id": "feature.bugbear.sneaky"
+      "name": "You are proficient in the Stealth skill",
+      "description": "In addition, without squeezing, you can move through and stop in a space large enough for a Small creature.",
+      "id": "feature.bugbear.you_are_proficient_in_the_stealth_skill"
     },
     {
       "name": "Surprise Attack",

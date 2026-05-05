@@ -2,8 +2,9 @@
   "id": "race.shadar_kai",
   "name": "Shadar Kai",
   "parentId": "race.elf",
-  "sortName": "Shadar Kai",
-  "sourceFile": "shadar-kai.txt",
+  "sortName": "009004",
+  "sourceFile": "Shadar-kai.txt",
+  "isGroupOnly": false,
   "description": "Shadar-kai are the elves of the Shadowfell, originally drawn to that dread realm by the Raven Queen. Over the centuries, some of them have continued to serve her, while others have ventured into the Material Plane to forge their own destinies.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,6 +37,7 @@
       ]
     }
   ],
+  "selectableChoices": [],
   "mechanicalEffects": [
     {
       "type": "resistance",
@@ -46,16 +48,9 @@
     },
     {
       "type": "proficiency",
-      "name": "Race Proficiency",
+      "name": "Keen Senses",
       "target": "skill",
       "value": "Perception",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
       "amount": 0
     }
   ],
@@ -64,6 +59,9 @@
   "hasDarkvision": true,
   "darkvisionRange": 60,
   "traits": [
+    "Ability Score Increases",
+    "Shadar-kai Traits",
+    "You are a Humanoid",
     "Size",
     "Speed",
     "Blessing of the Raven Queen",
@@ -74,6 +72,21 @@
     "Trance"
   ],
   "features": [
+    {
+      "name": "Ability Score Increases",
+      "description": "When determining your character's ability scores, increase one score by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy. The \"Quick Build\" section for your character's class offers suggestions on which scores to increase. You can follow those suggestions or ignore them, but you can't raise any of your scores above 20.",
+      "id": "feature.shadar_kai.ability_score_increases"
+    },
+    {
+      "name": "Shadar-kai Traits",
+      "description": "As a shadar-kai, you have the following racial traits.",
+      "id": "feature.shadar_kai.shadar_kai_traits"
+    },
+    {
+      "name": "You are a Humanoid",
+      "description": "You are also considered an elf for any prerequisite or effect that requires you to be an elf.",
+      "id": "feature.shadar_kai.you_are_a_humanoid"
+    },
     {
       "name": "Size",
       "description": "You are Medium.",

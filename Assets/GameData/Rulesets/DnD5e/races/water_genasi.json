@@ -2,8 +2,9 @@
   "id": "race.water_genasi",
   "name": "Water Genasi",
   "parentId": "race.genasi",
-  "sortName": "Water Genasi",
-  "sourceFile": "water genasi.txt",
+  "sortName": "012004",
+  "sourceFile": "Water Genasi.txt",
+  "isGroupOnly": false,
   "description": "Water genasi descend from marids, aquatic genies from the Elemental Plane of Water. Water genasi are perfectly suited to life underwater and carry the power of the waves inside themselves.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,19 +37,25 @@
       ]
     }
   ],
+  "selectableChoices": [
+    {
+      "id": "choice.spellcasting_ability",
+      "type": "spellcastingAbility",
+      "name": "Choose spellcasting ability",
+      "count": 1,
+      "options": [
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
   "mechanicalEffects": [
     {
       "type": "resistance",
       "name": "Acid Resistance",
       "target": "acid",
       "value": "Acid damage",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
       "amount": 0
     }
   ],
@@ -57,18 +64,18 @@
   "hasDarkvision": true,
   "darkvisionRange": 60,
   "traits": [
-    "Size",
+    "You are Medium or Small",
     "Speed",
     "Acid Resistance",
     "Amphibious",
-    "Call to the Wave",
+    "You know the acid splash cantrip",
     "Darkvision"
   ],
   "features": [
     {
-      "name": "Size",
-      "description": "You are Medium or Small. You choose the size when you select this race.",
-      "id": "feature.water_genasi.size"
+      "name": "You are Medium or Small",
+      "description": "You choose the size when you select this race.",
+      "id": "feature.water_genasi.you_are_medium_or_small"
     },
     {
       "name": "Speed",
@@ -86,9 +93,9 @@
       "id": "feature.water_genasi.amphibious"
     },
     {
-      "name": "Call to the Wave",
-      "description": "You know the acid splash cantrip. Starting at 3rd level, you can cast the create or destroy water spell with this trait. Starting at 5th level, you can also cast the water walk spell with this trait, without requiring a material component. Once you cast create or destroy water or water walk with this trait, you can't cast that spell with it again until you finish a long rest. You can also cast either of those spells using any spell slots you have of the appropriate level.\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
-      "id": "feature.water_genasi.call_to_the_wave"
+      "name": "You know the acid splash cantrip",
+      "description": "Starting at 3rd level, you can cast the create or destroy water spell with this trait. Starting at 5th level, you can also cast the water walk spell with this trait, without requiring a material component. Once you cast create or destroy water or water walk with this trait, you can't cast that spell with it again until you finish a long rest. You can also cast either of those spells using any spell slots you have of the appropriate level.\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
+      "id": "feature.water_genasi.you_know_the_acid_splash_cantrip"
     },
     {
       "name": "Darkvision",

@@ -2,8 +2,9 @@
   "id": "race.deep_gnome",
   "name": "Deep Gnome",
   "parentId": "race.gnome",
-  "sortName": "Deep Gnome",
-  "sourceFile": "deep gnome.txt",
+  "sortName": "016001",
+  "sourceFile": "Deep Gnome.txt",
+  "isGroupOnly": false,
   "description": "Deep gnomes, or svirfneblin, are natives of the Underdark and are suffused with that subterranean realm's magic. They can supernaturally camouflage themselves, and their svirfneblin magic renders them difficult to locate. These abilities have enabled them to survive for generations among the perils of the Underdark.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,20 +37,26 @@
       ]
     }
   ],
-  "mechanicalEffects": [
+  "selectableChoices": [
     {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
-      "amount": 0
+      "id": "choice.spellcasting_ability",
+      "type": "spellcastingAbility",
+      "name": "Choose spellcasting ability",
+      "count": 1,
+      "options": [
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     }
   ],
+  "mechanicalEffects": [],
   "speed": 30,
-  "size": "Medium",
+  "size": "Small",
   "hasDarkvision": true,
   "darkvisionRange": 120,
   "traits": [
+    "You are a Humanoid",
     "Size",
     "Speed",
     "Darkvision",
@@ -58,6 +65,11 @@
     "Svirfneblin Camouflage"
   ],
   "features": [
+    {
+      "name": "You are a Humanoid",
+      "description": "You are also considered a gnome for any prerequisite or effect that requires you to be a gnome.",
+      "id": "feature.deep_gnome.you_are_a_humanoid"
+    },
     {
       "name": "Size",
       "description": "You are Small.",

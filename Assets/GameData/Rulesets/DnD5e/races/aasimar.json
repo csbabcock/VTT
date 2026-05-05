@@ -2,8 +2,9 @@
   "id": "race.aasimar",
   "name": "Aasimar",
   "parentId": "",
-  "sortName": "Aasimar",
-  "sourceFile": "aasimar.txt",
+  "sortName": "0020",
+  "sourceFile": "Aasimar.txt",
+  "isGroupOnly": false,
   "description": "Whether descended from a celestial being or infused with heavenly power, aasimar are mortals who carry a spark of the Upper Planes within their souls. They can fan that spark to bring light, ease wounds, and unleash the fury of the heavens. Aasimar can arise among any population of mortals.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,6 +37,7 @@
       ]
     }
   ],
+  "selectableChoices": [],
   "mechanicalEffects": [
     {
       "type": "speed",
@@ -50,13 +52,6 @@
       "target": "necrotic",
       "value": "Necrotic damage",
       "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
-      "amount": 0
     }
   ],
   "speed": 30,
@@ -64,19 +59,22 @@
   "hasDarkvision": true,
   "darkvisionRange": 60,
   "traits": [
-    "Size",
+    "You are Medium or Small",
     "Speed",
     "Celestial Resistance",
     "Darkvision",
     "Healing Hands",
-    "Light Bearer",
-    "Celestial Revelation"
+    "You know the light cantrip",
+    "Celestial Revelation",
+    "Necrotic Shroud",
+    "Radiant Consumption",
+    "Radiant Soul"
   ],
   "features": [
     {
-      "name": "Size",
-      "description": "You are Medium or Small. You choose the size when you select this race.",
-      "id": "feature.aasimar.size"
+      "name": "You are Medium or Small",
+      "description": "You choose the size when you select this race.",
+      "id": "feature.aasimar.you_are_medium_or_small"
     },
     {
       "name": "Speed",
@@ -99,14 +97,29 @@
       "id": "feature.aasimar.healing_hands"
     },
     {
-      "name": "Light Bearer",
-      "description": "You know the light cantrip. Charisma is your spellcasting ability for it.",
-      "id": "feature.aasimar.light_bearer"
+      "name": "You know the light cantrip",
+      "description": "Charisma is your spellcasting ability for it.",
+      "id": "feature.aasimar.you_know_the_light_cantrip"
     },
     {
       "name": "Celestial Revelation",
-      "description": "When you reach 3rd level, choose one of the revelation options below. Thereafter, you can use a bonus action to unleash the celestial energy within yourself, gaining the benefits of that revelation. Your transformation lasts for 1 minute or until you end it as a bonus action. Once you transform using your revelation below, you can't use it again until you finish a long rest:\n\nNecrotic Shroud. Your eyes briefly become pools of darkness, and ghostly, flightless wings sprout from your back temporarily. Creatures other than your allies within 10 feet of you that can see you must succeed on a Charisma saving throw (DC 8 + your proficiency bonus + your Charisma modifier) or become frightened of you until the end of your next turn. Until the transformation ends, once on each of your turns, you can deal extra necrotic damage to one target when you deal damage to it with an attack or a spell. The extra damage equals your proficiency bonus.\n\nRadiant Consumption. Searing light temporarily radiates from your eyes and mouth. For the duration, you shed bright light in a 10-foot radius and dim light for an additional 10 feet, and at the end of each of your turns, each creature within 10 feet of you takes radiant damage equal to your proficiency bonus. Until the transformation ends, once on each of your turns, you can deal extra radiant damage to one target when you deal damage to it with an attack or a spell. The extra damage equals your proficiency bonus.\n\nRadiant Soul. Two luminous, spectral wings sprout from your back temporarily. Until the transformation ends, you have a flying speed equal to your walking speed, and once on each of your turns, you can deal extra radiant damage to one target when you deal damage to it with an attack or a spell. The extra damage equals your proficiency bonus.\n\nMordenkainen Presents: Monsters of the Multiverse, pg. 7",
+      "description": "When you reach 3rd level, choose one of the revelation options below. Thereafter, you can use a bonus action to unleash the celestial energy within yourself, gaining the benefits of that revelation. Your transformation lasts for 1 minute or until you end it as a bonus action. Once you transform using your revelation below, you can't use it again until you finish a long rest:",
       "id": "feature.aasimar.celestial_revelation"
+    },
+    {
+      "name": "Necrotic Shroud",
+      "description": "Your eyes briefly become pools of darkness, and ghostly, flightless wings sprout from your back temporarily. Creatures other than your allies within 10 feet of you that can see you must succeed on a Charisma saving throw (DC 8 + your proficiency bonus + your Charisma modifier) or become frightened of you until the end of your next turn. Until the transformation ends, once on each of your turns, you can deal extra necrotic damage to one target when you deal damage to it with an attack or a spell. The extra damage equals your proficiency bonus.",
+      "id": "feature.aasimar.necrotic_shroud"
+    },
+    {
+      "name": "Radiant Consumption",
+      "description": "Searing light temporarily radiates from your eyes and mouth. For the duration, you shed bright light in a 10-foot radius and dim light for an additional 10 feet, and at the end of each of your turns, each creature within 10 feet of you takes radiant damage equal to your proficiency bonus. Until the transformation ends, once on each of your turns, you can deal extra radiant damage to one target when you deal damage to it with an attack or a spell. The extra damage equals your proficiency bonus.",
+      "id": "feature.aasimar.radiant_consumption"
+    },
+    {
+      "name": "Radiant Soul",
+      "description": "Two luminous, spectral wings sprout from your back temporarily. Until the transformation ends, you have a flying speed equal to your walking speed, and once on each of your turns, you can deal extra radiant damage to one target when you deal damage to it with an attack or a spell. The extra damage equals your proficiency bonus.",
+      "id": "feature.aasimar.radiant_soul"
     }
   ]
 }

@@ -2,8 +2,9 @@
   "id": "race.lizardfolk",
   "name": "Lizardfolk",
   "parentId": "",
-  "sortName": "Lizardfolk",
-  "sourceFile": "lizardfolk.txt",
+  "sortName": "0270",
+  "sourceFile": "Lizardfolk.txt",
+  "isGroupOnly": false,
   "description": "The saurian lizardfolk are thought by some sages to be distant cousins of dragonborn and kobolds. Despite their resemblance to those other scaled folk, however, lizardfolk are their own people and have lived on the worlds of the Material Plane since the worlds' creation. Gifted by the gods with remarkable physical defenses and a mystical connection to the natural world, lizardfolk can survive with just their wits in situations that would be deadly for other folk. Because of that fact, many lizardfolk myths state that their people were placed by the gods in the Material Plane to guard its natural wonders.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,20 +37,14 @@
       ]
     }
   ],
+  "selectableChoices": [],
   "mechanicalEffects": [
     {
-      "type": "proficiency",
-      "name": "Race Proficiency",
-      "target": "skill",
-      "value": "two of the following skills of your choice: Animal Handling, Medicine, Nature, Perception, Stealth, or Survival",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
-      "amount": 0
+      "type": "naturalArmor",
+      "name": "Natural Armor",
+      "target": "armorClass",
+      "value": "Base AC 13",
+      "amount": 13
     }
   ],
   "speed": 30,
@@ -61,7 +56,7 @@
     "Speed",
     "Bite",
     "Hold Breath",
-    "Hungry Jaws",
+    "You can throw yourself into a feeding frenzy",
     "Natural Armor",
     "Nature's Intuition"
   ],
@@ -87,9 +82,9 @@
       "id": "feature.lizardfolk.hold_breath"
     },
     {
-      "name": "Hungry Jaws",
-      "description": "You can throw yourself into a feeding frenzy. As a bonus action, you can make a special attack with your Bite. If the attack hits, it deals its normal damage, and you gain temporary hit points equal to your proficiency bonus. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
-      "id": "feature.lizardfolk.hungry_jaws"
+      "name": "You can throw yourself into a feeding frenzy",
+      "description": "As a bonus action, you can make a special attack with your Bite. If the attack hits, it deals its normal damage, and you gain temporary hit points equal to your proficiency bonus. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+      "id": "feature.lizardfolk.you_can_throw_yourself_into_a_feeding_frenzy"
     },
     {
       "name": "Natural Armor",

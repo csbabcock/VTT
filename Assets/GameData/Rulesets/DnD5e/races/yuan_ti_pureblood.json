@@ -1,0 +1,118 @@
+{
+  "id": "race.yuan_ti_pureblood",
+  "name": "Yuan-ti Pureblood",
+  "parentId": "race.yuan_ti",
+  "sortName": "041001",
+  "sourceFile": "Yuan-ti.txt",
+  "isGroupOnly": false,
+  "description": "Yuan-ti were originally humans who transformed themselves into serpent folk through ancient rituals. Most yuan-ti were corrupted into monsters by those rites, but some yuan-ti instead became a new people who mix characteristics of humans and snakes.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "selectableChoices": [
+    {
+      "id": "choice.spellcasting_ability",
+      "type": "spellcastingAbility",
+      "name": "Choose spellcasting ability",
+      "count": 1,
+      "options": [
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "resistance",
+      "name": "Poison Resistance",
+      "target": "poison",
+      "value": "Poison damage",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium or Small",
+  "hasDarkvision": true,
+  "darkvisionRange": 60,
+  "traits": [
+    "Ability Score Increases",
+    "Yuan-ti Traits",
+    "You are Medium or Small",
+    "Speed",
+    "Darkvision",
+    "Magic Resistance",
+    "Poison Resilience",
+    "You know the poison spray cantrip"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increases",
+      "description": "When determining your character's ability scores, increase one score by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy. The \"Quick Build\" section for your character's class offers suggestions on which scores to increase. You can follow those suggestions or ignore them, but you can't raise any of your scores above 20.",
+      "id": "feature.yuan_ti_pureblood.ability_score_increases"
+    },
+    {
+      "name": "Yuan-ti Traits",
+      "description": "As a yuan-ti, you have the following racial traits.",
+      "id": "feature.yuan_ti_pureblood.yuan_ti_traits"
+    },
+    {
+      "name": "You are Medium or Small",
+      "description": "You choose the size when you select this race.",
+      "id": "feature.yuan_ti_pureblood.you_are_medium_or_small"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet.",
+      "id": "feature.yuan_ti_pureblood.speed"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
+      "id": "feature.yuan_ti_pureblood.darkvision"
+    },
+    {
+      "name": "Magic Resistance",
+      "description": "You have advantage on saving throws against spells.",
+      "id": "feature.yuan_ti_pureblood.magic_resistance"
+    },
+    {
+      "name": "Poison Resilience",
+      "description": "You have advantage on saving throws you make to avoid or end the poisoned condition on yourself. You also have resistance to poison damage.",
+      "id": "feature.yuan_ti_pureblood.poison_resilience"
+    },
+    {
+      "name": "You know the poison spray cantrip",
+      "description": "You can cast animal friendship an unlimited number of times with this trait, but you can target only snakes with it. Starting at 3rd level, you can also cast suggestion with this trait. Once you cast it, you can't do so again until you finish a long rest. You can also cast it using any spell slots you have of 2nd level or higher.\n\nIntelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).",
+      "id": "feature.yuan_ti_pureblood.you_know_the_poison_spray_cantrip"
+    }
+  ]
+}

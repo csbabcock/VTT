@@ -2,8 +2,9 @@
   "id": "race.goliath",
   "name": "Goliath",
   "parentId": "",
-  "sortName": "Goliath",
-  "sourceFile": "goliath.txt",
+  "sortName": "0180",
+  "sourceFile": "Goliath.txt",
+  "isGroupOnly": false,
   "description": "The first goliaths lived on the highest mountain peaks-far above the tree line, where the air is thin and frigid winds howl. Distantly related to giants and infused with the supernatural essence of their ancestors' mountainous home, goliaths stand between 7 and 8 feet tall and have a wide array of skin tones resembling different types of stone.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,26 +37,13 @@
       ]
     }
   ],
+  "selectableChoices": [],
   "mechanicalEffects": [
     {
       "type": "resistance",
       "name": "Cold Resistance",
       "target": "cold",
       "value": "Cold damage",
-      "amount": 0
-    },
-    {
-      "type": "proficiency",
-      "name": "Race Proficiency",
-      "target": "skill",
-      "value": "Athletics",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
       "amount": 0
     }
   ],
@@ -67,7 +55,7 @@
     "Size",
     "Speed",
     "Little Giant",
-    "Mountain Born",
+    "You have resistance to cold damage",
     "Stone's Endurance"
   ],
   "features": [
@@ -87,9 +75,9 @@
       "id": "feature.goliath.little_giant"
     },
     {
-      "name": "Mountain Born",
-      "description": "You have resistance to cold damage. You also naturally acclimate to high altitudes, even if you've never been to one. This includes elevations above 20,000 feet.",
-      "id": "feature.goliath.mountain_born"
+      "name": "You have resistance to cold damage",
+      "description": "You also naturally acclimate to high altitudes, even if you've never been to one. This includes elevations above 20,000 feet.",
+      "id": "feature.goliath.you_have_resistance_to_cold_damage"
     },
     {
       "name": "Stone's Endurance",

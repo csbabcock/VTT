@@ -1,9 +1,10 @@
 {
   "id": "race.githzerai",
   "name": "Githzerai",
-  "parentId": "",
-  "sortName": "Githzerai",
-  "sourceFile": "githzerai.txt",
+  "parentId": "race.gith",
+  "sortName": "015002",
+  "sourceFile": "Githzerai.txt",
+  "isGroupOnly": false,
   "description": "Githzerai migrated to the Everchanging Chaos of Limbo after the ancient schism that split their ancestors from their cousins, githyanki. Limbo is a roiling maelstrom of matter and energy, collapsing and reforming without purpose or direction, until a creature exerts deliberate will to stabilize it. Through their potent psionic power, githzerai carved a home for themselves amid the chaos. As the ages passed, githzerai explorers ranged out to other planes and worlds of the multiverse.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,19 +37,25 @@
       ]
     }
   ],
+  "selectableChoices": [
+    {
+      "id": "choice.spellcasting_ability",
+      "type": "spellcastingAbility",
+      "name": "Choose spellcasting ability",
+      "count": 1,
+      "options": [
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
   "mechanicalEffects": [
     {
       "type": "resistance",
       "name": "Psychic Resistance",
       "target": "psychic",
       "value": "Psychic damage",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
       "amount": 0
     }
   ],

@@ -2,8 +2,9 @@
   "id": "race.centaur",
   "name": "Centaur",
   "parentId": "",
-  "sortName": "Centaur",
-  "sourceFile": "centaur.txt",
+  "sortName": "0040",
+  "sourceFile": "Centaur.txt",
+  "isGroupOnly": false,
   "description": "Centaurs gallop throughout the multiverse and trace their origins to many different realms. The centaurs presented here hail from the Feywild and mystically resonate with the natural world. From the waist up, they resemble elves, displaying all the elf varieties of skin tone. From the waist down, they have the bodies of horses.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,15 +37,21 @@
       ]
     }
   ],
-  "mechanicalEffects": [
+  "selectableChoices": [
     {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Fey",
-      "amount": 0
+      "id": "choice.skill",
+      "type": "skill",
+      "name": "Choose a skill proficiency",
+      "count": 1,
+      "options": [
+        "Animal Handling",
+        "Medicine",
+        "Nature",
+        "Survival"
+      ]
     }
   ],
+  "mechanicalEffects": [],
   "speed": 40,
   "size": "Medium",
   "hasDarkvision": false,
@@ -54,7 +61,7 @@
     "Speed",
     "Charge",
     "Equine Build",
-    "Hooves",
+    "You have hooves that you can use to make unarmed strikes",
     "Natural Affinity"
   ],
   "features": [
@@ -79,9 +86,9 @@
       "id": "feature.centaur.equine_build"
     },
     {
-      "name": "Hooves",
-      "description": "You have hooves that you can use to make unarmed strikes. When you hit with them, the strike deals 1d6 + your Strength modifier bludgeoning damage, instead of the bludgeoning damage normal for an unarmed strike.",
-      "id": "feature.centaur.hooves"
+      "name": "You have hooves that you can use to make unarmed strikes",
+      "description": "When you hit with them, the strike deals 1d6 + your Strength modifier bludgeoning damage, instead of the bludgeoning damage normal for an unarmed strike.",
+      "id": "feature.centaur.you_have_hooves_that_you_can_use_to_make_unarmed_strikes"
     },
     {
       "name": "Natural Affinity",

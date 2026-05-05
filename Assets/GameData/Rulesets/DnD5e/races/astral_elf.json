@@ -1,25 +1,174 @@
 {
   "id": "race.astral_elf",
   "name": "Astral Elf",
-  "parentId": "",
-  "sortName": "Astral Elf",
-  "sourceFile": "astral elf.txt",
+  "parentId": "race.elf",
+  "sortName": "009001",
+  "sourceFile": "Astral Elf.txt",
+  "isGroupOnly": false,
   "description": "Long ago, groups of elves ventured from the Feywild to the Astral Plane to be closer to their gods. Life in the Silver Void has imbued their souls with a spark of divine light. That light manifests as a starry gleam in an astral elf's eyes.",
   "abilityScoreBonuses": [],
-  "abilityScoreChoices": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "selectableChoices": [
+    {
+      "id": "choice.language.extra",
+      "type": "language",
+      "name": "Choose an extra language",
+      "count": 1,
+      "options": [
+        "Dwarvish",
+        "Elvish",
+        "Giant",
+        "Gnomish",
+        "Goblin",
+        "Halfling",
+        "Orc",
+        "Abyssal",
+        "Celestial",
+        "Draconic",
+        "Deep Speech",
+        "Infernal",
+        "Primordial",
+        "Sylvan",
+        "Undercommon",
+        "Aquan",
+        "Auran",
+        "Ignan",
+        "Terran",
+        "Leonin",
+        "Loxodon",
+        "Minotaur",
+        "Vedalken"
+      ]
+    },
+    {
+      "id": "choice.cantrip",
+      "type": "cantrip",
+      "name": "Choose a cantrip",
+      "count": 1,
+      "options": [
+        "Dancing Lights",
+        "Light",
+        "Sacred Flame"
+      ]
+    },
+    {
+      "id": "choice.skill.any",
+      "type": "skill",
+      "name": "Choose a skill proficiency",
+      "count": 1,
+      "options": [
+        "Acrobatics",
+        "Animal Handling",
+        "Arcana",
+        "Athletics",
+        "Deception",
+        "History",
+        "Insight",
+        "Intimidation",
+        "Investigation",
+        "Medicine",
+        "Nature",
+        "Perception",
+        "Performance",
+        "Persuasion",
+        "Religion",
+        "Sleight of Hand",
+        "Stealth",
+        "Survival"
+      ]
+    },
+    {
+      "id": "choice.tool",
+      "type": "tool",
+      "name": "Choose a tool or weapon proficiency",
+      "count": 1,
+      "options": [
+        "Battleaxe",
+        "Handaxe",
+        "Light hammer",
+        "Warhammer",
+        "Longsword",
+        "Shortsword",
+        "Shortbow",
+        "Longbow",
+        "Rapier",
+        "Hand crossbow",
+        "Spear",
+        "Trident",
+        "Light crossbow",
+        "Net",
+        "Alchemist's supplies",
+        "Brewer's supplies",
+        "Calligrapher's supplies",
+        "Carpenter's tools",
+        "Cartographer's tools",
+        "Cobbler's tools",
+        "Cook's utensils",
+        "Glassblower's tools",
+        "Jeweler's tools",
+        "Leatherworker's tools",
+        "Mason's tools",
+        "Painter's supplies",
+        "Potter's tools",
+        "Smith's tools",
+        "Tinker's tools",
+        "Weaver's tools",
+        "Woodcarver's tools",
+        "Thieves' tools",
+        "Disguise kit",
+        "Forgery kit",
+        "Herbalism kit",
+        "Navigator's tools",
+        "Poisoner's kit"
+      ]
+    },
+    {
+      "id": "choice.spellcasting_ability",
+      "type": "spellcastingAbility",
+      "name": "Choose spellcasting ability",
+      "count": 1,
+      "options": [
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
   "mechanicalEffects": [
     {
       "type": "proficiency",
-      "name": "Race Proficiency",
+      "name": "Keen Senses",
       "target": "skill",
       "value": "Perception",
-      "amount": 0
-    },
-    {
-      "type": "language",
-      "name": "Languages",
-      "target": "language",
-      "value": "Common and one other language that you and your DM agree is appropriate",
       "amount": 0
     },
     {
@@ -28,12 +177,75 @@
       "target": "creatureType",
       "value": "Humanoid",
       "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Language",
+      "target": "language",
+      "value": "Common",
+      "amount": 0
     }
   ],
   "speed": 30,
   "size": "Medium",
   "hasDarkvision": true,
   "darkvisionRange": 60,
-  "traits": [],
-  "features": []
+  "traits": [
+    "Ability Score Increase",
+    "Size",
+    "Speed",
+    "Astral Fire",
+    "Darkvision",
+    "Fey Ancestry",
+    "Keen Senses",
+    "Starlight Step",
+    "Astral Trance"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Increase one ability score by 2, and increase a different one by 1, or increase three different scores by 1.",
+      "id": "feature.astral_elf.ability_score_increase"
+    },
+    {
+      "name": "Size",
+      "description": "You are Medium.",
+      "id": "feature.astral_elf.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet.",
+      "id": "feature.astral_elf.speed"
+    },
+    {
+      "name": "Astral Fire",
+      "description": "You know one of the following cantrips of your choice: Dancing Lights, Light, or Sacred Flame. Intelligence, Wisdom, or Charisma is your spellcasting ability for it (choose when you select this race).",
+      "id": "feature.astral_elf.astral_fire"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see dim light within 60 feet of yourself as if it were bright light, and in darkness as if it were dim light. You discern colors in darkness only as shades of gray.",
+      "id": "feature.astral_elf.darkvision"
+    },
+    {
+      "name": "Fey Ancestry",
+      "description": "You have advantage on saving throws you make to avoid or end the charmed condition on yourself.",
+      "id": "feature.astral_elf.fey_ancestry"
+    },
+    {
+      "name": "Keen Senses",
+      "description": "You have proficiency in the Perception skill.",
+      "id": "feature.astral_elf.keen_senses"
+    },
+    {
+      "name": "Starlight Step",
+      "description": "As a bonus action, you can magically teleport up to 30 feet to an unoccupied space you can see. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+      "id": "feature.astral_elf.starlight_step"
+    },
+    {
+      "name": "Astral Trance",
+      "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a long rest in 4 hours if you spend those hours in a trancelike meditation, during which you remain conscious. Whenever you finish this trance, you gain proficiency in one skill of your choice and with one weapon or tool of your choice, selected from the Player's Handbook. You magically acquire these proficiencies by drawing them from shared elven memory and the experiences of entities on the Astral Plane, and you retain them until you finish your next long rest.",
+      "id": "feature.astral_elf.astral_trance"
+    }
+  ]
 }

@@ -1,0 +1,19 @@
+{
+  "id": "race.gith",
+  "name": "Gith",
+  "parentId": "",
+  "sortName": "0150",
+  "sourceFile": "",
+  "isGroupOnly": true,
+  "description": "Astral wanderers and disciplined monks split between conquerors and ascetics.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [],
+  "selectableChoices": [],
+  "mechanicalEffects": [],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [],
+  "features": []
+}

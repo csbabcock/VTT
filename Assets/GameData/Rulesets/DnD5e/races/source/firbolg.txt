@@ -1,84 +1,50 @@
-We spent three months tracking the green dragon before locating the forest in which it sought refuge. On our second day in that place, we woke to find the dragon’s head placed in the center of our camp. Soveliss told me that firbolgs must have claimed the forest, and they wanted to show us we had no further business there. If we lingered, he assured me, our heads would be next.
+Distant cousins of giants, the first firbolgs wandered the primeval forests of the multiverse, and the magic of those forests entwined itself with the firbolgs' souls. Centuries later, that magic still thrums inside a firbolg, even one who has never lived under the boughs of a great forest.
 
-— Gimble, Notes from a Treasure Hunter
+A firbolg's magic is an obscuring sort, which allowed their ancestors to pass through a forest without disturbing it. So deep is the connection between a firbolg and the wild places of the world that they can communicate with flora and fauna.
 
-Firbolg tribes cloister in remote forest strongholds, preferring to spend their days in quiet harmony with the woods. When provoked, firbolgs demonstrate formidable skills with weapons and druidic magic.
+Firbolgs can live up to 500 years.
 
-Humble Guardians
-Firbolgs love nothing more than a peaceful day spent among the trees of an old forest. They see forests as sacred places, representing the heart of the world and monuments to the durability of life.
+Creating Your Character
+At 1st level, you choose whether your character is a member of the human race or of a fantastical race. If you select a fantastical race, follow these additional rules during character creation.
 
-In their role as caretakers, firbolgs live off the land while striving to remain in balance with nature. Their methods reflect common sense and remarkable resourcefulness. During a bountiful summer, they store away excess nuts, fruit, and berries. When winter arrives, they scatter everything they can spare to ensure the animals of the wood survive until springtime.
+Ability Score Increases
+When determining your character's ability scores, increase one score by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy. The "Quick Build" section for your character's class offers suggestions on which scores to increase. You can follow those suggestions or ignore them, but you can't raise any of your scores above 20.
 
-In a firbolg’s eyes, there is no greater fault than greed. The firbolgs believe that the world remains healthiest when each creature takes only what it needs. Material goods, especially precious gems and gold, have little appeal to them. What use are such things when winter lingers and food runs short?
+Languages
+Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player's Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
 
-Natural Druids
-Firbolgs have a talent for druidic magic. Their cultural reverence for nature, combined with their strong and insightful minds, makes learning such magic an instinctive part of their development. Almost every firbolg learns a few spells, typically those used to mask their presence, and many go on to master nature magic.
+Creature Type
+Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race tells you what your character's creature type is.
 
-Firbolgs who become druids serve as stronghold leaders. With every action the tribe takes, the druids weigh not only the group’s needs, but the effect each action will have on the forest and the rest of the natural world. Firbolg tribes would rather go hungry than strain the land during a famine.
+Here's a list of the game's creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don't have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn't work on a Construct or an Undead.
 
-Hidden Shepherds
-As caretakers of the land, firbolgs prefer to remain out of sight and out of mind. They don’t try to dominate nature, but rather seek to ensure that it prospers and survives according to its own laws.
+Life Span
+The typical life span of a player character in the D&D multiverse is about a century, assuming the character doesn't meet a violent end on an adventure. Members of some races, such as dwarves and elves, can live for centuries. If typical members of a race can live longer than a century, that fact is mentioned in the race's description.
 
-Firbolgs use their magic to keep their presence in a forest secret. This approach allows them to avoid the politics and struggles of elves, humans, and orcs. Such events concern the firbolgs only when the events affect the forest.
-
-Even in the face of an intrusion, firbolgs prefer a subtle, gentle approach to prevent damage to their territory. They employ their magic to make the forest an unappealing place to explore by temporarily diverting springs, driving away game, stealing critical tools, and altering trails to leave hunting or lumber parties hopelessly lost. The firbolgs’ presence is marked by an absence of animals and a strange quiet, as if the forest wishes to avoid attracting attention to itself. The faster travelers decide to move on, the better.
-
-If these tactics fail, the firbolgs take more direct action. Their observations of a settlement determine what happens next. If the outsiders seem peaceful, the firbolgs approach and gently ask them to leave, even offering food and other supplies to aid their departure. If those who insist on remaining respect nature, take only what they need, and live in harmony with the wood, firbolgs explore the possibility of friendship with them, as long as the outsiders vow to safeguard the forest. If the settlers clearly display evil intentions, however, the firbolgs martial their strength and magic for a single overwhelming attack.
-
-Outcast Adventurers
-As guardians of the wood, few firbolgs would dream of leaving their homes or attempting to fit into human society. An exiled firbolg, or one whose clan has been destroyed, might not have a choice in the matter. Most adventuring firbolgs fall into this latter category.
-
-Outcast firbolgs can never return home. They committed some unforgivable deed, usually something that put their homeland at risk, such as starting a forest fire or killing a rare or beautiful wild creature. These firbolgs are loners who wander the world in hope of finding a new place to call home.
-
-Orphaned firbolgs are those whose clans or homelands have been destroyed. They become crusaders for nature, seeking to avenge their loss and prevent the further destruction of the natural world.
-
-A few rare firbolgs are entrusted by their clan with an important mission that takes them beyond their homes. These firbolgs feel like pilgrims in a strange land, and usually they wish only to complete their quests and return home as quickly as possible.
-
-The Firbolg Adventurers table can serve as inspiration for determining why a firbolg character leaves home.
-
-Firbolg Adventurers
-
-d8	Reason for Adventuring
-1	Outcast for murder
-2	Outcast for severely damaging home territory
-3	Clan slain by invading humanoids
-4	Clan slain by a dragon or demon
-5	Separated from the tribe and lost
-6	Homeland destroyed by natural disaster
-7	Personal quest ordained by omens
-8	Dispatched on a quest by tribe leaders
-Firbolg Names
-Firbolg adopt elven names when they must deal with outsiders, although the concept of names strikes them as strange. They know the animals and plants of the forest without formal names, and instead identify the forest’s children by their deeds, habits, and other actions.
-
-By the same token, their tribe names merely refer to their homes. When dealing with other races, firbolgs refer to their lands by whatever name the surrounding folk use, as a matter of tact and hospitality, but among their own kind they simply call it “home.”
-
-Sometimes firbolgs adopt the nicknames or titles outsiders give them under the assumption that those who need names can call them whatever they wish.
+Height and Weight
+Player characters, regardless of race, typically fall into the same ranges of height and weight that humans have in our world. If you'd like to determine your character's height or weight randomly, consult the Random Height and Weight table in the Player's Handbook, and choose the row in the table that best represents the build you imagine for your character.
 
 Firbolg Traits
-Your firbolg character has the following racial traits.
-Ability Score Increase
-Your Wisdom score increases by 2, and your Strength score increases by 1.
-
-Age
-As humanoids related to the fey, firbolg have long lifespans. A firbolg reaches adulthood around 30, and the oldest of them can live for 500 years.
+As a firbolg, you have the following racial traits.
+Creature Type
+You are a Humanoid.
 
 Size
-Firbolg are between 7 and 8 feet tall and weigh between 240 and 300 pounds. Your size is Medium.
+You are Medium.
 
 Speed
-Your base walking speed is 30 feet.
+Your walking speed is 30 feet.
 
 Firbolg Magic
-You can cast detect magic and disguise self with this trait, using Wisdom as your spellcasting ability for them. Once you cast either spell, you can’t cast it again with this trait until you finish a short or long rest. When you use this version of disguise self, you can seem up to 3 feet shorter than normal, allowing you to more easily blend in with humans and elves.
+You can cast the detect magic and disguise self spells with this trait. When you use this version of disguise self, you can seem up to 3 feet shorter or taller. Once you cast either of these spells with this trait, you can't cast that spell with it again until you finish a long rest. You can also cast these spells using any spell slots you have.
+
+Intelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race).
 
 Hidden Step
-As a bonus action, you can magically turn invisible until the start of your next turn or until you attack, make a damage roll, or force someone to make a saving throw. Once you use this trait, you can’t use it again until you finish a short or long rest.
+As a bonus action, you can magically turn invisible until the start of your next turn or until you attack, make a damage roll, or force someone to make a saving throw. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.
 
 Powerful Build
 You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.
 
 Speech of Beast and Leaf
-You have the ability to communicate in a limited manner with beasts and plants. They can understand the meaning of your words, though you have no special ability to understand them in return. You have advantage on all Charisma checks you make to influence them.
-
-Languages
-You can speak, read, and write Common, Elvish, and Giant.
+You have the ability to communicate in a limited manner with Beasts, Plants, and vegetation. They can understand the meaning of your words, though you have no special ability to understand them in return. You have advantage on all Charisma checks you make to influence them.

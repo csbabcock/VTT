@@ -78,6 +78,7 @@ namespace GameCore.UI.MainMenu
             _view.ClassSelected += HandleClassSelected;
             _view.RaceSelected += HandleRaceSelected;
             _view.RaceAbilityScoreChoiceSelected += HandleRaceAbilityScoreChoiceSelected;
+            _view.RaceChoiceSelected += HandleRaceChoiceSelected;
             _view.BackgroundSelected += HandleBackgroundSelected;
             _view.SelectedClassLevelChanged += HandleSelectedClassLevelChanged;
             _view.RollAbilitiesClicked += HandleRollAbilitiesClicked;
@@ -120,6 +121,7 @@ namespace GameCore.UI.MainMenu
                 _view.ClassSelected -= HandleClassSelected;
                 _view.RaceSelected -= HandleRaceSelected;
                 _view.RaceAbilityScoreChoiceSelected -= HandleRaceAbilityScoreChoiceSelected;
+                _view.RaceChoiceSelected -= HandleRaceChoiceSelected;
                 _view.BackgroundSelected -= HandleBackgroundSelected;
                 _view.SelectedClassLevelChanged -= HandleSelectedClassLevelChanged;
                 _view.RollAbilitiesClicked -= HandleRollAbilitiesClicked;
@@ -192,7 +194,7 @@ namespace GameCore.UI.MainMenu
         private void BindRaceClassBackgroundOptionsFromContent()
         {
             (List<(string id, string displayName)> classes,
-                List<(string id, string displayName)> races,
+                List<RaceOptionData> races,
                 List<(string id, string displayName)> backgrounds) =
                 CharacterCreationRulesetOptionLists.CreateSortedRaceClassBackground(_contentQuery);
 
@@ -206,6 +208,8 @@ namespace GameCore.UI.MainMenu
 
         private void HandleRaceSelected(string raceId)
         {
+            if (_contentQuery.TryGetRace(raceId, out RaceDefinition race) && race.isGroupOnly)
+                return;
             Model.SetSelectedRaceId(raceId);
         }
 
@@ -214,6 +218,13 @@ namespace GameCore.UI.MainMenu
             if (!IsValidRaceAbilityChoice(Model.State, choiceId, abilityCode))
                 return;
             Model.SetRaceAbilityScoreChoice(choiceId, abilityCode);
+        }
+
+        private void HandleRaceChoiceSelected(string choiceId, string selectedOption)
+        {
+            if (!IsValidRaceChoice(Model.State, choiceId, selectedOption))
+                return;
+            Model.SetRaceChoice(choiceId, selectedOption);
         }
 
         private void HandleBackgroundSelected(string backgroundId)
@@ -788,27 +799,57 @@ namespace GameCore.UI.MainMenu
             if (race?.abilityScoreChoices == null || race.abilityScoreChoices.Count == 0)
             {
                 _view.BindRaceAbilityScoreChoices(null);
+            }
+            else
+            {
+                var viewModels = new List<RaceAbilityScoreChoiceViewModel>();
+                foreach (AbilityScoreChoiceDefinition choice in race.abilityScoreChoices)
+                {
+                    if (choice == null || string.IsNullOrEmpty(choice.id))
+                        continue;
+
+                    string selected = string.Empty;
+                    state.SelectedRaceAbilityChoices?.TryGetValue(choice.id, out selected);
+                    string label = string.IsNullOrEmpty(choice.name)
+                        ? $"+{choice.bonus} ability"
+                        : $"{choice.name} (+{choice.bonus})";
+                    IReadOnlyList<string> abilities = choice.abilities != null && choice.abilities.Count > 0
+                        ? choice.abilities
+                        : new[] { "STR", "DEX", "CON", "INT", "WIS", "CHA" };
+                    viewModels.Add(new RaceAbilityScoreChoiceViewModel(choice.id, label, abilities, selected));
+                }
+
+                _view.BindRaceAbilityScoreChoices(viewModels);
+            }
+
+            UpdateRaceChoiceControls(state, race);
+        }
+
+        private void UpdateRaceChoiceControls(CharacterCreationState state, RaceDefinition race)
+        {
+            if (race?.selectableChoices == null || race.selectableChoices.Count == 0)
+            {
+                _view.BindRaceChoices(null);
                 return;
             }
 
-            var viewModels = new List<RaceAbilityScoreChoiceViewModel>();
-            foreach (AbilityScoreChoiceDefinition choice in race.abilityScoreChoices)
+            var viewModels = new List<RaceChoiceViewModel>();
+            foreach (SelectableChoiceDefinition choice in race.selectableChoices)
             {
-                if (choice == null || string.IsNullOrEmpty(choice.id))
+                if (choice == null || string.IsNullOrEmpty(choice.id) ||
+                    choice.options == null || choice.options.Count == 0)
                     continue;
 
                 string selected = string.Empty;
-                state.SelectedRaceAbilityChoices?.TryGetValue(choice.id, out selected);
-                string label = string.IsNullOrEmpty(choice.name)
-                    ? $"+{choice.bonus} ability"
-                    : $"{choice.name} (+{choice.bonus})";
-                IReadOnlyList<string> abilities = choice.abilities != null && choice.abilities.Count > 0
-                    ? choice.abilities
-                    : new[] { "STR", "DEX", "CON", "INT", "WIS", "CHA" };
-                viewModels.Add(new RaceAbilityScoreChoiceViewModel(choice.id, label, abilities, selected));
+                state.SelectedRaceChoices?.TryGetValue(choice.id, out selected);
+                viewModels.Add(new RaceChoiceViewModel(
+                    choice.id,
+                    string.IsNullOrEmpty(choice.name) ? choice.type : choice.name,
+                    choice.options,
+                    selected));
             }
 
-            _view.BindRaceAbilityScoreChoices(viewModels);
+            _view.BindRaceChoices(viewModels);
         }
 
         private bool IsValidRaceAbilityChoice(CharacterCreationState state, string choiceId, string abilityCode)
@@ -838,6 +879,21 @@ namespace GameCore.UI.MainMenu
             }
 
             return true;
+        }
+
+        private bool IsValidRaceChoice(CharacterCreationState state, string choiceId, string selectedOption)
+        {
+            if (string.IsNullOrEmpty(state.SelectedRaceId) ||
+                !_contentQuery.TryGetRace(state.SelectedRaceId, out RaceDefinition race) ||
+                race.selectableChoices == null)
+                return false;
+
+            SelectableChoiceDefinition choice = race.selectableChoices
+                .FirstOrDefault(c => c != null && string.Equals(c.id, choiceId, StringComparison.OrdinalIgnoreCase));
+            if (choice?.options == null || choice.options.Count == 0)
+                return false;
+
+            return choice.options.Any(o => string.Equals(o, selectedOption, StringComparison.OrdinalIgnoreCase));
         }
 
         private static int[] BuildEffectiveAbilityScores(CharacterCreationState state, RaceDefinition race)
@@ -964,7 +1020,8 @@ namespace GameCore.UI.MainMenu
                 _contentQuery.TryGetBackground(state.SelectedBackgroundId, out background);
 
             _view.UpdateProficiencyPanel(
-                CharacterCreationRulesPreview.BuildProficiencySections(classDef, background, race));
+                CharacterCreationRulesPreview.BuildProficiencySections(
+                    classDef, background, race, state.SelectedRaceChoices));
         }
 
     }

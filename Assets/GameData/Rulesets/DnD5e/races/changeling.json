@@ -2,8 +2,9 @@
   "id": "race.changeling",
   "name": "Changeling",
   "parentId": "",
-  "sortName": "Changeling",
-  "sourceFile": "changeling.txt",
+  "sortName": "0050",
+  "sourceFile": "Changeling.txt",
+  "isGroupOnly": false,
   "description": "With ever-changing appearances, changelings reside in many societies undetected. Each changeling can supernaturally adopt any face they like. For some changelings, a new face is only a disguise. For other changelings, a new face may reveal an aspect of their soul.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,37 +37,23 @@
       ]
     }
   ],
-  "mechanicalEffects": [
-    {
-      "type": "proficiency",
-      "name": "Race Proficiency",
-      "target": "skill",
-      "value": "two of the following skills of your choice: Deception, Insight, Intimidation, Performance, or Persuasion",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Fey",
-      "amount": 0
-    }
-  ],
+  "selectableChoices": [],
+  "mechanicalEffects": [],
   "speed": 30,
   "size": "Medium or Small",
   "hasDarkvision": false,
   "darkvisionRange": 0,
   "traits": [
-    "Size",
+    "You are Medium or Small",
     "Speed",
     "Changeling Instincts",
     "Shapechanger"
   ],
   "features": [
     {
-      "name": "Size",
-      "description": "You are Medium or Small. You choose the size when you select this race.",
-      "id": "feature.changeling.size"
+      "name": "You are Medium or Small",
+      "description": "You choose the size when you select this race.",
+      "id": "feature.changeling.you_are_medium_or_small"
     },
     {
       "name": "Speed",

@@ -2,8 +2,9 @@
   "id": "race.eladrin",
   "name": "Eladrin",
   "parentId": "race.elf",
-  "sortName": "Eladrin",
-  "sourceFile": "eladrin.txt",
+  "sortName": "009002",
+  "sourceFile": "Eladrin.txt",
+  "isGroupOnly": false,
   "description": "Eladrin are elves of the Feywild, a realm of perilous beauty and boundless magic. Using that magic, eladrin can step from one place to another in the blink of an eye, and each eladrin resonates with emotions captured in the Feywild in the form of seasons-affinities that affect the eladrin's mood and appearance. An eladrin's season can change, though some remain in one season forever. Choose your season or roll on the Eladrin Seasons table. Your Trance trait lets you change your season.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,19 +37,13 @@
       ]
     }
   ],
+  "selectableChoices": [],
   "mechanicalEffects": [
     {
       "type": "proficiency",
-      "name": "Race Proficiency",
+      "name": "Keen Senses",
       "target": "skill",
       "value": "Perception",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
       "amount": 0
     }
   ],
@@ -57,15 +52,25 @@
   "hasDarkvision": true,
   "darkvisionRange": 60,
   "traits": [
+    "You are a Humanoid",
     "Size",
     "Speed",
     "Darkvision",
     "Fey Ancestry",
     "Fey Step",
+    "Autumn",
+    "Winter",
+    "Spring",
+    "Summer",
     "Keen Senses",
     "Trance"
   ],
   "features": [
+    {
+      "name": "You are a Humanoid",
+      "description": "You are also considered an elf for any prerequisite or effect that requires you to be an elf.",
+      "id": "feature.eladrin.you_are_a_humanoid"
+    },
     {
       "name": "Size",
       "description": "You are Medium.",
@@ -88,8 +93,28 @@
     },
     {
       "name": "Fey Step",
-      "description": "As a bonus action, you can magically teleport up to 30 feet to an unoccupied space you can see. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.\n\nWhen you reach 3rd level, your Fey Step gains an additional effect based on your season; if the effect requires a saving throw, the DC equals 8 + your proficiency bonus + your Intelligence, Wisdom, or Charisma modifier (choose when you select this race):\n\nAutumn. Immediately after you use your Fey Step, up to two creatures of your choice that you can see within 10 feet of you must succeed on a Wisdom saving throw or be charmed by you for 1 minute, or until you or your companions deal any damage to the creatures.\n\nWinter. When you use your Fey Step, one creature of your choice that you can see within 5 feet of you before you teleport must succeed on a Wisdom saving throw or be frightened of you until the end of your next turn.\n\nSpring. When you use your Fey Step, you can touch one willing creature within 5 feet of you. That creature then teleports instead of you, appearing in an unoccupied space of your choice that you can see within 30 feet of you.\n\nSummer. Immediately after you use your Fey Step, each creature of your choice that you can see within 5 feet of you takes fire damage equal to your proficiency bonus.",
+      "description": "As a bonus action, you can magically teleport up to 30 feet to an unoccupied space you can see. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.\n\nWhen you reach 3rd level, your Fey Step gains an additional effect based on your season; if the effect requires a saving throw, the DC equals 8 + your proficiency bonus + your Intelligence, Wisdom, or Charisma modifier (choose when you select this race):",
       "id": "feature.eladrin.fey_step"
+    },
+    {
+      "name": "Autumn",
+      "description": "Immediately after you use your Fey Step, up to two creatures of your choice that you can see within 10 feet of you must succeed on a Wisdom saving throw or be charmed by you for 1 minute, or until you or your companions deal any damage to the creatures.",
+      "id": "feature.eladrin.autumn"
+    },
+    {
+      "name": "Winter",
+      "description": "When you use your Fey Step, one creature of your choice that you can see within 5 feet of you before you teleport must succeed on a Wisdom saving throw or be frightened of you until the end of your next turn.",
+      "id": "feature.eladrin.winter"
+    },
+    {
+      "name": "Spring",
+      "description": "When you use your Fey Step, you can touch one willing creature within 5 feet of you. That creature then teleports instead of you, appearing in an unoccupied space of your choice that you can see within 30 feet of you.",
+      "id": "feature.eladrin.spring"
+    },
+    {
+      "name": "Summer",
+      "description": "Immediately after you use your Fey Step, each creature of your choice that you can see within 5 feet of you takes fire damage equal to your proficiency bonus.",
+      "id": "feature.eladrin.summer"
     },
     {
       "name": "Keen Senses",

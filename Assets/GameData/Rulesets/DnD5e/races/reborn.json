@@ -2,24 +2,19 @@
   "id": "race.reborn",
   "name": "Reborn",
   "parentId": "",
-  "sortName": "Reborn",
-  "sourceFile": "reborn.txt",
+  "sortName": "0320",
+  "sourceFile": "Reborn.txt",
+  "isGroupOnly": false,
   "description": "Death isn't always the end. The reborn exemplify this, being individuals who have died yet, somehow, still live. Some reborn exhibit the scars of fatal ends, their ashen flesh or bloodless veins making it clear that they've been touched by death. Other reborn are marvels of magic or science, being stitched together from disparate beings or bearing mysterious minds in manufactured bodies. Whatever their origins, reborn know a new life and seek experiences and answers all their own.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [],
+  "selectableChoices": [],
   "mechanicalEffects": [
     {
       "type": "resistance",
       "name": "Poison Resistance",
       "target": "poison",
       "value": "Poison damage",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
       "amount": 0
     }
   ],
@@ -28,15 +23,15 @@
   "hasDarkvision": false,
   "darkvisionRange": 0,
   "traits": [
-    "Size",
+    "You are Medium or Small",
     "Ancestral Legacy",
     "Deathless Nature"
   ],
   "features": [
     {
-      "name": "Size",
-      "description": "You are Medium or Small. You choose the size when you gain this lineage.",
-      "id": "feature.reborn.size"
+      "name": "You are Medium or Small",
+      "description": "You choose the size when you gain this lineage.",
+      "id": "feature.reborn.you_are_medium_or_small"
     },
     {
       "name": "Ancestral Legacy",

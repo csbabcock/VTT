@@ -1,0 +1,154 @@
+{
+  "id": "race.warforged",
+  "name": "Warforged",
+  "parentId": "",
+  "sortName": "0400",
+  "sourceFile": "Warforged.txt",
+  "isGroupOnly": false,
+  "description": "The warforged were built to fight in the Last War. While the first warforged were mindless automatons, House Cannith devoted vast resources to improving these steel soldiers. An unexpected breakthrough produced sapient soldiers, giving rise to what some have only grudgingly accepted as a new species. Warforged are made from wood and metal, but they can feel pain and emotion. Built as weapons, they must now find a purpose beyond war. A warforged can be a steadfast ally, a cold-hearted killer, or a visionary in search of meaning.",
+  "abilityScoreBonuses": [
+    {
+      "ability": "CON",
+      "bonus": 2
+    }
+  ],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose one other ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "selectableChoices": [
+    {
+      "id": "choice.language.extra",
+      "type": "language",
+      "name": "Choose an extra language",
+      "count": 1,
+      "options": [
+        "Dwarvish",
+        "Elvish",
+        "Giant",
+        "Gnomish",
+        "Goblin",
+        "Halfling",
+        "Orc",
+        "Abyssal",
+        "Celestial",
+        "Draconic",
+        "Deep Speech",
+        "Infernal",
+        "Primordial",
+        "Sylvan",
+        "Undercommon",
+        "Aquan",
+        "Auran",
+        "Ignan",
+        "Terran",
+        "Leonin",
+        "Loxodon",
+        "Minotaur",
+        "Vedalken"
+      ]
+    }
+  ],
+  "mechanicalEffects": [
+    {
+      "type": "resistance",
+      "name": "Poison Resistance",
+      "target": "poison",
+      "value": "Poison damage",
+      "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Language",
+      "target": "language",
+      "value": "Common",
+      "amount": 0
+    }
+  ],
+  "speed": 30,
+  "size": "Medium",
+  "hasDarkvision": false,
+  "darkvisionRange": 0,
+  "traits": [
+    "Your warforged character has the following traits",
+    "Ability Score Increase",
+    "A typical warforged is between two and thirty years old",
+    "Alignment",
+    "Your size is Medium",
+    "Speed",
+    "Constructed Resilience",
+    "Sentry's Rest",
+    "Integrated Protection",
+    "You can don only armor with which you have proficiency",
+    "Specialized Design"
+  ],
+  "features": [
+    {
+      "name": "Your warforged character has the following traits",
+      "description": "A few of the traits give you a choice; consider how your choice reflects the purpose for which your character was built.",
+      "id": "feature.warforged.your_warforged_character_has_the_following_traits"
+    },
+    {
+      "name": "Ability Score Increase",
+      "description": "Your Constitution score increases by 2, and one other ability score of your choice increases by 1.",
+      "id": "feature.warforged.ability_score_increase"
+    },
+    {
+      "name": "A typical warforged is between two and thirty years old",
+      "description": "The maximum warforged lifespan remains a mystery; so far, warforged have shown no signs of deterioration due to age. You are immune to magical aging effects.",
+      "id": "feature.warforged.a_typical_warforged_is_between_two_and_thirty_years_old"
+    },
+    {
+      "name": "Alignment",
+      "description": "Most warforged take comfort in order and discipline, tending toward law and neutrality. But some have absorbed the morality, or lack thereof, of the beings with which they served.",
+      "id": "feature.warforged.alignment"
+    },
+    {
+      "name": "Your size is Medium",
+      "description": "To set your height and weight randomly, start with rolling a size modifier:\n\nSize modifier = 2d6\n\nHeight = 5 feet + 10 inches + your size modifier in inches\n\nWeight in pounds = 270 + (4 × your size modifier)",
+      "id": "feature.warforged.your_size_is_medium"
+    },
+    {
+      "name": "Speed",
+      "description": "Your base walking speed is 30 feet.",
+      "id": "feature.warforged.speed"
+    },
+    {
+      "name": "Constructed Resilience",
+      "description": "You were created to have remarkable fortitude, represented by the following benefits:\n\nYou have advantage on saving throws against being poisoned, and you have resistance to poison damage.\n\nYou don't need to eat, drink, or breathe.\n\nYou are immune to disease.\n\nYou don't need to sleep, and magic can't put you to sleep.",
+      "id": "feature.warforged.constructed_resilience"
+    },
+    {
+      "name": "Sentry's Rest",
+      "description": "When you take a long rest, you must spend at least six hours in an inactive, motionless state, rather than sleeping. In this state, you appear inert, but it doesn't render you unconscious, and you can see and hear as normal.",
+      "id": "feature.warforged.sentry_s_rest"
+    },
+    {
+      "name": "Integrated Protection",
+      "description": "Your body has built-in defensive layers, which can be enhanced with armor:\n\nYou gain a +1 bonus to Armor Class.",
+      "id": "feature.warforged.integrated_protection"
+    },
+    {
+      "name": "You can don only armor with which you have proficiency",
+      "description": "To don armor other than a shield, you must incorporate it into your body over the course of 1 hour, during which you remain in contact with the armor. To doff armor, you must spend 1 hour removing it. You can rest while donning or doffing armor in this way.\n\nWhile you live, the armor incorporated into your body can't be removed against your will.",
+      "id": "feature.warforged.you_can_don_only_armor_with_which_you_have_proficiency"
+    },
+    {
+      "name": "Specialized Design",
+      "description": "You gain one skill proficiency and one tool proficiency of your choice.",
+      "id": "feature.warforged.specialized_design"
+    }
+  ]
+}

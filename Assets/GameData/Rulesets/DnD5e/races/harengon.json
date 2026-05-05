@@ -2,8 +2,9 @@
   "id": "race.harengon",
   "name": "Harengon",
   "parentId": "",
-  "sortName": "Harengon",
-  "sourceFile": "harengons.txt",
+  "sortName": "0200",
+  "sourceFile": "Harengons.txt",
+  "isGroupOnly": false,
   "description": "Harengons originated in the Feywild, where they spoke Sylvan and embodied the spirit of freedom and travel. In time, these rabbitfolk hopped into other worlds, bringing the fey realm's exuberance with them and learning new languages as they went.",
   "abilityScoreBonuses": [],
   "abilityScoreChoices": [
@@ -36,19 +37,13 @@
       ]
     }
   ],
+  "selectableChoices": [],
   "mechanicalEffects": [
     {
       "type": "proficiency",
-      "name": "Race Proficiency",
+      "name": "Keen Senses",
       "target": "skill",
       "value": "Perception",
-      "amount": 0
-    },
-    {
-      "type": "creatureType",
-      "name": "Creature Type",
-      "target": "creatureType",
-      "value": "Humanoid",
       "amount": 0
     }
   ],
@@ -57,7 +52,7 @@
   "hasDarkvision": false,
   "darkvisionRange": 0,
   "traits": [
-    "Size",
+    "You are Medium or Small",
     "Speed",
     "Hare-Trigger",
     "Leporine Senses",
@@ -66,9 +61,9 @@
   ],
   "features": [
     {
-      "name": "Size",
-      "description": "You are Medium or Small. You choose the size when you select this race.",
-      "id": "feature.harengon.size"
+      "name": "You are Medium or Small",
+      "description": "You choose the size when you select this race.",
+      "id": "feature.harengon.you_are_medium_or_small"
     },
     {
       "name": "Speed",

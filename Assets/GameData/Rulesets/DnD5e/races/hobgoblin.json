@@ -1,78 +1,104 @@
 {
   "id": "race.hobgoblin",
   "name": "Hobgoblin",
-  "parentId": "",
-  "sortName": "Hobgoblin",
-  "sourceFile": "hobgoblin.txt",
-  "description": "Hobgoblins are relentless soldiers that cleave to rigid tactics and orders. I fear their less-predictable scouts and spies more.",
-  "abilityScoreBonuses": [
+  "parentId": "race.goblinoid",
+  "sortName": "017003",
+  "sourceFile": "Hobgoblins.txt",
+  "isGroupOnly": false,
+  "description": "Hobgoblins trace their origins to the ancient courts of the Feywild, where they first appeared with their goblin and bugbear kin. Many of them were driven from the Feywild by the conquering god Maglubiyet, who marshaled them as soldiers, but the fey realm left its mark; wherever they are in the multiverse, they continue to channel an aspect of the Feywild's rule of reciprocity, which creates a mystical bond between the giver and the receiver of a gift.",
+  "abilityScoreBonuses": [],
+  "abilityScoreChoices": [
     {
-      "ability": "CON",
-      "bonus": 2
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     },
     {
-      "ability": "INT",
-      "bonus": 1
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
     }
   ],
-  "abilityScoreChoices": [],
-  "mechanicalEffects": [
-    {
-      "type": "language",
-      "name": "Languages",
-      "target": "language",
-      "value": "Common and Goblin",
-      "amount": 0
-    }
-  ],
+  "selectableChoices": [],
+  "mechanicalEffects": [],
   "speed": 30,
   "size": "Medium",
   "hasDarkvision": true,
   "darkvisionRange": 60,
   "traits": [
-    "Ability Score Increase",
-    "Age",
+    "You are a Humanoid",
     "Size",
     "Speed",
     "Darkvision",
-    "Martial Training",
-    "Saving Face"
+    "Fey Ancestry",
+    "Fey Gift",
+    "Hospitality",
+    "Passage",
+    "Spite"
   ],
   "features": [
     {
-      "name": "Ability Score Increase",
-      "description": "Your Constitution score increases by 2, and your Intelligence score increases by 1.",
-      "id": "feature.hobgoblin.ability_score_increase"
-    },
-    {
-      "name": "Age",
-      "description": "Hobgoblins mature at the same rate as humans and have lifespans similar in length to theirs.",
-      "id": "feature.hobgoblin.age"
+      "name": "You are a Humanoid",
+      "description": "You are also considered a goblinoid for any prerequisite or effect that requires you to be a goblinoid.",
+      "id": "feature.hobgoblin.you_are_a_humanoid"
     },
     {
       "name": "Size",
-      "description": "Hobgoblins are between 5 and 6 feet tall and weigh between 150 and 200 pounds. Your size is Medium.",
+      "description": "You are Medium.",
       "id": "feature.hobgoblin.size"
     },
     {
       "name": "Speed",
-      "description": "Your base walking speed is 30 feet.",
+      "description": "Your walking speed is 30 feet.",
       "id": "feature.hobgoblin.speed"
     },
     {
       "name": "Darkvision",
-      "description": "You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "description": "You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
       "id": "feature.hobgoblin.darkvision"
     },
     {
-      "name": "Martial Training",
-      "description": "You are proficient with two martial weapons of your choice and with light armor.",
-      "id": "feature.hobgoblin.martial_training"
+      "name": "Fey Ancestry",
+      "description": "You have advantage on saving throws you make to avoid or end the charmed condition on yourself.",
+      "id": "feature.hobgoblin.fey_ancestry"
     },
     {
-      "name": "Saving Face",
-      "description": "Hobgoblins are careful not to show weakness in front of their allies, for fear of losing status. If you miss with an attack roll or fail an ability check or a saving throw, you can gain a bonus to the roll equal to the number of allies you can see within 30 feet of you (maximum bonus of +5). Once you use this trait, you can't use it again until you finish a short or long rest.",
-      "id": "feature.hobgoblin.saving_face"
+      "name": "Fey Gift",
+      "description": "You can use this trait to take the Help action as a bonus action, and you can do so a number of times equal to your proficiency bonus. You regain all expended uses when you finish a long rest.\n\nStarting at 3rd level, choose one of the options below each time you take the Help action with this trait:",
+      "id": "feature.hobgoblin.fey_gift"
+    },
+    {
+      "name": "Hospitality",
+      "description": "You and the creature you help each gain a number of temporary hit points equal to 1d6 plus your proficiency bonus.",
+      "id": "feature.hobgoblin.hospitality"
+    },
+    {
+      "name": "Passage",
+      "description": "You and the creature you help each increase your walking speeds by 10 feet until the start of your next turn.",
+      "id": "feature.hobgoblin.passage"
+    },
+    {
+      "name": "Spite",
+      "description": "Until the start of your next turn, the first time the creature you help hits a target with an attack roll, that target has disadvantage on the next attack roll it makes within the next minute.\n\nFortune from the Many\n\nIf you miss with an attack roll or fail an ability check or a saving throw, you can draw on your bonds of reciprocity to gain a bonus to the roll equal to the number of allies you can see within 30 feet of you (maximum bonus of +3). You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+      "id": "feature.hobgoblin.spite"
     }
   ]
 }

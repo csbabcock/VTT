@@ -2,17 +2,80 @@
   "id": "race.plasmoid",
   "name": "Plasmoid",
   "parentId": "",
-  "sortName": "Plasmoid",
-  "sourceFile": "plasmoid.txt",
+  "sortName": "0310",
+  "sourceFile": "Plasmoid.txt",
+  "isGroupOnly": false,
   "description": "Plasmoids are amorphous beings with no typical shape. In the presence of other folk, they often adopt a similar shape, but there's little chance of mistaking a plasmoid for anything else. They consume food by osmosis, the way an amoeba does, and excrete waste through tiny pores. They breathe by absorbing oxygen through another set of pores, and their limbs are strong and flexible enough to grasp and manipulate weapons and tools. Although most plasmoids are translucent gray, they can alter their color and translucence by absorbing dyes through their pores.",
   "abilityScoreBonuses": [],
-  "abilityScoreChoices": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "selectableChoices": [
+    {
+      "id": "choice.language.extra",
+      "type": "language",
+      "name": "Choose an extra language",
+      "count": 1,
+      "options": [
+        "Dwarvish",
+        "Elvish",
+        "Giant",
+        "Gnomish",
+        "Goblin",
+        "Halfling",
+        "Orc",
+        "Abyssal",
+        "Celestial",
+        "Draconic",
+        "Deep Speech",
+        "Infernal",
+        "Primordial",
+        "Sylvan",
+        "Undercommon",
+        "Aquan",
+        "Auran",
+        "Ignan",
+        "Terran",
+        "Leonin",
+        "Loxodon",
+        "Minotaur",
+        "Vedalken"
+      ]
+    }
+  ],
   "mechanicalEffects": [
     {
       "type": "language",
-      "name": "Languages",
+      "name": "Language",
       "target": "language",
-      "value": "Common and one other language that you and your DM agree is appropriate",
+      "value": "Common",
       "amount": 0
     }
   ],
@@ -20,6 +83,56 @@
   "size": "Medium or Small",
   "hasDarkvision": true,
   "darkvisionRange": 60,
-  "traits": [],
-  "features": []
+  "traits": [
+    "Ability Score Increase",
+    "Size",
+    "Speed",
+    "Amorphous",
+    "Darkvision",
+    "Hold Breath",
+    "Natural Resilience",
+    "Shape Self"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Increase one ability score by 2, and increase a different one by 1, or increase three different scores by 1.",
+      "id": "feature.plasmoid.ability_score_increase"
+    },
+    {
+      "name": "Size",
+      "description": "You are Medium or Small. You choose the size when you gain this race.",
+      "id": "feature.plasmoid.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet.",
+      "id": "feature.plasmoid.speed"
+    },
+    {
+      "name": "Amorphous",
+      "description": "You can squeeze through a space as narrow as 1 inch wide, provided you are wearing and carrying nothing. You also have advantage on ability checks you make to initiate or escape a grapple.",
+      "id": "feature.plasmoid.amorphous"
+    },
+    {
+      "name": "Darkvision",
+      "description": "You can see in dim light within 60 feet of yourself as if it were bright light, and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray.",
+      "id": "feature.plasmoid.darkvision"
+    },
+    {
+      "name": "Hold Breath",
+      "description": "You can hold your breath for 1 hour.",
+      "id": "feature.plasmoid.hold_breath"
+    },
+    {
+      "name": "Natural Resilience",
+      "description": "You have resistance to acid and poison damage, and you have advantage on saving throws against being poisoned.",
+      "id": "feature.plasmoid.natural_resilience"
+    },
+    {
+      "name": "Shape Self",
+      "description": "As an action, you can reshape your body to give yourself a head, one or two arms, one or two legs, and makeshift hands and feet, or you can revert to a limbless blob. While you have a humanlike shape, you can wear clothing and armor made for a Humanoid of your size. As a bonus action, you can extrude a pseudopod that is up to 6 inches wide and 10 feet long or reabsorb it into your body. As part of the same bonus action, you can use this pseudopod to manipulate an object, open or close a door or container, or pick up or set down a Tiny object. The pseudopod contains no sensory organs and can't attack, activate magic items, or lift more than 10 pounds.",
+      "id": "feature.plasmoid.shape_self"
+    }
+  ]
 }

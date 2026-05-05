@@ -1,81 +1,45 @@
-The map we found showed the entrance to the Priest King’s treasure cache right in the middle of the ruined section of the city. We approached our destination without issue, but as we arrived at the burned-out building, a sudden cacophony erupted around us. Birds squawked, cats hissed, and dogs growled. Lidda hustled us back to the city’s safer avenues. Only when we were back within the area patrolled by the guard did she explain that the noises indicated that the wingless folk had claimed that area, and that to trespass would be to court death.
+Feathered folk who resemble ravens, kenku are blessed with keen observation and supernaturally accurate memories. None of them can remember the origin of the first kenku, however, and they often joke that there are as many kenku origin stories as there are kenku. Some of them paint their genesis as a curse, being a flightless bird people doomed to mimic other people's creations. Other kenku recite cryptic but beautiful poems about their advent being a blessed event in which they were sent into the multiverse to observe and catalog its many wonders.
 
-— Gimble, Notes from a Treasure Hunter
+Whatever their true origin, kenku are most often found in the Shadowfell and the Material Plane, and they tend to have the coloration typical of ravens.
 
-Haunted by an ancient crime that robbed them of their wings, the kenku wander the world as vagabonds and burglars who live at the edge of human society. Kenku suffer from a sinister reputation that is not wholly unearned, but they can prove to be valuable allies.
+Creating Your Character
+At 1st level, you choose whether your character is a member of the human race or of a fantastical race. If you select a fantastical race, follow these additional rules during character creation.
 
-An Ancient Curse
-The kenku once served a mysterious, powerful entity on another plane of existence. Some believe they were minions of Grazz’t, while others say that they were scouts and explorers for the Wind Dukes of Aaqa. Whatever the truth, according to legend, the kenku betrayed their master. Unable to resist the lure of a beautiful sparkling treasure, the kenku plotted to steal the item and escape to the Material Plane.
-
-Unfortunately for the kenku, their master discovered their plan before they could enact it. Enraged, the entity imposed three dreadful curses upon them. First, the kenku’s beloved wings withered and fell away from their bodies, leaving them bound to the earth. Second, because their ingenuity and skill had turned toward scheming against their patron, the spark of creativity was torn from their souls. Finally, to ensure that the kenku could never divulge any secrets, their master took away their voices. Once the entity was satisfied that they had been sufficiently punished, the kenku were set loose on the Material Plane.
-
-Since then, the kenku have wandered the world. They settle in places that accept them, usually bleak cities that have fallen on hard times and are overrun with crime.
-
-Dreams of Flight
-Above all else, kenku wish to regain their ability to fly. Every kenku is born with a desire to take to the air, and those who learn spellcasting do so in hope of mastering spells that will allow them to fly. Rumors of magic items such as flying carpets, brooms capable of flight, and similar objects provoke a great desire for the kenku to acquire the items for themselves.
-
-Despite their lack of wings, kenku love dwelling in towers and other tall structures. They seek out ruins that reach to the sky, though they lack the motivation and creativity to make repairs or fortify such places. Even so, their light weight and size allow them to dwell in rickety structures that would collapse beneath a human or an orc.
-
-Some thieves’ guilds use kenku as lookouts and messengers. The kenku dwell in the tallest buildings and towers the guild controls, allowing them to lurk in the highest levels and to keep watch on the city below.
-
-Hopeless Plagiarists
-As a result of their lack of creativity, kenku function comfortably as minions of a powerful master. Flock leaders enforce discipline and minimize conflicts, but they fail at effective planning or crafting long-term schemes.
-
-Although unable to speak in their own voices, kenku can perfectly mimic any sound they hear, from a half­ling’s voice to the noise of rocks clattering down a hillside. However, kenku cannot create new sounds and can communicate only by using sounds they have heard. Most kenku use a combination of overheard phrases and sound effects to convey their ideas and thoughts.
-
-By the same token, kenku have no ability to invent new ideas or create new things. Kenku can copy existing items with exceptional skill, allowing them to become excellent artisans and scribes. They can copy books, make replicas of objects, and otherwise thrive in situations where they can produce large numbers of identical items. Few kenku find this work satisfying, since their quest for the freedom of flight makes them ill-suited to settle into a routine.
-
-Ideal Minions
-Kenku gather in groups called flocks. A flock is led by the oldest and most experienced kenku with the widest store of knowledge to draw on, often called Master.
-
-Although kenku can’t create new things, they have a talent for learning and memorizing details. Thus, ambitious kenku can excel as superb spies and scouts. A kenku who learns of clever schemes and plans devised by other creatures can put them to use. The kenku lack the talent to improvise or alter a plan, but a wise Master sets multiple plans in motion at once, confident that underlings can follow orders to the letter.
-
-For this reason, many kenku make an easy living serving as messengers, spies, and lookouts for thieves’ guilds, bandits, and other criminal cartels. A network of kenku can relay a bird call or similar noise across the city, alerting their allies to the approach of a guard patrol or signaling a prime opportunity for a robbery.
-
-Since kenku can precisely reproduce any sound, the messages they carry rarely suffer degradation or shifts in meaning. Human messengers might switch words or phrases and garble a message inadvertently, but the kenku produce perfect copies of whatever they hear.
-
-Kenku Adventurers
-Kenku adventurers are usually the survivors of a flock that has sustained heavy losses, or a rare kenku who has grown weary of a life of crime. These kenku are more ambitious and daring than their fellows. Others strike out on their own in search of the secrets of flight, to master magic, or to uncover the secret of their curse and find a method to break it.
-
-Kenku adventurers, despite their relative independence, still have a tendency to seek out a companion to emulate and follow. A kenku loves to mimic the voice and words of its chosen companion.
-
-ROLEPLAYING A KENKU
-
-If you’re playing a kenku, constant attempts to mimic noises can come across as confusing or irritating rather than entertaining. You can just as easily describe the sounds your character makes and what they mean. Be clear about your character’s intentions unless you’re deliberately aiming for inscrutable or mysterious. 
-
-You might say, “Snapper makes the noise of a hammer slowly and rhythmically tapping a stone to show how bored he is. He plays with his dagger and studies the Lords’ Alliance agent sitting at the bar.” Creating a vocabulary of noises for the other players to decode might sound like fun, but it can prove distracting and could slow down the game.
-
-Kenku Names
-Given that kenku can duplicate any sound, their names are drawn from a staggering variety of noises and phrases. Kenku names tend to break down into three categories that make no distinction between male and female names.
-
-Kenku thugs, warriors, and toughs adopt noises made by weapons, such as the clang of a mace against armor or the sound made by a breaking bone. Non-kenku refer to the kenku by describing this noise. Examples of this type of name include Smasher, Clanger, Slicer, and Basher.
-
-Kenku thieves, con artists, and burglars adopt animal noises, typically those common in urban settings. In this manner, kenku can call out to each other while those who overhear them mistake them for common animals. Non-kenku use names that refer to the sound made or the animal a kenku mimics, such as Rat Scratch, Whistler, Mouser, and Growler.
-
-Some kenku turn their back on crime to pursue legitimate trades. These kenku adopt noises made as part of their craft. A sailor duplicates the sound of a fluttering sail, while a smith mimics the clanging of a hammer on metal. Non-kenku describe these folk by their trade sounds, such as Sail Snap, Hammerer, and Cutter.
-
-Kenku Traits
-Your kenku character has the following racial traits.
-Ability Score Increase
-Your Dexterity score increases by 2, and your Wisdom score increases by 1.
-
-Age
-Kenku have shorter lifespans than humans. They reach maturity at about 12 years old and can live to 60.
-
-Size
-Kenku are around 5 feet tall and weigh between 90 and 120 pounds. Your size is Medium.
-
-Speed
-Your base walking speed is 30 feet.
-
-Expert Forgery
-You can duplicate other creatures’ handwriting and craftwork. You have advantage on all checks made to produce forgeries or duplicates of existing objects.
-
-Kenku Training
-You are proficient in your choice of two of the following skills: Acrobatics, Deception, Stealth, and Sleight of Hand.
-
-Mimicry
-You can mimic sounds you have heard, including voices. A creature that hears the sounds you make can tell they are imitations with a successful Wisdom (Insight) check opposed by your Charisma (Deception) check.
+Ability Score Increases
+When determining your character's ability scores, increase one score by 2 and increase a different score by 1, or increase three different scores by 1. Follow this rule regardless of the method you use to determine the scores, such as rolling or point buy. The "Quick Build" section for your character's class offers suggestions on which scores to increase. You can follow those suggestions or ignore them, but you can't raise any of your scores above 20.
 
 Languages
-You can read and write Common and Auran, but you can speak only by using your Mimicry trait.
+Your character can speak, read, and write Common and one other language that you and your DM agree is appropriate for the character. The Player's Handbook offers a list of languages to choose from. The DM is free to modify that list for a campaign.
+
+Creature Type
+Every creature in D&D, including each player character, has a special tag in the rules that identifies the type of creature they are. Most player characters are of the Humanoid type. A race tells you what your character's creature type is.
+
+Here's a list of the game's creature types in alphabetical order: Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead. These types don't have rules themselves, but some rules in the game affect creatures of certain types in different ways. For example, the cure wounds spell doesn't work on a Construct or an Undead.
+
+Life Span
+The typical life span of a player character in the D&D multiverse is about a century, assuming the character doesn't meet a violent end on an adventure. Members of some races, such as dwarves and elves, can live for centuries. If typical members of a race can live longer than a century, that fact is mentioned in the race's description.
+
+Height and Weight
+Player characters, regardless of race, typically fall into the same ranges of height and weight that humans have in our world. If you'd like to determine your character's height or weight randomly, consult the Random Height and Weight table in the Player's Handbook, and choose the row in the table that best represents the build you imagine for your character.
+
+Kenku Traits
+As a kenku, you have the following racial traits.
+Creature Type
+You are a Humanoid.
+
+Size
+Your size is Medium or Small. You choose the size when you select this race.
+
+Speed
+Your walking speed is 30 feet.
+
+Expert Duplication
+When you copy writing or craftwork produced by yourself or someone else, you have advantage on any ability checks you make to produce an exact duplicate.
+
+Kenku Recall
+Thanks to your supernaturally good memory, you have proficiency in two skills of your choice.
+
+Moreover, when you make an ability check using any skill in which you have proficiency, you can give yourself advantage on the check before rolling the d20. You can give yourself advantage in this way a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.
+
+Mimicry
+You can accurately mimic sounds you have heard, including voices. A creature that hears the sounds you make can tell they are imitations only with a successful Wisdom (Insight) check against a DC of 8 + your proficiency bonus + your Charisma modifier.

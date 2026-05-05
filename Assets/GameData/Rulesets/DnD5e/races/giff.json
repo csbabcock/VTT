@@ -2,17 +2,80 @@
   "id": "race.giff",
   "name": "Giff",
   "parentId": "",
-  "sortName": "Giff",
-  "sourceFile": "giff.txt",
+  "sortName": "0140",
+  "sourceFile": "Giff.txt",
+  "isGroupOnly": false,
   "description": "Giff are tall, broad-shouldered folk with hippo-like features. Some have smooth skin, while others have short bristles on their faces and the tops of their heads. As beings of impressive size and unforgettable appearance, giff are noticed wherever they go.",
   "abilityScoreBonuses": [],
-  "abilityScoreChoices": [],
+  "abilityScoreChoices": [
+    {
+      "id": "asi.choice_plus_2",
+      "name": "Choose one ability",
+      "bonus": 2,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    },
+    {
+      "id": "asi.choice_plus_1",
+      "name": "Choose a different ability",
+      "bonus": 1,
+      "requiresUniqueAbility": true,
+      "abilities": [
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA"
+      ]
+    }
+  ],
+  "selectableChoices": [
+    {
+      "id": "choice.language.extra",
+      "type": "language",
+      "name": "Choose an extra language",
+      "count": 1,
+      "options": [
+        "Dwarvish",
+        "Elvish",
+        "Giant",
+        "Gnomish",
+        "Goblin",
+        "Halfling",
+        "Orc",
+        "Abyssal",
+        "Celestial",
+        "Draconic",
+        "Deep Speech",
+        "Infernal",
+        "Primordial",
+        "Sylvan",
+        "Undercommon",
+        "Aquan",
+        "Auran",
+        "Ignan",
+        "Terran",
+        "Leonin",
+        "Loxodon",
+        "Minotaur",
+        "Vedalken"
+      ]
+    }
+  ],
   "mechanicalEffects": [
     {
-      "type": "language",
-      "name": "Languages",
-      "target": "language",
-      "value": "Common and one other language that you and your DM agree is appropriate",
+      "type": "proficiency",
+      "name": "Firearms Mastery",
+      "target": "weapon",
+      "value": "You have a mystical connection to firearms that traces back to the gods of the giff, who delighted in such weapons",
       "amount": 0
     },
     {
@@ -21,12 +84,57 @@
       "target": "creatureType",
       "value": "Humanoid",
       "amount": 0
+    },
+    {
+      "type": "language",
+      "name": "Language",
+      "target": "language",
+      "value": "Common",
+      "amount": 0
     }
   ],
   "speed": 30,
   "size": "Medium",
   "hasDarkvision": false,
   "darkvisionRange": 0,
-  "traits": [],
-  "features": []
+  "traits": [
+    "Ability Score Increase",
+    "Size",
+    "Speed",
+    "Astral Spark",
+    "Firearms Mastery",
+    "Hippo Build"
+  ],
+  "features": [
+    {
+      "name": "Ability Score Increase",
+      "description": "Increase one ability score by 2, and increase a different one by 1, or increase three different scores by 1.",
+      "id": "feature.giff.ability_score_increase"
+    },
+    {
+      "name": "Size",
+      "description": "You are Medium.",
+      "id": "feature.giff.size"
+    },
+    {
+      "name": "Speed",
+      "description": "Your walking speed is 30 feet, and you have a swimming speed equal to your walking speed.",
+      "id": "feature.giff.speed"
+    },
+    {
+      "name": "Astral Spark",
+      "description": "Your psychic connection to the Astral Plane enables you to mystically access a spark of divine power, which you can channel through your weapons. When you hit a target with a simple or martial weapon, you can cause the target to take extra force damage equal to your proficiency bonus. You can use this trait a number of times equal to your proficiency bonus, but you can use it no more than once per turn. You regain all expended uses when you finish a long rest.",
+      "id": "feature.giff.astral_spark"
+    },
+    {
+      "name": "Firearms Mastery",
+      "description": "You have a mystical connection to firearms that traces back to the gods of the giff, who delighted in such weapons. You have proficiency with all firearms and ignore the loading property of any firearm. In addition, attacking at long range with a firearm doesn't impose disadvantage on your attack roll.",
+      "id": "feature.giff.firearms_mastery"
+    },
+    {
+      "name": "Hippo Build",
+      "description": "You have advantage on Strength-based ability checks and Strength saving throws. In addition, you count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.",
+      "id": "feature.giff.hippo_build"
+    }
+  ]
 }

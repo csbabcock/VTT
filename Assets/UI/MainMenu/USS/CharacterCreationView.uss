@@ -336,24 +336,33 @@
     flex-direction: column;
 }
 
-/* Wrapping tile grid (matches ability-row chip spacing ~12px) */
+/* Stacked list: one row per option; controls shrink to content and align left (matches foldouts). */
 .character-creation-buttons-container {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
     align-content: flex-start;
     width: 100%;
     padding-bottom: var(--spacing-sm);
 }
 
 .character-creation-buttons-container > * {
-    margin-right: 12px;
+    margin-right: 0;
     margin-bottom: 12px;
+    align-self: flex-start;
+}
+
+/* Full-width rows (foldout chrome / section labels); overrides align-self above */
+.character-creation-buttons-container > .character-creation-race-foldout,
+.character-creation-buttons-container > .character-creation-option-group-header {
+    align-self: stretch;
+    width: 100%;
 }
 
 .character-creation-option-button {
-    min-width: 132px;
-    max-width: 200px;
     width: auto;
+    min-width: auto;
+    max-width: none;
     flex-grow: 0;
     flex-shrink: 0;
     height: 52px;
@@ -367,9 +376,9 @@
     -unity-font-style: bold;
     letter-spacing: -0.28px;
     padding: var(--spacing-sm) var(--spacing-md);
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    -unity-text-align: middle-center;
+    -unity-text-align: middle-left;
     white-space: normal;
 
     transition-duration: var(--transition-fast);
@@ -392,12 +401,26 @@
 }
 
 .character-creation-option-group-header {
-    width: 100%;
     color: var(--color-text-secondary);
     font-size: 13px;
     -unity-font-style: bold;
     margin-top: 6px;
     margin-bottom: 2px;
+}
+
+.character-creation-race-foldout {
+    color: var(--color-text-primary);
+    -unity-font-style: bold;
+    margin-bottom: 8px;
+}
+
+.character-creation-race-foldout .character-creation-option-button {
+    margin-top: 8px;
+    margin-left: 12px;
+    align-self: flex-start;
+    width: auto;
+    min-width: auto;
+    max-width: none;
 }
 
 .character-creation-race-asi-container {
@@ -424,6 +447,11 @@
     margin-bottom: 8px;
 }
 
+.character-creation-race-choice-row {
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
 .character-creation-race-asi-label {
     width: 100%;
     color: var(--color-text-secondary);
@@ -446,6 +474,11 @@
     background-color: var(--color-blue);
     border-color: var(--color-blue);
     color: var(--color-text-primary);
+}
+
+.character-creation-race-choice-dropdown {
+    min-height: 32px;
+    width: 100%;
 }
 
 .character-creation-score-method-buttons {

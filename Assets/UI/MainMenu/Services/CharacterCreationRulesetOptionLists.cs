@@ -6,6 +6,26 @@ using GameCore.PlayerData.Rulesets.Definitions;
 
 namespace GameCore.UI.MainMenu.Services
 {
+    public class RaceOptionData
+    {
+        public string Id { get; }
+        public string DisplayName { get; }
+        public bool IsGroupOnly { get; }
+        public IReadOnlyList<RaceOptionData> Children { get; }
+
+        public RaceOptionData(
+            string id,
+            string displayName,
+            bool isGroupOnly = false,
+            IReadOnlyList<RaceOptionData> children = null)
+        {
+            Id = id ?? string.Empty;
+            DisplayName = displayName ?? string.Empty;
+            IsGroupOnly = isGroupOnly;
+            Children = children ?? Array.Empty<RaceOptionData>();
+        }
+    }
+
     /// <summary>
     /// Builds sorted (id, displayName) option lists for character-creation dropdowns from ruleset content.
     /// </summary>
@@ -16,7 +36,7 @@ namespace GameCore.UI.MainMenu.Services
         /// </summary>
         public static (
             List<(string id, string displayName)> classes,
-            List<(string id, string displayName)> races,
+            List<RaceOptionData> races,
             List<(string id, string displayName)> backgrounds)
             CreateSortedRaceClassBackground(IRulesetContentQuery query)
         {
@@ -27,7 +47,7 @@ namespace GameCore.UI.MainMenu.Services
                 query.GetClasses(),
                 c => c.id,
                 c => c.name);
-            List<(string, string)> races = BuildGroupedRaceOptions(query.GetRaces());
+            List<RaceOptionData> races = BuildGroupedRaceOptions(query.GetRaces());
             List<(string, string)> backgrounds = BuildSortedOptions(
                 query.GetBackgrounds(),
                 b => b.id,
@@ -53,10 +73,10 @@ namespace GameCore.UI.MainMenu.Services
                 .ToList();
         }
 
-        private static List<(string id, string displayName)> BuildGroupedRaceOptions(
+        private static List<RaceOptionData> BuildGroupedRaceOptions(
             IEnumerable<RaceDefinition> races)
         {
-            var result = new List<(string id, string displayName)>();
+            var result = new List<RaceOptionData>();
             if (races == null)
                 return result;
 
@@ -76,16 +96,24 @@ namespace GameCore.UI.MainMenu.Services
             {
                 if (childrenByParent.TryGetValue(race.id, out List<RaceDefinition> children) && children.Count > 0)
                 {
-                    result.Add(($"__group:{race.id}", string.IsNullOrEmpty(race.name) ? race.id : race.name));
-                    foreach (RaceDefinition child in children
-                                 .OrderBy(r => r.sortName ?? r.name ?? r.id, StringComparer.OrdinalIgnoreCase))
-                    {
-                        result.Add((child.id, string.IsNullOrEmpty(child.name) ? child.id : child.name));
-                    }
+                    List<RaceOptionData> childOptions = children
+                        .OrderBy(r => r.sortName ?? r.name ?? r.id, StringComparer.OrdinalIgnoreCase)
+                        .Select(child => new RaceOptionData(
+                            child.id,
+                            string.IsNullOrEmpty(child.name) ? child.id : child.name))
+                        .ToList();
+                    result.Add(new RaceOptionData(
+                        race.id,
+                        string.IsNullOrEmpty(race.name) ? race.id : race.name,
+                        true,
+                        childOptions));
                 }
                 else
                 {
-                    result.Add((race.id, string.IsNullOrEmpty(race.name) ? race.id : race.name));
+                    result.Add(new RaceOptionData(
+                        race.id,
+                        string.IsNullOrEmpty(race.name) ? race.id : race.name,
+                        race.isGroupOnly));
                 }
             }
 
@@ -93,7 +121,9 @@ namespace GameCore.UI.MainMenu.Services
                          .Where(r => !string.IsNullOrEmpty(r.parentId) && !byId.ContainsKey(r.parentId))
                          .OrderBy(r => r.sortName ?? r.name ?? r.id, StringComparer.OrdinalIgnoreCase))
             {
-                result.Add((orphan.id, string.IsNullOrEmpty(orphan.name) ? orphan.id : orphan.name));
+                result.Add(new RaceOptionData(
+                    orphan.id,
+                    string.IsNullOrEmpty(orphan.name) ? orphan.id : orphan.name));
             }
 
             return result;
