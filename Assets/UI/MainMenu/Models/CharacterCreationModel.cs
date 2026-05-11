@@ -12,11 +12,45 @@ namespace GameCore.UI.MainMenu
     {
         public string CategoryTitle { get; }
         public IReadOnlyList<string> Items { get; }
+        public IReadOnlyList<CharacterProficiencyGroup> Groups { get; }
 
-        public CharacterProficiencySection(string categoryTitle, IReadOnlyList<string> items)
+        public CharacterProficiencySection(
+            string categoryTitle,
+            IReadOnlyList<string> items,
+            IReadOnlyList<CharacterProficiencyGroup> groups = null)
         {
             CategoryTitle = categoryTitle ?? string.Empty;
             Items = items ?? Array.Empty<string>();
+            Groups = groups ?? Array.Empty<CharacterProficiencyGroup>();
+        }
+    }
+
+    /// <summary>
+    /// Counted proficiency display data for a related proficiency set, such as weapons.
+    /// </summary>
+    public readonly struct CharacterProficiencyGroup
+    {
+        public string CategoryName { get; }
+        public string ItemLabel { get; }
+        public int TotalItemCount { get; }
+        public int ProficientItemCount { get; }
+        public bool IsAllProficient { get; }
+        public IReadOnlyList<string> ProficientItems { get; }
+
+        public CharacterProficiencyGroup(
+            string categoryName,
+            string itemLabel,
+            int totalItemCount,
+            int proficientItemCount,
+            bool isAllProficient,
+            IReadOnlyList<string> proficientItems)
+        {
+            CategoryName = categoryName ?? string.Empty;
+            ItemLabel = string.IsNullOrEmpty(itemLabel) ? "items" : itemLabel;
+            TotalItemCount = Math.Max(0, totalItemCount);
+            ProficientItemCount = Math.Max(0, proficientItemCount);
+            IsAllProficient = isAllProficient;
+            ProficientItems = proficientItems ?? Array.Empty<string>();
         }
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GameCore.PlayerData;
 using GameCore.UI.InGame.Models;
 
@@ -9,6 +10,47 @@ namespace GameCore.PlayerData
     /// </summary>
     public static class DnD5eWeaponCalculator
     {
+        private static readonly string[] KnownWeaponNames =
+        {
+            "Club",
+            "Dagger",
+            "Greatclub",
+            "Handaxe",
+            "Javelin",
+            "Light Hammer",
+            "Mace",
+            "Quarterstaff",
+            "Sickle",
+            "Spear",
+            "Light Crossbow",
+            "Dart",
+            "Shortbow",
+            "Sling",
+            "Battleaxe",
+            "Flail",
+            "Glaive",
+            "Greataxe",
+            "Greatsword",
+            "Halberd",
+            "Lance",
+            "Longsword",
+            "Maul",
+            "Morningstar",
+            "Pike",
+            "Rapier",
+            "Scimitar",
+            "Shortsword",
+            "Trident",
+            "War Pick",
+            "Warhammer",
+            "Whip",
+            "Blowgun",
+            "Hand Crossbow",
+            "Heavy Crossbow",
+            "Longbow",
+            "Net"
+        };
+
         /// <summary>
         /// Weapon properties for D&D 5e weapons.
         /// </summary>
@@ -23,6 +65,21 @@ namespace GameCore.PlayerData
             public bool isRanged; // Uses DEX for attack
             public bool isTwoHanded; // Requires two hands
             public string weaponCategory; // "Simple" or "Martial"
+        }
+
+        public static IReadOnlyList<string> GetKnownWeaponNames() => KnownWeaponNames;
+
+        public static IReadOnlyList<WeaponProperties> GetAllWeaponProperties()
+        {
+            var weapons = new List<WeaponProperties>(KnownWeaponNames.Length);
+            foreach (string weaponName in KnownWeaponNames)
+            {
+                WeaponProperties? properties = GetWeaponProperties(weaponName);
+                if (properties.HasValue)
+                    weapons.Add(properties.Value);
+            }
+
+            return weapons;
         }
 
         /// <summary>

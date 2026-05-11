@@ -209,7 +209,10 @@ namespace GameCore.UI.MainMenu
         private void HandleRaceSelected(string raceId)
         {
             if (_contentQuery.TryGetRace(raceId, out RaceDefinition race) && race.isGroupOnly)
+            {
+                ShowRaceFamilyDetails(race);
                 return;
+            }
             Model.SetSelectedRaceId(raceId);
         }
 
@@ -709,6 +712,7 @@ namespace GameCore.UI.MainMenu
                     CharacterCreationDataService.GetRaceFeatures(state.SelectedRaceId), state);
                 _view.UpdateDetailPanel(name, type, description, features, null, "Race features",
                     descMeta.Substituted);
+                _view.BindRaceSubraceOptions(BuildSiblingSubraceOptions(race, state));
                 return;
             }
             else if (!string.IsNullOrEmpty(state.SelectedClassId) &&
@@ -729,6 +733,7 @@ namespace GameCore.UI.MainMenu
                     CharacterCreationClassContentBuilder.ClassFeaturesSectionHeading(classLevel);
                 _view.UpdateDetailPanel(name, type, description, features, sectionList, featHeading,
                     clsDescMeta.Substituted, true, classLevel, classLevelMax);
+                _view.BindRaceSubraceOptions(null);
                 return;
             }
             else if (!string.IsNullOrEmpty(state.SelectedBackgroundId) &&
@@ -742,10 +747,61 @@ namespace GameCore.UI.MainMenu
                     CharacterCreationDataService.GetBackgroundFeatures(state.SelectedBackgroundId), state);
                 _view.UpdateDetailPanel(name, type, description, features, null, "Background features",
                     bgDescMeta.Substituted);
+                _view.BindRaceSubraceOptions(null);
                 return;
             }
 
             _view.UpdateDetailPanel(name, type, description, features, null, null, false);
+            _view.BindRaceSubraceOptions(null);
+        }
+
+        private void ShowRaceFamilyDetails(RaceDefinition race)
+        {
+            if (race == null)
+                return;
+
+            CharacterCreationState state = Model.State;
+            string name = race.name ?? race.id;
+            AbilityModifierTextInterpolator.InterpolationResult descMeta =
+                InterpolateRulesText(race.description, state);
+            List<FeatureData> features = InterpolateFeatureDescriptions(
+                CharacterCreationDataService.GetRaceFeatures(race.id), state);
+            _view.UpdateDetailPanel(name, "Race", descMeta.Text, features, null, "Race features",
+                descMeta.Substituted);
+            _view.SelectRaceListOption(race.id);
+            _view.BindRaceSubraceOptions(BuildSubraceOptions(race.id, state));
+        }
+
+        private List<RaceSubraceOptionViewModel> BuildSubraceOptions(
+            string parentRaceId,
+            CharacterCreationState state)
+        {
+            if (string.IsNullOrEmpty(parentRaceId))
+                return null;
+
+            return _contentQuery.GetRaces()
+                .Where(r => r != null &&
+                            string.Equals(r.parentId, parentRaceId, StringComparison.OrdinalIgnoreCase) &&
+                            !string.IsNullOrEmpty(r.id))
+                .OrderBy(r => r.sortName ?? r.name ?? r.id, StringComparer.OrdinalIgnoreCase)
+                .Select(r =>
+                {
+                    bool selected = string.Equals(state.SelectedRaceId, r.id, StringComparison.OrdinalIgnoreCase);
+                    return new RaceSubraceOptionViewModel(
+                        r.id,
+                        string.IsNullOrEmpty(r.name) ? r.id : r.name,
+                        selected);
+                })
+                .ToList();
+        }
+
+        private List<RaceSubraceOptionViewModel> BuildSiblingSubraceOptions(
+            RaceDefinition race,
+            CharacterCreationState state)
+        {
+            if (race == null || string.IsNullOrEmpty(race.parentId))
+                return null;
+            return BuildSubraceOptions(race.parentId, state);
         }
 
         private AbilityModifierTextInterpolator.InterpolationResult InterpolateRulesText(

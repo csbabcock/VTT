@@ -2,51 +2,71 @@
     <Style src="project://database/Assets/UI/MainMenu/USS/CharacterCreationView.uss?fileID=7433441132597879392&amp;guid=d50ded843bb59ba49b9028199398f790&amp;type=3#CharacterCreationView"/>
     <ui:VisualElement name="root" class="character-creation-root">
         <ui:VisualElement name="content-host" class="character-creation-content-host">
+            <ui:VisualElement name="character-creation-header" class="character-creation-header">
+                <ui:VisualElement class="character-creation-header-copy">
+                    <ui:Label text="Create Character" class="character-creation-screen-title"/>
+                    <ui:Label text="Build choices on the left, inspect rules in the center, and watch the live sheet update on the right." class="character-creation-screen-subtitle"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="character-total-level-row" class="character-creation-level-row character-creation-total-level-row">
+                    <ui:VisualElement class="character-creation-header-stat">
+                        <ui:Label text="Class" class="character-creation-level-label"/>
+                        <ui:Label name="character-class-summary" text="No class" class="character-creation-total-level-value character-creation-header-summary-value"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="character-creation-header-stat">
+                        <ui:Label text="Race" class="character-creation-level-label"/>
+                        <ui:Label name="character-race-summary" text="No race" class="character-creation-total-level-value character-creation-header-summary-value"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="character-creation-header-stat">
+                        <ui:Label text="Level" class="character-creation-level-label"/>
+                        <ui:Label name="character-level-total" text="1" class="character-creation-total-level-value"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
             <ui:VisualElement name="container" class="character-creation-container">
                 <ui:VisualElement name="left-panel" class="character-creation-left-panel">
                     <ui:VisualElement name="main-content" class="character-creation-main-content">
-                        <ui:VisualElement name="character-total-level-row" class="character-creation-level-row character-creation-total-level-row">
-                            <ui:Label text="Character level" class="character-creation-level-label"/>
-                            <ui:Label name="character-level-total" text="1" class="character-creation-total-level-value"/>
-                        </ui:VisualElement>
+                        <ui:Label text="Choose Foundation" class="character-creation-panel-eyebrow"/>
                         <ui:VisualElement name="tabs-container" class="character-creation-tabs-container">
-                            <ui:Button name="tab-class" text="Class" class="character-creation-tab active"/>
-                            <ui:Button name="tab-race" text="Race" class="character-creation-tab"/>
-                            <ui:Button name="tab-background" text="Background" class="character-creation-tab"/>
-                        </ui:VisualElement>
-                        <ui:VisualElement name="tab-content-container" class="character-creation-tab-content-container">
-                            <ui:VisualElement name="tab-class-content" class="character-creation-tab-content active">
-                                <ui:VisualElement class="character-creation-scroll-with-custom-bar">
-                                    <ui:ScrollView mode="Vertical" show-horizontal-scroller="false" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="character-creation-options-scroll character-creation-pane-scroll">
-                                        <ui:VisualElement name="class-buttons-container" class="character-creation-buttons-container"/>
-                                    </ui:ScrollView>
-                                    <ui:VisualElement class="character-creation-custom-vscroll-track">
-                                        <ui:VisualElement class="character-creation-custom-vscroll-thumb"/>
+                            <ui:Foldout name="tab-class" text="Class" value="false" class="character-creation-tab">
+                                <ui:VisualElement name="tab-class-content" class="character-creation-tab-content">
+                                    <ui:VisualElement class="character-creation-scroll-with-custom-bar">
+                                        <ui:ScrollView mode="Vertical" show-horizontal-scroller="false" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="character-creation-options-scroll character-creation-pane-scroll">
+                                            <ui:VisualElement name="class-buttons-container" class="character-creation-buttons-container"/>
+                                        </ui:ScrollView>
+                                        <ui:VisualElement class="character-creation-custom-vscroll-track">
+                                            <ui:VisualElement class="character-creation-custom-vscroll-thumb"/>
+                                        </ui:VisualElement>
                                     </ui:VisualElement>
                                 </ui:VisualElement>
-                            </ui:VisualElement>
-                            <ui:VisualElement name="tab-race-content" class="character-creation-tab-content">
-                                <ui:VisualElement class="character-creation-scroll-with-custom-bar">
-                                    <ui:ScrollView mode="Vertical" show-horizontal-scroller="false" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="character-creation-options-scroll character-creation-pane-scroll">
-                                        <ui:VisualElement name="race-buttons-container" class="character-creation-buttons-container"/>
-                                    </ui:ScrollView>
-                                    <ui:VisualElement class="character-creation-custom-vscroll-track">
-                                        <ui:VisualElement class="character-creation-custom-vscroll-thumb"/>
+                            </ui:Foldout>
+                            <ui:Foldout name="tab-race" text="Race" value="false" class="character-creation-tab">
+                                <ui:VisualElement name="tab-race-content" class="character-creation-tab-content">
+                                    <ui:VisualElement class="character-creation-scroll-with-custom-bar">
+                                        <ui:ScrollView mode="Vertical" show-horizontal-scroller="false" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="character-creation-options-scroll character-creation-pane-scroll">
+                                            <ui:VisualElement name="race-buttons-container" class="character-creation-buttons-container"/>
+                                        </ui:ScrollView>
+                                        <ui:VisualElement class="character-creation-custom-vscroll-track">
+                                            <ui:VisualElement class="character-creation-custom-vscroll-thumb"/>
+                                        </ui:VisualElement>
                                     </ui:VisualElement>
                                 </ui:VisualElement>
-                            </ui:VisualElement>
-                            <ui:VisualElement name="tab-background-content" class="character-creation-tab-content">
-                                <ui:VisualElement class="character-creation-scroll-with-custom-bar">
-                                    <ui:ScrollView mode="Vertical" show-horizontal-scroller="false" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="character-creation-options-scroll character-creation-pane-scroll">
-                                        <ui:VisualElement name="background-buttons-container" class="character-creation-buttons-container"/>
-                                    </ui:ScrollView>
-                                    <ui:VisualElement class="character-creation-custom-vscroll-track">
-                                        <ui:VisualElement class="character-creation-custom-vscroll-thumb"/>
+                            </ui:Foldout>
+                            <ui:Foldout name="tab-background" text="Background" value="false" class="character-creation-tab">
+                                <ui:VisualElement name="tab-background-content" class="character-creation-tab-content">
+                                    <ui:VisualElement class="character-creation-scroll-with-custom-bar">
+                                        <ui:ScrollView mode="Vertical" show-horizontal-scroller="false" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" class="character-creation-options-scroll character-creation-pane-scroll">
+                                            <ui:VisualElement name="background-buttons-container" class="character-creation-buttons-container"/>
+                                        </ui:ScrollView>
+                                        <ui:VisualElement class="character-creation-custom-vscroll-track">
+                                            <ui:VisualElement class="character-creation-custom-vscroll-thumb"/>
+                                        </ui:VisualElement>
                                     </ui:VisualElement>
                                 </ui:VisualElement>
-                            </ui:VisualElement>
+                            </ui:Foldout>
                         </ui:VisualElement>
                     </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="center-panel" class="character-creation-center-panel">
                     <ui:VisualElement name="detail-panel" class="character-creation-detail-panel">
                         <ui:Label text="Selection Details" class="character-creation-detail-title"/>
                         <ui:VisualElement name="detail-header" class="character-creation-detail-header">
@@ -58,6 +78,7 @@
                                 <ui:Label name="detail-type" text="Race" class="character-creation-detail-type"/>
                             </ui:VisualElement>
                         </ui:VisualElement>
+                        <ui:VisualElement name="detail-subrace-options" class="character-creation-detail-subrace-options"/>
                         <ui:VisualElement name="detail-class-level-row" class="character-creation-level-row character-creation-detail-class-level-row">
                             <ui:Label text="Class level" class="character-creation-level-label"/>
                             <ui:Button name="detail-class-level-minus" text="−" class="character-creation-level-step-button"/>

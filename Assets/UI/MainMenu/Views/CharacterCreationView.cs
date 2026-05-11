@@ -67,6 +67,23 @@ namespace GameCore.UI.MainMenu
         }
     }
 
+    public readonly struct RaceSubraceOptionViewModel
+    {
+        public string Id { get; }
+        public string DisplayName { get; }
+        public bool IsSelected { get; }
+
+        public RaceSubraceOptionViewModel(
+            string id,
+            string displayName,
+            bool isSelected)
+        {
+            Id = id ?? string.Empty;
+            DisplayName = displayName ?? string.Empty;
+            IsSelected = isSelected;
+        }
+    }
+
     /// <summary>
     /// View for character creation UI.
     /// Follows MVP: coordinates binding and events; ability stat tiles are built by <see cref="AbilityStatRowViewFactory"/>.
@@ -102,8 +119,8 @@ namespace GameCore.UI.MainMenu
         private List<RaceChoiceViewModel> _lastRaceChoices;
         private VisualElement _root;
 
-        // Tab buttons
-        private Button[] _tabButtons;
+        // Left accordion sections
+        private Foldout[] _tabFoldouts;
         private VisualElement[] _tabContents;
 
         // Option button containers
@@ -123,6 +140,9 @@ namespace GameCore.UI.MainMenu
         private VisualElement _featuresSection;
         private Label _featuresSectionTitle;
         private Label _characterLevelTotalLabel;
+        private Label _characterClassSummaryLabel;
+        private Label _characterRaceSummaryLabel;
+        private VisualElement _detailSubraceOptions;
         private VisualElement _detailClassLevelRow;
         private Label _detailClassLevelHint;
         private Button _detailClassLevelMinus;
@@ -371,12 +391,12 @@ namespace GameCore.UI.MainMenu
 
         private void QueryUIElements()
         {
-            // Tab buttons and content
-            _tabButtons = new Button[3]
+            // Left accordion sections and content
+            _tabFoldouts = new Foldout[3]
             {
-                _root.Q<Button>("tab-class"),
-                _root.Q<Button>("tab-race"),
-                _root.Q<Button>("tab-background")
+                _root.Q<Foldout>("tab-class"),
+                _root.Q<Foldout>("tab-race"),
+                _root.Q<Foldout>("tab-background")
             };
 
             _tabContents = new VisualElement[3]
@@ -403,6 +423,9 @@ namespace GameCore.UI.MainMenu
             _featuresSection = _root.Q<VisualElement>("features-section");
             _featuresSectionTitle = _root.Q<Label>("features-section-title");
             _characterLevelTotalLabel = _root.Q<Label>("character-level-total");
+            _characterClassSummaryLabel = _root.Q<Label>("character-class-summary");
+            _characterRaceSummaryLabel = _root.Q<Label>("character-race-summary");
+            _detailSubraceOptions = _root.Q<VisualElement>("detail-subrace-options");
             _detailClassLevelRow = _root.Q<VisualElement>("detail-class-level-row");
             _detailClassLevelHint = _root.Q<Label>("detail-class-level-hint");
             _detailClassLevelMinus = _root.Q<Button>("detail-class-level-minus");
@@ -432,13 +455,13 @@ namespace GameCore.UI.MainMenu
 
         private void SetupEventHandlers()
         {
-            // Tab buttons
-            for (int i = 0; i < _tabButtons.Length; i++)
+            // Left accordion sections
+            for (int i = 0; i < _tabFoldouts.Length; i++)
             {
                 int tabIndex = i; // Capture for closure
-                if (_tabButtons[i] != null)
+                if (_tabFoldouts[i] != null)
                 {
-                    _tabButtons[i].clicked += () => SwitchTab(tabIndex);
+                    _tabFoldouts[i].RegisterValueChangedCallback(evt => SetAccordionSection(tabIndex, evt.newValue));
                 }
             }
 
@@ -513,26 +536,46 @@ namespace GameCore.UI.MainMenu
             }
         }
 
-        private void SwitchTab(int tabIndex)
+        private void SetAccordionSection(int tabIndex, bool expanded)
         {
-            if (tabIndex < 0 || tabIndex >= _tabButtons.Length || tabIndex >= _tabContents.Length)
+            if (tabIndex < 0 || tabIndex >= _tabFoldouts.Length || tabIndex >= _tabContents.Length)
                 return;
 
-            // Update tab buttons
-            for (int i = 0; i < _tabButtons.Length; i++)
+            if (expanded)
             {
-                if (_tabButtons[i] != null)
-                {
-                    if (i == tabIndex)
-                        _tabButtons[i].AddToClassList("active");
-                    else
-                        _tabButtons[i].RemoveFromClassList("active");
-                }
+                SwitchTab(tabIndex);
+                return;
             }
 
-            // Update tab content
+            _tabFoldouts[tabIndex]?.RemoveFromClassList("active");
+            if (_tabContents[tabIndex] != null)
+            {
+                _tabContents[tabIndex].RemoveFromClassList("active");
+                _tabContents[tabIndex].style.display = DisplayStyle.None;
+            }
+        }
+
+        private void SwitchTab(int tabIndex)
+        {
+            if (tabIndex < 0 || tabIndex >= _tabFoldouts.Length || tabIndex >= _tabContents.Length)
+                return;
+
             for (int i = 0; i < _tabContents.Length; i++)
             {
+                if (_tabFoldouts[i] != null)
+                {
+                    if (i == tabIndex)
+                    {
+                        _tabFoldouts[i].AddToClassList("active");
+                        _tabFoldouts[i].SetValueWithoutNotify(true);
+                    }
+                    else
+                    {
+                        _tabFoldouts[i].RemoveFromClassList("active");
+                        _tabFoldouts[i].SetValueWithoutNotify(false);
+                    }
+                }
+
                 if (_tabContents[i] != null)
                 {
                     if (i == tabIndex)
@@ -582,6 +625,8 @@ namespace GameCore.UI.MainMenu
             _lastBackgroundOptions = backgrounds != null ? new List<(string id, string displayName)>(backgrounds) : null;
 
             RebindCachedOptionLists();
+            if (_hasLastState)
+                UpdateHeaderSelectionLabels(_lastState);
         }
 
         private void RebindCachedOptionLists()
@@ -630,15 +675,10 @@ namespace GameCore.UI.MainMenu
                 if (option == null)
                     continue;
 
-                if (option.Children != null && option.Children.Count > 0)
-                {
-                    CreateRaceFoldout(container, option);
-                    continue;
-                }
-
                 if (option.IsGroupOnly)
                 {
-                    CreateOptionGroupHeader(container, option.DisplayName);
+                    string capturedGroupId = option.Id;
+                    CreateOptionButton(container, capturedGroupId, option.DisplayName, () => RaceSelected?.Invoke(capturedGroupId));
                     continue;
                 }
 
@@ -683,6 +723,60 @@ namespace GameCore.UI.MainMenu
                 ? new List<RaceChoiceViewModel>(choices)
                 : null;
             RebuildRaceAbilityChoiceControls();
+        }
+
+        public void BindRaceSubraceOptions(
+            System.Collections.Generic.IReadOnlyList<RaceSubraceOptionViewModel> subraces)
+        {
+            if (_detailSubraceOptions == null)
+                return;
+
+            _detailSubraceOptions.Clear();
+            if (subraces == null || subraces.Count == 0)
+            {
+                _detailSubraceOptions.style.display = DisplayStyle.None;
+                return;
+            }
+
+            _detailSubraceOptions.style.display = DisplayStyle.Flex;
+            var title = new Label("Choose a subrace");
+            title.AddToClassList("character-creation-detail-subrace-title");
+            _detailSubraceOptions.Add(title);
+
+            const string placeholder = "Select a subrace...";
+            var labels = new List<string>();
+            var idsByLabel = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            string selectedLabel = placeholder;
+            labels.Add(placeholder);
+
+            foreach (RaceSubraceOptionViewModel subrace in subraces)
+            {
+                if (string.IsNullOrEmpty(subrace.Id))
+                    continue;
+
+                string label = string.IsNullOrEmpty(subrace.DisplayName) ? subrace.Id : subrace.DisplayName;
+                labels.Add(label);
+                idsByLabel[label] = subrace.Id;
+                if (subrace.IsSelected)
+                    selectedLabel = label;
+            }
+
+            var dropdown = new PopupField<string>(labels, selectedLabel);
+            dropdown.AddToClassList("character-creation-detail-subrace-dropdown");
+            dropdown.RegisterValueChangedCallback(evt =>
+            {
+                if (string.IsNullOrEmpty(evt.newValue) || evt.newValue == placeholder)
+                    return;
+                if (idsByLabel.TryGetValue(evt.newValue, out string selectedRaceId))
+                    RaceSelected?.Invoke(selectedRaceId);
+            });
+
+            _detailSubraceOptions.Add(dropdown);
+        }
+
+        public void SelectRaceListOption(string raceId)
+        {
+            UpdateOptionSelection(_raceButtonsContainer, raceId);
         }
 
         private void EnsureRaceAbilityChoicesContainer()
@@ -1004,11 +1098,12 @@ namespace GameCore.UI.MainMenu
 
             // Update selected options (content ids from ruleset JSON)
             UpdateOptionSelection(_classButtonsContainer, state.SelectedClassId);
-            UpdateOptionSelection(_raceButtonsContainer, state.SelectedRaceId);
+            UpdateOptionSelection(_raceButtonsContainer, GetRaceListSelectionId(state.SelectedRaceId));
             UpdateOptionSelection(_backgroundButtonsContainer, state.SelectedBackgroundId);
 
             if (_characterLevelTotalLabel != null)
                 _characterLevelTotalLabel.text = state.CharacterLevel.ToString();
+            UpdateHeaderSelectionLabels(state);
 
             // When locked: hide pool, method buttons, and confirm button; show only final ability scores
             if (state.AbilityScoresLocked)
@@ -1138,6 +1233,86 @@ namespace GameCore.UI.MainMenu
 
                 UpdateOptionSelection(element, selectedId);
             }
+        }
+
+        private void UpdateHeaderSelectionLabels(CharacterCreationState state)
+        {
+            if (_characterClassSummaryLabel != null)
+                _characterClassSummaryLabel.text = FindOptionDisplayName(_lastClassOptions, state.SelectedClassId, "No class");
+            if (_characterRaceSummaryLabel != null)
+                _characterRaceSummaryLabel.text = FindRaceDisplayName(state.SelectedRaceId, "No race");
+        }
+
+        private static string FindOptionDisplayName(
+            IReadOnlyList<(string id, string displayName)> options,
+            string selectedId,
+            string fallback)
+        {
+            if (options != null && !string.IsNullOrEmpty(selectedId))
+            {
+                foreach ((string id, string displayName) in options)
+                {
+                    if (string.Equals(id, selectedId, StringComparison.OrdinalIgnoreCase))
+                        return string.IsNullOrEmpty(displayName) ? selectedId : displayName;
+                }
+            }
+
+            return fallback;
+        }
+
+        private string FindRaceDisplayName(string selectedRaceId, string fallback)
+        {
+            if (_lastRaceOptions != null && !string.IsNullOrEmpty(selectedRaceId))
+            {
+                foreach (RaceOptionData option in _lastRaceOptions)
+                {
+                    string match = FindRaceDisplayNameRecursive(option, selectedRaceId);
+                    if (!string.IsNullOrEmpty(match))
+                        return match;
+                }
+            }
+
+            return fallback;
+        }
+
+        private static string FindRaceDisplayNameRecursive(RaceOptionData option, string selectedRaceId)
+        {
+            if (option == null || string.IsNullOrEmpty(selectedRaceId))
+                return string.Empty;
+            if (string.Equals(option.Id, selectedRaceId, StringComparison.OrdinalIgnoreCase))
+                return string.IsNullOrEmpty(option.DisplayName) ? option.Id : option.DisplayName;
+            if (option.Children == null)
+                return string.Empty;
+            foreach (RaceOptionData child in option.Children)
+            {
+                string match = FindRaceDisplayNameRecursive(child, selectedRaceId);
+                if (!string.IsNullOrEmpty(match))
+                    return match;
+            }
+            return string.Empty;
+        }
+
+        private string GetRaceListSelectionId(string selectedRaceId)
+        {
+            if (_lastRaceOptions == null || string.IsNullOrEmpty(selectedRaceId))
+                return selectedRaceId;
+
+            foreach (RaceOptionData option in _lastRaceOptions)
+            {
+                if (option == null)
+                    continue;
+                if (string.Equals(option.Id, selectedRaceId, StringComparison.OrdinalIgnoreCase))
+                    return option.Id;
+                if (option.Children == null)
+                    continue;
+                foreach (RaceOptionData child in option.Children)
+                {
+                    if (child != null && string.Equals(child.Id, selectedRaceId, StringComparison.OrdinalIgnoreCase))
+                        return option.Id;
+                }
+            }
+
+            return selectedRaceId;
         }
 
         private void UpdateScoreMethodSelection(string selectedScoreMethod)
@@ -1454,22 +1629,82 @@ namespace GameCore.UI.MainMenu
                 var list = new VisualElement();
                 list.AddToClassList("character-creation-proficiency-list");
 
+                if (section.Groups != null)
+                {
+                    foreach (CharacterProficiencyGroup group in section.Groups)
+                    {
+                        if (string.IsNullOrEmpty(group.CategoryName))
+                            continue;
+                        list.Add(CreateProficiencyGroup(group));
+                    }
+                }
+
                 if (section.Items != null)
                 {
                     foreach (string item in section.Items)
                     {
                         if (string.IsNullOrEmpty(item))
                             continue;
-                        var tag = new VisualElement();
-                        tag.AddToClassList("character-creation-proficiency-tag");
-                        tag.Add(new Label(item));
-                        list.Add(tag);
+                        list.Add(CreateProficiencyTag(item));
                     }
                 }
 
                 cat.Add(list);
                 _proficiencyListHost.Add(cat);
             }
+        }
+
+        private static VisualElement CreateProficiencyGroup(CharacterProficiencyGroup group)
+        {
+            var card = new VisualElement();
+            card.AddToClassList("character-creation-proficiency-group");
+            if (group.ProficientItemCount == 0)
+                card.AddToClassList("character-creation-proficiency-group-none");
+
+            var header = new VisualElement();
+            header.AddToClassList("character-creation-proficiency-group-header");
+
+            var title = new Label(group.CategoryName);
+            title.AddToClassList("character-creation-proficiency-group-title");
+            header.Add(title);
+            card.Add(header);
+
+            var summary = new Label($"{group.ProficientItemCount} {group.ItemLabel}");
+            summary.AddToClassList("character-creation-proficiency-group-summary");
+            card.Add(summary);
+
+            if (group.ProficientItems == null || group.ProficientItems.Count == 0)
+                return card;
+
+            var weapons = new VisualElement();
+            weapons.AddToClassList("character-creation-proficiency-group-items");
+            weapons.style.display = DisplayStyle.None;
+            foreach (string item in group.ProficientItems)
+                weapons.Add(CreateProficiencyTag(item, "character-creation-proficiency-weapon-tag"));
+
+            var toggle = new Button();
+            toggle.text = "View weapons";
+            toggle.AddToClassList("character-creation-proficiency-group-toggle");
+            toggle.clicked += () =>
+            {
+                bool isHidden = weapons.style.display == DisplayStyle.None;
+                weapons.style.display = isHidden ? DisplayStyle.Flex : DisplayStyle.None;
+                toggle.text = isHidden ? "Hide weapons" : "View weapons";
+            };
+            card.Add(toggle);
+
+            card.Add(weapons);
+            return card;
+        }
+
+        private static VisualElement CreateProficiencyTag(string item, string extraClass = null)
+        {
+            var tag = new VisualElement();
+            tag.AddToClassList("character-creation-proficiency-tag");
+            if (!string.IsNullOrEmpty(extraClass))
+                tag.AddToClassList(extraClass);
+            tag.Add(new Label(item));
+            return tag;
         }
 
         /// <summary>
