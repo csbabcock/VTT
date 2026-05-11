@@ -353,6 +353,7 @@ namespace GameCore.UI.MainMenu
             QueryUIElements();
             SetupEventHandlers();
             InitializeUIElements();
+            CharacterCreationResizablePanelsController.Attach(_root);
             _paneScrollBarBinder.BindTree(_root);
 
             RebindCachedOptionLists();

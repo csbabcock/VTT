@@ -1806,31 +1806,29 @@
 }
 
 .character-creation-left-panel {
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 300px;
-    width: 300px;
-    min-width: 280px;
-    max-width: 340px;
+    flex-grow: 300;
+    flex-shrink: 1;
+    flex-basis: 0;
+    width: auto;
+    min-width: 240px;
     min-height: 0;
 }
 
 .character-creation-center-panel {
     flex-direction: column;
-    flex-grow: 1;
+    flex-grow: 1078;
     flex-shrink: 1;
     flex-basis: 0;
-    min-width: 420px;
+    min-width: 360px;
     min-height: 0;
 }
 
 .character-creation-right-panel {
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 430px;
-    width: 430px;
-    min-width: 380px;
-    max-width: 460px;
+    flex-grow: 430;
+    flex-shrink: 1;
+    flex-basis: 0;
+    width: auto;
+    min-width: 300px;
     min-height: 0;
     margin-right: 0;
 }
@@ -2089,4 +2087,178 @@
 
 .character-creation-action-buttons {
     padding: 14px 20px;
+}
+
+/* Runtime panel resizing */
+.character-creation-tabs-container,
+.character-creation-detail-panel,
+.character-creation-stats-proficiency-column,
+.character-creation-stats-panel,
+.character-creation-proficiency-panel {
+    position: relative;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.resizable-column-member {
+    width: 100%;
+    align-self: stretch;
+}
+
+.resize-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 14px;
+    min-width: 14px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0);
+    border-width: 0;
+    opacity: 1;
+    overflow: visible;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.resize-handle-right {
+    right: 0;
+}
+
+.resize-handle-left,
+.resize-handle-column {
+    left: 0;
+}
+
+.resize-handle-bottom,
+.resize-handle-splitter {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: auto;
+    height: 10px;
+    min-height: 10px;
+}
+
+.resize-handle:hover {
+    background-color: rgba(2, 190, 250, 0.48);
+    opacity: 1;
+}
+
+.resize-handle--active {
+    background-color: rgba(255, 255, 255, 0);
+    opacity: 1;
+}
+
+.panel--resizing {
+    border-color: var(--color-border-strong);
+}
+
+.scrollable-content {
+    overflow: hidden;
+}
+
+.character-creation-detail-scroll,
+.character-creation-stats-scroll,
+.character-creation-proficiency-scroll,
+.character-creation-options-scroll {
+    overflow: hidden;
+}
+
+.character-creation-tab .unity-foldout__text,
+.character-creation-option-button,
+.character-creation-detail-name,
+.character-creation-proficiency-category-title,
+.character-creation-proficiency-group-title,
+.character-creation-char-stat-label,
+.character-creation-char-stat-value {
+    overflow: hidden;
+    white-space: normal;
+}
+
+.character-creation-tabs-container.panel--compact .character-creation-tab .unity-foldout__toggle {
+    padding-left: 10px;
+    padding-right: 16px;
+}
+
+.character-creation-tabs-container.panel--compact .character-creation-option-button {
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 13px;
+}
+
+.character-creation-detail-panel.panel--compact {
+    padding: 18px;
+}
+
+.character-creation-detail-panel.panel--compact .character-creation-detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.character-creation-detail-panel.panel--compact .character-creation-detail-icon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 10px;
+    font-size: 22px;
+}
+
+.character-creation-detail-panel.panel--compact .character-creation-detail-name {
+    font-size: 22px;
+}
+
+.character-creation-detail-panel.panel--compact .character-creation-detail-class-level-row {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.character-creation-detail-panel.panel--compact .character-creation-level-label,
+.character-creation-detail-panel.panel--compact .character-creation-level-hint {
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 6px;
+}
+
+.character-creation-stats-proficiency-column.panel--compact .character-creation-stats-panel,
+.character-creation-stats-proficiency-column.panel--compact .character-creation-proficiency-panel,
+.character-creation-stats-panel.panel--compact,
+.character-creation-proficiency-panel.panel--compact {
+    padding: 14px;
+}
+
+.character-creation-stats-panel.panel--compact .character-creation-ability-scores-row {
+    flex-direction: column;
+}
+
+.character-creation-stats-panel.panel--compact .character-creation-ability-scores-row > .character-creation-ability-stat-row {
+    margin-right: 0;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.character-creation-stats-panel.panel--compact .character-creation-char-stat-item {
+    flex-basis: 100%;
+    max-width: none;
+    min-width: 0;
+}
+
+.chips-container--wrapped .character-creation-proficiency-list,
+.chips-container--wrapped .character-creation-proficiency-group-items {
+    flex-wrap: wrap;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.character-creation-proficiency-tag {
+    max-width: 100%;
+    flex-shrink: 1;
+}
+
+.character-creation-proficiency-tag Label,
+.character-creation-proficiency-weapon-tag Label {
+    white-space: normal;
+    overflow: hidden;
 }
