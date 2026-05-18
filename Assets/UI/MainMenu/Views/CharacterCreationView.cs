@@ -67,6 +67,26 @@ namespace GameCore.UI.MainMenu
         }
     }
 
+    public readonly struct ClassAbilityScoreChoiceViewModel
+    {
+        public string ChoiceId { get; }
+        public string Label { get; }
+        public IReadOnlyList<string> AbilityCodes { get; }
+        public string SelectedAbility { get; }
+
+        public ClassAbilityScoreChoiceViewModel(
+            string choiceId,
+            string label,
+            IReadOnlyList<string> abilityCodes,
+            string selectedAbility)
+        {
+            ChoiceId = choiceId ?? string.Empty;
+            Label = label ?? string.Empty;
+            AbilityCodes = abilityCodes;
+            SelectedAbility = selectedAbility ?? string.Empty;
+        }
+    }
+
     public readonly struct RaceSubraceOptionViewModel
     {
         public string Id { get; }
@@ -115,8 +135,11 @@ namespace GameCore.UI.MainMenu
         private List<(string id, string displayName)> _lastClassOptions;
         private List<RaceOptionData> _lastRaceOptions;
         private List<(string id, string displayName)> _lastBackgroundOptions;
+        private List<ClassAbilityScoreChoiceViewModel> _lastClassAbilityScoreChoices;
         private List<RaceAbilityScoreChoiceViewModel> _lastRaceAbilityScoreChoices;
         private List<RaceChoiceViewModel> _lastRaceChoices;
+        private List<RaceSubraceOptionViewModel> _lastRaceSubraceOptions;
+        private string _lastDetailType;
         private VisualElement _root;
 
         // Left accordion sections
@@ -126,7 +149,6 @@ namespace GameCore.UI.MainMenu
         // Option button containers
         private VisualElement _classButtonsContainer;
         private VisualElement _raceButtonsContainer;
-        private VisualElement _raceAbilityChoicesContainer;
         private VisualElement _backgroundButtonsContainer;
 
         // Ability score inputs (using Labels for display since they're read-only)
@@ -183,6 +205,7 @@ namespace GameCore.UI.MainMenu
 
         // Events - View only raises events, delegates all logic to Presenter
         public event System.Action<string> ClassSelected;
+        public event System.Action<string, string> ClassAbilityScoreChoiceSelected;
         public event System.Action<string> RaceSelected;
         public event System.Action<string, string> RaceAbilityScoreChoiceSelected;
         public event System.Action<string, string> RaceChoiceSelected;
@@ -258,7 +281,6 @@ namespace GameCore.UI.MainMenu
 
         private void ResetDynamicElementReferences()
         {
-            _raceAbilityChoicesContainer = null;
         }
 
         private void EnsurePanelReloadSubscription()
@@ -410,7 +432,6 @@ namespace GameCore.UI.MainMenu
             // Option button containers
             _classButtonsContainer = _root.Q<VisualElement>("class-buttons-container");
             _raceButtonsContainer = _root.Q<VisualElement>("race-buttons-container");
-            EnsureRaceAbilityChoicesContainer();
             _backgroundButtonsContainer = _root.Q<VisualElement>("background-buttons-container");
 
             // Ability score labels will be queried after they are created in InitializeAbilityStatRows
@@ -637,12 +658,11 @@ namespace GameCore.UI.MainMenu
 
             _classButtonsContainer?.Clear();
             _raceButtonsContainer?.Clear();
-            _raceAbilityChoicesContainer = null;
             _backgroundButtonsContainer?.Clear();
             BindOptionList(_classButtonsContainer, _lastClassOptions, id => ClassSelected?.Invoke(id));
             BindRaceOptionList(_raceButtonsContainer, _lastRaceOptions);
-            RebuildRaceAbilityChoiceControls();
             BindOptionList(_backgroundButtonsContainer, _lastBackgroundOptions, id => BackgroundSelected?.Invoke(id));
+            RebuildDetailChoiceControls();
         }
 
         private void BindOptionList(
@@ -708,13 +728,22 @@ namespace GameCore.UI.MainMenu
             parent.Add(foldout);
         }
 
+        public void BindClassAbilityScoreChoices(
+            System.Collections.Generic.IReadOnlyList<ClassAbilityScoreChoiceViewModel> choices)
+        {
+            _lastClassAbilityScoreChoices = choices != null
+                ? new List<ClassAbilityScoreChoiceViewModel>(choices)
+                : null;
+            RebuildDetailChoiceControls();
+        }
+
         public void BindRaceAbilityScoreChoices(
             System.Collections.Generic.IReadOnlyList<RaceAbilityScoreChoiceViewModel> choices)
         {
             _lastRaceAbilityScoreChoices = choices != null
                 ? new List<RaceAbilityScoreChoiceViewModel>(choices)
                 : null;
-            RebuildRaceAbilityChoiceControls();
+            RebuildDetailChoiceControls();
         }
 
         public void BindRaceChoices(
@@ -723,34 +752,107 @@ namespace GameCore.UI.MainMenu
             _lastRaceChoices = choices != null
                 ? new List<RaceChoiceViewModel>(choices)
                 : null;
-            RebuildRaceAbilityChoiceControls();
+            RebuildDetailChoiceControls();
         }
 
         public void BindRaceSubraceOptions(
             System.Collections.Generic.IReadOnlyList<RaceSubraceOptionViewModel> subraces)
         {
+            _lastRaceSubraceOptions = subraces != null
+                ? new List<RaceSubraceOptionViewModel>(subraces)
+                : null;
+            RebuildDetailChoiceControls();
+        }
+
+        public void SelectRaceListOption(string raceId)
+        {
+            UpdateOptionSelection(_raceButtonsContainer, raceId);
+        }
+
+        private void RebuildDetailChoiceControls()
+        {
             if (_detailSubraceOptions == null)
                 return;
 
             _detailSubraceOptions.Clear();
-            if (subraces == null || subraces.Count == 0)
+
+            bool showClassChoices = string.Equals(_lastDetailType, "Class", StringComparison.OrdinalIgnoreCase) &&
+                                    _lastClassAbilityScoreChoices != null &&
+                                    _lastClassAbilityScoreChoices.Count > 0;
+            bool showRaceChoices = string.Equals(_lastDetailType, "Race", StringComparison.OrdinalIgnoreCase);
+            bool hasRaceSubraces = showRaceChoices &&
+                                   _lastRaceSubraceOptions != null &&
+                                   _lastRaceSubraceOptions.Count > 0;
+            bool hasRaceAsi = showRaceChoices &&
+                              _lastRaceAbilityScoreChoices != null &&
+                              _lastRaceAbilityScoreChoices.Count > 0;
+            bool hasRaceChoices = showRaceChoices &&
+                                  _lastRaceChoices != null &&
+                                  _lastRaceChoices.Count > 0;
+
+            if (!showClassChoices && !hasRaceSubraces && !hasRaceAsi && !hasRaceChoices)
             {
                 _detailSubraceOptions.style.display = DisplayStyle.None;
                 return;
             }
 
             _detailSubraceOptions.style.display = DisplayStyle.Flex;
+
+            if (showClassChoices)
+                AddClassAbilityChoiceDropdowns(_detailSubraceOptions);
+
+            if (hasRaceSubraces)
+                AddRaceSubraceDropdown(_detailSubraceOptions);
+
+            if (hasRaceAsi)
+                AddRaceAbilityChoiceDropdowns(_detailSubraceOptions);
+
+            if (hasRaceChoices)
+                AddRaceChoiceDropdowns(_detailSubraceOptions);
+        }
+
+        private void AddClassAbilityChoiceDropdowns(VisualElement host)
+        {
+            var title = new Label("Class Ability Score Improvements");
+            title.AddToClassList("character-creation-detail-subrace-title");
+            host.Add(title);
+
+            foreach (ClassAbilityScoreChoiceViewModel choice in _lastClassAbilityScoreChoices)
+            {
+                if (string.IsNullOrEmpty(choice.ChoiceId))
+                    continue;
+
+                var row = new VisualElement();
+                row.AddToClassList("character-creation-race-asi-row");
+                var label = new Label(choice.Label);
+                label.AddToClassList("character-creation-race-asi-label");
+                row.Add(label);
+
+                var options = BuildDropdownOptions(choice.AbilityCodes ?? AbilityNamesDisplay, choice.SelectedAbility,
+                    "Select ability...");
+                string capturedChoiceId = choice.ChoiceId;
+                VisualElement dropdown = CreateStyledDropdown(options,
+                    selected =>
+                    {
+                        if (!string.IsNullOrEmpty(selected) && selected != options.Placeholder)
+                            ClassAbilityScoreChoiceSelected?.Invoke(capturedChoiceId, selected);
+                    });
+                row.Add(dropdown);
+                host.Add(row);
+            }
+        }
+
+        private void AddRaceSubraceDropdown(VisualElement host)
+        {
             var title = new Label("Choose a subrace");
             title.AddToClassList("character-creation-detail-subrace-title");
-            _detailSubraceOptions.Add(title);
+            host.Add(title);
 
             const string placeholder = "Select a subrace...";
             var labels = new List<string>();
             var idsByLabel = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            string selectedLabel = placeholder;
-            labels.Add(placeholder);
-
-            foreach (RaceSubraceOptionViewModel subrace in subraces)
+            string selectedLabel = string.Empty;
+            foreach (RaceSubraceOptionViewModel subrace in _lastRaceSubraceOptions)
             {
                 if (string.IsNullOrEmpty(subrace.Id))
                     continue;
@@ -762,105 +864,56 @@ namespace GameCore.UI.MainMenu
                     selectedLabel = label;
             }
 
-            var dropdown = new PopupField<string>(labels, selectedLabel);
-            dropdown.AddToClassList("character-creation-detail-subrace-dropdown");
-            dropdown.RegisterValueChangedCallback(evt =>
-            {
-                if (string.IsNullOrEmpty(evt.newValue) || evt.newValue == placeholder)
-                    return;
-                if (idsByLabel.TryGetValue(evt.newValue, out string selectedRaceId))
-                    RaceSelected?.Invoke(selectedRaceId);
-            });
-
-            _detailSubraceOptions.Add(dropdown);
-        }
-
-        public void SelectRaceListOption(string raceId)
-        {
-            UpdateOptionSelection(_raceButtonsContainer, raceId);
-        }
-
-        private void EnsureRaceAbilityChoicesContainer()
-        {
-            if (_raceButtonsContainer == null)
-                return;
-            if (_raceAbilityChoicesContainer != null)
-            {
-                if (_raceAbilityChoicesContainer.parent != _raceButtonsContainer)
-                    _raceButtonsContainer.Add(_raceAbilityChoicesContainer);
-                return;
-            }
-
-            _raceAbilityChoicesContainer = new VisualElement();
-            _raceAbilityChoicesContainer.name = "race-ability-choices-container";
-            _raceAbilityChoicesContainer.AddToClassList("character-creation-race-asi-container");
-            _raceButtonsContainer.Add(_raceAbilityChoicesContainer);
-        }
-
-        private void RebuildRaceAbilityChoiceControls()
-        {
-            EnsureRaceAbilityChoicesContainer();
-            if (_raceAbilityChoicesContainer == null)
-                return;
-
-            _raceAbilityChoicesContainer.Clear();
-            bool hasAbilityChoices = _lastRaceAbilityScoreChoices != null && _lastRaceAbilityScoreChoices.Count > 0;
-            bool hasRaceChoices = _lastRaceChoices != null && _lastRaceChoices.Count > 0;
-            if (!hasAbilityChoices && !hasRaceChoices)
-            {
-                _raceAbilityChoicesContainer.style.display = DisplayStyle.None;
-                return;
-            }
-
-            _raceAbilityChoicesContainer.style.display = DisplayStyle.Flex;
-            var title = new Label("Ability Score Choices");
-            title.AddToClassList("character-creation-race-asi-title");
-            if (hasAbilityChoices)
-                _raceAbilityChoicesContainer.Add(title);
-
-            if (hasAbilityChoices)
-            {
-                foreach (RaceAbilityScoreChoiceViewModel choice in _lastRaceAbilityScoreChoices)
+            var options = BuildDropdownOptions(labels, selectedLabel, placeholder);
+            VisualElement dropdown = CreateStyledDropdown(options,
+                selected =>
                 {
-                    if (string.IsNullOrEmpty(choice.ChoiceId))
-                        continue;
+                    if (string.IsNullOrEmpty(selected) || selected == options.Placeholder)
+                        return;
+                    if (idsByLabel.TryGetValue(selected, out string selectedRaceId))
+                        RaceSelected?.Invoke(selectedRaceId);
+                },
+                "character-creation-detail-subrace-dropdown");
 
-                    var row = new VisualElement();
-                    row.AddToClassList("character-creation-race-asi-row");
-                    var label = new Label(choice.Label);
-                    label.AddToClassList("character-creation-race-asi-label");
-                    row.Add(label);
-
-                    IReadOnlyList<string> abilities = choice.AbilityCodes ?? AbilityNamesDisplay;
-                    foreach (string ability in abilities)
-                    {
-                        if (string.IsNullOrEmpty(ability))
-                            continue;
-                        string capturedChoiceId = choice.ChoiceId;
-                        string capturedAbility = ability;
-                        var button = new Button();
-                        button.text = ability;
-                        button.userData = $"{capturedChoiceId}:{capturedAbility}";
-                        button.AddToClassList("character-creation-race-asi-button");
-                        if (string.Equals(choice.SelectedAbility, ability, StringComparison.OrdinalIgnoreCase))
-                            button.AddToClassList("selected");
-                        button.clicked += () => RaceAbilityScoreChoiceSelected?.Invoke(capturedChoiceId, capturedAbility);
-                        row.Add(button);
-                    }
-
-                    _raceAbilityChoicesContainer.Add(row);
-                }
-            }
-
-            if (hasRaceChoices)
-                AddRaceChoiceDropdowns();
+            host.Add(dropdown);
         }
 
-        private void AddRaceChoiceDropdowns()
+        private void AddRaceAbilityChoiceDropdowns(VisualElement host)
+        {
+            var title = new Label("Ability Score Choices");
+            title.AddToClassList("character-creation-detail-subrace-title");
+            host.Add(title);
+
+            foreach (RaceAbilityScoreChoiceViewModel choice in _lastRaceAbilityScoreChoices)
+            {
+                if (string.IsNullOrEmpty(choice.ChoiceId))
+                    continue;
+
+                var row = new VisualElement();
+                row.AddToClassList("character-creation-race-asi-row");
+                var label = new Label(choice.Label);
+                label.AddToClassList("character-creation-race-asi-label");
+                row.Add(label);
+
+                var options = BuildDropdownOptions(choice.AbilityCodes ?? AbilityNamesDisplay, choice.SelectedAbility,
+                    "Select ability...");
+                string capturedChoiceId = choice.ChoiceId;
+                VisualElement dropdown = CreateStyledDropdown(options,
+                    selected =>
+                    {
+                        if (!string.IsNullOrEmpty(selected) && selected != options.Placeholder)
+                            RaceAbilityScoreChoiceSelected?.Invoke(capturedChoiceId, selected);
+                    });
+                row.Add(dropdown);
+                host.Add(row);
+            }
+        }
+
+        private void AddRaceChoiceDropdowns(VisualElement host)
         {
             var title = new Label("Race Choices");
-            title.AddToClassList("character-creation-race-asi-title");
-            _raceAbilityChoicesContainer.Add(title);
+            title.AddToClassList("character-creation-detail-subrace-title");
+            host.Add(title);
 
             foreach (RaceChoiceViewModel choice in _lastRaceChoices)
             {
@@ -873,31 +926,125 @@ namespace GameCore.UI.MainMenu
                 label.AddToClassList("character-creation-race-asi-label");
                 row.Add(label);
 
-                const string placeholder = "Select...";
-                var options = new List<string>(choice.Options);
-                int selectedIndex = 0;
-                if (string.IsNullOrEmpty(choice.SelectedOption))
+                var options = BuildDropdownOptions(choice.Options, choice.SelectedOption, "Select...");
+
+                string capturedChoiceId = choice.ChoiceId;
+                VisualElement dropdown = CreateStyledDropdown(options,
+                    selected =>
+                    {
+                        if (!string.IsNullOrEmpty(selected) && selected != options.Placeholder)
+                            RaceChoiceSelected?.Invoke(capturedChoiceId, selected);
+                    },
+                    "character-creation-race-choice-dropdown");
+                row.Add(dropdown);
+                host.Add(row);
+            }
+        }
+
+        private VisualElement CreateStyledDropdown(
+            (List<string> Labels, int SelectedIndex, string Placeholder) options,
+            System.Action<string> onSelected,
+            string extraClass = null)
+        {
+            var root = new VisualElement();
+            root.AddToClassList("character-creation-choice-dropdown");
+            root.AddToClassList("character-creation-styled-dropdown");
+            if (!string.IsNullOrEmpty(extraClass))
+                root.AddToClassList(extraClass);
+
+            string current = options.Labels.Count > 0
+                ? options.Labels[Mathf.Clamp(options.SelectedIndex, 0, options.Labels.Count - 1)]
+                : options.Placeholder;
+
+            VisualElement menu;
+            if (options.Labels.Count > 5)
+            {
+                var scrollMenu = new ScrollView(ScrollViewMode.Vertical)
                 {
-                    options.Insert(0, placeholder);
-                }
+                    horizontalScrollerVisibility = ScrollerVisibility.Hidden,
+                    verticalScrollerVisibility = ScrollerVisibility.Auto
+                };
+                menu = scrollMenu;
+            }
+            else
+            {
+                menu = new VisualElement();
+            }
+
+            menu.AddToClassList("character-creation-styled-dropdown-menu");
+            menu.style.display = DisplayStyle.None;
+
+            var button = new VisualElement();
+            button.AddToClassList("character-creation-styled-dropdown-button");
+            button.RegisterCallback<ClickEvent>(_ =>
+            {
+                bool open = menu.style.display == DisplayStyle.Flex;
+                menu.style.display = open ? DisplayStyle.None : DisplayStyle.Flex;
+                root.EnableInClassList("open", !open);
+            });
+            var text = new Label(current);
+            text.AddToClassList("character-creation-styled-dropdown-text");
+            var arrow = new Label("▾");
+            arrow.AddToClassList("character-creation-styled-dropdown-arrow");
+            button.Add(text);
+            button.Add(arrow);
+
+            foreach (string option in options.Labels)
+            {
+                string capturedOption = option;
+                var item = new VisualElement();
+                item.AddToClassList("character-creation-styled-dropdown-item");
+                if (string.Equals(capturedOption, current, StringComparison.OrdinalIgnoreCase))
+                    item.AddToClassList("selected");
+
+                var itemText = new Label(capturedOption);
+                itemText.AddToClassList("character-creation-styled-dropdown-item-text");
+                item.Add(itemText);
+
+                item.RegisterCallback<ClickEvent>(_ =>
+                {
+                    text.text = capturedOption;
+                    menu.style.display = DisplayStyle.None;
+                    root.RemoveFromClassList("open");
+                    onSelected?.Invoke(capturedOption);
+                });
+                menu.Add(item);
+            }
+
+            root.Add(button);
+            root.Add(menu);
+            return root;
+        }
+
+        private static (List<string> Labels, int SelectedIndex, string Placeholder) BuildDropdownOptions(
+            IReadOnlyList<string> sourceOptions,
+            string selectedValue,
+            string placeholder)
+        {
+            var labels = sourceOptions != null
+                ? new List<string>(sourceOptions)
+                : new List<string>();
+            int selectedIndex = 0;
+            if (string.IsNullOrEmpty(selectedValue))
+            {
+                labels.Insert(0, placeholder);
+            }
+            else
+            {
+                int found = labels.FindIndex(o => string.Equals(o, selectedValue, StringComparison.OrdinalIgnoreCase));
+                if (found >= 0)
+                    selectedIndex = found;
                 else
                 {
-                    int found = options.FindIndex(o => string.Equals(o, choice.SelectedOption, StringComparison.OrdinalIgnoreCase));
-                    if (found >= 0)
-                        selectedIndex = found;
+                    labels.Insert(0, selectedValue);
+                    selectedIndex = 0;
                 }
-
-                var dropdown = new PopupField<string>(options, selectedIndex);
-                dropdown.AddToClassList("character-creation-race-choice-dropdown");
-                string capturedChoiceId = choice.ChoiceId;
-                dropdown.RegisterValueChangedCallback(evt =>
-                {
-                    if (!string.IsNullOrEmpty(evt.newValue) && evt.newValue != placeholder)
-                        RaceChoiceSelected?.Invoke(capturedChoiceId, evt.newValue);
-                });
-                row.Add(dropdown);
-                _raceAbilityChoicesContainer.Add(row);
             }
+
+            if (labels.Count == 0)
+                labels.Add(placeholder);
+
+            return (labels, selectedIndex, placeholder);
         }
 
         private static bool IsOptionGroupHeader(string id) =>
@@ -1431,6 +1578,8 @@ namespace GameCore.UI.MainMenu
         {
             if (_detailName != null) _detailName.text = name ?? string.Empty;
             if (_detailType != null) _detailType.text = type ?? string.Empty;
+            _lastDetailType = type ?? string.Empty;
+            RebuildDetailChoiceControls();
 
             _detailClassLevelMaxCached = Mathf.Max(detailClassLevelMax, CharacterCreationModel.MinCharacterLevel);
             if (_detailClassLevelRow != null)

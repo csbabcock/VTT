@@ -441,15 +441,17 @@
 }
 
 .character-creation-race-asi-row {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     margin-bottom: 8px;
+    width: auto;
 }
 
 .character-creation-race-choice-row {
     flex-direction: column;
+    align-items: flex-start;
     margin-bottom: 8px;
+    width: auto;
 }
 
 .character-creation-race-asi-label {
@@ -459,26 +461,232 @@
     margin-bottom: 6px;
 }
 
-.character-creation-race-asi-button {
-    height: 30px;
-    min-width: 44px;
-    margin-right: 6px;
-    background-color: var(--color-bg-shade1);
+.character-creation-choice-dropdown {
+    width: 320px;
+    max-width: 100%;
+    align-self: flex-start;
     border-width: 1px;
     border-color: var(--color-border-strong);
-    color: var(--color-text-n3);
-    font-size: 12px;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    padding: 0;
 }
 
-.character-creation-race-asi-button.selected {
-    background-color: var(--color-blue);
+.character-creation-choice-dropdown:hover {
     border-color: var(--color-blue);
+    background-color: var(--color-bg-shade1);
+}
+
+.character-creation-styled-dropdown {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.character-creation-styled-dropdown-button {
+    min-height: 40px;
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: transparent;
+    border-width: 0;
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+}
+
+.character-creation-styled-dropdown-button:hover {
+    background-color: var(--color-bg-shade1);
+}
+
+.character-creation-styled-dropdown-text {
+    color: var(--color-text-primary);
+    -unity-font-style: bold;
+    font-size: 13px;
+    flex-grow: 1;
+    -unity-text-align: middle-left;
+}
+
+.character-creation-styled-dropdown-arrow {
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    -unity-text-align: middle-right;
+    width: 18px;
+}
+
+.character-creation-styled-dropdown-menu {
+    width: 100%;
+    max-height: 180px;
+    flex-direction: column;
+    align-items: stretch;
+    background-color: var(--color-bg-primary);
+    border-top-width: 1px;
+    border-top-color: var(--color-border-default);
+    overflow: hidden;
+}
+
+.character-creation-styled-dropdown-menu .unity-scroll-view__content-container {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+}
+
+.character-creation-styled-dropdown-menu .unity-scroll-view__content-viewport {
+    width: 100%;
+    align-items: stretch;
+}
+
+.character-creation-styled-dropdown-menu Scroller {
+    width: 12px;
+    background-color: var(--color-bg-primary);
+    border-width: 0;
+}
+
+.character-creation-styled-dropdown-menu Scroller #unity-low-button,
+.character-creation-styled-dropdown-menu Scroller #unity-high-button {
+    height: 0;
+    min-height: 0;
+    max-height: 0;
+    background-color: transparent;
+    border-width: 0;
+    padding: 0;
+}
+
+.character-creation-styled-dropdown-menu Scroller #unity-tracker {
+    background-color: var(--color-bg-shade1);
+    border-width: 0;
+}
+
+.character-creation-styled-dropdown-menu Scroller #unity-dragger {
+    background-color: var(--color-border-strong);
+    border-radius: 2px;
+    border-width: 0;
+}
+
+.character-creation-styled-dropdown-item {
+    min-height: 34px;
+    width: 100%;
+    align-self: stretch;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: var(--color-bg-primary);
+    border-width: 0;
+    border-radius: 0;
+    color: var(--color-text-secondary);
+    padding: 8px 14px;
+    -unity-text-align: middle-left;
+}
+
+.character-creation-styled-dropdown-item-text {
+    color: var(--color-text-secondary);
+    -unity-text-align: middle-left;
+    font-size: 12px;
+    width: 100%;
+    align-self: stretch;
+}
+
+.character-creation-styled-dropdown-item:hover {
+    background-color: var(--color-bg-shade1);
     color: var(--color-text-primary);
 }
 
+.character-creation-styled-dropdown-item:hover .character-creation-styled-dropdown-item-text {
+    color: var(--color-text-primary);
+}
+
+.character-creation-styled-dropdown-item.selected {
+    background-color: var(--color-blue-25);
+    color: var(--color-text-primary);
+}
+
+.character-creation-styled-dropdown-item.selected .character-creation-styled-dropdown-item-text {
+    color: var(--color-text-primary);
+}
+
+.character-creation-choice-dropdown .unity-base-field__input {
+    min-height: 38px;
+    padding: 9px 12px;
+    border-width: 0;
+    border-radius: var(--radius-sm);
+    background-color: transparent;
+    color: var(--color-text-primary);
+    -unity-font-style: bold;
+}
+
+.character-creation-choice-dropdown .unity-base-popup-field__input {
+    min-height: 38px;
+    padding: 9px 12px;
+    border-width: 0;
+    border-radius: var(--radius-sm);
+    background-color: transparent;
+    color: var(--color-text-primary);
+    -unity-font-style: bold;
+}
+
+.character-creation-choice-dropdown .unity-base-popup-field__text,
+.character-creation-choice-dropdown .unity-popup-field__text {
+    color: var(--color-text-primary);
+    -unity-font-style: bold;
+}
+
+.character-creation-choice-dropdown .unity-base-popup-field__arrow,
+.character-creation-choice-dropdown .unity-popup-field__arrow {
+    background-color: var(--color-text-secondary);
+}
+
+.unity-base-dropdown,
+.unity-base-dropdown__container,
+.unity-base-dropdown__container-outer,
+.unity-base-dropdown__container-inner,
+.unity-base-dropdown__content,
+.unity-generic-dropdown-menu,
+.unity-generic-dropdown-menu__container,
+.unity-generic-dropdown-menu__container-outer,
+.unity-generic-dropdown-menu__container-inner,
+.unity-generic-dropdown-menu__content {
+    background-color: var(--color-bg-primary);
+    border-color: var(--color-border-strong);
+    color: var(--color-text-primary);
+}
+
+.unity-base-dropdown__item,
+.unity-base-dropdown__item-content,
+.unity-generic-dropdown-menu__item {
+    min-height: 34px;
+    padding: 8px 12px;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    -unity-font-style: bold;
+}
+
+.unity-base-dropdown__item:hover,
+.unity-base-dropdown__item:hover .unity-base-dropdown__item-content,
+.unity-generic-dropdown-menu__item:hover {
+    background-color: var(--color-bg-shade1);
+    color: var(--color-text-primary);
+}
+
+.unity-base-dropdown__item--selected,
+.unity-base-dropdown__item--selected .unity-base-dropdown__item-content,
+.unity-generic-dropdown-menu__item--selected {
+    background-color: var(--color-blue-25);
+    color: var(--color-text-primary);
+}
+
+.unity-base-dropdown__item-text,
+.unity-base-dropdown__checkmark,
+.unity-base-dropdown__item .unity-label,
+.unity-generic-dropdown-menu__item .unity-label {
+    color: var(--color-text-primary);
+}
+
+.unity-base-dropdown__checkmark {
+    -unity-background-image-tint-color: var(--color-blue);
+}
+
+.character-creation-race-asi-dropdown,
 .character-creation-race-choice-dropdown {
-    min-height: 32px;
-    width: 100%;
+    min-height: 40px;
 }
 
 .character-creation-score-method-buttons {
@@ -1993,6 +2201,7 @@
 .character-creation-detail-subrace-options {
     display: none;
     flex-direction: column;
+    align-items: flex-start;
     flex-shrink: 0;
     padding: 14px 16px;
     margin-bottom: 16px;
@@ -2013,26 +2222,15 @@
 .character-creation-detail-subrace-dropdown {
     min-height: 42px;
     width: 100%;
-    border-width: 1px;
-    border-color: var(--color-border-strong);
-    border-radius: var(--radius-sm);
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
-    padding: 0;
 }
 
 .character-creation-detail-subrace-dropdown:hover {
-    border-color: var(--color-blue);
     background-color: var(--color-bg-primary);
 }
 
 .character-creation-detail-subrace-dropdown .unity-base-field__input {
-    color: var(--color-text-primary);
-    background-color: transparent;
-    border-width: 0;
     min-height: 40px;
     padding: 10px 14px;
-    -unity-font-style: bold;
 }
 
 .character-creation-detail-section-heading {

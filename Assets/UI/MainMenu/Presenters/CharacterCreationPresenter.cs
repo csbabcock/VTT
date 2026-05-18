@@ -18,6 +18,9 @@ namespace GameCore.UI.MainMenu
     [DisallowMultipleComponent]
     public class CharacterCreationPresenter : MonoBehaviour, IUIPresenter<CharacterCreationModel, CharacterCreationView>
     {
+        private const string RaceSizeChoiceId = "choice.size";
+        private static readonly char[] RaceSizeSeparators = { '/' };
+
         [Header("References")]
         [SerializeField] private CharacterCreationView _view;
 
@@ -33,18 +36,12 @@ namespace GameCore.UI.MainMenu
         private IAbilityScoreRoller _abilityScoreRoller;
         private DragAndDropHandler _dragAndDropHandler;
         private DragState _currentDragState;
+        private readonly Dictionary<string, string> _selectedClassAbilityChoices =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         private void Awake()
         {
-            if (_view == null)
-            {
-                _view = GetComponent<CharacterCreationView>();
-            }
-
-            Model = new CharacterCreationModel();
-            _contentQuery = RulesetContentQueryProvider.GetOrCreate(_rulesetId);
-            _calculator = RulesetCalculatorFactory.GetDefaultCalculator();
-            _abilityScoreRoller = AbilityScoreRollerFactory.GetDefault();
+            EnsureDependencies();
         }
 
         private void OnEnable()
@@ -65,6 +62,8 @@ namespace GameCore.UI.MainMenu
             if (_initialized)
                 return;
 
+            EnsureDependencies();
+
             if (_view == null)
             {
                 Debug.LogError("CharacterCreationPresenter: View reference is missing.");
@@ -76,6 +75,7 @@ namespace GameCore.UI.MainMenu
 
             // Subscribe to view events
             _view.ClassSelected += HandleClassSelected;
+            _view.ClassAbilityScoreChoiceSelected += HandleClassAbilityScoreChoiceSelected;
             _view.RaceSelected += HandleRaceSelected;
             _view.RaceAbilityScoreChoiceSelected += HandleRaceAbilityScoreChoiceSelected;
             _view.RaceChoiceSelected += HandleRaceChoiceSelected;
@@ -111,6 +111,24 @@ namespace GameCore.UI.MainMenu
             _initialized = true;
         }
 
+        private void EnsureDependencies()
+        {
+            if (_view == null)
+                _view = GetComponent<CharacterCreationView>();
+
+            if (Model == null)
+                Model = new CharacterCreationModel();
+
+            if (_contentQuery == null)
+                _contentQuery = RulesetContentQueryProvider.GetOrCreate(_rulesetId);
+
+            if (_calculator == null)
+                _calculator = RulesetCalculatorFactory.GetDefaultCalculator();
+
+            if (_abilityScoreRoller == null)
+                _abilityScoreRoller = AbilityScoreRollerFactory.GetDefault();
+        }
+
         public void Dispose()
         {
             if (!_initialized)
@@ -119,6 +137,7 @@ namespace GameCore.UI.MainMenu
             if (_view != null)
             {
                 _view.ClassSelected -= HandleClassSelected;
+                _view.ClassAbilityScoreChoiceSelected -= HandleClassAbilityScoreChoiceSelected;
                 _view.RaceSelected -= HandleRaceSelected;
                 _view.RaceAbilityScoreChoiceSelected -= HandleRaceAbilityScoreChoiceSelected;
                 _view.RaceChoiceSelected -= HandleRaceChoiceSelected;
@@ -203,7 +222,25 @@ namespace GameCore.UI.MainMenu
 
         private void HandleClassSelected(string classId)
         {
+            bool sameClass = string.Equals(Model.State.SelectedClassId, classId, StringComparison.OrdinalIgnoreCase);
+            _selectedClassAbilityChoices.Clear();
             Model.SetSelectedClassId(classId);
+            if (sameClass)
+                HandleModelStateChanged(Model.State);
+        }
+
+        private void HandleClassAbilityScoreChoiceSelected(string choiceId, string abilityCode)
+        {
+            if (!IsValidClassAbilityChoice(Model.State, choiceId, abilityCode))
+                return;
+
+            string normalized = abilityCode.Trim().ToUpperInvariant();
+            if (_selectedClassAbilityChoices.TryGetValue(choiceId, out string current) &&
+                string.Equals(current, normalized, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            _selectedClassAbilityChoices[choiceId] = normalized;
+            HandleModelStateChanged(Model.State);
         }
 
         private void HandleRaceSelected(string raceId)
@@ -769,6 +806,9 @@ namespace GameCore.UI.MainMenu
             _view.UpdateDetailPanel(name, "Race", descMeta.Text, features, null, "Race features",
                 descMeta.Substituted);
             _view.SelectRaceListOption(race.id);
+            _view.BindRaceAbilityScoreChoices(null);
+            _view.BindRaceChoices(null);
+            _view.BindClassAbilityScoreChoices(null);
             _view.BindRaceSubraceOptions(BuildSubraceOptions(race.id, state));
         }
 
@@ -850,6 +890,78 @@ namespace GameCore.UI.MainMenu
             return results;
         }
 
+        private void UpdateClassAbilityChoiceControls(CharacterCreationState state, ClassDefinition classDef)
+        {
+            if (classDef == null)
+            {
+                _view.BindClassAbilityScoreChoices(null);
+                return;
+            }
+
+            int classLevel = CharacterCreationModel.GetClassLevel(state.ClassLevels, state.SelectedClassId);
+            List<(string id, string label)> choices = BuildClassAsiChoiceIds(classDef, classLevel);
+            if (choices.Count == 0)
+            {
+                _view.BindClassAbilityScoreChoices(null);
+                return;
+            }
+
+            var viewModels = new List<ClassAbilityScoreChoiceViewModel>(choices.Count);
+            foreach ((string id, string label) in choices)
+            {
+                _selectedClassAbilityChoices.TryGetValue(id, out string selected);
+                viewModels.Add(new ClassAbilityScoreChoiceViewModel(
+                    id,
+                    label,
+                    new[] { "STR", "DEX", "CON", "INT", "WIS", "CHA" },
+                    selected));
+            }
+
+            _view.BindClassAbilityScoreChoices(viewModels);
+        }
+
+        private static List<(string id, string label)> BuildClassAsiChoiceIds(ClassDefinition classDef, int classLevel)
+        {
+            var choices = new List<(string id, string label)>();
+            if (classDef?.featuresByLevel == null)
+                return choices;
+
+            int asiIndex = 0;
+            foreach (ClassFeatureByLevelDefinition featureByLevel in classDef.featuresByLevel
+                         .Where(f => f != null && f.level <= classLevel && IsAbilityScoreImprovement(f.feature))
+                         .OrderBy(f => f.level))
+            {
+                asiIndex++;
+                string baseId = $"{classDef.id}.asi.{featureByLevel.level}.{asiIndex}";
+                string labelPrefix = $"Level {featureByLevel.level} ASI";
+                choices.Add(($"{baseId}.first", $"{labelPrefix} +1"));
+                choices.Add(($"{baseId}.second", $"{labelPrefix} +1"));
+            }
+
+            return choices;
+        }
+
+        private static bool IsAbilityScoreImprovement(FeatureDefinition feature)
+        {
+            return feature != null &&
+                   !string.IsNullOrEmpty(feature.name) &&
+                   feature.name.IndexOf("Ability Score Improvement", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private bool IsValidClassAbilityChoice(CharacterCreationState state, string choiceId, string abilityCode)
+        {
+            if (string.IsNullOrEmpty(choiceId) ||
+                string.IsNullOrEmpty(abilityCode) ||
+                !DnD5eAbilityCodes.TryIndexFromCode(abilityCode, out _) ||
+                string.IsNullOrEmpty(state.SelectedClassId) ||
+                !_contentQuery.TryGetClass(state.SelectedClassId, out ClassDefinition classDef))
+                return false;
+
+            int classLevel = CharacterCreationModel.GetClassLevel(state.ClassLevels, state.SelectedClassId);
+            return BuildClassAsiChoiceIds(classDef, classLevel)
+                .Any(choice => string.Equals(choice.id, choiceId, StringComparison.OrdinalIgnoreCase));
+        }
+
         private void UpdateRaceAbilityChoiceControls(CharacterCreationState state, RaceDefinition race)
         {
             if (race?.abilityScoreChoices == null || race.abilityScoreChoices.Count == 0)
@@ -872,6 +984,17 @@ namespace GameCore.UI.MainMenu
                     IReadOnlyList<string> abilities = choice.abilities != null && choice.abilities.Count > 0
                         ? choice.abilities
                         : new[] { "STR", "DEX", "CON", "INT", "WIS", "CHA" };
+                    if (choice.requiresUniqueAbility && state.SelectedRaceAbilityChoices != null)
+                    {
+                        string selectedForThisChoice = selected;
+                        abilities = abilities
+                            .Where(ability =>
+                                string.Equals(ability, selectedForThisChoice, StringComparison.OrdinalIgnoreCase) ||
+                                !state.SelectedRaceAbilityChoices.Any(kv =>
+                                    !string.Equals(kv.Key, choice.id, StringComparison.OrdinalIgnoreCase) &&
+                                    string.Equals(kv.Value, ability, StringComparison.OrdinalIgnoreCase)))
+                            .ToList();
+                    }
                     viewModels.Add(new RaceAbilityScoreChoiceViewModel(choice.id, label, abilities, selected));
                 }
 
@@ -883,29 +1006,44 @@ namespace GameCore.UI.MainMenu
 
         private void UpdateRaceChoiceControls(CharacterCreationState state, RaceDefinition race)
         {
-            if (race?.selectableChoices == null || race.selectableChoices.Count == 0)
+            if (race == null)
             {
                 _view.BindRaceChoices(null);
                 return;
             }
 
             var viewModels = new List<RaceChoiceViewModel>();
-            foreach (SelectableChoiceDefinition choice in race.selectableChoices)
+            if (TryBuildRaceSizeOptions(race, out List<string> sizeOptions))
             {
-                if (choice == null || string.IsNullOrEmpty(choice.id) ||
-                    choice.options == null || choice.options.Count == 0)
-                    continue;
-
-                string selected = string.Empty;
-                state.SelectedRaceChoices?.TryGetValue(choice.id, out selected);
                 viewModels.Add(new RaceChoiceViewModel(
-                    choice.id,
-                    string.IsNullOrEmpty(choice.name) ? choice.type : choice.name,
-                    choice.options,
-                    selected));
+                    RaceSizeChoiceId,
+                    "Choose size",
+                    sizeOptions,
+                    state.SelectedRaceChoices != null &&
+                    state.SelectedRaceChoices.TryGetValue(RaceSizeChoiceId, out string selectedSize)
+                        ? selectedSize
+                        : string.Empty));
             }
 
-            _view.BindRaceChoices(viewModels);
+            if (race.selectableChoices != null)
+            {
+                foreach (SelectableChoiceDefinition choice in race.selectableChoices)
+                {
+                    if (choice == null || string.IsNullOrEmpty(choice.id) ||
+                        choice.options == null || choice.options.Count == 0)
+                        continue;
+
+                    string selected = string.Empty;
+                    state.SelectedRaceChoices?.TryGetValue(choice.id, out selected);
+                    viewModels.Add(new RaceChoiceViewModel(
+                        choice.id,
+                        string.IsNullOrEmpty(choice.name) ? choice.type : choice.name,
+                        choice.options,
+                        selected));
+                }
+            }
+
+            _view.BindRaceChoices(viewModels.Count > 0 ? viewModels : null);
         }
 
         private bool IsValidRaceAbilityChoice(CharacterCreationState state, string choiceId, string abilityCode)
@@ -940,8 +1078,14 @@ namespace GameCore.UI.MainMenu
         private bool IsValidRaceChoice(CharacterCreationState state, string choiceId, string selectedOption)
         {
             if (string.IsNullOrEmpty(state.SelectedRaceId) ||
-                !_contentQuery.TryGetRace(state.SelectedRaceId, out RaceDefinition race) ||
-                race.selectableChoices == null)
+                !_contentQuery.TryGetRace(state.SelectedRaceId, out RaceDefinition race))
+                return false;
+
+            if (string.Equals(choiceId, RaceSizeChoiceId, StringComparison.OrdinalIgnoreCase))
+                return TryBuildRaceSizeOptions(race, out List<string> sizeOptions) &&
+                       sizeOptions.Any(o => string.Equals(o, selectedOption, StringComparison.OrdinalIgnoreCase));
+
+            if (race.selectableChoices == null)
                 return false;
 
             SelectableChoiceDefinition choice = race.selectableChoices
@@ -952,6 +1096,37 @@ namespace GameCore.UI.MainMenu
             return choice.options.Any(o => string.Equals(o, selectedOption, StringComparison.OrdinalIgnoreCase));
         }
 
+        private static bool TryBuildRaceSizeOptions(RaceDefinition race, out List<string> options)
+        {
+            options = null;
+            if (string.IsNullOrWhiteSpace(race?.size) ||
+                race.size.IndexOf(" or ", StringComparison.OrdinalIgnoreCase) < 0)
+                return false;
+
+            options = race.size
+                .Split(new[] { " or " }, StringSplitOptions.RemoveEmptyEntries)
+                .SelectMany(part => part.Split(RaceSizeSeparators, StringSplitOptions.RemoveEmptyEntries))
+                .Select(part => part.Trim())
+                .Where(part => !string.IsNullOrEmpty(part))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            return options.Count > 1;
+        }
+
+        private static string ResolveRaceSizeDisplay(RaceDefinition race, CharacterCreationState state)
+        {
+            if (race == null)
+                return "—";
+            if (state.SelectedRaceChoices != null &&
+                state.SelectedRaceChoices.TryGetValue(RaceSizeChoiceId, out string selectedSize) &&
+                TryBuildRaceSizeOptions(race, out List<string> sizeOptions) &&
+                sizeOptions.Any(o => string.Equals(o, selectedSize, StringComparison.OrdinalIgnoreCase)))
+                return selectedSize;
+
+            return string.IsNullOrEmpty(race.size) ? "Medium" : race.size;
+        }
+
         private static int[] BuildEffectiveAbilityScores(CharacterCreationState state, RaceDefinition race)
         {
             if (state.AbilityScores == null || state.AbilityScores.Length != 6)
@@ -959,10 +1134,8 @@ namespace GameCore.UI.MainMenu
 
             int[] scores = new int[6];
             Array.Copy(state.AbilityScores, scores, 6);
-            if (race == null)
-                return scores;
 
-            if (race.abilityScoreBonuses != null)
+            if (race?.abilityScoreBonuses != null)
             {
                 foreach (AbilityScoreBonusDefinition bonus in race.abilityScoreBonuses)
                 {
@@ -973,7 +1146,7 @@ namespace GameCore.UI.MainMenu
                 }
             }
 
-            if (race.abilityScoreChoices != null && state.SelectedRaceAbilityChoices != null)
+            if (race?.abilityScoreChoices != null && state.SelectedRaceAbilityChoices != null)
             {
                 foreach (AbilityScoreChoiceDefinition choice in race.abilityScoreChoices)
                 {
@@ -990,6 +1163,29 @@ namespace GameCore.UI.MainMenu
             return scores;
         }
 
+        private void ApplyClassAbilityScoreChoices(
+            CharacterCreationState state,
+            ClassDefinition classDef,
+            int[] scores)
+        {
+            if (classDef == null || scores == null || scores.Length != 6)
+                return;
+
+            int classLevel = CharacterCreationModel.GetClassLevel(state.ClassLevels, state.SelectedClassId);
+            var unlockedChoiceIds = new HashSet<string>(
+                BuildClassAsiChoiceIds(classDef, classLevel).Select(choice => choice.id),
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (KeyValuePair<string, string> kv in _selectedClassAbilityChoices)
+            {
+                if (!unlockedChoiceIds.Contains(kv.Key) ||
+                    !DnD5eAbilityCodes.TryIndexFromCode(kv.Value, out int index))
+                    continue;
+                if (scores[index] >= 0)
+                    scores[index] += 1;
+            }
+        }
+
         private void UpdateCharacterStats(CharacterCreationState state)
         {
             if (state.AbilityScores == null || state.AbilityScores.Length != 6)
@@ -998,8 +1194,14 @@ namespace GameCore.UI.MainMenu
             RaceDefinition race = null;
             if (!string.IsNullOrEmpty(state.SelectedRaceId))
                 _contentQuery.TryGetRace(state.SelectedRaceId, out race);
+
+            ClassDefinition classDef = null;
+            if (!string.IsNullOrEmpty(state.SelectedClassId))
+                _contentQuery.TryGetClass(state.SelectedClassId, out classDef);
             UpdateRaceAbilityChoiceControls(state, race);
+            UpdateClassAbilityChoiceControls(state, classDef);
             int[] effectiveScores = BuildEffectiveAbilityScores(state, race);
+            ApplyClassAbilityScoreChoices(state, classDef, effectiveScores);
 
             for (int i = 0; i < 6; i++)
             {
@@ -1014,10 +1216,6 @@ namespace GameCore.UI.MainMenu
                     _view.UpdateAbilityScoreDisplay(i, score, modifier);
                 }
             }
-
-            ClassDefinition classDef = null;
-            if (!string.IsNullOrEmpty(state.SelectedClassId))
-                _contentQuery.TryGetClass(state.SelectedClassId, out classDef);
 
             int totalLevel = Mathf.Clamp(state.CharacterLevel, CharacterCreationModel.MinCharacterLevel,
                 CharacterCreationModel.MaxCharacterLevel);
@@ -1062,7 +1260,7 @@ namespace GameCore.UI.MainMenu
             if (race != null)
             {
                 _view.UpdatePhysicalTraits(
-                    race.size ?? "Medium",
+                    ResolveRaceSizeDisplay(race, state),
                     CharacterCreationRulesPreview.FormatRaceSpeed(race),
                     CharacterCreationRulesPreview.FormatRaceSenses(race));
             }
