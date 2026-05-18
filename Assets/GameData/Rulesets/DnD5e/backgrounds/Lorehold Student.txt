@@ -1,0 +1,34 @@
+Lorehold Student
+You have spent your youth preparing to be a student of Lorehold College, reading every book on the college’s recommended reading list for prospective students. Your academic passions are in the broad field of history. You might dream of using magic to contact great historical figures or your own ancestors or of recreating the mighty magic of a distant age.
+
+Skill Proficiencies:History, Religion
+
+- Choose a Language -
+
+- Choose a Language -
+You gain the Strixhaven Initiate feat and must choose Lorehold within it.
+
+You have studied some magical theory and have learned a few spells associated with Strixhaven University.
+
+Choose one of Strixhaven’s colleges: Lorehold, Prismari, Quandrix, Silverquill, or Witherbloom. You learn two cantrips and one 1st-level spell based on the college you choose, as specified in the Strixhaven Spells table.
+
+You can cast the chosen 1st-level spell without a spell slot, and you must finish a long rest before you can cast it in this way again. You can also cast the spell using any spell slots you have.
+
+Your spellcasting ability for this feat’s spells is Intelligence, Wisdom, or Charisma (choose when you select this feat).
+
+Strixhaven Spells
+College	Cantrips	1st-Level Spell
+Lorehold	Choose two from light, sacred flame, and thaumaturgy.	Choose one 1st-level cleric or wizard spell.
+Prismari	Choose two from fire bolt, prestidigitation, and ray of frost.	Choose one 1st-level bard or sorcerer spell.
+Quandrix	Choose two from druidcraft, guidance, and mage hand.	Choose one 1st-level druid or wizard spell.
+Silverquill	Choose two from sacred flame, thaumaturgy, and vicious mockery.	Choose one 1st-level bard or cleric spell.
+Witherbloom	Choose two from chill touch, druidcraft, and spare the dying.	Choose one 1st-level druid or wizard spell.
+
+- Choose an Option -
+d6	Personality Traits (Choose Two)	Random
+1	I thrive on esoteric lore. The more obscure the historical references I can include in everyday conversation, the better.	+ Add
+2	By searching for these lost artifacts, I hope to find who I really am along the way.	+ Add
+3	I can barely go a minute without talking about my research. I have so much knowledge in my head, and it needs to be let out somewhere!	+ Add
+4	The spirits of the dead are so much more interesting to talk with than living classmates.	+ Add
+5	I can speak eloquently about the historical ramifications of an ancient war. But ask me to add two-digit numbers together, and I’m a mess.	+ Add
+6	In the end, it’s all just entropy. Everything falls apart someday.	+ Add

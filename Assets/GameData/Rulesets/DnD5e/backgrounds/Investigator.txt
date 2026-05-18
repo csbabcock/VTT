@@ -1,0 +1,63 @@
+Investigator
+You relentlessly seek the truth. Perhaps you’re motivated by belief in the law and a sense of universal justice, or maybe that very law has failed you and you seek to make things right. You could have witnessed something remarkable or terrible, and now you must know more about this hidden truth. Or maybe you’re a detective for hire, uncovering secrets for well-paying clients. Whether the mysteries you’re embroiled in are local crimes or realm-spanning conspiracies, you’re driven by a personal need to hunt down even the most elusive clues and reveal what others would keep hidden in the shadows.
+
+Skill Proficiencies:
+
+- Choose a Skill -
+
+- Choose a Skill -
+Tool Proficiencies:Disguise Kit, Thieves' Tools
+You’re experienced at gaining access to people and places to get the information you need. Through a combination of fast-talking, determination, and official-looking documentation, you can gain access to a place or an individual related to a crime you’re investigating. Those who aren’t involved in your investigation avoid impeding you or pass along your requests. Additionally, local law enforcement has firm opinions about you, viewing you as either a nuisance or one of their own.
+
+d12	Personality Traits (Choose Two)	Random
+1	I had an encounter that I believe gives me a special affinity with a supernatural creature or event.	+ Add
+2	A signature piece of clothing or distinct weapon serves as an emblem of who I am.	+ Add
+3	I never accept that I’m out of my depth.	+ Add
+4	I must know the answer to every secret. No door remains unopened in my presence.	+ Add
+5	I let people underestimate me, revealing my full competency only to those close to me.	+ Add
+6	I compulsively seek to collect trophies of my travels and victories.	+ Add
+7	It doesn’t matter if the whole world’s against me. I’ll always do what I think is right.	+ Add
+8	I have morbid interests and a macabre aesthetic.	+ Add
+9	I have a personal ritual, mantra, or relaxation method I use to deal with stress.	+ Add
+10	Nothing is more important than life, and I never leave anyone in danger.	+ Add
+11	I’m quick to jump to extreme solutions. Why risk a lesser option not working?	+ Add
+12	I’m easily startled, but I’m not a coward.	+ Add
+d12	Ideals	Random
+1	Adrenaline. I’ve experienced such strangeness that now I feel alive only in extreme situations.	+ Add
+2	Balance. I strive to counter the deeds of someone for whom I feel responsible.	+ Add
+3	Bound. I’ve wronged someone and must work their will to avoid their curse.	+ Add
+4	Escape. I believe there is something beyond the world I know, and I need to find it.	+ Add
+5	Legacy. I must do something great so that I’m remembered, and my time is running out.	+ Add
+6	Misdirection. I work vigorously to keep others from realizing my flaws or misdeeds.	+ Add
+7	Obsession. I’ve lived this way for so long that I can’t imagine another way.	+ Add
+8	Obligation. I owe it to my people, faith, family, or teacher to continue a vaunted legacy.	+ Add
+9	Promise. My life is no longer my own. I must fulfill the dream of someone who’s gone.	+ Add
+10	Revelation. I need to know what lies beyond the mysteries of death, the world, or the Mists.	+ Add
+11	Sanctuary. I know the forces at work in the world and strive to create islands apart from them.	+ Add
+12	Truth. I care about the truth above all else, even if it doesn’t benefit anyone.	+ Add
+d12	Bonds	Random
+1	I desperately need to get back to someone or someplace, but I lost them in the Mists.	+ Add
+2	Everything I do is in the service of a powerful master, one I must keep a secret from everyone.	+ Add
+3	I owe much to my vanished mentor. I seek to continue their work even as I search to find them.	+ Add
+4	I’ve seen great darkness, and I’m committed to being a light against it—the light of all lights.	+ Add
+5	Someone I love has become a monster, murderer, or other threat. It’s up to me to redeem them.	+ Add
+6	The world has been convinced of a terrible lie. It’s up to me to reveal the truth.	+ Add
+7	I deeply miss someone and am quick to adopt people who remind me of them.	+ Add
+8	A great evil dwells within me. I will fight against it and the world’s other evils for as long as I can.	+ Add
+9	I’m desperately seeking a cure to an affliction or a curse, either for someone close to me for myself.	+ Add
+10	Spirits are drawn to me. I do all I can to help them find peace.	+ Add
+11	I use my cunning mind to solve mysteries and find justice for those who’ve been wronged.	+ Add
+12	I lost someone I care about, but I still see them in guilty visions, recurring dreams, or as a spirit.	+ Add
+d12	Flaws	Random
+1	I believe doom follows me and that anyone who gets close to me will face a tragic end.	+ Add
+2	I’m convinced something is after me, appearing in mirrors, dreams, and places where no one could.	+ Add
+3	I’m especially superstitious and live life seeking to avoid bad luck, wicked spirits, or the Mists.	+ Add
+4	I’ve done unspeakable evil and will do anything to prevent others from finding out.	+ Add
+5	I am exceptionally credulous and believe any story or legend immediately.	+ Add
+6	I’m a skeptic and don’t believe in the power of rituals, religion, superstition, or spirits.	+ Add
+7	I know my future is written and that anything I do will lead to a prophesied end.	+ Add
+8	I need to find the best in everyone and everything, even when that means denying obvious malice.	+ Add
+9	I’ve seen the evil of a type of place—like forests, cities, or graveyards—and resist going there.	+ Add
+10	I’m exceptionally cautious, planning laboriously and devising countless contingencies.	+ Add
+11	I have a reputation for defeating a great evil, but that’s a lie and the wicked force knows.	+ Add
+12	I know the ends always justify the means and am quick to make sacrifices to attain my goals.	+ Add

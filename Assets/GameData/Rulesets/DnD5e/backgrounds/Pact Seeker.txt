@@ -1,0 +1,33 @@
+Pact Seeker
+You had a purpose in mind. Perhaps you were seeking out knowledge or power. Or maybe you were in search of hidden secrets. One way or another, your journey lead you to seek out an extraplanar entity. Once you made contact, a deal was struck, and your life changed.
+
+Skill Proficiencies:Arcana, Persuasion
+Tool Proficiencies:Calligrapher's Supplies
+
+Ability Score Increase
+
+Choose an Option
+
+Fey Pact
+Planar Pact Feat (Prerequisite: Can’t Have Another Planar Pact Feat)
+
+You gain the following benefits.
+
+Fey Bond. You know Sylvan. If you already know Sylvan when you select this feat, you instead learn one language of your choice from the language tables in the Player’s Handbook. You also gain Proficiency in the Nature skill.
+
+Fey Cantrips. You know the Druidcraft cantrip and learn one other cantrip of your choice from the Divination or Enchantment school of magic. Intelligence, Wisdom, or Charisma is your spellcasting ability for these spells (choose when you select this feat).
+
+Honeyed Words. When you roll a 5 or lower on the d20 for a Charisma (Deception) or Charisma (Persuasion) check, you can take a Reaction to reroll the check, and you must use the new roll. Once you take this Reaction, you can’t use this benefit again until you finish a Long Rest.
+
+or
+
+Infernal Pact
+Planar Pact Feat (Prerequisite: Can’t Have Another Planar Pact Feat)
+
+You gain the following benefits.
+
+Infernal Resistance. You have Resistance to Fire damage and Poison damage.
+
+Infernal Sight. You can see normally in Dim Light and Darkness—both magical and nonmagical—within 60 feet of yourself.
+
+Silver-Tongued. You gain proficiency in the Deception skill.

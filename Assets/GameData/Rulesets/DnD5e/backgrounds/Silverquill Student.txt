@@ -1,0 +1,36 @@
+Silverquill Student
+You have spent years practicing your writing and oration in the hope of becoming a student of Silverquill College. Your studies focus on language, literature, and the power of words, both magical and otherwise. The metaphorical power of words to illuminate or conceal is joined with the literal ability of magic to do the same in your academic pursuits.
+
+Skill Proficiencies:Persuasion
+
+- Choose a Skill -
+
+- Choose a Language -
+
+- Choose a Language -
+You gain the Strixhaven Initiate feat and must choose Silverquill within it.
+
+You have studied some magical theory and have learned a few spells associated with Strixhaven University.
+
+Choose one of Strixhaven’s colleges: Lorehold, Prismari, Quandrix, Silverquill, or Witherbloom. You learn two cantrips and one 1st-level spell based on the college you choose, as specified in the Strixhaven Spells table.
+
+You can cast the chosen 1st-level spell without a spell slot, and you must finish a long rest before you can cast it in this way again. You can also cast the spell using any spell slots you have.
+
+Your spellcasting ability for this feat’s spells is Intelligence, Wisdom, or Charisma (choose when you select this feat).
+
+Strixhaven Spells
+College	Cantrips	1st-Level Spell
+Lorehold	Choose two from light, sacred flame, and thaumaturgy.	Choose one 1st-level cleric or wizard spell.
+Prismari	Choose two from fire bolt, prestidigitation, and ray of frost.	Choose one 1st-level bard or sorcerer spell.
+Quandrix	Choose two from druidcraft, guidance, and mage hand.	Choose one 1st-level druid or wizard spell.
+Silverquill	Choose two from sacred flame, thaumaturgy, and vicious mockery.	Choose one 1st-level bard or cleric spell.
+Witherbloom	Choose two from chill touch, druidcraft, and spare the dying.	Choose one 1st-level druid or wizard spell.
+
+- Choose an Option -
+d6	Personality Traits (Choose Two)	Random
+1	I’ll say whatever I need to in order to maintain my high social status.	+ Add
+2	I prefer saying the blunt truth over a pretty lie, and I don’t particularly care whose feelings I hurt.	+ Add
+3	I believe that uplifting my peers is the best way to succeed.	+ Add
+4	I’ve mastered the art of using humor as a defense, and I always have a charming joke ready.	+ Add
+5	I always wait before speaking, analyzing the situation for whichever angle is most advantageous to my goals.	+ Add
+6	No one knows about the all-nighters I’ve pulled to keep my magic looking effortless, and I’m going to keep it that way.	+ Add

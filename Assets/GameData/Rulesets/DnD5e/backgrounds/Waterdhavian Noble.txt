@@ -1,0 +1,47 @@
+Waterdhavian Noble
+You are a scion of one of the great noble families of Waterdeep. Human families who jealously guard their privilege and place in the City of Splendors, Waterdhavian nobles have a reputation across Faerûn for being eccentric, spoiled, venal, and, above all else, rich.
+
+Whether you are a shining example of the reason for this reputation or one who proves the rule by being an exception, people expect things of you when they know your surname and what it means. Your reasons for taking up adventuring likely involve your family in some way: Are you the family rebel, who prefers delving in filthy dungeons to sipping zzar at a ball? Or have you taken up sword or spell on your family’s behalf, ensuring that they have someone of renown to see to their legacy?
+
+Work with your DM to come up with the family you are part of —there are around seventy-five lineages in Waterdeep, each with its own financial interests, specialties, and schemes. You might be part of the main line of your family, possibly in line to become its leader one day. Or you might be one of any number of cousins, with less prestige but also less responsibility.
+
+Skill Proficiencies:History, Persuasion
+Tool Proficiencies:
+
+- Choose a Musical Instrument or Gaming Set -
+
+- Choose a Language -
+While you are in Waterdeep or elsewhere in the North, your house sees to your everyday needs. Your name and signet are sufficient to cover most of your expenses; the inns, taverns, and festhalls you frequent are glad to record your debt and send an accounting to your family’s estate in Waterdeep to settle what you owe.
+
+This advantage enables you to live a comfortable lifestyle without having to pay 2 gp a day for it, or reduces the cost of a wealthy or aristocratic lifestyle by that amount. You may not maintain a less affluent lifestyle and use the difference as income—the benefit is a line of credit, not an actual monetary reward.
+
+d8	Personality Traits (Choose Two)	Random
+1	My eloquent flattery makes everyone I talk to feel like the most wonderful and important person in the world.	+ Add
+2	The common folk love me for my kindness and generosity.	+ Add
+3	No one could doubt by looking at my regal bearing that I am a cut above the unwashed masses.	+ Add
+4	I take great pains to always look my best and follow the latest fashions.	+ Add
+5	I don’t like to get my hands dirty, and I won’t be caught dead in unsuitable accommodations.	+ Add
+6	Despite my noble birth, I do not place myself above other folk. We all have the same blood.	+ Add
+7	My favor, once lost, is lost forever.	+ Add
+8	If you do me an injury, I will crush you, ruin your name, and salt your fields.	+ Add
+d6	Ideals	Random
+1	Respect. Respect is due to me because of my position, but all people regardless of station deserve to be treated with dignity. (Good)	+ Add
+2	Responsibility. It is my duty to respect the authority of those above me, just as those below me must respect mine. (Lawful)	+ Add
+3	Independence. I must prove that I can handle myself without the coddling of my family. (Chaotic)	+ Add
+4	Power. If I can attain more power, no one will tell me what to do. (Evil)	+ Add
+5	Family. Blood runs thicker than water. (Any)	+ Add
+6	Noble Obligation. It is my duty to protect and care for the people beneath me. (Good)	+ Add
+d6	Bonds	Random
+1	I will face any challenge to win the approval of my family.	+ Add
+2	My house’s alliance with another noble family must be sustained at all costs.	+ Add
+3	Nothing is more important than the other members of my family.	+ Add
+4	I am in love with the heir of a family that my family despises.	+ Add
+5	My loyalty to my sovereign is unwavering.	+ Add
+6	The common folk must see me as a hero of the people.	+ Add
+d6	Flaws	Random
+1	I secretly believe that everyone is beneath me.	+ Add
+2	I hide a truly scandalous secret that could ruin my family forever.	+ Add
+3	I too often hear veiled insults and threats in every word addressed to me, and I’m quick to anger.	+ Add
+4	I have an insatiable desire for carnal pleasures.	+ Add
+5	In fact, the world does revolve around me.	+ Add
+6	By my words and actions, I often bring shame to my family.	+ Add

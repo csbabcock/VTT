@@ -1,0 +1,43 @@
+Archaeologist
+An archaeologist learns about the long-lost and fallen cultures of the past by studying their remains — their bones, their ruins, their surviving masterworks, and their tombs. Those who practice archaeology travel to the far corners of the world to root through crumbled cities and lost dungeons, digging in search of artifacts that might tell the stories of monarchs and high priests, wars and cataclysms.
+
+Skill Proficiencies:History
+
+- Choose a Skill -
+Tool Proficiencies:
+
+- Choose a Tool -
+
+- Choose a Language -
+When you enter a ruin or dungeon, you can correctly ascertain its original purpose and determine its builders, whether those were dwarves, elves, humans, yuan-ti, or some other known race. In addition, you can determine the monetary value of art objects more than a century old.
+
+d8	Personality Traits (Choose Two)	Random
+1	I love a good puzzle or mystery.	+ Add
+2	I’m a pack rat who never throws anything away.	+ Add
+3	Fame is more important to me than money.	+ Add
+4	I have no qualms about stealing from the dead.	+ Add
+5	I’m happier in a dusty old tomb than I am in the centers of civilization.	+ Add
+6	Traps don’t make me nervous. Idiots who trigger traps make me nervous.	+ Add
+7	I might fail, but I will never give up.	+ Add
+8	You might think I’m a scholar, but I love a good brawl. These fists were made for punching.	+ Add
+d6	Ideals	Random
+1	Preservation. That artifact belongs in a museum. (Good)	+ Add
+2	Greed. I won’t risk my life for nothing. I expect some kind of payment. (Any)	+ Add
+3	Death Wish. Nothing is more exhilarating than a narrow escape from the jaws of death. (Chaotic)	+ Add
+4	Dignity. The dead and their belongings deserve to be treated with respect. (Lawful)	+ Add
+5	Immortality. All my exploring is part of a plan to find the secret of everlasting life. (Any)	+ Add
+6	Danger. With every great discovery comes grave danger. The two walk hand in hand. (Any)	+ Add
+d6	Bonds	Random
+1	Ever since I was a child, I’ve heard stories about a lost city. I aim to find it, learn its secrets, and earn my place in the history books.	+ Add
+2	I want to find my mentor, who disappeared on an expedition some time ago.	+ Add
+3	I have a friendly rival. Only one of us can be the best, and I aim to prove it’s me.	+ Add
+4	I won’t sell an art object or other treasure that has historical significance or is one of a kind.	+ Add
+5	I’m secretly in love with the wealthy patron who sponsors my archaeological exploits.	+ Add
+6	I hope to bring prestige to a library, a museum, or a university.	+ Add
+d6	Flaws	Random
+1	I have a secret fear of some common wild animal—and in my work, I see them everywhere.	+ Add
+2	I can’t leave a room without searching it for secret doors.	+ Add
+3	When I’m not exploring dungeons or ruins, I get jittery and impatient.	+ Add
+4	I have no time for friends or family. I spend every waking moment thinking about and preparing for my next expedition.	+ Add
+5	When given the choice of going left or right, I always go left.	+ Add
+6	I can’t sleep except in total darkness.	+ Add

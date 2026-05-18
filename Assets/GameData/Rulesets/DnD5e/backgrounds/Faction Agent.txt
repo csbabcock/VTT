@@ -1,0 +1,44 @@
+Faction Agent
+Many organizations active in the North and across the face of Faerûn aren’t bound by strictures of geography. These factions pursue their agendas without regard for political boundaries, and their members operate anywhere the organization deems necessary. These groups employ listeners, rumormongers, smugglers, sellswords, cache-holders (people who guard caches of wealth or magic for use by the faction’s operatives), haven keepers, and message drop minders, to name a few. At the core of every faction are those who don’t merely fulfill a small function for that organization, but who serve as its hands, head, and heart.
+
+As a prelude to your adventuring career (and in preparation for it), you served as an agent of a particular faction in Faerûn. You might have operated openly or secretly, depending on the faction and its goals, as well as how those goals mesh with your own. Becoming an adventurer doesn’t necessarily require you to relinquish membership in your faction (though you can choose to do so), and it might enhance your status in the faction.
+
+Skill Proficiencies:Insight
+
+- Choose a Skill -
+
+- Choose a Language -
+
+- Choose a Language -
+As a faction agent, you have access to a secret network of supporters and operatives who can provide assistance on your adventures. You know a set of secret signs and passwords you can use to identify such operatives, who can provide you with access to a hidden safe house, free room and board, or assistance in finding information. These agents never risk their lives for you or risk revealing their true identities.
+
+d8	Personality Traits (Choose Two)	Random
+1	I idolize a particular hero of my faith, and constantly refer to that person’s deeds and example.	+ Add
+2	I can find common ground between the fiercest enemies, empathizing with them and always working toward peace.	+ Add
+3	I see omens in every event and action. The gods try to speak to us, we just need to listen.	+ Add
+4	Nothing can shake my optimistic attitude.	+ Add
+5	I quote (or misquote) sacred texts and proverbs in almost every situation.	+ Add
+6	I am tolerant (or intolerant) of other faiths and respect (or condemn) the worship of other gods.	+ Add
+7	I’ve enjoyed fine food, drink, and high society among my temple’s elite. Rough living grates on me.	+ Add
+8	I’ve spent so long in the temple that I have little practical experience dealing with people in the outside world.	+ Add
+d6	Ideals	Random
+1	Tradition. The ancient traditions of worship and sacrifice must be preserved and upheld. (Lawful)	+ Add
+2	Charity. I always try to help those in need, no matter what the personal cost. (Good)	+ Add
+3	Change. We must help bring about the changes the gods are constantly working in the world. (Chaotic)	+ Add
+4	Power. I hope to one day rise to the top of my faith’s religious hierarchy. (Lawful)	+ Add
+5	Faith. I trust that my deity will guide my actions. I have faith that if I work hard, things will go well. (Lawful)	+ Add
+6	Aspiration. I seek to prove myself worthy of my god’s favor by matching my actions against his or her teachings. (Any)	+ Add
+d6	Bonds	Random
+1	I would die to recover an ancient relic of my faith that was lost long ago.	+ Add
+2	I will someday get revenge on the corrupt temple hierarchy who branded me a heretic.	+ Add
+3	I owe my life to the priest who took me in when my parents died.	+ Add
+4	Everything I do is for the common people.	+ Add
+5	I will do anything to protect the temple where I served.	+ Add
+6	I seek to preserve a sacred text that my enemies consider heretical and seek to destroy.	+ Add
+d6	Flaws	Random
+1	I judge others harshly, and myself even more severely.	+ Add
+2	I put too much trust in those who wield power within my temple’s hierarchy.	+ Add
+3	My piety sometimes leads me to blindly trust those that profess faith in my god.	+ Add
+4	I am inflexible in my thinking.	+ Add
+5	I am suspicious of strangers and expect the worst of them.	+ Add
+6	Once I pick a goal, I become obsessed with it to the detriment of everything else in my life.	+ Add

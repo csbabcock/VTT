@@ -1,0 +1,29 @@
+Luxonborn Acolyte
+Every acolyte is a servant of some god. But you serve the Luxon, a being that you believe transcends godhood and created the cosmos. No mere priest, you are a student of potential, for the Luxon is potentiality incarnate.
+
+You act as an intermediary between the realm of the holy and the mortal world, performing sacred rites and offering sacrifices in order to conduct worshipers into the presence of the divine. You are not necessarily a cleric—performing sacred rites is not the same thing as channeling divine power.
+
+Were you a lesser functionary in a temple, raised from childhood to assist the priests in the sacred rites? Or were you a high priest who suddenly experienced a call to serve your god in a different way? Perhaps you were the leader of a small cult outside of any established temple structure, or even an occult group that served a fiendish master that you now deny. 
+
+Skill Proficiencies:Insight, Religion
+
+- Choose a Language -
+
+- Choose a Language -
+As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity. You and your adventuring companions can expect to receive free healing and care at a temple, shrine, or other established presence of your faith, though you must provide any material components needed for spells. Those who share your religion will support you (but only you) at a modest lifestyle.
+
+You might also have ties to a specific temple dedicated to your chosen deity or pantheon, and you have a residence there. This could be the temple where you used to serve, if you remain on good terms with it, or a temple where you have found a new home. While near your temple, you can call upon the priests for assistance, provided the assistance you ask for is not hazardous and you remain in good standing with your temple.
+
+Acolyte (Luxonborn)
+
+Your Shelter of the Faithful feature applies to all who venerate the Luxon, and to all who practice the art of dunamancy that the Luxon bestowed upon the world.
+
+d8	Personality Traits (Choose Two)	Random
+1	I idolize a particular hero of my faith, and constantly refer to that person’s deeds and example.	+ Add
+2	I can find common ground between the fiercest enemies, empathizing with them and always working toward peace.	+ Add
+3	I see omens in every event and action. The gods try to speak to us, we just need to listen.	+ Add
+4	Nothing can shake my optimistic attitude.	+ Add
+5	I quote (or misquote) sacred texts and proverbs in almost every situation.	+ Add
+6	I am tolerant (or intolerant) of other faiths and respect (or condemn) the worship of other gods.	+ Add
+7	I’ve enjoyed fine food, drink, and high society among my temple’s elite. Rough living grates on me.	+ Add
+8	I’ve spent so long in the temple that I have little practical experience dealing with people in the outside world.	+ Add

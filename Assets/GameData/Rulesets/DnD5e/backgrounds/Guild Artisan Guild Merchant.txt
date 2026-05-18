@@ -1,0 +1,45 @@
+Guild Artisan / Guild Merchant
+You are a member of an artisan’s guild, skilled in a particular field and closely associated with other artisans. You are a well-established part of the mercantile world, freed by talent and wealth from the constraints of a feudal social order. You learned your skills as an apprentice to a master artisan, under the sponsorship of your guild, until you became a master in your own right.
+
+Skill Proficiencies:Insight, Persuasion
+Tool Proficiencies:
+
+- Choose an Artisan's Tool -
+
+- Choose a Language -
+As an established and respected member of a guild, you can rely on certain benefits that membership provides. Your fellow guild members will provide you with lodging and food if necessary, and pay for your funeral if needed. In some cities and towns, a guildhall offers a central place to meet other members of your profession, which can be a good place to meet potential patrons, allies, or hirelings.
+
+Guilds often wield tremendous political power. If you are accused of a crime, your guild will support you if a good case can be made for your innocence or the crime is justifiable. You can also gain access to powerful political figures through the guild, if you are a member in good standing. Such connections might require the donation of money or magic items to the guild’s coffers.
+
+You must pay dues of 5 gp per month to the guild. If you miss payments, you must make up back dues to remain in the guild’s good graces.
+
+d8	Personality Traits (Choose Two)	Random
+1	I believe that anything worth doing is worth doing right. I can’t help it—I’m a perfectionist.	+ Add
+2	I’m a snob who looks down on those who can’t appreciate fine art.	+ Add
+3	I always want to know how things work and what makes people tick.	+ Add
+4	I’m full of witty aphorisms and have a proverb for every occasion.	+ Add
+5	I’m rude to people who lack my commitment to hard work and fair play.	+ Add
+6	I like to talk at length about my profession.	+ Add
+7	I don’t part with my money easily and will haggle tirelessly to get the best deal possible.	+ Add
+8	I’m well known for my work, and I want to make sure everyone appreciates it. I’m always taken aback when people haven’t heard of me.	+ Add
+d6	Ideals	Random
+1	Community. It is the duty of all people to strengthen the bonds and security of communities. (Lawful)	+ Add
+2	Generosity. My talents were given to me so that I could use them to benefit the world. (Good)	+ Add
+3	Freedom. Everyone should be free to pursue his or her own livelihood. (Chaotic)	+ Add
+4	Greed. I’m only in it for the money. (Evil)	+ Add
+5	People. I’m committed to the people I care about, not to ideals. (Neutral)	+ Add
+6	Aspiration. I work hard to be the best there is at my craft. (Any)	+ Add
+d6	Bonds	Random
+1	The workshop where I learned my trade is the most important place in the world to me.	+ Add
+2	I created a great work for someone, and then found them unworthy to receive it. I’m still looking for someone worthy.	+ Add
+3	I owe my guild a great debt for forging me into the person I am today.	+ Add
+4	I pursue wealth to secure someone’s love.	+ Add
+5	One day I will return to my guild and prove that I am the greatest artisan of them all.	+ Add
+6	I will get revenge on the evil forces that destroyed my place of business and ruined my livelihood.	+ Add
+d6	Flaws	Random
+1	I’ll do anything to get my hands on something rare or priceless.	+ Add
+2	I’m quick to assume that someone is trying to cheat me.	+ Add
+3	No one must ever learn that I once stole money from guild coffers.	+ Add
+4	I’m never satisfied with what I have—I always want more.	+ Add
+5	I would kill to acquire a noble title.	+ Add
+6	I’m horribly jealous of anyone who can outshine my handiwork. Everywhere I go, I’m surrounded by rivals.	+ Add

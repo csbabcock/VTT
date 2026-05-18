@@ -1,0 +1,35 @@
+Witherbloom Student
+You filled your childhood with rudimentary alchemical experiments, all in the hope of becoming a student of Witherbloom College. The life sciences are the focus of your reading, which include biology and necromancy. Brewing strange concoctions with medicinal properties, exploring the anatomies of monsters, and cataloging swamp flora are the kinds of studies you might pursue at Witherbloom College.
+
+Skill Proficiencies:Nature
+
+- Choose a Skill -
+Tool Proficiencies:Herbalism Kit
+
+- Choose a Language -
+You gain the Strixhaven Initiate feat and must choose Witherbloom within it.
+
+You have studied some magical theory and have learned a few spells associated with Strixhaven University.
+
+Choose one of Strixhaven’s colleges: Lorehold, Prismari, Quandrix, Silverquill, or Witherbloom. You learn two cantrips and one 1st-level spell based on the college you choose, as specified in the Strixhaven Spells table.
+
+You can cast the chosen 1st-level spell without a spell slot, and you must finish a long rest before you can cast it in this way again. You can also cast the spell using any spell slots you have.
+
+Your spellcasting ability for this feat’s spells is Intelligence, Wisdom, or Charisma (choose when you select this feat).
+
+Strixhaven Spells
+College	Cantrips	1st-Level Spell
+Lorehold	Choose two from light, sacred flame, and thaumaturgy.	Choose one 1st-level cleric or wizard spell.
+Prismari	Choose two from fire bolt, prestidigitation, and ray of frost.	Choose one 1st-level bard or sorcerer spell.
+Quandrix	Choose two from druidcraft, guidance, and mage hand.	Choose one 1st-level druid or wizard spell.
+Silverquill	Choose two from sacred flame, thaumaturgy, and vicious mockery.	Choose one 1st-level bard or cleric spell.
+Witherbloom	Choose two from chill touch, druidcraft, and spare the dying.	Choose one 1st-level druid or wizard spell.
+
+- Choose an Option -
+d6	Personality Traits (Choose Two)	Random
+1	I love brewing up a new recipe, even if some might be repulsed by my choice of ingredients. Or the final product. Or both.	+ Add
+2	My fashion sense is like my garden: withered, black, and weird.	+ Add
+3	I’m going to befriend every single monster in this swamp if it’s the last thing I do.	+ Add
+4	Everything in this world dies eventually. The question is, what will you do with the time you have left?	+ Add
+5	I know we just met, but when you die, may I have your bones? For research.	+ Add
+6	Don’t interrupt me; I’m brooding.	+ Add
