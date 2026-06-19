@@ -6,21 +6,13 @@ using GameCore.PlayerData;
 namespace GameCore.PlayerData.Rulesets
 {
     /// <summary>
-    /// Adapter for D&D 5e character data to generic CharacterData format.
-    /// Follows Adapter Pattern - converts DnD5eCharacterData to CharacterData.
+    /// Adapter that exposes a <see cref="DnD5eCharacterData"/> as the ruleset-agnostic
+    /// dictionaries/weapon data the character sheet UI consumes.
+    /// Follows the Adapter Pattern so generic UI code stays decoupled from ruleset models.
     /// </summary>
     public class DnD5eCharacterDataAdapter : ICharacterDataAdapter
     {
         public string RulesetId => "DnD5e";
-
-        public CharacterData AdaptToCharacterData(object rulesetData)
-        {
-            if (rulesetData is DnD5eCharacterData dnD5eData)
-            {
-                return dnD5eData.ToLegacyCharacterData();
-            }
-            throw new System.ArgumentException($"Expected DnD5eCharacterData, got {rulesetData?.GetType()}");
-        }
 
         public Dictionary<string, int> GetAbilityScores(object rulesetData)
         {

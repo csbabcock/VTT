@@ -6,7 +6,7 @@ namespace GameCore.PlayerData
     /// Can be swapped with DI framework later if needed.
     /// 
     /// Usage:
-    ///   var data = PlayerDataServiceLocator.Service.GetPlayerData();
+    ///   var sheet = PlayerDataServiceLocator.Service.GetCharacterSheet();
     /// </summary>
     public static class PlayerDataServiceLocator
     {

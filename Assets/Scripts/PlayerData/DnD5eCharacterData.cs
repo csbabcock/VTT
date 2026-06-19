@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using GameCore.PlayerData.Rulesets;
 using UnityEngine;
 
@@ -256,24 +255,24 @@ namespace GameCore.PlayerData
 
         int ICharacterSheet.GetAbilityModifier(string abilityCode) => GetAbilityModifier(abilityCode);
 
-        /// <summary>
-        /// Converts to the old CharacterData format for backward compatibility.
-        /// </summary>
-        public GameCore.UI.InGame.Models.CharacterData ToLegacyCharacterData()
+        string ICharacterSheet.GetSkillAbility(string skill)
         {
-            return new GameCore.UI.InGame.Models.CharacterData
-            {
-                CharacterName = characterName,
-                Strength = strength,
-                Dexterity = dexterity,
-                Constitution = constitution,
-                Intelligence = intelligence,
-                Wisdom = wisdom,
-                Charisma = charisma,
-                ProficiencyBonus = proficiencyBonus,
-                ProficientSkills = new HashSet<string>(GetProficientSkills().Select(s => s.GetDisplayName())),
-                ExpertiseSkills = new HashSet<string>(GetExpertiseSkills().Select(s => s.GetDisplayName()))
-            };
+            var parsed = DnD5eSkillExtensions.FromString(skill);
+            return parsed.HasValue ? parsed.Value.GetAbilityScore() : string.Empty;
+        }
+
+        int ICharacterSheet.GetSkillModifier(string skill) => GetSkillModifier(skill);
+
+        bool ICharacterSheet.IsProficientInSkill(string skill)
+        {
+            var parsed = DnD5eSkillExtensions.FromString(skill);
+            return parsed.HasValue && IsProficientInSkill(parsed.Value);
+        }
+
+        bool ICharacterSheet.HasExpertiseInSkill(string skill)
+        {
+            var parsed = DnD5eSkillExtensions.FromString(skill);
+            return parsed.HasValue && IsExpertInSkill(parsed.Value);
         }
     }
 }

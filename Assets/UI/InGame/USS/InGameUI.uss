@@ -1013,3 +1013,93 @@
     color: var(--vtt-text-muted);
     font-size: 14px;
 }
+
+/* DM player management panel - top right */
+.dm-panel {
+    position: absolute;
+    right: 48px;
+    top: 5px;
+    width: 260px;
+    max-height: 420px;
+    border-radius: var(--vtt-radius-large);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: rgba(12, 12, 16, 0.85);
+    padding: 0;
+    flex-direction: column;
+    overflow: hidden;
+    display: none;
+}
+
+.dm-panel-header {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--vtt-spacing-medium) var(--vtt-spacing-large);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--vtt-border-color);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.dm-panel-title {
+    color: var(--vtt-text-main);
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.dm-player-list-scroll {
+    max-height: 180px;
+    flex-shrink: 0;
+}
+
+.dm-player-list {
+    flex-direction: column;
+    padding: var(--vtt-spacing-small) var(--vtt-spacing-medium);
+}
+
+.dm-player-button {
+    margin-bottom: var(--vtt-spacing-small);
+    justify-content: flex-start;
+    color: var(--vtt-text-main);
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: var(--vtt-border-color);
+}
+
+.dm-player-button-selected {
+    background-color: rgba(120, 160, 255, 0.25);
+    border-color: rgba(120, 160, 255, 0.6);
+}
+
+.dm-selection-details {
+    flex-direction: column;
+    padding: var(--vtt-spacing-medium) var(--vtt-spacing-large);
+    border-top-width: 1px;
+    border-top-color: var(--vtt-border-color);
+}
+
+.dm-selected-label {
+    color: var(--vtt-text-main);
+    font-size: 14px;
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+.dm-hp-value {
+    color: var(--vtt-text-muted);
+    font-size: 14px;
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+.dm-hp-controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+.dm-hp-button {
+    min-width: 44px;
+    margin-right: var(--vtt-spacing-small);
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+.dm-view-self-button {
+    align-self: flex-start;
+}

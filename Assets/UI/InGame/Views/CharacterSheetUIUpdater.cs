@@ -14,69 +14,57 @@ namespace GameCore.UI.InGame
     /// Follows SOLID principles:
     /// - Single Responsibility: Only handles UI updates
     /// - Open/Closed: Can extend with new rulesets without modification
-    /// - Dependency Inversion: Depends on abstractions (IRulesetCalculator, ICharacterDataAdapter)
+    /// - Dependency Inversion: Depends on abstractions (ICharacterSheet, IRulesetCalculator, ICharacterDataAdapter)
     /// </summary>
     public static class CharacterSheetUIUpdater
     {
         /// <summary>
-        /// Updates all character sheet UI elements from character data.
+        /// Updates all character sheet UI elements from a character sheet.
         /// Uses ruleset calculator and adapter for ruleset-agnostic updates.
         /// </summary>
-        public static void UpdateCharacterSheet(VisualElement root, CharacterData data, string rulesetId = "DnD5e")
+        public static void UpdateCharacterSheet(VisualElement root, ICharacterSheet sheet, string rulesetId = null)
         {
             if (root == null)
             {
                 Debug.LogWarning("CharacterSheetUIUpdater: Root element is null!");
                 return;
             }
-            
-            if (data == null)
+
+            if (sheet == null)
             {
-                Debug.LogWarning("CharacterSheetUIUpdater: Character data is null!");
+                Debug.LogWarning("CharacterSheetUIUpdater: Character sheet is null!");
                 return;
             }
 
-            // Get ruleset calculator and adapter
+            rulesetId = string.IsNullOrEmpty(rulesetId) ? sheet.RulesetId : rulesetId;
+
+            // Get ruleset calculator and adapter for this sheet's ruleset.
             var calculator = RulesetCalculatorFactory.GetCalculator(rulesetId) ?? RulesetCalculatorFactory.GetDefaultCalculator();
             var adapter = RulesetAdapterFactory.GetAdapter(rulesetId) ?? RulesetAdapterFactory.GetDefaultAdapter();
 
-            // Get ruleset-specific data if available
-            object rulesetData = GetRulesetData(data, rulesetId);
+            // The sheet IS the ruleset domain object the adapter consumes.
+            object rulesetData = sheet;
 
-            UpdateCharacterName(root, data);
-            if (rulesetId == "DnD5e" && rulesetData is DnD5eCharacterData dnd)
+            UpdateCharacterName(root, sheet);
+            if (rulesetId == "DnD5e" && sheet is DnD5eCharacterData dnd)
             {
                 UpdateCombatHeader(root, dnd, calculator);
             }
 
-            UpdateAbilityScores(root, data, calculator, adapter, rulesetData);
-            UpdateSkills(root, data, calculator, adapter, rulesetData);
-            UpdateAttacks(root, data, calculator, adapter, rulesetData);
-        }
-
-        /// <summary>
-        /// Gets ruleset-specific data from the service if available.
-        /// </summary>
-        private static object GetRulesetData(CharacterData data, string rulesetId)
-        {
-            // Any service now exposes a ruleset-agnostic sheet; for DnD5e the concrete
-            // sheet is a DnD5eCharacterData that the adapter knows how to consume.
-            if (rulesetId == "DnD5e")
-            {
-                return PlayerDataServiceLocator.Service?.GetCharacterSheet() as DnD5eCharacterData;
-            }
-            return null;
+            UpdateAbilityScores(root, adapter, calculator, rulesetData);
+            UpdateSkills(root, adapter, calculator, rulesetData);
+            UpdateAttacks(root, adapter, calculator, rulesetData);
         }
 
         /// <summary>
         /// Updates character name in the header.
         /// </summary>
-        private static void UpdateCharacterName(VisualElement root, CharacterData data)
+        private static void UpdateCharacterName(VisualElement root, ICharacterSheet sheet)
         {
             var nameLabel = root.Q<Label>(CharacterSheetUIMapper.GetCharacterNameElementName());
             if (nameLabel != null)
             {
-                nameLabel.text = data.CharacterName;
+                nameLabel.text = sheet.CharacterName;
             }
         }
 
@@ -129,23 +117,23 @@ namespace GameCore.UI.InGame
         }
 
         /// <summary>
-        /// Updates all ability score buttons using ruleset calculator.
+        /// Updates all ability score buttons using the ruleset adapter.
         /// </summary>
-        private static void UpdateAbilityScores(VisualElement root, CharacterData data, IRulesetCalculator calculator, 
-            ICharacterDataAdapter adapter, object rulesetData)
+        private static void UpdateAbilityScores(VisualElement root, ICharacterDataAdapter adapter,
+            IRulesetCalculator calculator, object rulesetData)
         {
             var mapping = CharacterSheetUIMapper.GetAbilityScoreMapping();
-            var abilityScores = rulesetData != null ? adapter.GetAbilityScores(rulesetData) : GetAbilityScoresFromLegacy(data);
-            var abilityModifiers = rulesetData != null ? adapter.GetAbilityModifiers(rulesetData, calculator) : GetAbilityModifiersFromLegacy(data, calculator);
+            var abilityScores = adapter.GetAbilityScores(rulesetData);
+            var abilityModifiers = adapter.GetAbilityModifiers(rulesetData, calculator);
 
             foreach (var kvp in mapping)
             {
                 string buttonName = kvp.Key;
                 string abilityName = kvp.Value;
-                
+
                 int score = abilityScores.TryGetValue(abilityName, out var s) ? s : 10;
                 int modifier = abilityModifiers.TryGetValue(abilityName, out var m) ? m : 0;
-                
+
                 UpdateAbilityScore(root, buttonName, abilityName, score, modifier);
             }
         }
@@ -164,30 +152,20 @@ namespace GameCore.UI.InGame
         }
 
         /// <summary>
-        /// Updates all skill buttons using ruleset calculator.
+        /// Updates all skill buttons using the ruleset adapter.
         /// </summary>
-        private static void UpdateSkills(VisualElement root, CharacterData data, IRulesetCalculator calculator,
-            ICharacterDataAdapter adapter, object rulesetData)
+        private static void UpdateSkills(VisualElement root, ICharacterDataAdapter adapter,
+            IRulesetCalculator calculator, object rulesetData)
         {
             var skillMapping = CharacterSheetUIMapper.GetSkillMapping();
-            // Convert to HashSet for consistent type handling
-            HashSet<string> proficientSkills;
-            if (rulesetData != null)
-            {
-                var proficientList = adapter.GetProficientSkills(rulesetData);
-                proficientSkills = new HashSet<string>(proficientList);
-            }
-            else
-            {
-                proficientSkills = data.ProficientSkills;
-            }
-            var skillModifiers = rulesetData != null ? adapter.GetSkillModifiers(rulesetData, calculator) : GetSkillModifiersFromLegacy(data, calculator);
+            var proficientSkills = new HashSet<string>(adapter.GetProficientSkills(rulesetData));
+            var skillModifiers = adapter.GetSkillModifiers(rulesetData, calculator);
 
             foreach (var kvp in skillMapping)
             {
                 string buttonName = kvp.Key;
                 string skillName = kvp.Value;
-                
+
                 var buttons = root.Query<Button>(name: buttonName).ToList();
 
                 foreach (var button in buttons)
@@ -214,7 +192,7 @@ namespace GameCore.UI.InGame
             {
                 modifierLabel = button.Q<Label>(CharacterSheetUIMapper.GetSkillModifierClassName());
             }
-            
+
             if (modifierLabel != null)
             {
                 string modifierText = modifier >= 0 ? $"+{modifier}" : modifier.ToString();
@@ -224,7 +202,7 @@ namespace GameCore.UI.InGame
             // Update proficiency indicator
             var icon = button.Q<VisualElement>(className: CharacterSheetUIMapper.GetSkillIconClassName());
             var spacer = button.Q<VisualElement>(className: CharacterSheetUIMapper.GetSkillIconSpacerClassName());
-            
+
             if (isProficient)
             {
                 button.AddToClassList(CharacterSheetUIMapper.GetProficientClassName());
@@ -242,10 +220,10 @@ namespace GameCore.UI.InGame
         }
 
         /// <summary>
-        /// Updates all attack buttons using ruleset calculator.
+        /// Updates all attack buttons using the ruleset adapter.
         /// </summary>
-        private static void UpdateAttacks(VisualElement root, CharacterData data, IRulesetCalculator calculator,
-            ICharacterDataAdapter adapter, object rulesetData)
+        private static void UpdateAttacks(VisualElement root, ICharacterDataAdapter adapter,
+            IRulesetCalculator calculator, object rulesetData)
         {
             var attackMapping = CharacterSheetUIMapper.GetAttackMapping();
 
@@ -255,32 +233,10 @@ namespace GameCore.UI.InGame
                 string weaponName = kvp.Value;
 
                 var buttons = root.Query<Button>(name: buttonName).ToList();
-                
+
                 foreach (var button in buttons)
                 {
-                    WeaponData weaponData;
-                    if (rulesetData != null)
-                    {
-                        weaponData = adapter.GetWeaponData(weaponName, rulesetData, calculator);
-                    }
-                    else
-                    {
-                        // Fallback: Convert legacy CharacterData to DnD5eCharacterData for ruleset system
-                        var dnD5eFallback = new DnD5eCharacterData
-                        {
-                            characterName = data.CharacterName,
-                            strength = data.Strength,
-                            dexterity = data.Dexterity,
-                            constitution = data.Constitution,
-                            intelligence = data.Intelligence,
-                            wisdom = data.Wisdom,
-                            charisma = data.Charisma,
-                            level = 1, // Default level
-                            proficientWeapons = new List<string> { "Simple", "Martial" } // Assume basic proficiency
-                        };
-                        weaponData = adapter.GetWeaponData(weaponName, dnD5eFallback, calculator);
-                    }
-
+                    WeaponData weaponData = adapter.GetWeaponData(weaponName, rulesetData, calculator);
                     UpdateAttackButton(button, weaponData, calculator);
                 }
             }
@@ -294,13 +250,13 @@ namespace GameCore.UI.InGame
             if (button == null || weaponData == null)
                 return;
 
-            string attackBonusText = weaponData.AttackBonus >= 0 
-                ? $"+{weaponData.AttackBonus}" 
+            string attackBonusText = weaponData.AttackBonus >= 0
+                ? $"+{weaponData.AttackBonus}"
                 : weaponData.AttackBonus.ToString();
 
             string damageText = FormatDamage(weaponData, calculator);
             string newText = $"{weaponData.WeaponName} {attackBonusText} ({damageText})";
-            
+
             button.text = newText;
         }
 
@@ -316,11 +272,11 @@ namespace GameCore.UI.InGame
 
             string diceText = $"{weaponData.DamageDice}d{weaponData.DamageDieType}";
             string modifierText = "";
-            
+
             if (weaponData.DamageModifier != 0)
             {
-                modifierText = weaponData.DamageModifier >= 0 
-                    ? $"+{weaponData.DamageModifier}" 
+                modifierText = weaponData.DamageModifier >= 0
+                    ? $"+{weaponData.DamageModifier}"
                     : weaponData.DamageModifier.ToString();
             }
 
@@ -334,52 +290,5 @@ namespace GameCore.UI.InGame
 
             return $"{diceText}{modifierText} {damageType}";
         }
-
-        #region Legacy Support Methods
-
-        private static Dictionary<string, int> GetAbilityScoresFromLegacy(CharacterData data)
-        {
-            return new Dictionary<string, int>
-            {
-                { "STR", data.Strength },
-                { "DEX", data.Dexterity },
-                { "CON", data.Constitution },
-                { "INT", data.Intelligence },
-                { "WIS", data.Wisdom },
-                { "CHA", data.Charisma }
-            };
-        }
-
-        private static Dictionary<string, int> GetAbilityModifiersFromLegacy(CharacterData data, IRulesetCalculator calculator)
-        {
-            var scores = GetAbilityScoresFromLegacy(data);
-            var modifiers = new Dictionary<string, int>();
-            foreach (var kvp in scores)
-            {
-                modifiers[kvp.Key] = calculator.CalculateAbilityModifier(kvp.Value);
-            }
-            return modifiers;
-        }
-
-        private static Dictionary<string, int> GetSkillModifiersFromLegacy(CharacterData data, IRulesetCalculator calculator)
-        {
-            var modifiers = new Dictionary<string, int>();
-            var abilityModifiers = GetAbilityModifiersFromLegacy(data, calculator);
-
-            foreach (var skillName in CharacterSheetUIMapper.GetSkillMapping().Values)
-            {
-                string abilityName = CharacterData.GetSkillAbility(skillName);
-                bool isProficient = data.ProficientSkills.Contains(skillName);
-                bool hasExpertise = data.ExpertiseSkills.Contains(skillName);
-                int abilityModifier = abilityModifiers.TryGetValue(abilityName, out var m) ? m : 0;
-                int skillModifier = calculator.CalculateSkillModifier(abilityModifier, isProficient, hasExpertise, 1); // Default level 1
-                modifiers[skillName] = skillModifier;
-            }
-
-            return modifiers;
-        }
-
-        #endregion
     }
 }
-

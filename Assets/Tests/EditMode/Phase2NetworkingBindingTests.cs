@@ -88,7 +88,7 @@ namespace GameCore.Tests.EditMode
             Assert.IsNotNull(sheet);
             Assert.AreEqual("Gimli", sheet.CharacterName);
             Assert.AreEqual(18, sheet.GetAbilityScore("STR"));
-            Assert.AreEqual(18, service.GetPlayerData().Strength);
+            Assert.AreSame(data, service.GetDnD5eCharacterData());
         }
 
         [Test]
@@ -97,7 +97,19 @@ namespace GameCore.Tests.EditMode
             var service = new InMemoryPlayerDataService(null);
 
             Assert.IsNotNull(service.GetCharacterSheet());
-            Assert.IsNotNull(service.GetPlayerData());
+        }
+
+        [Test]
+        public void NotifyChanged_RaisesCharacterSheetChanged()
+        {
+            var data = new DnD5eCharacterData { characterName = "Boromir" };
+            var service = new InMemoryPlayerDataService(data);
+            ICharacterSheet received = null;
+            service.CharacterSheetChanged += sheet => received = sheet;
+
+            service.NotifyChanged();
+
+            Assert.AreSame(data, received);
         }
     }
 

@@ -15,13 +15,6 @@ namespace GameCore.PlayerData.Rulesets
         string RulesetId { get; }
 
         /// <summary>
-        /// Adapts ruleset-specific data to generic CharacterData for UI display.
-        /// </summary>
-        /// <param name="rulesetData">The ruleset-specific data object</param>
-        /// <returns>Generic CharacterData for UI consumption</returns>
-        CharacterData AdaptToCharacterData(object rulesetData);
-
-        /// <summary>
         /// Gets ability scores as a dictionary.
         /// </summary>
         Dictionary<string, int> GetAbilityScores(object rulesetData);

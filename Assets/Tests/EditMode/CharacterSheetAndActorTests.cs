@@ -75,6 +75,62 @@ namespace GameCore.Tests.EditMode
             Assert.IsNotNull(sheet);
             Assert.AreEqual("DnD5e", sheet.RulesetId);
         }
+
+        [Test]
+        public void ICharacterSheet_ExposesSkillReads_ForExpertise()
+        {
+            // Level 5 -> proficiency +3, DEX 14 -> +2 modifier.
+            var data = new DnD5eCharacterData { level = 5, dexterity = 14 };
+            data.SetExpertiseSkills(new List<DnD5eSkill> { DnD5eSkill.Acrobatics });
+
+            ICharacterSheet sheet = data;
+
+            Assert.AreEqual("DEX", sheet.GetSkillAbility("Acrobatics"));
+            Assert.IsTrue(sheet.IsProficientInSkill("Acrobatics"));
+            Assert.IsTrue(sheet.HasExpertiseInSkill("Acrobatics"));
+            // +2 ability + (2 x 3) expertise = +8.
+            Assert.AreEqual(8, sheet.GetSkillModifier("Acrobatics"));
+        }
+
+        [Test]
+        public void ICharacterSheet_ProficiencyWithoutExpertise_IsSingle()
+        {
+            var data = new DnD5eCharacterData { level = 5, dexterity = 14 };
+            data.SetProficientSkills(new List<DnD5eSkill> { DnD5eSkill.Acrobatics });
+
+            ICharacterSheet sheet = data;
+
+            Assert.IsTrue(sheet.IsProficientInSkill("Acrobatics"));
+            Assert.IsFalse(sheet.HasExpertiseInSkill("Acrobatics"));
+            // +2 ability + 3 proficiency = +5.
+            Assert.AreEqual(5, sheet.GetSkillModifier("Acrobatics"));
+        }
+
+        [Test]
+        public void ICharacterSheet_UnknownSkill_ReturnsDefaults()
+        {
+            ICharacterSheet sheet = new DnD5eCharacterData();
+
+            Assert.AreEqual(string.Empty, sheet.GetSkillAbility("NotASkill"));
+            Assert.AreEqual(0, sheet.GetSkillModifier("NotASkill"));
+            Assert.IsFalse(sheet.IsProficientInSkill("NotASkill"));
+            Assert.IsFalse(sheet.HasExpertiseInSkill("NotASkill"));
+        }
+
+        [Test]
+        public void PlayerDataAsset_ToDnD5eCharacterData_MapsProficientSkills()
+        {
+            var asset = ScriptableObject.CreateInstance<PlayerDataAsset>();
+            asset.characterName = "Preset";
+            asset.proficientSkills = new List<string> { "Athletics" };
+
+            ICharacterSheet sheet = asset.ToDnD5eCharacterData();
+
+            Assert.AreEqual("Preset", sheet.CharacterName);
+            Assert.IsTrue(sheet.IsProficientInSkill("Athletics"));
+
+            Object.DestroyImmediate(asset);
+        }
     }
 
     /// <summary>

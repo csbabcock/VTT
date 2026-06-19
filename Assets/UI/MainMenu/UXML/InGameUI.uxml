@@ -47,6 +47,27 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
+        <!-- DM panel - host/DM only at runtime -->
+        <ui:VisualElement name="dm-panel" class="dm-panel diegetic-panel">
+            <ui:VisualElement name="dm-panel-header" class="dm-panel-header">
+                <ui:Label text="Players" class="dm-panel-title" />
+            </ui:VisualElement>
+            <ui:ScrollView name="dm-player-list-scroll" class="dm-player-list-scroll">
+                <ui:VisualElement name="dm-player-list" class="dm-player-list" />
+            </ui:ScrollView>
+            <ui:VisualElement name="dm-selection-details" class="dm-selection-details">
+                <ui:Label name="dm-selected-label" text="Inspecting: (none)" class="dm-selected-label" />
+                <ui:Label name="dm-hp-value" text="HP: —" class="dm-hp-value" />
+                <ui:VisualElement class="dm-hp-controls">
+                    <ui:Button name="dm-hp-minus-five" text="-5" class="dm-hp-button" />
+                    <ui:Button name="dm-hp-minus-one" text="-1" class="dm-hp-button" />
+                    <ui:Button name="dm-hp-plus-one" text="+1" class="dm-hp-button" />
+                    <ui:Button name="dm-hp-plus-five" text="+5" class="dm-hp-button" />
+                </ui:VisualElement>
+                <ui:Button name="dm-view-self-button" text="View Self" class="dm-view-self-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
         <!-- Character sheet panel; initially hidden by InGameUIView -->
         <ui:VisualElement name="character-sheet-panel" class="charsheet-panel diegetic-panel">
             <!-- Persistent Header Bar -->

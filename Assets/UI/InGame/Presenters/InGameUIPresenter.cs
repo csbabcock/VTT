@@ -1,3 +1,4 @@
+using GameCore.Actors;
 using GameCore.UI;
 using GameCore;
 using GameCore.UI.InGame.Services;
@@ -38,8 +39,8 @@ namespace GameCore.UI.InGame
         public InGameUIView View => _view;
 
         /// <summary>
-        /// True when the local machine is the host acting as Dungeon Master. Used to
-        /// gate DM-only tools (built out in a later phase).
+        /// True when the local machine is the host acting as Dungeon Master. Gates the
+        /// DM player-management panel and server-authoritative HP adjustments.
         /// </summary>
         public bool IsLocalPlayerDungeonMaster => SessionRoleLocator.IsDungeonMaster;
         #endregion
@@ -48,7 +49,11 @@ namespace GameCore.UI.InGame
         private bool _initialized;
         private DiceRollService _diceRollService;
         private GameLogService _gameLogService;
-        private IPlayerDataService _playerDataService;
+        private IPlayerDataService _localDataService;
+        private IPlayerDataService _boundDataService;
+        private IActor _inspectedActor;
+        private int _selectedOwnerId = -1;
+        private bool _dmToolsInitialized;
         private KeyboardNavigationService _keyboardNavigationService;
         private EncounterModeManager _encounterModeManager;
         #endregion
@@ -83,11 +88,10 @@ namespace GameCore.UI.InGame
             // Bind to the local player's actor when one exists so this UI follows a
             // specific participant (the foundation for per-client sheets in multiplayer).
             // Falls back to the global locator until a PlayerActor is present in the scene.
-            _playerDataService = Actors.ActorRegistry.LocalActor?.DataService ?? PlayerDataServiceLocator.Service;
+            _localDataService = ActorRegistry.LocalActor?.DataService ?? PlayerDataServiceLocator.Service;
             _keyboardNavigationService = new KeyboardNavigationService();
-            
-            // Subscribe to player data changes
-            _playerDataService.PlayerDataChanged += OnPlayerDataChanged;
+
+            BindActiveDataService();
             
             // Initialize UI interaction service (centralized UI blocking logic)
             if (_view != null)
@@ -144,14 +148,14 @@ namespace GameCore.UI.InGame
             _view.UpdateView(Model.State);
 
             // PanelRenderer may attach the visual tree one frame after Initialize() when the reload callback fires.
-            var initialData = _playerDataService.GetPlayerData();
+            var initialSheet = GetActiveSheet();
             if (_view.Root != null)
             {
-                UpdateCharacterSheetUI(initialData);
+                UpdateCharacterSheetUI(initialSheet);
             }
             else
             {
-                StartCoroutine(CoApplyInitialCharacterSheetWhenRootReady(initialData));
+                StartCoroutine(CoApplyInitialCharacterSheetWhenRootReady(initialSheet));
             }
             
             // Explicitly ensure input is enabled on startup (character sheet starts closed)
@@ -162,10 +166,13 @@ namespace GameCore.UI.InGame
 
             Debug.Log($"InGameUIPresenter: Local role = {(IsLocalPlayerDungeonMaster ? "Dungeon Master" : "Player")}.");
 
+            SetupDmToolsIfNeeded();
+            RefreshDmPanelUi();
+
             _initialized = true;
         }
 
-        private IEnumerator CoApplyInitialCharacterSheetWhenRootReady(CharacterData initialData)
+        private IEnumerator CoApplyInitialCharacterSheetWhenRootReady(ICharacterSheet initialSheet)
         {
             int waited = 0;
             while (_view != null && _view.Root == null && waited < 120)
@@ -179,7 +186,7 @@ namespace GameCore.UI.InGame
                 yield break;
             }
 
-            UpdateCharacterSheetUI(initialData);
+            UpdateCharacterSheetUI(initialSheet);
             _view.UpdateView(Model.State);
         }
 
@@ -207,14 +214,175 @@ namespace GameCore.UI.InGame
                 Model.StateChanged -= OnModelStateChanged;
             }
 
-            // Unsubscribe from player data service
-            if (_playerDataService != null)
-            {
-                _playerDataService.PlayerDataChanged -= OnPlayerDataChanged;
-            }
+            TeardownDmTools();
+            UnbindActiveDataService();
 
             _initialized = false;
         }
+        #endregion
+
+        #region DM Tools
+
+        private void SetupDmToolsIfNeeded()
+        {
+            if (!IsLocalPlayerDungeonMaster || _dmToolsInitialized || _view == null)
+                return;
+
+            var dmPanel = _view.DmPanel;
+            dmPanel.PlayerSelected += OnDmPlayerSelected;
+            dmPanel.ViewSelfClicked += OnDmViewSelfClicked;
+            dmPanel.HitPointsAdjusted += OnDmHitPointsAdjusted;
+            ActorRegistry.ActorRegistered += OnActorRegistryChanged;
+            ActorRegistry.ActorUnregistered += OnActorUnregistered;
+            dmPanel.SetVisible(true);
+            _dmToolsInitialized = true;
+        }
+
+        private void TeardownDmTools()
+        {
+            if (!_dmToolsInitialized || _view == null)
+                return;
+
+            var dmPanel = _view.DmPanel;
+            dmPanel.PlayerSelected -= OnDmPlayerSelected;
+            dmPanel.ViewSelfClicked -= OnDmViewSelfClicked;
+            dmPanel.HitPointsAdjusted -= OnDmHitPointsAdjusted;
+            ActorRegistry.ActorRegistered -= OnActorRegistryChanged;
+            ActorRegistry.ActorUnregistered -= OnActorUnregistered;
+            dmPanel.SetVisible(false);
+            _dmToolsInitialized = false;
+        }
+
+        private void OnActorRegistryChanged(IActor actor) => RefreshDmPanelUi();
+
+        private void OnActorUnregistered(IActor actor)
+        {
+            if (ReferenceEquals(_inspectedActor, actor))
+                SetInspectedActor(null);
+            RefreshDmPanelUi();
+        }
+
+        private void OnDmPlayerSelected(int ownerId)
+        {
+            SetInspectedActor(ActorRegistry.GetByOwner(ownerId));
+            if (_inspectedActor != null && !Model.IsCharacterSheetOpen)
+                Model.SetCharacterSheetOpen(true);
+        }
+
+        private void OnDmViewSelfClicked()
+        {
+            SetInspectedActor(null);
+            if (!Model.IsCharacterSheetOpen)
+                Model.SetCharacterSheetOpen(true);
+        }
+
+        private void OnDmHitPointsAdjusted(int delta)
+        {
+            if (_inspectedActor == null)
+                return;
+
+            GetHitPointsAuthority(_inspectedActor)?.RequestAdjustCurrentHitPoints(delta);
+            RefreshDmSelectionHp();
+        }
+
+        private void SetInspectedActor(IActor actor)
+        {
+            _inspectedActor = actor;
+            _selectedOwnerId = actor?.OwnerId ?? -1;
+            BindActiveDataService();
+            RefreshInspectedSheet();
+            RefreshDmPanelUi();
+        }
+
+        private void RefreshDmPanelUi()
+        {
+            if (!_dmToolsInitialized || _view == null)
+                return;
+
+            _view.DmPanel.RefreshPlayerList(ActorRegistry.Actors, _selectedOwnerId);
+            RefreshDmSelectionHp();
+        }
+
+        private void RefreshDmSelectionHp()
+        {
+            if (!_dmToolsInitialized || _view == null || _inspectedActor == null)
+                return;
+
+            GetDisplayHitPoints(_inspectedActor, out int current, out int max);
+            _view.DmPanel.UpdateSelectionDetails(_inspectedActor, current, max);
+        }
+
+        private void RefreshInspectedSheet()
+        {
+            UpdateCharacterSheetUI(GetActiveSheet());
+        }
+
+        private IPlayerDataService GetActiveDataService()
+        {
+            if (_inspectedActor?.DataService != null)
+                return _inspectedActor.DataService;
+
+            return _localDataService ?? PlayerDataServiceLocator.Service;
+        }
+
+        private ICharacterSheet GetActiveSheet() => GetActiveDataService()?.GetCharacterSheet();
+
+        private void BindActiveDataService()
+        {
+            var next = GetActiveDataService();
+            if (ReferenceEquals(_boundDataService, next))
+                return;
+
+            UnbindActiveDataService();
+            _boundDataService = next;
+            if (_boundDataService != null)
+                _boundDataService.CharacterSheetChanged += OnCharacterSheetChanged;
+        }
+
+        private void UnbindActiveDataService()
+        {
+            if (_boundDataService == null)
+                return;
+
+            _boundDataService.CharacterSheetChanged -= OnCharacterSheetChanged;
+            _boundDataService = null;
+        }
+
+        private static ICharacterHitPointsAuthority GetHitPointsAuthority(IActor actor)
+        {
+            if (actor?.Transform == null)
+                return null;
+
+            foreach (var component in actor.Transform.GetComponents<MonoBehaviour>())
+            {
+                if (component is ICharacterHitPointsAuthority authority)
+                    return authority;
+            }
+
+            return null;
+        }
+
+        private static void GetDisplayHitPoints(IActor actor, out int current, out int max)
+        {
+            var authority = GetHitPointsAuthority(actor);
+            if (authority != null)
+            {
+                current = authority.CurrentHitPoints;
+                max = authority.MaxHitPoints;
+                return;
+            }
+
+            if (actor?.Sheet is DnD5eCharacterData data)
+            {
+                max = CharacterHitPoints.GetDisplayMaxHp(data);
+                current = CharacterHitPoints.ClampCurrent(data.currentHitPoints, max);
+                return;
+            }
+
+            current = 0;
+            max = 0;
+        }
+
         #endregion
 
         #region Input Handling
@@ -406,8 +574,8 @@ namespace GameCore.UI.InGame
         {
             yield return new WaitForSeconds(delay);
             
-            var data = _playerDataService.GetPlayerData();
-            UpdateCharacterSheetUI(data);
+            var sheet = GetActiveSheet();
+            UpdateCharacterSheetUI(sheet);
         }
         #endregion
 
@@ -482,21 +650,22 @@ namespace GameCore.UI.InGame
         #region Player Data Event Handlers
 
         /// <summary>
-        /// Called when player data changes. Updates UI to reflect new data.
+        /// Called when the character sheet changes. Updates UI to reflect new data.
         /// </summary>
-        private void OnPlayerDataChanged(CharacterData data)
+        private void OnCharacterSheetChanged(ICharacterSheet sheet)
         {
-            UpdateCharacterSheetUI(data);
+            UpdateCharacterSheetUI(sheet);
+            RefreshDmSelectionHp();
         }
 
         /// <summary>
-        /// Updates the character sheet UI with current character data.
+        /// Updates the character sheet UI from the current character sheet.
         /// </summary>
-        private void UpdateCharacterSheetUI(CharacterData data)
+        private void UpdateCharacterSheetUI(ICharacterSheet sheet)
         {
-            if (_view == null || data == null)
+            if (_view == null || sheet == null)
             {
-                Debug.LogWarning("InGameUIPresenter: Cannot update UI - view or data is null");
+                Debug.LogWarning("InGameUIPresenter: Cannot update UI - view or sheet is null");
                 return;
             }
 
@@ -507,17 +676,10 @@ namespace GameCore.UI.InGame
                 return;
             }
 
-            Debug.Log($"InGameUIPresenter: Updating character sheet UI for {data.CharacterName}");
+            Debug.Log($"InGameUIPresenter: Updating character sheet UI for {sheet.CharacterName}");
 
-            // Use refactored updater with ruleset-agnostic architecture
-            // Detect ruleset from service (defaults to DnD5e)
-            string rulesetId = "DnD5e";
-            if (_playerDataService is JsonPlayerDataService)
-            {
-                rulesetId = "DnD5e"; // Could be detected from JSON metadata in future
-            }
-
-            CharacterSheetUIUpdater.UpdateCharacterSheet(root, data, rulesetId);
+            // Ruleset-agnostic updater; the sheet reports its own ruleset.
+            CharacterSheetUIUpdater.UpdateCharacterSheet(root, sheet, sheet.RulesetId);
         }
 
         #endregion
@@ -529,16 +691,16 @@ namespace GameCore.UI.InGame
             
             // Refresh UI when switching tabs to ensure all data is up to date
             // This is especially important if buttons are in different tabs
-            var data = _playerDataService.GetPlayerData();
-            UpdateCharacterSheetUI(data);
+            var sheet = GetActiveSheet();
+            UpdateCharacterSheetUI(sheet);
         }
 
         private void OnAbilityScoreClicked(string abilityName)
         {
-            var characterData = _playerDataService.GetPlayerData();
-            int modifier = characterData.GetAbilityModifier(abilityName);
+            var sheet = GetActiveSheet();
+            int modifier = sheet.GetAbilityModifier(abilityName);
             var rollResult = _diceRollService.RollD20Check(
-                characterData.CharacterName,
+                sheet.CharacterName,
                 $"{abilityName} Check",
                 modifier,
                 new List<ModifierBreakdown>
@@ -553,15 +715,16 @@ namespace GameCore.UI.InGame
 
         private void OnSkillClicked(string skillName)
         {
-            var characterData = _playerDataService.GetPlayerData();
-            string abilityName = CharacterData.GetSkillAbility(skillName);
-            int modifier = characterData.GetSkillModifier(skillName, abilityName);
-            bool hasExpertise = characterData.ExpertiseSkills.Contains(skillName);
-            bool isProficient = characterData.ProficientSkills.Contains(skillName);
+            var sheet = GetActiveSheet();
+            string abilityName = sheet.GetSkillAbility(skillName);
+            int abilityModifier = sheet.GetAbilityModifier(abilityName);
+            int modifier = sheet.GetSkillModifier(skillName);
+            bool hasExpertise = sheet.HasExpertiseInSkill(skillName);
+            bool isProficient = sheet.IsProficientInSkill(skillName);
 
             var breakdowns = new List<ModifierBreakdown>
             {
-                new ModifierBreakdown { Source = abilityName, Value = characterData.GetAbilityModifier(abilityName) }
+                new ModifierBreakdown { Source = abilityName, Value = abilityModifier }
             };
 
             if (hasExpertise)
@@ -569,7 +732,7 @@ namespace GameCore.UI.InGame
                 breakdowns.Add(new ModifierBreakdown
                 {
                     Source = "Expertise",
-                    Value = characterData.ProficiencyBonus * 2
+                    Value = sheet.ProficiencyBonus * 2
                 });
             }
             else if (isProficient)
@@ -577,12 +740,12 @@ namespace GameCore.UI.InGame
                 breakdowns.Add(new ModifierBreakdown 
                 { 
                     Source = "Proficiency", 
-                    Value = characterData.ProficiencyBonus 
+                    Value = sheet.ProficiencyBonus 
                 });
             }
 
             var rollResult = _diceRollService.RollD20Check(
-                characterData.CharacterName,
+                sheet.CharacterName,
                 skillName,
                 modifier,
                 breakdowns
@@ -594,9 +757,9 @@ namespace GameCore.UI.InGame
 
         private void OnActionClicked(string actionName)
         {
-            var characterData = _playerDataService.GetPlayerData();
+            var sheet = GetActiveSheet();
             // Log the action (non-dice actions)
-            var formatted = _gameLogService.FormatAction(characterData.CharacterName, actionName);
+            var formatted = _gameLogService.FormatAction(sheet.CharacterName, actionName);
             _view.AddLogEntry(formatted);
 
             // Handle Dash action - double movement speed
@@ -610,10 +773,8 @@ namespace GameCore.UI.InGame
         {
             // Resolve a ruleset-agnostic sheet; both data services provide one, so no
             // service-type downcasts or hand-rolled fallbacks are needed here.
-            ICharacterSheet sheet = _playerDataService.GetCharacterSheet();
-            string characterName = sheet != null
-                ? sheet.CharacterName
-                : _playerDataService.GetPlayerData().CharacterName;
+            ICharacterSheet sheet = GetActiveSheet();
+            string characterName = sheet?.CharacterName ?? "Unknown";
 
             // The adapter consumes the ruleset domain object behind ICharacterSheet
             // and encapsulates all ruleset-specific weapon math.
@@ -636,17 +797,17 @@ namespace GameCore.UI.InGame
 
         private void OnFeatureClicked(string featureName)
         {
-            var characterData = _playerDataService.GetPlayerData();
+            var sheet = GetActiveSheet();
             // Log feature usage (non-dice actions for now)
-            var formatted = _gameLogService.FormatAction(characterData.CharacterName, $"Used: {featureName}");
+            var formatted = _gameLogService.FormatAction(sheet.CharacterName, $"Used: {featureName}");
             _view.AddLogEntry(formatted);
         }
 
         private void OnRestClicked(string restType)
         {
-            var characterData = _playerDataService.GetPlayerData();
+            var sheet = GetActiveSheet();
             // Log rest action
-            var formatted = _gameLogService.FormatAction(characterData.CharacterName, restType);
+            var formatted = _gameLogService.FormatAction(sheet.CharacterName, restType);
             _view.AddLogEntry(formatted);
         }
 

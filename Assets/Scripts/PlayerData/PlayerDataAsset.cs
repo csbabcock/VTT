@@ -1,5 +1,5 @@
-using GameCore.UI.InGame.Models;
 using System.Collections.Generic;
+using GameCore.PlayerData.Rulesets;
 using UnityEngine;
 
 namespace GameCore.PlayerData
@@ -51,22 +51,31 @@ namespace GameCore.PlayerData
         public List<string> proficientSkills = new List<string> { "Athletics" };
 
         /// <summary>
-        /// Converts this ScriptableObject data to a CharacterData instance.
+        /// Converts this ScriptableObject preset into a ruleset character sheet.
         /// </summary>
-        public CharacterData ToCharacterData()
+        public DnD5eCharacterData ToDnD5eCharacterData()
         {
-            return new CharacterData
+            var data = new DnD5eCharacterData
             {
-                CharacterName = characterName,
-                Strength = strength,
-                Dexterity = dexterity,
-                Constitution = constitution,
-                Intelligence = intelligence,
-                Wisdom = wisdom,
-                Charisma = charisma,
-                ProficiencyBonus = proficiencyBonus,
-                ProficientSkills = new HashSet<string>(proficientSkills)
+                characterName = characterName,
+                strength = strength,
+                dexterity = dexterity,
+                constitution = constitution,
+                intelligence = intelligence,
+                wisdom = wisdom,
+                charisma = charisma,
             };
+
+            var skills = new List<DnD5eSkill>();
+            foreach (var skillName in proficientSkills)
+            {
+                var parsed = DnD5eSkillExtensions.FromString(skillName);
+                if (parsed.HasValue)
+                    skills.Add(parsed.Value);
+            }
+            data.SetProficientSkills(skills);
+
+            return data;
         }
     }
 }

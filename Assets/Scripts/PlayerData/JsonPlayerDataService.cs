@@ -1,21 +1,18 @@
-using GameCore.UI.InGame.Models;
 using System;
 using UnityEngine;
 
 namespace GameCore.PlayerData
 {
     /// <summary>
-    /// JSON-based implementation of IPlayerDataService.
+    /// JSON-based implementation of <see cref="IPlayerDataService"/>.
     /// Loads character data from JSON files in StreamingAssets/Characters/.
-    /// Converts to legacy CharacterData format for backward compatibility.
     /// </summary>
     public class JsonPlayerDataService : IPlayerDataService
     {
         private DnD5eCharacterData _dnD5eData;
-        private CharacterData _legacyData;
         private readonly string _jsonFilePath;
 
-        public event Action<CharacterData> PlayerDataChanged;
+        public event Action<ICharacterSheet> CharacterSheetChanged;
 
         /// <summary>
         /// Creates a new JsonPlayerDataService.
@@ -27,18 +24,8 @@ namespace GameCore.PlayerData
             LoadCharacterData();
         }
 
-        public CharacterData GetPlayerData()
-        {
-            // Return legacy format for backward compatibility
-            if (_legacyData == null && _dnD5eData != null)
-            {
-                _legacyData = _dnD5eData.ToLegacyCharacterData();
-            }
-            return _legacyData ?? new CharacterData();
-        }
-
         /// <summary>
-        /// Gets the D&D 5e character data (new format).
+        /// Gets the D&D 5e character data (concrete ruleset model).
         /// </summary>
         public DnD5eCharacterData GetDnD5eCharacterData()
         {
@@ -51,39 +38,6 @@ namespace GameCore.PlayerData
             return _dnD5eData;
         }
 
-        public void UpdatePlayerData(Action<CharacterData> updateAction)
-        {
-            if (updateAction == null)
-            {
-                Debug.LogWarning("JsonPlayerDataService: Update action is null.");
-                return;
-            }
-
-            // Get or create legacy data
-            if (_legacyData == null)
-            {
-                _legacyData = _dnD5eData?.ToLegacyCharacterData() ?? new CharacterData();
-            }
-
-            // Apply the update
-            updateAction(_legacyData);
-
-            // Sync back to D&D 5e format (basic sync - only ability scores for now)
-            if (_dnD5eData != null)
-            {
-                _dnD5eData.strength = _legacyData.Strength;
-                _dnD5eData.dexterity = _legacyData.Dexterity;
-                _dnD5eData.constitution = _legacyData.Constitution;
-                _dnD5eData.intelligence = _legacyData.Intelligence;
-                _dnD5eData.wisdom = _legacyData.Wisdom;
-                _dnD5eData.charisma = _legacyData.Charisma;
-                _dnD5eData.characterName = _legacyData.CharacterName;
-            }
-
-            // Notify listeners
-            PlayerDataChanged?.Invoke(_legacyData);
-        }
-
         /// <summary>
         /// Loads character data from JSON file.
         /// </summary>
@@ -93,7 +47,6 @@ namespace GameCore.PlayerData
             {
                 Debug.LogWarning("JsonPlayerDataService: No JSON file path provided. Using default character data.");
                 _dnD5eData = new DnD5eCharacterData();
-                _legacyData = _dnD5eData.ToLegacyCharacterData();
                 return;
             }
 
@@ -108,9 +61,6 @@ namespace GameCore.PlayerData
             {
                 Debug.Log($"JsonPlayerDataService: Successfully loaded character data for {_dnD5eData.characterName} from {_jsonFilePath}");
             }
-
-            // Convert to legacy format
-            _legacyData = _dnD5eData.ToLegacyCharacterData();
         }
 
         /// <summary>
@@ -120,7 +70,7 @@ namespace GameCore.PlayerData
         public void Reload()
         {
             LoadCharacterData();
-            PlayerDataChanged?.Invoke(_legacyData);
+            CharacterSheetChanged?.Invoke(_dnD5eData);
         }
 
         /// <summary>
@@ -135,6 +85,8 @@ namespace GameCore.PlayerData
 
             return PlayerDataJsonLoader.SaveToFile(_dnD5eData, _jsonFilePath);
         }
+
+        /// <summary>Raises <see cref="CharacterSheetChanged"/> after the sheet has been mutated.</summary>
+        public void NotifyChanged() => CharacterSheetChanged?.Invoke(_dnD5eData);
     }
 }
-

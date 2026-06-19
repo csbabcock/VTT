@@ -32,5 +32,21 @@ namespace GameCore.PlayerData
 
         /// <summary>Derived ability/attribute modifier for the given ruleset code, or 0 if unknown.</summary>
         int GetAbilityModifier(string abilityCode);
+
+        // --- Skills ---
+        // Skills are identified by ruleset-defined names/ids (for DnD5e these are display
+        // names such as "Athletics"). Consumers stay ruleset-agnostic by keying on strings.
+
+        /// <summary>Ability code (e.g. "DEX") a skill is based on, or "" if unknown.</summary>
+        string GetSkillAbility(string skill);
+
+        /// <summary>Total modifier for a skill, including proficiency/expertise, or 0 if unknown.</summary>
+        int GetSkillModifier(string skill);
+
+        /// <summary>Whether the character is proficient (or has expertise) in a skill.</summary>
+        bool IsProficientInSkill(string skill);
+
+        /// <summary>Whether the character has expertise (doubled proficiency) in a skill.</summary>
+        bool HasExpertiseInSkill(string skill);
     }
 }

@@ -60,11 +60,15 @@ namespace GameCore.UI.InGame
 
         private Button _moveButton;
         private System.Action _moveButtonClickedHandler;
+        private DmPanelView _dmPanelView = new DmPanelView();
         #endregion
 
         #region Public Properties
 
         public VisualElement Root => _root;
+
+        /// <summary>DM-only player list and HP controls.</summary>
+        public DmPanelView DmPanel => _dmPanelView;
 
         /// <summary>
         /// Checks if the character sheet is currently open/visible.
@@ -518,6 +522,8 @@ namespace GameCore.UI.InGame
             {
                 _root.styleSheets.Add(_inGameStyleSheet);
             }
+
+            _dmPanelView.Initialize(_root);
 
             _characterSheetPanel = _root.Q<VisualElement>("character-sheet-panel");
 
