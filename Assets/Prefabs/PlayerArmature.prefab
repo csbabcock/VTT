@@ -1044,6 +1044,7 @@ GameObject:
   - component: {fileID: 6941535999701414163}
   - component: {fileID: 6135894449241737777}
   - component: {fileID: -2304926037428911808}
+  - component: {fileID: 8765432109876543210}
   m_Layer: 8
   m_Name: PlayerArmature
   m_TagString: Player
@@ -1479,6 +1480,20 @@ MonoBehaviour:
       Synchronize: 1
       ParameterType: 1
   AnimatorParametersExpanded: 0
+--- !u!114 &8765432109876543210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4416926081852918481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d5f0b3c2e9a5147b6f7c8d9e0f1a2b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GameCore.Networking::GameCore.Networking.NetworkEncounterParticipant
+  ShowTopMostFoldoutHeaderGroup: 1
+  _baseMovementSpeedFeet: 30
 --- !u!1 &4523139366846529165
 GameObject:
   m_ObjectHideFlags: 0

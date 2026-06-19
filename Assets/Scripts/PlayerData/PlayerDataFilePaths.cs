@@ -50,7 +50,7 @@ namespace GameCore.PlayerData
         /// <summary>
         /// Gets the full path for a template character file.
         /// </summary>
-        /// <param name="fileName">Name of the file (e.g., "ExampleCharacter.json")</param>
+        /// <param name="fileName">Name of the file (e.g., "Gideon.json")</param>
         /// <returns>Full path to the file</returns>
         public static string GetTemplateCharacterPath(string fileName)
         {

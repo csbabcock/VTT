@@ -1,4 +1,5 @@
 using UnityEngine;
+using GameCore.Actors;
 using GameCore.EncounterMode.Grid;
 using GameCore.EncounterMode.Services;
 using GameCore.UI.InGame;
@@ -65,6 +66,29 @@ namespace GameCore.EncounterMode
         /// Whether movement mode is currently active (grid selection enabled).
         /// </summary>
         public bool IsMovementModeActive => _isMovementModeActive;
+
+        /// <summary>
+        /// True when the local player may take encounter actions (move, dash). When no turn
+        /// order is active, all participants may act.
+        /// </summary>
+        public bool IsLocalTurnActive
+        {
+            get
+            {
+                var authority = EncounterSessionLocator.Authority;
+                if (authority == null || !authority.HasActiveTurnOrder)
+                    return true;
+
+                var localActor = ActorRegistry.LocalActor;
+                return localActor != null && localActor.OwnerId == authority.CurrentTurnOwnerId;
+            }
+        }
+
+        /// <summary>
+        /// True when a networked encounter session is driving state (server-validated moves).
+        /// </summary>
+        public bool UsesNetworkEncounter =>
+            EncounterSessionLocator.Authority != null && IsEncounterModeActive;
 
         private IGridGenerator _gridGenerator;
         private IGridRenderer _gridRenderer;
@@ -166,21 +190,35 @@ namespace GameCore.EncounterMode
         }
 
         /// <summary>
-        /// Toggles encounter mode on or off.
+        /// Toggles encounter mode on or off. When a networked authority is present, delegates to it.
         /// </summary>
         public void ToggleEncounterMode()
         {
-            IsEncounterModeActive = !IsEncounterModeActive;
-            Debug.Log($"[EncounterCameraDebug] EncounterModeManager toggled encounterActive={IsEncounterModeActive}, manager={name}");
-            
+            var authority = EncounterSessionLocator.Authority;
+            if (authority != null)
+            {
+                authority.RequestToggleEncounter();
+                return;
+            }
+
+            ApplyEncounterActive(!IsEncounterModeActive);
+        }
+
+        /// <summary>
+        /// Applies encounter active state from the local toggle or replicated authority.
+        /// </summary>
+        public void ApplyEncounterActive(bool isActive)
+        {
+            if (IsEncounterModeActive == isActive)
+                return;
+
+            IsEncounterModeActive = isActive;
+            Debug.Log($"[EncounterCameraDebug] EncounterModeManager encounterActive={IsEncounterModeActive}, manager={name}");
+
             if (IsEncounterModeActive)
-            {
                 EnableEncounterMode();
-            }
             else
-            {
                 DisableEncounterMode();
-            }
 
             OnEncounterModeToggled?.Invoke(IsEncounterModeActive);
         }
@@ -216,16 +254,22 @@ namespace GameCore.EncounterMode
         /// </summary>
         public void EnableGridSelection()
         {
-            if (!IsEncounterModeActive)
+            if (!IsEncounterModeActive || !IsLocalTurnActive)
                 return;
 
             // Reset movement tracking
             _movementTracker.ResetMovement();
             _isMovementModeActive = true;
-            
+
             // Get current player position and set as starting cell
             GridCell startCell = GetPlayerCurrentCell();
             _movementTracker.SetStartingCell(startCell);
+
+            if (UsesNetworkEncounter)
+            {
+                GetLocalParticipant()?.RequestBeginMovePhase();
+                SyncMovementFromParticipant();
+            }
 
             // Enable grid components
             EnableGridComponents();
@@ -253,6 +297,15 @@ namespace GameCore.EncounterMode
         /// </summary>
         public void SetDashActive(bool isActive)
         {
+            if (!IsLocalTurnActive)
+                return;
+
+            if (UsesNetworkEncounter && isActive)
+            {
+                GetLocalParticipant()?.RequestDash();
+                return;
+            }
+
             _movementTracker.SetDashActive(isActive, _isMovementModeActive);
             
             // If we're in movement mode and now have movement remaining, re-enable grid selection
@@ -282,7 +335,16 @@ namespace GameCore.EncounterMode
         /// </summary>
         private void OnCellSelected(GridCell cell, int elevation)
         {
-            if (cell == null || _gridGenerator == null || _movementTracker.IsMovementExhausted)
+            if (cell == null || _gridGenerator == null || !IsLocalTurnActive)
+                return;
+
+            if (UsesNetworkEncounter)
+            {
+                GetLocalParticipant()?.RequestMoveTo(cell, elevation);
+                return;
+            }
+
+            if (_movementTracker.IsMovementExhausted)
                 return;
 
             // Get starting cell for distance calculation
@@ -295,11 +357,28 @@ namespace GameCore.EncounterMode
             if (!_movementTracker.TryDeductMovement(distanceFeet, cell))
                 return;
 
-            // Update UI and visualization
+            ApplyLocalMoveResult(cell);
+        }
+
+        /// <summary>
+        /// Applies server-approved movement state on the owning client after validation.
+        /// </summary>
+        public void ApplyApprovedNetworkMove(GridCell cell, int elevation, int remainingFeet, bool dashActive)
+        {
+            _movementTracker.SetRemainingMovementFeet(remainingFeet);
+            _movementTracker.SetDashActive(dashActive, _isMovementModeActive);
+
+            if (cell != null)
+                _movementTracker.SetStartingCell(cell);
+
+            ApplyLocalMoveResult(cell);
+        }
+
+        private void ApplyLocalMoveResult(GridCell cell)
+        {
             UpdateMovementDisplay();
             RefreshReachableCells();
 
-            // Disable grid selection if movement is exhausted (but keep movement mode active so Dash can re-enable)
             if (_movementTracker.IsMovementExhausted)
             {
                 DisableGridComponents();
@@ -375,6 +454,32 @@ namespace GameCore.EncounterMode
         }
 
         #region Helper Methods
+
+        private void SyncMovementFromParticipant()
+        {
+            var participant = GetLocalParticipant();
+            if (participant == null)
+                return;
+
+            _movementTracker.SetRemainingMovementFeet(participant.RemainingMovementFeet);
+            _movementTracker.SetDashActive(participant.IsDashActive, _isMovementModeActive);
+        }
+
+        private static IEncounterMovementClient GetLocalParticipant()
+        {
+            var localActor = ActorRegistry.LocalActor;
+            if (localActor?.Transform == null)
+                return null;
+
+            var components = localActor.Transform.GetComponents<Component>();
+            for (int i = 0; i < components.Length; i++)
+            {
+                if (components[i] is IEncounterMovementClient client)
+                    return client;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Gets the player's current grid cell position.

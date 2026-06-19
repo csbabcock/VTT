@@ -247,6 +247,9 @@ namespace GameCore.UI.InGame
         /// Fired when the Move button is clicked.
         /// </summary>
         public event System.Action MoveButtonClicked;
+
+        /// <summary>Fired after the UXML visual tree is bound (including deferred PanelRenderer loads).</summary>
+        public event System.Action VisualTreeBound;
         #endregion
 
         #region Unity Lifecycle
@@ -683,6 +686,7 @@ namespace GameCore.UI.InGame
                 _characterSheetPanel.AddToClassList("runtime-hidden");
             }
 
+            VisualTreeBound?.Invoke();
         }
 
         /// <summary>
@@ -1285,6 +1289,19 @@ namespace GameCore.UI.InGame
                     speedContainer.RemoveFromClassList("movement-mode-active");
                 }
             }
+        }
+
+        /// <summary>
+        /// Shows or hides the encounter turn banner at the top of the HUD.
+        /// </summary>
+        public void UpdateEncounterTurnIndicator(string text, bool visible)
+        {
+            var label = _root?.Q<Label>("encounter-turn-label");
+            if (label == null)
+                return;
+
+            label.text = text ?? string.Empty;
+            label.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
         }
         #endregion
 

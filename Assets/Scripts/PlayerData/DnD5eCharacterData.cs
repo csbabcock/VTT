@@ -13,36 +13,36 @@ namespace GameCore.PlayerData
     public class DnD5eCharacterData : ICharacterSheet
     {
         [Header("Basic Information")]
-        public string characterName = "Arlen";
+        public string characterName = "";
         public int level = 1;
-        public string characterClass = "Fighter";
+        public string characterClass = "";
         public string subclass = "";
-        public string race = "Human";
+        public string race = "";
         public string subrace = "";
-        public string background = "Soldier";
-        public string alignment = "Lawful Good";
+        public string background = "";
+        public string alignment = "";
         public string playerName = "";
         public int experiencePoints = 0;
 
         [Header("Ability Scores")]
-        public int strength = 16;
-        public int dexterity = 14;
-        public int constitution = 14;
+        public int strength = 10;
+        public int dexterity = 10;
+        public int constitution = 10;
         public int intelligence = 10;
-        public int wisdom = 12;
-        public int charisma = 8;
+        public int wisdom = 10;
+        public int charisma = 10;
 
         [Header("Combat Stats")]
         public int maxHitPoints = 10;
         public int currentHitPoints = 10;
         public int temporaryHitPoints = 0;
-        public int armorClass = 16;
-        public int initiative = 0; // Usually set manually, but should equal DEX modifier
+        public int armorClass = 10;
+        public int initiative = 0;
         public int walkingSpeed = 30;
         public int flyingSpeed = 0;
         public int swimmingSpeed = 0;
         public int climbingSpeed = 0;
-        public string hitDice = "1d10"; // e.g., "3d10" for level 3 fighter
+        public string hitDice = "";
         public int hitDiceUsed = 0;
 
         [Header("Proficiencies")]

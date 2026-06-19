@@ -15,8 +15,8 @@ namespace GameCore.PlayerData
     public class PlayerDataServiceInitializer : MonoBehaviour
     {
         [Header("JSON Configuration")]
-        [Tooltip("Path to JSON file relative to StreamingAssets (e.g., 'Characters/MyCharacter.json'). Leave empty to use default character data.")]
-        [SerializeField] private string _jsonFilePath = "Characters/ExampleCharacter.json";
+        [Tooltip("Path to JSON file relative to StreamingAssets (e.g., 'Characters/MyCharacter.json'). Leave empty to use a blank local character until one is chosen in the main menu.")]
+        [SerializeField] private string _jsonFilePath = "";
 
         private void Awake()
         {
@@ -51,7 +51,7 @@ namespace GameCore.PlayerData
             else
             {
                 service = new LocalPlayerDataService();
-                Debug.Log("PlayerDataService initialized with default values");
+                Debug.Log("PlayerDataServiceInitializer: Using blank local character data.");
             }
 
             PlayerDataServiceLocator.Service = service;

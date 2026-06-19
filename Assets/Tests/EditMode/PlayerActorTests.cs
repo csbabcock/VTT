@@ -32,6 +32,20 @@ namespace GameCore.Tests.EditMode
         }
 
         [Test]
+        public void RemoteActor_BeforeOwnershipResolved_DoesNotUseLocator()
+        {
+            PlayerDataServiceLocator.Service = new InMemoryPlayerDataService(
+                new DnD5eCharacterData { characterName = "WrongName" });
+
+            _gameObject = new GameObject("RemotePlayer");
+            _actor = _gameObject.AddComponent<PlayerActor>();
+
+            Assert.IsFalse(_actor.IsOwnershipResolved);
+            Assert.IsNull(_actor.DataService);
+            Assert.AreNotEqual("WrongName", _actor.DisplayName);
+        }
+
+        [Test]
         public void RemoteActor_DataServiceIsNull_WithoutInjection()
         {
             _gameObject = new GameObject("RemotePlayer");
@@ -51,6 +65,7 @@ namespace GameCore.Tests.EditMode
 
             _gameObject = new GameObject("LocalPlayer");
             _actor = _gameObject.AddComponent<PlayerActor>();
+            _actor.SetOwner(ownerId: 0, isLocalPlayer: true);
 
             Assert.AreSame(locatorService, _actor.DataService);
             Assert.AreEqual("LocatorHero", _actor.Sheet.CharacterName);

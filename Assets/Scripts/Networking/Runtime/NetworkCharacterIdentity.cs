@@ -122,6 +122,9 @@ namespace GameCore.Networking
                 data.currentHitPoints = current;
                 _currentHitPoints.Value = current;
             }
+
+            if (_playerActor != null)
+                ActorRegistry.NotifyActorUpdated(_playerActor);
         }
 
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]

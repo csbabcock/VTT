@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f340b654fe607f49b19709ff7931931, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameCore.PlayerData.PlayerDataServiceInitializer
-  _jsonFilePath: Characters/ExampleCharacter.json
+  _jsonFilePath:
 --- !u!4 &43104506
 Transform:
   m_ObjectHideFlags: 0
@@ -180,6 +180,8 @@ GameObject:
   - component: {fileID: 233035422}
   - component: {fileID: 233035424}
   - component: {fileID: 233035425}
+  - component: {fileID: 233035426}
+  - component: {fileID: 233035427}
   m_Layer: 0
   m_Name: EncounterModeManager
   m_TagString: Untagged
@@ -323,6 +325,45 @@ MonoBehaviour:
   ReachableCellColor: {r: 0.31764707, g: 1, b: 0.49803922, a: 0.3137255}
   VisualHeightOffset: 0.02
   IndicatorSize: 0.95
+--- !u!114 &233035426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233035417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 3847291056
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 0
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 0
+  AllowOwnerToParent: 0
+--- !u!114 &233035427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233035417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c4e9a2b1d8f4036a5e6b7c8d9e0f1a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GameCore.Networking::GameCore.Networking.NetworkEncounterSession
+  ShowTopMostFoldoutHeaderGroup: 1
+  _encounterModeManager: {fileID: 233035420}
 --- !u!1 &521361991
 GameObject:
   m_ObjectHideFlags: 0

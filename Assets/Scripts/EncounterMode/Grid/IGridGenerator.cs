@@ -12,6 +12,7 @@ namespace GameCore.EncounterMode.Grid
         Vector3 GridOrigin { get; }
 
         void GenerateGrid(Vector3 origin, int width, int height, float cellSize, LayerMask groundLayer);
+        GridCell GetCell(int x, int z);
         GridCell GetCellAtWorldPosition(Vector3 worldPos);
     }
 }

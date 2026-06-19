@@ -93,6 +93,14 @@ namespace GameCore.EncounterMode.Services
         }
 
         /// <summary>
+        /// Sets remaining movement from replicated server state.
+        /// </summary>
+        public void SetRemainingMovementFeet(int remainingFeet)
+        {
+            _remainingMovementFeet = Mathf.Max(0, remainingFeet);
+        }
+
+        /// <summary>
         /// Resets Dash state.
         /// </summary>
         public void ResetDash()

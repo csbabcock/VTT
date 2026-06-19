@@ -643,33 +643,43 @@ namespace GameCore
             if (_encounterModeManager != null)
             {
                 _encounterModeManager.ToggleEncounterMode();
-                CurrentMovementMode = _encounterModeManager.IsEncounterModeActive 
-                    ? MovementMode.Encounter 
-                    : MovementMode.Normal;
-
-                if (_encounterMovementHandler != null)
-                {
-                    if (CurrentMovementMode == MovementMode.Encounter)
-                    {
-                        // Entering encounter mode - cancel any existing movement and ensure grounded
-                        _encounterMovementHandler.CancelMovement();
-                    }
-                    else
-                    {
-                        // Exiting encounter mode - cancel movement
-                        // Don't snap position - let normal physics handle grounding
-                        _encounterMovementHandler.CancelMovement();
-                    }
-                }
+                SyncMovementModeFromEncounterManager();
             }
+        }
+
+        private void SyncMovementModeFromEncounterManager()
+        {
+            if (_encounterModeManager == null)
+                return;
+
+            CurrentMovementMode = _encounterModeManager.IsEncounterModeActive
+                ? MovementMode.Encounter
+                : MovementMode.Normal;
+
+            if (_encounterMovementHandler != null)
+                _encounterMovementHandler.CancelMovement();
+        }
+
+        /// <summary>
+        /// Called after the server approves an encounter grid move.
+        /// </summary>
+        public void ApplyApprovedEncounterMove(GameCore.EncounterMode.Grid.GridCell cell, int elevation)
+        {
+            if (CurrentMovementMode != MovementMode.Encounter || _encounterMovementHandler == null || cell == null)
+                return;
+
+            _encounterMovementHandler.SetTargetCell(cell, elevation);
         }
 
         private void OnGridCellSelected(GameCore.EncounterMode.Grid.GridCell cell, int elevation)
         {
-            if (CurrentMovementMode == MovementMode.Encounter && _encounterMovementHandler != null)
-            {
-                _encounterMovementHandler.SetTargetCell(cell, elevation);
-            }
+            if (CurrentMovementMode != MovementMode.Encounter || _encounterMovementHandler == null)
+                return;
+
+            if (_encounterModeManager is EncounterModeManager manager && manager.UsesNetworkEncounter)
+                return;
+
+            _encounterMovementHandler.SetTargetCell(cell, elevation);
         }
 
 

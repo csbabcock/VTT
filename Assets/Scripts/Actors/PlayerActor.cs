@@ -27,20 +27,25 @@ namespace GameCore.Actors
 
         private IPlayerDataService _dataService;
         private string _displayNameOverride;
+        private bool _ownershipResolved;
+        private bool _attemptedOfflineOwnership;
 
         public int OwnerId => _ownerId;
 
         public bool IsLocalPlayer => _isLocalPlayer;
 
+        /// <summary>True after <see cref="SetOwner"/> or offline ownership resolution.</summary>
+        public bool IsOwnershipResolved => _ownershipResolved;
+
         /// <summary>
         /// The data service backing this actor's sheet. An explicitly assigned service
         /// (e.g. injected server-side from the client's transmitted character) always
-        /// wins. Otherwise only the local player's actor falls back to the global
+        /// wins. Otherwise only the resolved local player's actor falls back to the global
         /// <see cref="PlayerDataServiceLocator.Service"/>; remote actors return null so
-        /// they never masquerade as the local character.
+        /// they never masquerade as the host's character before ownership is assigned.
         /// </summary>
         public IPlayerDataService DataService =>
-            _dataService ?? (_isLocalPlayer ? PlayerDataServiceLocator.Service : null);
+            _dataService ?? (CanUseGlobalDataService ? PlayerDataServiceLocator.Service : null);
 
         public ICharacterSheet Sheet => DataService?.GetCharacterSheet();
 
@@ -51,13 +56,21 @@ namespace GameCore.Actors
                 if (!string.IsNullOrEmpty(_displayNameOverride))
                     return _displayNameOverride;
 
-                string name = Sheet?.CharacterName;
-                if (!string.IsNullOrEmpty(name))
-                    return name;
+                if (_dataService != null || CanUseGlobalDataService)
+                {
+                    string name = Sheet?.CharacterName;
+                    if (!string.IsNullOrEmpty(name))
+                        return name;
+                }
 
-                return _isLocalPlayer ? gameObject.name : $"Player {_ownerId}";
+                if (_ownershipResolved)
+                    return $"Player {_ownerId}";
+
+                return gameObject.name;
             }
         }
+
+        private bool CanUseGlobalDataService => _ownershipResolved && _isLocalPlayer;
 
         public Transform Transform => transform;
 
@@ -65,6 +78,7 @@ namespace GameCore.Actors
         public void SetDataService(IPlayerDataService service)
         {
             _dataService = service;
+            ActorRegistry.NotifyActorUpdated(this);
         }
 
         /// <summary>
@@ -74,6 +88,7 @@ namespace GameCore.Actors
         public void SetDisplayName(string displayName)
         {
             _displayNameOverride = displayName;
+            ActorRegistry.NotifyActorUpdated(this);
         }
 
         /// <summary>Assigns ownership for this actor (used by the networked spawner).</summary>
@@ -81,15 +96,38 @@ namespace GameCore.Actors
         {
             _ownerId = ownerId;
             _isLocalPlayer = isLocalPlayer;
+            _ownershipResolved = true;
 
             // Ownership is assigned after OnEnable registration, so let the registry
             // re-evaluate which actor is the local player.
             ActorRegistry.NotifyOwnershipChanged(this);
+            ActorRegistry.NotifyActorUpdated(this);
         }
 
         private void OnEnable()
         {
             ActorRegistry.Register(this);
+        }
+
+        private void LateUpdate()
+        {
+            ResolveOfflineOwnershipIfNeeded();
+        }
+
+        /// <summary>
+        /// Offline/direct-scene play has no network spawn; apply serialized defaults once.
+        /// </summary>
+        private void ResolveOfflineOwnershipIfNeeded()
+        {
+            if (_ownershipResolved || _attemptedOfflineOwnership)
+                return;
+
+            _attemptedOfflineOwnership = true;
+
+            if (NetworkSessionProbe.IsNetworkListening())
+                return;
+
+            SetOwner(_ownerId, _isLocalPlayer);
         }
 
         private void OnDisable()

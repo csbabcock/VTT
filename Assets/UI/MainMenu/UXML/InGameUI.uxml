@@ -66,7 +66,18 @@
                 </ui:VisualElement>
                 <ui:Button name="dm-view-self-button" text="View Self" class="dm-view-self-button" />
             </ui:VisualElement>
+            <ui:VisualElement name="dm-encounter-controls" class="dm-encounter-controls">
+                <ui:Label text="Encounter" class="dm-encounter-title" />
+                <ui:VisualElement class="dm-encounter-buttons">
+                    <ui:Button name="dm-start-encounter-button" text="Start" class="dm-encounter-button" />
+                    <ui:Button name="dm-end-encounter-button" text="End" class="dm-encounter-button" />
+                    <ui:Button name="dm-next-turn-button" text="Next Turn" class="dm-encounter-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
         </ui:VisualElement>
+
+        <!-- Turn indicator - visible during networked encounters -->
+        <ui:Label name="encounter-turn-label" text="" class="encounter-turn-label" />
 
         <!-- Character sheet panel; initially hidden by InGameUIView -->
         <ui:VisualElement name="character-sheet-panel" class="charsheet-panel diegetic-panel">
@@ -78,8 +89,8 @@
                         <ui:VisualElement name="portrait-image" class="portrait-image" />
                     </ui:Button>
                     <ui:VisualElement name="header-info" class="header-info">
-                        <ui:Label name="character-name" text="Arlen" class="header-name" />
-                        <ui:Label name="character-details" text="Human Fighter 3" class="header-details" />
+                        <ui:Label name="character-name" text="" class="header-name" />
+                        <ui:Label name="character-details" text="—" class="header-details" />
                     </ui:VisualElement>
                 </ui:VisualElement>
 
@@ -87,19 +98,19 @@
                 <ui:VisualElement name="header-center" class="header-center">
                     <ui:VisualElement name="hp-container" class="stat-container">
                         <ui:Label text="HP" class="stat-label" />
-                        <ui:Label name="hp-value" text="24 / 24" class="stat-value hp-value" />
+                        <ui:Label name="hp-value" text="— / —" class="stat-value hp-value" />
                     </ui:VisualElement>
                     <ui:VisualElement name="ac-container" class="stat-container">
                         <ui:Label text="AC" class="stat-label" />
-                        <ui:Label name="ac-value" text="16" class="stat-value" />
+                        <ui:Label name="ac-value" text="—" class="stat-value" />
                     </ui:VisualElement>
                     <ui:VisualElement name="initiative-container" class="stat-container">
                         <ui:Label text="Init" class="stat-label" />
-                        <ui:Label name="initiative-value" text="+2" class="stat-value" />
+                        <ui:Label name="initiative-value" text="—" class="stat-value" />
                     </ui:VisualElement>
                     <ui:VisualElement name="speed-container" class="stat-container">
                         <ui:Label text="Speed" class="stat-label" />
-                        <ui:Label name="speed-value" text="30 / 30 ft" class="stat-value" />
+                        <ui:Label name="speed-value" text="— / — ft" class="stat-value" />
                         <ui:Button name="move-button" class="move-button" text="Move" />
                     </ui:VisualElement>
                 </ui:VisualElement>
@@ -129,12 +140,12 @@
                     <!-- Ability Scores -->
                     <ui:Label text="Ability Scores" class="section-title" />
                     <ui:VisualElement name="ability-grid" class="ability-grid">
-                        <ui:Button name="ability-str" class="ability-score-button" text="STR 16 (+3)" />
-                        <ui:Button name="ability-dex" class="ability-score-button" text="DEX 14 (+2)" />
-                        <ui:Button name="ability-con" class="ability-score-button" text="CON 14 (+2)" />
-                        <ui:Button name="ability-int" class="ability-score-button" text="INT 10 (+0)" />
-                        <ui:Button name="ability-wis" class="ability-score-button" text="WIS 12 (+1)" />
-                        <ui:Button name="ability-cha" class="ability-score-button" text="CHA 8 (-1)" />
+                        <ui:Button name="ability-str" class="ability-score-button" text="STR —" />
+                        <ui:Button name="ability-dex" class="ability-score-button" text="DEX —" />
+                        <ui:Button name="ability-con" class="ability-score-button" text="CON —" />
+                        <ui:Button name="ability-int" class="ability-score-button" text="INT —" />
+                        <ui:Button name="ability-wis" class="ability-score-button" text="WIS —" />
+                        <ui:Button name="ability-cha" class="ability-score-button" text="CHA —" />
                     </ui:VisualElement>
 
                     <!-- Skills -->
@@ -266,8 +277,8 @@
 
                     <ui:Label text="Attacks" class="section-title" />
                     <ui:VisualElement name="attacks-list" class="actions-list">
-                        <ui:Button name="attack-longsword" class="attack-button" text="Longsword +5 (1d8+3 slashing)" />
-                        <ui:Button name="attack-shortbow" class="attack-button" text="Shortbow +4 (1d6+2 piercing)" />
+                        <ui:Button name="attack-longsword" class="attack-button" text="Attack" />
+                        <ui:Button name="attack-shortbow" class="attack-button" text="Attack" />
                     </ui:VisualElement>
 
                     <!-- Spells -->
@@ -279,9 +290,9 @@
                     <!-- Inventory -->
                     <ui:Label text="Equipped" class="section-title" />
                     <ui:VisualElement name="equipped-items" class="equipped-items">
-                        <ui:Button name="equipped-armor" class="equipment-button" text="Chain Mail (AC 16)" />
-                        <ui:Button name="equipped-weapon-1" class="equipment-button" text="Longsword" />
-                        <ui:Button name="equipped-weapon-2" class="equipment-button" text="Shortbow" />
+                        <ui:Button name="equipped-armor" class="equipment-button" text="Armor" />
+                        <ui:Button name="equipped-weapon-1" class="equipment-button" text="Weapon" />
+                        <ui:Button name="equipped-weapon-2" class="equipment-button" text="Weapon" />
                     </ui:VisualElement>
 
                     <ui:Label text="Carried Items" class="section-title" />
@@ -316,9 +327,9 @@
                     <!-- Features -->
                     <ui:Label text="Class Features" class="section-title" />
                     <ui:VisualElement name="features-list" class="features-list">
-                        <ui:Button name="feature-fighting-style" class="feature-button" text="Fighting Style: Defense" />
-                        <ui:Button name="feature-second-wind" class="feature-button" text="Second Wind" />
-                        <ui:Button name="feature-action-surge" class="feature-button" text="Action Surge" />
+                        <ui:Button name="feature-fighting-style" class="feature-button" text="Class Feature" />
+                        <ui:Button name="feature-second-wind" class="feature-button" text="Class Feature" />
+                        <ui:Button name="feature-action-surge" class="feature-button" text="Class Feature" />
                     </ui:VisualElement>
 
                     <!-- Rest -->
@@ -461,8 +472,8 @@
 
                     <ui:Label text="Attacks" class="section-title" />
                     <ui:VisualElement name="attacks-list" class="actions-list">
-                        <ui:Button name="attack-longsword" class="attack-button" text="Longsword +5 (1d8+3 slashing)" />
-                        <ui:Button name="attack-shortbow" class="attack-button" text="Shortbow +4 (1d6+2 piercing)" />
+                        <ui:Button name="attack-longsword" class="attack-button" text="Attack" />
+                        <ui:Button name="attack-shortbow" class="attack-button" text="Attack" />
                     </ui:VisualElement>
                 </ui:VisualElement>
 
@@ -478,9 +489,9 @@
                 <ui:VisualElement name="tab-inventory-content" class="charsheet-tab-panel">
                     <ui:Label text="Equipped" class="section-title" />
                     <ui:VisualElement name="equipped-items" class="equipped-items">
-                        <ui:Button name="equipped-armor" class="equipment-button" text="Chain Mail (AC 16)" />
-                        <ui:Button name="equipped-weapon-1" class="equipment-button" text="Longsword" />
-                        <ui:Button name="equipped-weapon-2" class="equipment-button" text="Shortbow" />
+                        <ui:Button name="equipped-armor" class="equipment-button" text="Armor" />
+                        <ui:Button name="equipped-weapon-1" class="equipment-button" text="Weapon" />
+                        <ui:Button name="equipped-weapon-2" class="equipment-button" text="Weapon" />
                     </ui:VisualElement>
 
                     <ui:Label text="Carried Items" class="section-title" />
@@ -517,9 +528,9 @@
                 <ui:VisualElement name="tab-features-content" class="charsheet-tab-panel">
                     <ui:Label text="Class Features" class="section-title" />
                     <ui:VisualElement name="features-list" class="features-list">
-                        <ui:Button name="feature-fighting-style" class="feature-button" text="Fighting Style: Defense" />
-                        <ui:Button name="feature-second-wind" class="feature-button" text="Second Wind" />
-                        <ui:Button name="feature-action-surge" class="feature-button" text="Action Surge" />
+                        <ui:Button name="feature-fighting-style" class="feature-button" text="Class Feature" />
+                        <ui:Button name="feature-second-wind" class="feature-button" text="Class Feature" />
+                        <ui:Button name="feature-action-surge" class="feature-button" text="Class Feature" />
                     </ui:VisualElement>
                 </ui:VisualElement>
 

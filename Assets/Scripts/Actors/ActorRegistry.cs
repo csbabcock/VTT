@@ -29,6 +29,9 @@ namespace GameCore.Actors
         /// <summary>Raised after an actor is unregistered.</summary>
         public static event Action<IActor> ActorUnregistered;
 
+        /// <summary>Raised when an actor's display name, ownership, or sheet data changes.</summary>
+        public static event Action<IActor> ActorUpdated;
+
         public static void Register(IActor actor)
         {
             if (actor == null || _actors.Contains(actor))
@@ -68,6 +71,15 @@ namespace GameCore.Actors
                 LocalActor = actor;
             else if (ReferenceEquals(LocalActor, actor))
                 LocalActor = FindLocalActor();
+        }
+
+        /// <summary>Notifies listeners that an actor's presentation data changed.</summary>
+        public static void NotifyActorUpdated(IActor actor)
+        {
+            if (actor == null || !_actors.Contains(actor))
+                return;
+
+            ActorUpdated?.Invoke(actor);
         }
 
         /// <summary>Returns the first actor owned by <paramref name="ownerId"/>, or null.</summary>

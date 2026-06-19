@@ -1014,13 +1014,13 @@
     font-size: 14px;
 }
 
-/* DM player management panel - top right */
+/* DM player management panel - top right, left of the character sheet */
 .dm-panel {
     position: absolute;
-    right: 48px;
+    right: 580px;
     top: 5px;
     width: 260px;
-    max-height: 420px;
+    max-height: 520px;
     border-radius: var(--vtt-radius-large);
     border-width: 1px;
     border-color: var(--vtt-border-color);
@@ -1102,4 +1102,45 @@
 
 .dm-view-self-button {
     align-self: flex-start;
+}
+
+.dm-encounter-controls {
+    flex-direction: column;
+    padding: var(--vtt-spacing-medium) var(--vtt-spacing-large);
+    border-top-width: 1px;
+    border-top-color: var(--vtt-border-color);
+}
+
+.dm-encounter-title {
+    color: var(--vtt-text-main);
+    font-size: 14px;
+    -unity-font-style: bold;
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+.dm-encounter-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.dm-encounter-button {
+    min-width: 72px;
+    margin-right: var(--vtt-spacing-small);
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+.encounter-turn-label {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    translate: -50% 0;
+    padding: 6px 16px;
+    border-radius: var(--vtt-radius-large);
+    background-color: rgba(12, 12, 16, 0.85);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    color: var(--vtt-text-main);
+    font-size: 16px;
+    -unity-font-style: bold;
+    display: none;
 }

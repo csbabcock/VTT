@@ -64,7 +64,7 @@ namespace GameCore.UI.InGame
             var nameLabel = root.Q<Label>(CharacterSheetUIMapper.GetCharacterNameElementName());
             if (nameLabel != null)
             {
-                nameLabel.text = sheet.CharacterName;
+                nameLabel.text = string.IsNullOrEmpty(sheet.CharacterName) ? "—" : sheet.CharacterName;
             }
         }
 

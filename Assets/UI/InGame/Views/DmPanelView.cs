@@ -21,6 +21,9 @@ namespace GameCore.UI.InGame
         public event Action<int> PlayerSelected;
         public event Action ViewSelfClicked;
         public event Action<int> HitPointsAdjusted;
+        public event Action StartEncounterClicked;
+        public event Action EndEncounterClicked;
+        public event Action NextTurnClicked;
 
         public void Initialize(VisualElement root)
         {
@@ -45,6 +48,9 @@ namespace GameCore.UI.InGame
             WireButton(root, "dm-hp-minus-one", () => HitPointsAdjusted?.Invoke(-1));
             WireButton(root, "dm-hp-plus-one", () => HitPointsAdjusted?.Invoke(1));
             WireButton(root, "dm-hp-plus-five", () => HitPointsAdjusted?.Invoke(5));
+            WireButton(root, "dm-start-encounter-button", () => StartEncounterClicked?.Invoke());
+            WireButton(root, "dm-end-encounter-button", () => EndEncounterClicked?.Invoke());
+            WireButton(root, "dm-next-turn-button", () => NextTurnClicked?.Invoke());
 
             if (_viewSelfButton != null)
                 _viewSelfButton.clicked += () => ViewSelfClicked?.Invoke();

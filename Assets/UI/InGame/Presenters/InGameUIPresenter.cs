@@ -54,6 +54,7 @@ namespace GameCore.UI.InGame
         private IActor _inspectedActor;
         private int _selectedOwnerId = -1;
         private bool _dmToolsInitialized;
+        private IEncounterSessionAuthority _encounterAuthority;
         private KeyboardNavigationService _keyboardNavigationService;
         private EncounterModeManager _encounterModeManager;
         #endregion
@@ -141,6 +142,7 @@ namespace GameCore.UI.InGame
             _view.ClearLogClicked += OnClearLogClicked;
             _view.LogEntryDeleteClicked += OnLogEntryDeleteClicked;
             _view.MoveButtonClicked += OnMoveButtonClicked;
+            _view.VisualTreeBound += OnViewVisualTreeBound;
             Model.StateChanged += OnModelStateChanged;
 
             // Push initial state to the view so it starts in sync with the model.
@@ -167,7 +169,9 @@ namespace GameCore.UI.InGame
             Debug.Log($"InGameUIPresenter: Local role = {(IsLocalPlayerDungeonMaster ? "Dungeon Master" : "Player")}.");
 
             SetupDmToolsIfNeeded();
+            BindEncounterAuthorityIfNeeded();
             RefreshDmPanelUi();
+            RefreshEncounterTurnUi();
 
             _initialized = true;
         }
@@ -207,6 +211,7 @@ namespace GameCore.UI.InGame
                 _view.ClearLogClicked -= OnClearLogClicked;
                 _view.LogEntryDeleteClicked -= OnLogEntryDeleteClicked;
                 _view.MoveButtonClicked -= OnMoveButtonClicked;
+                _view.VisualTreeBound -= OnViewVisualTreeBound;
             }
 
             if (Model != null)
@@ -215,6 +220,7 @@ namespace GameCore.UI.InGame
             }
 
             TeardownDmTools();
+            UnbindEncounterAuthority();
             UnbindActiveDataService();
 
             _initialized = false;
@@ -222,6 +228,13 @@ namespace GameCore.UI.InGame
         #endregion
 
         #region DM Tools
+
+        private void OnViewVisualTreeBound()
+        {
+            SetupDmToolsIfNeeded();
+            RefreshDmPanelUi();
+            RefreshEncounterTurnUi();
+        }
 
         private void SetupDmToolsIfNeeded()
         {
@@ -232,8 +245,12 @@ namespace GameCore.UI.InGame
             dmPanel.PlayerSelected += OnDmPlayerSelected;
             dmPanel.ViewSelfClicked += OnDmViewSelfClicked;
             dmPanel.HitPointsAdjusted += OnDmHitPointsAdjusted;
+            dmPanel.StartEncounterClicked += OnDmStartEncounterClicked;
+            dmPanel.EndEncounterClicked += OnDmEndEncounterClicked;
+            dmPanel.NextTurnClicked += OnDmNextTurnClicked;
             ActorRegistry.ActorRegistered += OnActorRegistryChanged;
             ActorRegistry.ActorUnregistered += OnActorUnregistered;
+            ActorRegistry.ActorUpdated += OnActorUpdated;
             dmPanel.SetVisible(true);
             _dmToolsInitialized = true;
         }
@@ -247,13 +264,28 @@ namespace GameCore.UI.InGame
             dmPanel.PlayerSelected -= OnDmPlayerSelected;
             dmPanel.ViewSelfClicked -= OnDmViewSelfClicked;
             dmPanel.HitPointsAdjusted -= OnDmHitPointsAdjusted;
+            dmPanel.StartEncounterClicked -= OnDmStartEncounterClicked;
+            dmPanel.EndEncounterClicked -= OnDmEndEncounterClicked;
+            dmPanel.NextTurnClicked -= OnDmNextTurnClicked;
             ActorRegistry.ActorRegistered -= OnActorRegistryChanged;
             ActorRegistry.ActorUnregistered -= OnActorUnregistered;
+            ActorRegistry.ActorUpdated -= OnActorUpdated;
             dmPanel.SetVisible(false);
             _dmToolsInitialized = false;
         }
 
         private void OnActorRegistryChanged(IActor actor) => RefreshDmPanelUi();
+
+        private void OnActorUpdated(IActor actor)
+        {
+            RefreshDmPanelUi();
+
+            if (_inspectedActor != null && _inspectedActor.OwnerId == actor.OwnerId)
+            {
+                BindActiveDataService();
+                RefreshInspectedSheet();
+            }
+        }
 
         private void OnActorUnregistered(IActor actor)
         {
@@ -285,6 +317,89 @@ namespace GameCore.UI.InGame
             RefreshDmSelectionHp();
         }
 
+        private void OnDmStartEncounterClicked()
+        {
+            EncounterSessionLocator.Authority?.RequestStartTurnOrder();
+        }
+
+        private void OnDmEndEncounterClicked()
+        {
+            var authority = EncounterSessionLocator.Authority;
+            if (authority != null && authority.IsEncounterActive)
+                authority.RequestToggleEncounter();
+        }
+
+        private void OnDmNextTurnClicked()
+        {
+            EncounterSessionLocator.Authority?.RequestEndTurn();
+        }
+
+        private void BindEncounterAuthorityIfNeeded()
+        {
+            var authority = EncounterSessionLocator.Authority;
+            if (ReferenceEquals(authority, _encounterAuthority))
+                return;
+
+            UnbindEncounterAuthority();
+            _encounterAuthority = authority;
+            if (_encounterAuthority == null)
+            {
+                RefreshEncounterTurnUi();
+                return;
+            }
+
+            _encounterAuthority.EncounterActiveChanged += OnEncounterActiveChanged;
+            _encounterAuthority.TurnOwnerChanged += OnTurnOwnerChanged;
+            RefreshEncounterTurnUi();
+        }
+
+        private void UnbindEncounterAuthority()
+        {
+            if (_encounterAuthority == null)
+                return;
+
+            _encounterAuthority.EncounterActiveChanged -= OnEncounterActiveChanged;
+            _encounterAuthority.TurnOwnerChanged -= OnTurnOwnerChanged;
+            _encounterAuthority = null;
+        }
+
+        private void OnEncounterActiveChanged(bool isActive)
+        {
+            RefreshEncounterTurnUi();
+        }
+
+        private void OnTurnOwnerChanged(int ownerId)
+        {
+            RefreshEncounterTurnUi();
+            if (_encounterModeManager != null && !_encounterModeManager.IsLocalTurnActive)
+                _encounterModeManager.DisableMovementMode();
+        }
+
+        private void RefreshEncounterTurnUi()
+        {
+            if (_view == null)
+                return;
+
+            var authority = EncounterSessionLocator.Authority;
+            if (authority == null || !authority.IsEncounterActive)
+            {
+                _view.UpdateEncounterTurnIndicator(null, false);
+                return;
+            }
+
+            if (!authority.HasActiveTurnOrder)
+            {
+                _view.UpdateEncounterTurnIndicator("Encounter active", true);
+                return;
+            }
+
+            var actor = ActorRegistry.GetByOwner(authority.CurrentTurnOwnerId);
+            string turnName = actor != null ? actor.DisplayName : $"Player {authority.CurrentTurnOwnerId}";
+            bool isLocalTurn = _encounterModeManager != null && _encounterModeManager.IsLocalTurnActive;
+            string suffix = isLocalTurn ? " (your turn)" : string.Empty;
+            _view.UpdateEncounterTurnIndicator($"{turnName}'s turn{suffix}", true);
+        }
+
         private void SetInspectedActor(IActor actor)
         {
             _inspectedActor = actor;
@@ -296,9 +411,13 @@ namespace GameCore.UI.InGame
 
         private void RefreshDmPanelUi()
         {
-            if (!_dmToolsInitialized || _view == null)
+            if (!IsLocalPlayerDungeonMaster || _view == null)
                 return;
 
+            if (!_dmToolsInitialized)
+                SetupDmToolsIfNeeded();
+
+            _view.DmPanel.SetVisible(true);
             _view.DmPanel.RefreshPlayerList(ActorRegistry.Actors, _selectedOwnerId);
             RefreshDmSelectionHp();
         }
@@ -391,6 +510,7 @@ namespace GameCore.UI.InGame
             if (!_initialized)
                 return;
 
+            BindEncounterAuthorityIfNeeded();
             UpdateLookInputState();
 
 #if ENABLE_INPUT_SYSTEM
@@ -656,6 +776,7 @@ namespace GameCore.UI.InGame
         {
             UpdateCharacterSheetUI(sheet);
             RefreshDmSelectionHp();
+            RefreshDmPanelUi();
         }
 
         /// <summary>
@@ -765,6 +886,9 @@ namespace GameCore.UI.InGame
             // Handle Dash action - double movement speed
             if (actionName == "Dash" && _encounterModeManager != null)
             {
+                if (!_encounterModeManager.IsLocalTurnActive)
+                    return;
+
                 _encounterModeManager.SetDashActive(true);
             }
         }
@@ -824,6 +948,9 @@ namespace GameCore.UI.InGame
         private void OnMoveButtonClicked()
         {
             if (_encounterModeManager == null || !_encounterModeManager.IsEncounterModeActive)
+                return;
+
+            if (!_encounterModeManager.IsLocalTurnActive)
                 return;
 
             // Toggle movement mode: if active, disable it; if not active, enable it

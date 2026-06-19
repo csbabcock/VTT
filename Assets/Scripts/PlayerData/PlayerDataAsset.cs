@@ -14,7 +14,7 @@ namespace GameCore.PlayerData
     {
         [Header("Character Info")]
         [Tooltip("Character's name")]
-        public string characterName = "Arlen";
+        public string characterName = "";
 
         [Header("Ability Scores")]
         [Tooltip("Strength score")]
