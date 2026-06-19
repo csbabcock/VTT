@@ -22,8 +22,11 @@ namespace GameCore.UI.InGame.Models
         // Proficiency Bonus
         public int ProficiencyBonus { get; set; } = 2;
 
-        // Skill Proficiencies
+        // Skill Proficiencies (includes expertise skills, since expertise implies proficiency)
         public HashSet<string> ProficientSkills { get; set; } = new HashSet<string> { "Athletics" };
+
+        // Skills with expertise (double proficiency bonus)
+        public HashSet<string> ExpertiseSkills { get; set; } = new HashSet<string>();
 
         /// <summary>
         /// Calculates the ability modifier from an ability score.
@@ -51,8 +54,13 @@ namespace GameCore.UI.InGame.Models
         public int GetSkillModifier(string skillName, string abilityName)
         {
             int abilityMod = GetAbilityModifier(abilityName);
-            bool isProficient = ProficientSkills.Contains(skillName);
-            int proficiency = isProficient ? ProficiencyBonus : 0;
+
+            int proficiency = 0;
+            if (ExpertiseSkills.Contains(skillName))
+                proficiency = ProficiencyBonus * 2;
+            else if (ProficientSkills.Contains(skillName))
+                proficiency = ProficiencyBonus;
+
             return abilityMod + proficiency;
         }
 

@@ -29,9 +29,21 @@ namespace GameCore.PlayerData
         /// </summary>
         public void InitializeService()
         {
+            // Non-destructive: if a service was already chosen (e.g. the character picked
+            // in the main menu before this scene loaded), respect it. This initializer is
+            // only a fallback for running the gameplay scene directly.
+            if (PlayerDataServiceLocator.HasService)
+            {
+                Debug.Log("PlayerDataServiceInitializer: A player data service is already set; leaving it unchanged.");
+                return;
+            }
+
             IPlayerDataService service;
 
-            if (!string.IsNullOrEmpty(_jsonFilePath))
+            // Only load from JSON when a path is configured AND the file actually exists,
+            // otherwise fall back to default data without logging a file-not-found error.
+            if (!string.IsNullOrEmpty(_jsonFilePath) &&
+                PlayerDataFilePaths.FindCharacterFile(System.IO.Path.GetFileName(_jsonFilePath)) != null)
             {
                 service = new JsonPlayerDataService(_jsonFilePath);
                 Debug.Log($"PlayerDataService initialized from JSON: {_jsonFilePath}");
@@ -42,7 +54,6 @@ namespace GameCore.PlayerData
                 Debug.Log("PlayerDataService initialized with default values");
             }
 
-            // Set it as the service locator's service
             PlayerDataServiceLocator.Service = service;
         }
 

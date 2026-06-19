@@ -1,41 +1,42 @@
 {
-    "characterName": "tEST",
-    "level": 7,
+    "characterName": "Sergio",
+    "level": 8,
     "characterClass": "Fighter",
-    "subclass": "Champion",
-    "race": "Half-Elf",
+    "subclass": "Battle Master",
+    "race": "Orc",
     "subrace": "",
     "background": "Soldier",
     "alignment": "Lawful Good",
-    "playerName": "",
-    "experiencePoints": 900,
-    "strength": 6,
-    "dexterity": 1,
-    "constitution": 4,
-    "intelligence": 1,
-    "wisdom": 12,
-    "charisma": 8,
-    "maxHitPoints": 28,
-    "currentHitPoints": 28,
+    "playerName": "csbabcock",
+    "experiencePoints": 0,
+    "strength": 20,
+    "dexterity": 16,
+    "constitution": 16,
+    "intelligence": 11,
+    "wisdom": 15,
+    "charisma": 12,
+    "maxHitPoints": 76,
+    "currentHitPoints": 76,
     "temporaryHitPoints": 0,
-    "armorClass": 16,
-    "initiative": 2,
+    "armorClass": 17,
+    "initiative": 3,
     "walkingSpeed": 30,
     "flyingSpeed": 0,
     "swimmingSpeed": 0,
     "climbingSpeed": 0,
-    "hitDice": "3d10",
+    "hitDice": "8d10",
     "hitDiceUsed": 0,
     "proficientSavingThrows": [
         "STR",
         "CON"
     ],
     "_proficientSkillsStrings": [
+        "Acrobatics",
         "Athletics",
         "Intimidation",
-        "Perception",
-        "Survival"
+        "Perception"
     ],
+    "_expertiseSkillsStrings": [],
     "proficientArmor": [
         "Light",
         "Medium",
@@ -46,10 +47,13 @@
         "Simple",
         "Martial"
     ],
-    "proficientTools": [],
+    "proficientTools": [
+        "Smith's Tools",
+        "Vehicles (Land)"
+    ],
     "languages": [
         "Common",
-        "Orcish"
+        "Orc"
     ],
     "hasInspiration": false,
     "exhaustionLevel": 0,
@@ -57,4 +61,3 @@
     "deathSaveSuccesses": 0,
     "deathSaveFailures": 0
 }
-

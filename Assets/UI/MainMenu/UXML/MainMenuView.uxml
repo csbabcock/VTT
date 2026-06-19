@@ -37,6 +37,7 @@
                     </ui:ScrollView>
                     <ui:VisualElement name="join-actions" class="menu-actions-container">
                         <ui:Label name="selected-character-name" text="No character selected" class="menu-selected-scene-name"/>
+                        <ui:TextField name="join-ip-field" label="Host IP" value="127.0.0.1" class="menu-ip-field"/>
                         <ui:VisualElement name="join-buttons" class="menu-join-buttons">
                             <ui:Button name="create-character-button" text="Create New Character" class="menu-button-secondary"/>
                             <ui:Button name="join-session-button" text="Join Session" enabled="false" class="menu-button-primary"/>

@@ -45,6 +45,12 @@ namespace GameCore.PlayerData
             return _dnD5eData;
         }
 
+        /// <inheritdoc />
+        public ICharacterSheet GetCharacterSheet()
+        {
+            return _dnD5eData;
+        }
+
         public void UpdatePlayerData(Action<CharacterData> updateAction)
         {
             if (updateAction == null)

@@ -16,6 +16,14 @@ namespace GameCore.PlayerData
         CharacterData GetPlayerData();
 
         /// <summary>
+        /// Gets the current player's character sheet as a ruleset-agnostic view.
+        /// Prefer this over <see cref="GetPlayerData"/> for ruleset-aware logic
+        /// (it carries level, proficiency, and weapon proficiencies that the legacy
+        /// <see cref="CharacterData"/> does not).
+        /// </summary>
+        ICharacterSheet GetCharacterSheet();
+
+        /// <summary>
         /// Event fired whenever player data changes.
         /// UI can subscribe to this to reactively update when data changes.
         /// </summary>

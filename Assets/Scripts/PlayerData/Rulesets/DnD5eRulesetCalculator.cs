@@ -31,8 +31,17 @@ namespace GameCore.PlayerData.Rulesets
 
         public int CalculateSkillModifier(int abilityModifier, bool isProficient, int level)
         {
+            return CalculateSkillModifier(abilityModifier, isProficient, hasExpertise: false, level);
+        }
+
+        public int CalculateSkillModifier(int abilityModifier, bool isProficient, bool hasExpertise, int level)
+        {
             int modifier = abilityModifier;
-            if (isProficient)
+            if (hasExpertise)
+            {
+                modifier += CalculateProficiencyBonus(level) * 2;
+            }
+            else if (isProficient)
             {
                 modifier += CalculateProficiencyBonus(level);
             }

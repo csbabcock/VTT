@@ -1,0 +1,63 @@
+{
+    "characterName": "Joan Springheel",
+    "level": 8,
+    "characterClass": "Cleric/Wizard",
+    "subclass": "Twilight Domain",
+    "race": "Harengon",
+    "subrace": "",
+    "background": "Sage",
+    "alignment": "",
+    "playerName": "csbabcock",
+    "experiencePoints": 0,
+    "strength": 8,
+    "dexterity": 14,
+    "constitution": 14,
+    "intelligence": 17,
+    "wisdom": 14,
+    "charisma": 8,
+    "maxHitPoints": 53,
+    "currentHitPoints": 53,
+    "temporaryHitPoints": 0,
+    "armorClass": 18,
+    "initiative": 8,
+    "walkingSpeed": 30,
+    "flyingSpeed": 0,
+    "swimmingSpeed": 0,
+    "climbingSpeed": 0,
+    "hitDice": "2d8 + 6d6",
+    "hitDiceUsed": 0,
+    "proficientSavingThrows": [
+        "WIS",
+        "CHA"
+    ],
+    "_proficientSkillsStrings": [
+        "Arcana",
+        "History",
+        "Insight",
+        "Perception",
+        "Religion"
+    ],
+    "_expertiseSkillsStrings": [],
+    "proficientArmor": [
+        "Light",
+        "Medium",
+        "Heavy",
+        "Shields"
+    ],
+    "proficientWeapons": [
+        "Simple",
+        "Martial"
+    ],
+    "proficientTools": [
+        "Tinker's Tools"
+    ],
+    "languages": [
+        "Celestial",
+        "Common"
+    ],
+    "hasInspiration": false,
+    "exhaustionLevel": 0,
+    "conditions": [],
+    "deathSaveSuccesses": 0,
+    "deathSaveFailures": 0
+}

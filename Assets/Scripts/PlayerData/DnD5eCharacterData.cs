@@ -11,7 +11,7 @@ namespace GameCore.PlayerData
     /// Supports JSON serialization for portability and tool integration.
     /// </summary>
     [Serializable]
-    public class DnD5eCharacterData
+    public class DnD5eCharacterData : ICharacterSheet
     {
         [Header("Basic Information")]
         public string characterName = "Arlen";
@@ -49,6 +49,7 @@ namespace GameCore.PlayerData
         [Header("Proficiencies")]
         public List<string> proficientSavingThrows = new List<string>(); // "STR", "DEX", etc.
         [SerializeField] private List<string> _proficientSkillsStrings = new List<string>(); // Serialized as strings for JSON
+        [SerializeField] private List<string> _expertiseSkillsStrings = new List<string>(); // Skills with expertise (double proficiency)
         public List<string> proficientArmor = new List<string>(); // "Light", "Medium", "Heavy", "Shields"
         public List<string> proficientWeapons = new List<string>(); // "Simple", "Martial", or specific weapons
         public List<string> proficientTools = new List<string>();
@@ -60,16 +61,35 @@ namespace GameCore.PlayerData
         /// </summary>
         public List<DnD5eSkill> GetProficientSkills()
         {
+            // Expertise implies proficiency, so the proficient set is the union of both
+            // lists (deduplicated). This keeps "is proficient" checks and styling correct
+            // while expertise is tracked separately for the double-proficiency bonus.
             var skills = new List<DnD5eSkill>();
-            foreach (var skillString in _proficientSkillsStrings)
+            ParseSkillsInto(_proficientSkillsStrings, skills);
+            ParseSkillsInto(_expertiseSkillsStrings, skills);
+            return skills;
+        }
+
+        /// <summary>
+        /// Gets the list of skills the character has expertise in (double proficiency).
+        /// </summary>
+        public List<DnD5eSkill> GetExpertiseSkills()
+        {
+            var skills = new List<DnD5eSkill>();
+            ParseSkillsInto(_expertiseSkillsStrings, skills);
+            return skills;
+        }
+
+        private static void ParseSkillsInto(List<string> source, List<DnD5eSkill> target)
+        {
+            foreach (var skillString in source)
             {
                 var skill = DnD5eSkillExtensions.FromString(skillString);
-                if (skill.HasValue)
+                if (skill.HasValue && !target.Contains(skill.Value))
                 {
-                    skills.Add(skill.Value);
+                    target.Add(skill.Value);
                 }
             }
-            return skills;
         }
 
         /// <summary>
@@ -86,11 +106,32 @@ namespace GameCore.PlayerData
         }
 
         /// <summary>
-        /// Checks if the character is proficient in a skill.
+        /// Sets the list of expertise skills.
+        /// Converts to string list for JSON serialization.
+        /// </summary>
+        public void SetExpertiseSkills(List<DnD5eSkill> skills)
+        {
+            _expertiseSkillsStrings.Clear();
+            foreach (var skill in skills)
+            {
+                _expertiseSkillsStrings.Add(skill.GetDisplayName());
+            }
+        }
+
+        /// <summary>
+        /// Checks if the character is proficient in a skill (includes expertise).
         /// </summary>
         public bool IsProficientInSkill(DnD5eSkill skill)
         {
             return GetProficientSkills().Contains(skill);
+        }
+
+        /// <summary>
+        /// Checks if the character has expertise (double proficiency) in a skill.
+        /// </summary>
+        public bool IsExpertInSkill(DnD5eSkill skill)
+        {
+            return GetExpertiseSkills().Contains(skill);
         }
 
         [Header("Skills")]
@@ -153,8 +194,13 @@ namespace GameCore.PlayerData
         {
             string abilityName = skill.GetAbilityScore();
             int abilityMod = GetAbilityModifier(abilityName);
-            bool isProficient = IsProficientInSkill(skill);
-            int proficiency = isProficient ? proficiencyBonus : 0;
+
+            int proficiency = 0;
+            if (IsExpertInSkill(skill))
+                proficiency = proficiencyBonus * 2;
+            else if (IsProficientInSkill(skill))
+                proficiency = proficiencyBonus;
+
             return abilityMod + proficiency;
         }
 
@@ -190,6 +236,26 @@ namespace GameCore.PlayerData
             return abilityMod + proficiency;
         }
 
+        // --- ICharacterSheet (ruleset-agnostic read surface) ---
+        // Explicit implementation so the serialized lower-case fields above stay the
+        // primary API while consumers can depend on the ruleset-agnostic abstraction.
+        string ICharacterSheet.RulesetId => "DnD5e";
+        string ICharacterSheet.CharacterName => characterName;
+        int ICharacterSheet.Level => level;
+        int ICharacterSheet.ProficiencyBonus => proficiencyBonus;
+        IReadOnlyList<string> ICharacterSheet.ProficientWeapons => proficientWeapons;
+
+        int ICharacterSheet.GetAbilityScore(string abilityCode)
+        {
+            int[] scores = { strength, dexterity, constitution, intelligence, wisdom, charisma };
+            if (!DnD5eAbilityCodes.TryIndexFromCode(abilityCode, out int idx) ||
+                (uint)idx >= (uint)scores.Length)
+                return 0;
+            return scores[idx];
+        }
+
+        int ICharacterSheet.GetAbilityModifier(string abilityCode) => GetAbilityModifier(abilityCode);
+
         /// <summary>
         /// Converts to the old CharacterData format for backward compatibility.
         /// </summary>
@@ -205,7 +271,8 @@ namespace GameCore.PlayerData
                 Wisdom = wisdom,
                 Charisma = charisma,
                 ProficiencyBonus = proficiencyBonus,
-                ProficientSkills = new HashSet<string>(GetProficientSkills().Select(s => s.GetDisplayName()))
+                ProficientSkills = new HashSet<string>(GetProficientSkills().Select(s => s.GetDisplayName())),
+                ExpertiseSkills = new HashSet<string>(GetExpertiseSkills().Select(s => s.GetDisplayName()))
             };
         }
     }

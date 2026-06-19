@@ -6,6 +6,7 @@ using GameCore.EncounterMode.Services;
 using GameCore.EncounterMode;
 using GameCore.PlayerData;
 using GameCore.PlayerData.Rulesets;
+using GameCore.Networking;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections;
@@ -35,6 +36,12 @@ namespace GameCore.UI.InGame
 
         public InGameUIModel Model { get; private set; }
         public InGameUIView View => _view;
+
+        /// <summary>
+        /// True when the local machine is the host acting as Dungeon Master. Used to
+        /// gate DM-only tools (built out in a later phase).
+        /// </summary>
+        public bool IsLocalPlayerDungeonMaster => SessionRoleLocator.IsDungeonMaster;
         #endregion
 
         #region Private Fields
@@ -73,7 +80,10 @@ namespace GameCore.UI.InGame
             // are stateless services with no external dependencies.
             _diceRollService = new DiceRollService();
             _gameLogService = new GameLogService();
-            _playerDataService = PlayerDataServiceLocator.Service;
+            // Bind to the local player's actor when one exists so this UI follows a
+            // specific participant (the foundation for per-client sheets in multiplayer).
+            // Falls back to the global locator until a PlayerActor is present in the scene.
+            _playerDataService = Actors.ActorRegistry.LocalActor?.DataService ?? PlayerDataServiceLocator.Service;
             _keyboardNavigationService = new KeyboardNavigationService();
             
             // Subscribe to player data changes
@@ -149,6 +159,8 @@ namespace GameCore.UI.InGame
             {
                 _playerInputs.SetInputEnabled(true);
             }
+
+            Debug.Log($"InGameUIPresenter: Local role = {(IsLocalPlayerDungeonMaster ? "Dungeon Master" : "Player")}.");
 
             _initialized = true;
         }
@@ -428,9 +440,16 @@ namespace GameCore.UI.InGame
         /// </summary>
         private void UpdatePlayerInput(bool isUIOpen)
         {
+            // The networked player spawns after this presenter's Awake, so resolve the
+            // PlayerInputs lazily (preferring the local player's actor) and retry on later
+            // state changes instead of warning.
             if (_playerInputs == null)
             {
-                Debug.LogWarning("InGameUIPresenter: PlayerInputs is null! Input may not be disabled when UI is open.");
+                _playerInputs = ResolvePlayerInputs();
+            }
+
+            if (_playerInputs == null)
+            {
                 return;
             }
 
@@ -438,6 +457,25 @@ namespace GameCore.UI.InGame
             // PlayerController will check if character sheet is open and conditionally use movement input
             // This follows SOLID principles - input system remains unchanged, PlayerController decides usage
             _playerInputs.SetInputEnabled(true);
+        }
+
+        /// <summary>
+        /// Finds the local player's PlayerInputs. Prefers the local actor's GameObject so we
+        /// never bind to a remote player's (disabled) input component.
+        /// </summary>
+        private PlayerInputs ResolvePlayerInputs()
+        {
+            var localActor = Actors.ActorRegistry.LocalActor;
+            if (localActor?.Transform != null)
+            {
+                var actorInputs = localActor.Transform.GetComponent<PlayerInputs>();
+                if (actorInputs != null)
+                {
+                    return actorInputs;
+                }
+            }
+
+            return FindAnyObjectByType<PlayerInputs>();
         }
         #endregion
 
@@ -518,6 +556,7 @@ namespace GameCore.UI.InGame
             var characterData = _playerDataService.GetPlayerData();
             string abilityName = CharacterData.GetSkillAbility(skillName);
             int modifier = characterData.GetSkillModifier(skillName, abilityName);
+            bool hasExpertise = characterData.ExpertiseSkills.Contains(skillName);
             bool isProficient = characterData.ProficientSkills.Contains(skillName);
 
             var breakdowns = new List<ModifierBreakdown>
@@ -525,7 +564,15 @@ namespace GameCore.UI.InGame
                 new ModifierBreakdown { Source = abilityName, Value = characterData.GetAbilityModifier(abilityName) }
             };
 
-            if (isProficient)
+            if (hasExpertise)
+            {
+                breakdowns.Add(new ModifierBreakdown
+                {
+                    Source = "Expertise",
+                    Value = characterData.ProficiencyBonus * 2
+                });
+            }
+            else if (isProficient)
             {
                 breakdowns.Add(new ModifierBreakdown 
                 { 
@@ -561,66 +608,18 @@ namespace GameCore.UI.InGame
 
         private void OnAttackClicked(string weaponName)
         {
-            // Get character name and weapon data using ruleset system
-            string characterName;
-            WeaponData weaponData;
-            
-            // Try to get D&D 5e character data for proper calculations
-            if (_playerDataService is JsonPlayerDataService jsonService)
-            {
-                var dnD5eData = jsonService.GetDnD5eCharacterData();
-                if (dnD5eData != null)
-                {
-                    // Use proper 5e weapon calculator through ruleset system
-                    characterName = dnD5eData.characterName;
-                    var calculator = RulesetCalculatorFactory.GetDefaultCalculator();
-                    var adapter = RulesetAdapterFactory.GetDefaultAdapter();
-                    weaponData = adapter.GetWeaponData(weaponName, dnD5eData, calculator);
-                }
-                else
-                {
-                    // Fallback: Use ruleset system with legacy CharacterData
-                    var characterData = _playerDataService.GetPlayerData();
-                    characterName = characterData.CharacterName;
-                    // Convert to DnD5eCharacterData for ruleset system
-                    var dnD5eFallback = new DnD5eCharacterData
-                    {
-                        characterName = characterData.CharacterName,
-                        strength = characterData.Strength,
-                        dexterity = characterData.Dexterity,
-                        constitution = characterData.Constitution,
-                        intelligence = characterData.Intelligence,
-                        wisdom = characterData.Wisdom,
-                        charisma = characterData.Charisma,
-                        level = 1, // Default level
-                        proficientWeapons = new List<string> { "Simple", "Martial" } // Assume basic proficiency
-                    };
-                    var calculator = RulesetCalculatorFactory.GetDefaultCalculator();
-                    var adapter = RulesetAdapterFactory.GetDefaultAdapter();
-                    weaponData = adapter.GetWeaponData(weaponName, dnD5eFallback, calculator);
-                }
-            }
-            else
-            {
-                // Legacy service - convert to DnD5eCharacterData for ruleset system
-                var characterData = _playerDataService.GetPlayerData();
-                characterName = characterData.CharacterName;
-                var dnD5eFallback = new DnD5eCharacterData
-                {
-                    characterName = characterData.CharacterName,
-                    strength = characterData.Strength,
-                    dexterity = characterData.Dexterity,
-                    constitution = characterData.Constitution,
-                    intelligence = characterData.Intelligence,
-                    wisdom = characterData.Wisdom,
-                    charisma = characterData.Charisma,
-                    level = 1, // Default level
-                    proficientWeapons = new List<string> { "Simple", "Martial" } // Assume basic proficiency
-                };
-                var calculator = RulesetCalculatorFactory.GetDefaultCalculator();
-                var adapter = RulesetAdapterFactory.GetDefaultAdapter();
-                weaponData = adapter.GetWeaponData(weaponName, dnD5eFallback, calculator);
-            }
+            // Resolve a ruleset-agnostic sheet; both data services provide one, so no
+            // service-type downcasts or hand-rolled fallbacks are needed here.
+            ICharacterSheet sheet = _playerDataService.GetCharacterSheet();
+            string characterName = sheet != null
+                ? sheet.CharacterName
+                : _playerDataService.GetPlayerData().CharacterName;
+
+            // The adapter consumes the ruleset domain object behind ICharacterSheet
+            // and encapsulates all ruleset-specific weapon math.
+            var calculator = RulesetCalculatorFactory.GetDefaultCalculator();
+            var adapter = RulesetAdapterFactory.GetDefaultAdapter();
+            WeaponData weaponData = adapter.GetWeaponData(weaponName, sheet, calculator);
 
             var (attackRoll, damageRoll) = _diceRollService.RollAttack(
                 characterName,

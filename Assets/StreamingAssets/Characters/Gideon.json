@@ -1,0 +1,63 @@
+{
+    "characterName": "Gideon Alexandros",
+    "level": 8,
+    "characterClass": "Paladin",
+    "subclass": "Oath of Redemption",
+    "race": "Variant Human",
+    "subrace": "",
+    "background": "Custom Background",
+    "alignment": "Lawful Good",
+    "playerName": "csbabcock",
+    "experiencePoints": 0,
+    "strength": 19,
+    "dexterity": 8,
+    "constitution": 16,
+    "intelligence": 8,
+    "wisdom": 8,
+    "charisma": 18,
+    "maxHitPoints": 76,
+    "currentHitPoints": 76,
+    "temporaryHitPoints": 0,
+    "armorClass": 20,
+    "initiative": -1,
+    "walkingSpeed": 30,
+    "flyingSpeed": 0,
+    "swimmingSpeed": 0,
+    "climbingSpeed": 0,
+    "hitDice": "8d10",
+    "hitDiceUsed": 0,
+    "proficientSavingThrows": [
+        "WIS",
+        "CHA"
+    ],
+    "_proficientSkillsStrings": [
+        "Athletics",
+        "Insight",
+        "Intimidation",
+        "Perception",
+        "Persuasion"
+    ],
+    "_expertiseSkillsStrings": [],
+    "proficientArmor": [
+        "Light",
+        "Medium",
+        "Heavy",
+        "Shields"
+    ],
+    "proficientWeapons": [
+        "Simple",
+        "Martial"
+    ],
+    "proficientTools": [
+        "Smith's Tools",
+        "Vehicles (Land)"
+    ],
+    "languages": [
+        "Common"
+    ],
+    "hasInspiration": false,
+    "exhaustionLevel": 0,
+    "conditions": [],
+    "deathSaveSuccesses": 0,
+    "deathSaveFailures": 0
+}

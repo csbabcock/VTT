@@ -1,0 +1,73 @@
+{
+    "characterName": "Apateon",
+    "level": 8,
+    "characterClass": "Bard",
+    "subclass": "College of Lore",
+    "race": "Half-Elf",
+    "subrace": "",
+    "background": "Entertainer",
+    "alignment": "Chaotic Good",
+    "playerName": "csbabcock",
+    "experiencePoints": 0,
+    "strength": 8,
+    "dexterity": 16,
+    "constitution": 14,
+    "intelligence": 8,
+    "wisdom": 13,
+    "charisma": 18,
+    "maxHitPoints": 59,
+    "currentHitPoints": 59,
+    "temporaryHitPoints": 0,
+    "armorClass": 15,
+    "initiative": 4,
+    "walkingSpeed": 30,
+    "flyingSpeed": 0,
+    "swimmingSpeed": 0,
+    "climbingSpeed": 0,
+    "hitDice": "8d8",
+    "hitDiceUsed": 0,
+    "proficientSavingThrows": [
+        "DEX",
+        "CHA"
+    ],
+    "_proficientSkillsStrings": [
+        "Acrobatics",
+        "Arcana",
+        "Insight",
+        "Intimidation",
+        "Medicine",
+        "Performance",
+        "Sleight of Hand",
+        "Stealth"
+    ],
+    "_expertiseSkillsStrings": [
+        "Deception",
+        "Persuasion"
+    ],
+    "proficientArmor": [
+        "Light"
+    ],
+    "proficientWeapons": [
+        "Simple",
+        "Hand Crossbow",
+        "Longsword",
+        "Rapier",
+        "Shortsword"
+    ],
+    "proficientTools": [
+        "Disguise Kit",
+        "Flute",
+        "Lute",
+        "Lyre",
+        "Viol"
+    ],
+    "languages": [
+        "Common",
+        "Elvish"
+    ],
+    "hasInspiration": false,
+    "exhaustionLevel": 0,
+    "conditions": [],
+    "deathSaveSuccesses": 0,
+    "deathSaveFailures": 0
+}

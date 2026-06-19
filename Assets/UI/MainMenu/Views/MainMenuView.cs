@@ -69,6 +69,7 @@ namespace GameCore.UI.MainMenu
         private Label _selectedCharacterNameLabel;
         private Button _createCharacterButton;
         private Button _joinSessionButton;
+        private TextField _joinIpField;
         
         // Exit Button and Confirmation Dialog
         private Button _exitButton;
@@ -242,6 +243,12 @@ namespace GameCore.UI.MainMenu
             }
         }
 
+        /// <summary>
+        /// The host IP address typed into the Join panel. Defaults to loopback when empty.
+        /// </summary>
+        public string JoinIpAddress =>
+            string.IsNullOrWhiteSpace(_joinIpField?.value) ? "127.0.0.1" : _joinIpField.value.Trim();
+
         private void ResetBoundVisualTreeReferences()
         {
             _visualTreeBound = false;
@@ -263,6 +270,7 @@ namespace GameCore.UI.MainMenu
             _selectedCharacterNameLabel = null;
             _createCharacterButton = null;
             _joinSessionButton = null;
+            _joinIpField = null;
             _exitButton = null;
             _exitConfirmationDialog = null;
             _dialogCancelButton = null;
@@ -367,6 +375,7 @@ namespace GameCore.UI.MainMenu
             _selectedCharacterNameLabel = _root.Q<Label>("selected-character-name");
             _createCharacterButton = _root.Q<Button>("create-character-button");
             _joinSessionButton = _root.Q<Button>("join-session-button");
+            _joinIpField = _root.Q<TextField>("join-ip-field");
             
             // Exit Button and Confirmation Dialog
             _exitButton = _root.Q<Button>("exit-button");

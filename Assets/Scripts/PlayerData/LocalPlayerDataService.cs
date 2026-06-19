@@ -32,6 +32,14 @@ namespace GameCore.PlayerData
             return _playerData;
         }
 
+        /// <inheritdoc />
+        public ICharacterSheet GetCharacterSheet()
+        {
+            // The local service only holds legacy data; project it into a ruleset
+            // sheet so consumers get a consistent ruleset-agnostic view.
+            return CharacterDataConverter.ConvertToDnD5eCharacterData(_playerData);
+        }
+
         public void UpdatePlayerData(Action<CharacterData> updateAction)
         {
             if (updateAction == null)

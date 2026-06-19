@@ -30,6 +30,13 @@ namespace GameCore.PlayerData
         }
 
         /// <summary>
+        /// True if a service has already been assigned, without lazily creating a default.
+        /// Lets scene initializers avoid clobbering a selection made elsewhere (e.g. the
+        /// character chosen in the main menu before loading the gameplay scene).
+        /// </summary>
+        public static bool HasService => _service != null;
+
+        /// <summary>
         /// Resets the service to null. Useful for testing.
         /// </summary>
         public static void Reset()

@@ -39,6 +39,16 @@ namespace GameCore.PlayerData.Rulesets
         int CalculateSkillModifier(int abilityModifier, bool isProficient, int level);
 
         /// <summary>
+        /// Calculates skill modifier, accounting for expertise (double proficiency).
+        /// </summary>
+        /// <param name="abilityModifier">The relevant ability modifier</param>
+        /// <param name="isProficient">Whether the character is proficient in the skill</param>
+        /// <param name="hasExpertise">Whether the character has expertise (doubles proficiency)</param>
+        /// <param name="level">Character level (for proficiency bonus calculation)</param>
+        /// <returns>Total skill modifier</returns>
+        int CalculateSkillModifier(int abilityModifier, bool isProficient, bool hasExpertise, int level);
+
+        /// <summary>
         /// Calculates saving throw modifier.
         /// </summary>
         /// <param name="abilityModifier">The relevant ability modifier</param>

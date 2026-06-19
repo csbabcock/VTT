@@ -59,14 +59,11 @@ namespace GameCore.UI.InGame
         /// </summary>
         private static object GetRulesetData(CharacterData data, string rulesetId)
         {
-            // Try to get D&D 5e data from service
+            // Any service now exposes a ruleset-agnostic sheet; for DnD5e the concrete
+            // sheet is a DnD5eCharacterData that the adapter knows how to consume.
             if (rulesetId == "DnD5e")
             {
-                var service = PlayerDataServiceLocator.Service;
-                if (service is JsonPlayerDataService jsonService)
-                {
-                    return jsonService.GetDnD5eCharacterData();
-                }
+                return PlayerDataServiceLocator.Service?.GetCharacterSheet() as DnD5eCharacterData;
             }
             return null;
         }
@@ -373,8 +370,9 @@ namespace GameCore.UI.InGame
             {
                 string abilityName = CharacterData.GetSkillAbility(skillName);
                 bool isProficient = data.ProficientSkills.Contains(skillName);
+                bool hasExpertise = data.ExpertiseSkills.Contains(skillName);
                 int abilityModifier = abilityModifiers.TryGetValue(abilityName, out var m) ? m : 0;
-                int skillModifier = calculator.CalculateSkillModifier(abilityModifier, isProficient, 1); // Default level 1
+                int skillModifier = calculator.CalculateSkillModifier(abilityModifier, isProficient, hasExpertise, 1); // Default level 1
                 modifiers[skillName] = skillModifier;
             }
 

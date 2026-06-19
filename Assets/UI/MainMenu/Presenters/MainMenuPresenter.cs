@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameCore.UI;
 using GameCore.PlayerData;
+using GameCore.Networking;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -170,7 +171,22 @@ namespace GameCore.UI.MainMenu
             }
 
             Model.SetInteractable(false);
-            SceneLoader.LoadScene(selectedScene);
+
+            var launcher = SessionLauncherLocator.Current;
+            if (launcher != null)
+            {
+                // Host the session; NGO replicates the gameplay scene load to clients.
+                if (!launcher.StartHost(selectedScene))
+                {
+                    Debug.LogError("MainMenuPresenter: Failed to start host.");
+                    Model.SetInteractable(true);
+                }
+            }
+            else
+            {
+                // No networking wired (offline / not yet set up): load locally.
+                SceneLoader.LoadScene(selectedScene);
+            }
         }
 
         private void HandleNavigationChanged(string section)
@@ -259,15 +275,25 @@ namespace GameCore.UI.MainMenu
 
             Debug.Log($"MainMenuPresenter: Loaded character {fileInfo.CharacterData?.characterName ?? selectedCharacter} for join session");
 
-            // TODO: Actually join a session (network connection, etc.)
-            // For now, we'll just load a scene similar to hosting
-            // In the future, this should connect to a server/host
             Model.SetInteractable(false);
-            
-            // For now, load the same scene as hosting would
-            // In a real implementation, this would connect to a remote session
-            string defaultScene = Model.State.AvailableScenes?.FirstOrDefault() ?? "Playground";
-            SceneLoader.LoadScene(defaultScene);
+
+            var launcher = SessionLauncherLocator.Current;
+            if (launcher != null)
+            {
+                // Connect to the host by IP; the server replicates its loaded scene to us.
+                launcher.Address = _view != null ? _view.JoinIpAddress : launcher.Address;
+                if (!launcher.StartClient())
+                {
+                    Debug.LogError($"MainMenuPresenter: Failed to start client (host {launcher.Address}:{launcher.Port}).");
+                    Model.SetInteractable(true);
+                }
+            }
+            else
+            {
+                // No networking wired (offline / not yet set up): load locally.
+                string defaultScene = Model.State.AvailableScenes?.FirstOrDefault() ?? "Playground";
+                SceneLoader.LoadScene(defaultScene);
+            }
         }
     }
 }

@@ -66,8 +66,9 @@ namespace GameCore.PlayerData.Rulesets
                 string abilityName = skill.GetAbilityScore();
 
                 bool isProficient = proficientSkills.Contains(skillName);
+                bool hasExpertise = data.IsExpertInSkill(skill);
                 int abilityModifier = abilityModifiers[abilityName];
-                int skillModifier = calculator.CalculateSkillModifier(abilityModifier, isProficient, data.level);
+                int skillModifier = calculator.CalculateSkillModifier(abilityModifier, isProficient, hasExpertise, data.level);
 
                 modifiers[skillName] = skillModifier;
             }

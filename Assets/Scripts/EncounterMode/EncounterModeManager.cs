@@ -381,11 +381,17 @@ namespace GameCore.EncounterMode
         /// </summary>
         private GridCell GetPlayerCurrentCell()
         {
-            if (PlayerController == null || GridGenerator == null)
+            if (GridGenerator == null)
                 return null;
 
-            Vector3 playerPos = PlayerController.transform.position;
-            return GridGenerator.GetCellAtWorldPosition(playerPos);
+            // Prefer the registered local actor's position; fall back to the directly
+            // referenced PlayerController so this keeps working before actors are wired up.
+            Transform playerTransform = GameCore.Actors.ActorRegistry.LocalActor?.Transform
+                ?? (PlayerController != null ? PlayerController.transform : null);
+            if (playerTransform == null)
+                return null;
+
+            return GridGenerator.GetCellAtWorldPosition(playerTransform.position);
         }
 
         /// <summary>
