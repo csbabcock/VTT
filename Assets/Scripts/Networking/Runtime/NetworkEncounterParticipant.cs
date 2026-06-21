@@ -138,9 +138,8 @@ namespace GameCore.Networking
 
             if (!_dashActive.Value)
             {
-                if (_remainingMovementFeet.Value <= 0)
-                    _remainingMovementFeet.Value = _baseMovementSpeedFeet;
                 _dashActive.Value = true;
+                _remainingMovementFeet.Value += _baseMovementSpeedFeet;
             }
 
             SyncMovementStateClientRpc(_remainingMovementFeet.Value, _dashActive.Value);

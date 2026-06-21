@@ -152,7 +152,6 @@ namespace GameCore.Networking
 
         private void HandleTurnOwnerChanged(int previous, int current)
         {
-            ResetMovementForTurnOwner(current);
             TurnOwnerChanged?.Invoke(current);
         }
 
@@ -200,7 +199,9 @@ namespace GameCore.Networking
         private void RollInitiativeAndStartTurn()
         {
             RollInitiativeAndStartTurnLocal();
-            _currentTurnOwnerId.Value = _turnOrder.Count > 0 ? _turnOrder[_turnIndex] : NoTurnOwner;
+            int owner = _turnOrder.Count > 0 ? _turnOrder[_turnIndex] : NoTurnOwner;
+            _currentTurnOwnerId.Value = owner;
+            ResetMovementForTurnOwner(owner);
         }
 
         private void RollInitiativeAndStartTurnLocal()
@@ -236,7 +237,9 @@ namespace GameCore.Networking
                 return;
 
             _turnIndex = (_turnIndex + 1) % _turnOrder.Count;
-            _currentTurnOwnerId.Value = _turnOrder[_turnIndex];
+            int nextOwner = _turnOrder[_turnIndex];
+            _currentTurnOwnerId.Value = nextOwner;
+            ResetMovementForTurnOwner(nextOwner);
         }
 
         private void ResetMovementForTurnOwner(int ownerId)
