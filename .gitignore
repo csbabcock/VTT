@@ -105,3 +105,9 @@ D:\VTT\DECISIONS.md
 D:\VTT\TASKS.md
 noop.ipynb
 .idea/
+
+# Local Cursor / project planning files
+.cursor/
+CONTEXT.md
+DECISIONS.md
+TASKS.md
