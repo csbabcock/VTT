@@ -49,6 +49,74 @@ namespace GameCore.Tests.EditMode
         }
     }
 
+    public class PlayerViewStateSmootherTests
+    {
+        [Test]
+        public void Step_FirstSample_SnapsToTarget()
+        {
+            var smoother = new PlayerViewStateSmoother();
+            var target = new PlayerViewStateNetwork
+            {
+                Position = new Vector3(1f, 2f, 3f),
+                Rotation = Quaternion.Euler(10f, 20f, 0f),
+                FieldOfView = 60f,
+                IsOrthographic = false,
+            };
+
+            PlayerViewStateNetwork result = smoother.Step(target, 0.016f, 25f, 30f);
+
+            Assert.IsTrue(smoother.IsInitialized);
+            Assert.AreEqual(target.Position, result.Position);
+            Assert.AreEqual(target.Rotation, result.Rotation);
+            Assert.AreEqual(target.FieldOfView, result.FieldOfView);
+            Assert.AreEqual(target.IsOrthographic, result.IsOrthographic);
+        }
+
+        [Test]
+        public void Step_MovesTowardTarget_OverMultipleFrames()
+        {
+            var smoother = new PlayerViewStateSmoother();
+            var start = new PlayerViewStateNetwork
+            {
+                Position = Vector3.zero,
+                Rotation = Quaternion.identity,
+                FieldOfView = 60f,
+                IsOrthographic = false,
+            };
+            var target = new PlayerViewStateNetwork
+            {
+                Position = new Vector3(10f, 0f, 0f),
+                Rotation = Quaternion.Euler(0f, 90f, 0f),
+                FieldOfView = 90f,
+                IsOrthographic = false,
+            };
+
+            smoother.Step(start, 0.016f, 25f, 30f);
+            PlayerViewStateNetwork result = smoother.Step(target, 0.016f, 25f, 30f);
+
+            Assert.Less(result.Position.x, target.Position.x);
+            Assert.Greater(result.Position.x, start.Position.x);
+            Assert.Less(Quaternion.Angle(result.Rotation, target.Rotation), 90f);
+            Assert.Less(result.FieldOfView, target.FieldOfView);
+        }
+
+        [Test]
+        public void Reset_ClearsInitializedState()
+        {
+            var smoother = new PlayerViewStateSmoother();
+            smoother.Step(new PlayerViewStateNetwork
+            {
+                Position = Vector3.one,
+                Rotation = Quaternion.identity,
+                FieldOfView = 60f,
+            }, 0.016f, 25f, 30f);
+
+            smoother.Reset();
+
+            Assert.IsFalse(smoother.IsInitialized);
+        }
+    }
+
     public class DmPlayerSpectateLocatorTests
     {
         private bool _wasSpectating;

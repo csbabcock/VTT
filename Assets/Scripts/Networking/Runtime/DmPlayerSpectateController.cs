@@ -13,9 +13,14 @@ namespace GameCore.Networking
     [DefaultExecutionOrder(200)]
     public class DmPlayerSpectateController : MonoBehaviour
     {
+        [SerializeField] private float _positionSharpness = 25f;
+        [SerializeField] private float _rotationSharpness = 30f;
+
         private Camera _camera;
         private DmFlyCameraController _flyCamera;
+        private readonly PlayerViewStateSmoother _viewStateSmoother = new PlayerViewStateSmoother();
         private bool _isSpectating;
+        private int _spectatedOwnerId = -1;
         private Vector3 _savedFlyPosition;
         private Quaternion _savedFlyRotation;
         private bool _savedOrthographic;
@@ -46,11 +51,24 @@ namespace GameCore.Networking
             if (!_isSpectating)
                 EnterSpectate();
 
-            NetworkPlayerViewState viewState = ResolveViewState(DmPlayerSpectateLocator.SpectatedOwnerId);
+            int ownerId = DmPlayerSpectateLocator.SpectatedOwnerId;
+            if (ownerId != _spectatedOwnerId)
+            {
+                _spectatedOwnerId = ownerId;
+                _viewStateSmoother.Reset();
+            }
+
+            NetworkPlayerViewState viewState = ResolveViewState(ownerId);
             if (viewState == null)
                 return;
 
-            viewState.ViewState.ApplyTo(_camera);
+            PlayerViewStateNetwork target = viewState.ViewState;
+            PlayerViewStateNetwork smoothed = _viewStateSmoother.Step(
+                target,
+                Time.deltaTime,
+                _positionSharpness,
+                _rotationSharpness);
+            smoothed.ApplyTo(_camera);
         }
 
         public void ExitSpectate()
@@ -62,6 +80,7 @@ namespace GameCore.Networking
             }
 
             _isSpectating = false;
+            _spectatedOwnerId = -1;
             DmPlayerSpectateLocator.Clear();
 
             if (_flyCamera != null)
@@ -79,6 +98,8 @@ namespace GameCore.Networking
         private void EnterSpectate()
         {
             _isSpectating = true;
+            _spectatedOwnerId = DmPlayerSpectateLocator.SpectatedOwnerId;
+            _viewStateSmoother.Reset();
 
             if (_camera != null)
             {

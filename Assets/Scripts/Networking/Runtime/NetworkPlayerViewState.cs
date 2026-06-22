@@ -7,7 +7,7 @@ namespace GameCore.Networking
     /// Replicates the owning client's main-camera pose so the DM can spectate that player's view.
     /// </summary>
     [RequireComponent(typeof(NetworkObject))]
-    [DefaultExecutionOrder(100)]
+    [DefaultExecutionOrder(500)]
     public class NetworkPlayerViewState : NetworkBehaviour
     {
         private const float PositionEpsilon = 0.001f;
