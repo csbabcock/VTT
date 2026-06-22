@@ -185,8 +185,6 @@ namespace GameCore.UI.InGame
                 _playerInputs.SetInputEnabled(true);
             }
 
-            Debug.Log($"InGameUIPresenter: Local role = {(IsLocalPlayerDungeonMaster ? "Dungeon Master" : "Player")}.");
-
             SetupDmToolsIfNeeded();
             if (IsLocalPlayerDungeonMaster)
             {

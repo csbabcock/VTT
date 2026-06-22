@@ -157,13 +157,64 @@ namespace GameCore.EncounterMode
 
         private void Start()
         {
-            if (_gridGenerator != null && GridGenerator != null)
-                GridGenerator.GenerateGrid(GridOriginPosition, GridWidth, GridHeight, GridCellSize, GroundLayerMask);
+            EnsureGridGenerated();
 
             if (GridSelector != null)
                 GridSelector.OnCellSelected += HandleCellSelected;
 
-            _presentation.InitializeHidden();
+            _presentation.ApplyStartupState(IsEncounterModeActive);
+        }
+
+        /// <summary>
+        /// Generates the encounter grid when it has not been built yet. Safe to call before
+        /// <see cref="Start"/> (e.g. when replicated encounter state arrives during scene sync).
+        /// </summary>
+        public void EnsureGridGenerated()
+        {
+            if (GridGenerator == null)
+                ResolveComponents();
+
+            if (GridGenerator == null || GridGenerator.Grid != null)
+            {
+                RefreshGridPresentationIfActive();
+                return;
+            }
+
+            GridGenerator.GenerateGrid(GridOriginPosition, GridWidth, GridHeight, GridCellSize, GroundLayerMask);
+            RefreshGridPresentationIfActive();
+        }
+
+        private void RefreshGridPresentationIfActive()
+        {
+            if (!EncounterGridStartupPolicy.ShouldRefreshPresentation(IsEncounterModeActive)
+                || _presentation == null)
+            {
+                return;
+            }
+
+            _presentation.SetGridVisible(true);
+        }
+
+        /// <summary>
+        /// Places an actor on the nearest grid cell ground. Used when a player joins mid-encounter.
+        /// </summary>
+        public void SnapTransformToGridGround(Transform target)
+        {
+            if (target == null)
+                return;
+
+            EnsureGridGenerated();
+            if (GridGenerator == null)
+                return;
+
+            Vector3? snapped = EncounterGridSnapUtility.ResolveSnapPosition(
+                GridGenerator,
+                target.position,
+                GridWidth / 2,
+                GridHeight / 2);
+
+            if (snapped.HasValue)
+                target.position = snapped.Value;
         }
 
         private void OnDestroy()
@@ -203,10 +254,15 @@ namespace GameCore.EncounterMode
 
         private void EnableEncounterMode()
         {
+            EnsureGridGenerated();
             _presentation.SetGridVisible(true);
 
             // Grid selection is enabled later via EnableGridSelection() when the move action is chosen.
             _coordinator.ResetForEncounterStart();
+
+            var localActor = ActorRegistry.LocalActor;
+            if (localActor?.Transform != null)
+                SnapTransformToGridGround(localActor.Transform);
 
             // Show character sheet by default when entering encounter mode.
             _ui.SetCharacterSheetOpen(true);

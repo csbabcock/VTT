@@ -387,9 +387,14 @@ namespace GameCore
             // Process movement based on mode
             if (CurrentMovementMode == MovementMode.Encounter && _encounterMovementHandler != null)
             {
-                // Encounter mode: use grid-based movement.
-                // The encounter handler manages its own vertical velocity internally.
                 _encounterMovementHandler.ProcessMovement(Grounded);
+
+                if (EncounterPlayerGroundingPolicy.ShouldApplyIdleGravity(
+                        isEncounterMovementMode: true,
+                        isMovingOnGrid: _encounterMovementHandler.IsMoving))
+                {
+                    _movementHandler.ApplyMovementWithVerticalVelocity(_jumpHandler.VerticalVelocity);
+                }
 
                 // Update animations using encounter movement handler
                 // In encounter mode, use only encounter movement handler states (not jump handler)
@@ -507,6 +512,8 @@ namespace GameCore
 
             if (_encounterModeManager == null)
                 return;
+
+            EnsureEncounterMovementHandler();
 
             MovementMode desiredMode = _encounterModeManager.IsEncounterModeActive
                 ? MovementMode.Encounter
@@ -640,6 +647,25 @@ namespace GameCore
 
             if (_encounterMovementHandler != null)
                 _encounterMovementHandler.CancelMovement();
+        }
+
+        private void EnsureEncounterMovementHandler()
+        {
+            if (_encounterMovementHandler != null || _encounterModeManager == null)
+                return;
+
+            var manager = _encounterModeManager as EncounterModeManager
+                          ?? EncounterSessionLocator.Manager;
+            var gridGenerator = manager?.GridGenerator;
+            if (gridGenerator == null)
+                return;
+
+            _encounterMovementHandler = new EncounterMovementHandler(
+                _controller,
+                transform,
+                gridGenerator,
+                SprintSpeed,
+                RotationSmoothTime);
         }
 
         /// <summary>

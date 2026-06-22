@@ -32,6 +32,20 @@ namespace GameCore.EncounterMode.Services
 
         public void SetGridVisible(bool visible) => _renderer?.SetVisible(visible);
 
+        /// <summary>Applies the correct initial grid visibility for scene startup.</summary>
+        public void ApplyStartupState(bool isEncounterActive)
+        {
+            if (EncounterGridStartupPolicy.ResolveStartupAction(isEncounterActive)
+                == EncounterGridStartupAction.ShowForActiveEncounter)
+            {
+                SetGridVisible(true);
+            }
+            else
+            {
+                InitializeHidden();
+            }
+        }
+
         /// <summary>Hides the grid and disables selection components at startup.</summary>
         public void InitializeHidden()
         {

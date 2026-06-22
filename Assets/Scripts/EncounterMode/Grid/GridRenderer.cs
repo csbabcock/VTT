@@ -56,16 +56,10 @@ namespace GameCore.EncounterMode.Grid
         public void UpdateVisualization()
         {
             if (_gridGenerator == null)
-            {
-                Debug.LogWarning("GridRenderer: GridGenerator is null!");
                 return;
-            }
             
             if (_gridGenerator.Grid == null)
-            {
-                Debug.LogWarning("GridRenderer: Grid is null! Make sure grid is generated first.");
                 return;
-            }
 
             if (!_isVisible)
             {
@@ -90,10 +84,7 @@ namespace GameCore.EncounterMode.Grid
         {
             var grid = _gridGenerator.Grid;
             if (grid == null)
-            {
-                Debug.LogWarning("GridRenderer: Cannot draw grid - grid is null!");
                 return;
-            }
 
             int width = grid.GetLength(0);
             int height = grid.GetLength(1);

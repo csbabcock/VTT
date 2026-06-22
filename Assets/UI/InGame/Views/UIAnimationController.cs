@@ -1,3 +1,4 @@
+using GameCore.UI.InGame.Services;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections;
@@ -26,6 +27,9 @@ namespace GameCore.UI.InGame
         /// </summary>
         public Coroutine AnimateSlideIn(VisualElement element, float startRight, float endRight, System.Action onComplete = null)
         {
+            if (!VisualElementAnimationUtility.IsAnimatable(element))
+                return null;
+
             if (_currentAnimation != null)
             {
                 StopCoroutine(_currentAnimation);
@@ -40,6 +44,9 @@ namespace GameCore.UI.InGame
         /// </summary>
         public Coroutine AnimateSlideOut(VisualElement element, float startRight, float endRight, System.Action onComplete = null)
         {
+            if (!VisualElementAnimationUtility.IsAnimatable(element))
+                return null;
+
             if (_currentAnimation != null)
             {
                 StopCoroutine(_currentAnimation);
@@ -54,6 +61,9 @@ namespace GameCore.UI.InGame
         /// </summary>
         public Coroutine AnimateGameLogSlideIn(VisualElement element, float startRight, float endRight, System.Action onComplete = null)
         {
+            if (!VisualElementAnimationUtility.IsAnimatable(element))
+                return null;
+
             if (_gameLogAnimation != null)
             {
                 StopCoroutine(_gameLogAnimation);
@@ -68,6 +78,9 @@ namespace GameCore.UI.InGame
         /// </summary>
         public Coroutine AnimateGameLogSlideOut(VisualElement element, float startRight, float endRight, System.Action onComplete = null)
         {
+            if (!VisualElementAnimationUtility.IsAnimatable(element))
+                return null;
+
             if (_gameLogAnimation != null)
             {
                 StopCoroutine(_gameLogAnimation);
@@ -101,6 +114,15 @@ namespace GameCore.UI.InGame
             }
         }
 
+        /// <summary>
+        /// Stops all running panel animations. Call before discarding cached visual elements.
+        /// </summary>
+        public void StopAllAnimations()
+        {
+            StopCurrentAnimation();
+            StopGameLogAnimation();
+        }
+
         #endregion
 
         #region Private Methods
@@ -114,6 +136,9 @@ namespace GameCore.UI.InGame
 
             while (elapsed < ANIMATION_DURATION)
             {
+                if (!VisualElementAnimationUtility.IsAnimatable(element))
+                    yield break;
+
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / ANIMATION_DURATION);
                 
@@ -121,20 +146,22 @@ namespace GameCore.UI.InGame
                 t = 1f - Mathf.Pow(1f - t, 3f);
                 
                 float currentRight = Mathf.Lerp(startRight, endRight, t);
-                element.style.right = currentRight;
+                if (!VisualElementAnimationUtility.TrySetRight(element, currentRight))
+                    yield break;
                 
                 // Only mark dirty every few frames to reduce stutter
                 if (elapsed % 0.016f < Time.deltaTime) // ~60fps updates
                 {
-                    element.MarkDirtyRepaint();
+                    VisualElementAnimationUtility.TryMarkDirtyRepaint(element);
                 }
 
                 yield return null;
             }
 
-            // Ensure final position is set
-            element.style.right = endRight;
-            element.MarkDirtyRepaint();
+            if (!VisualElementAnimationUtility.TrySetRight(element, endRight))
+                yield break;
+
+            VisualElementAnimationUtility.TryMarkDirtyRepaint(element);
             
             onComplete?.Invoke();
         }
@@ -148,6 +175,9 @@ namespace GameCore.UI.InGame
 
             while (elapsed < ANIMATION_DURATION)
             {
+                if (!VisualElementAnimationUtility.IsAnimatable(element))
+                    yield break;
+
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / ANIMATION_DURATION);
                 
@@ -155,17 +185,18 @@ namespace GameCore.UI.InGame
                 t = t * t * t;
                 
                 float currentRight = Mathf.Lerp(startRight, endRight, t);
-                element.style.right = currentRight;
+                if (!VisualElementAnimationUtility.TrySetRight(element, currentRight))
+                    yield break;
                 
-                // Mark dirty every frame for smooth animation
-                element.MarkDirtyRepaint();
+                VisualElementAnimationUtility.TryMarkDirtyRepaint(element);
 
                 yield return null;
             }
 
-            // Ensure final position is set
-            element.style.right = endRight;
-            element.MarkDirtyRepaint();
+            if (!VisualElementAnimationUtility.TrySetRight(element, endRight))
+                yield break;
+
+            VisualElementAnimationUtility.TryMarkDirtyRepaint(element);
             
             onComplete?.Invoke();
         }
@@ -173,4 +204,3 @@ namespace GameCore.UI.InGame
         #endregion
     }
 }
-

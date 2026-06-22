@@ -377,6 +377,11 @@ namespace GameCore.UI.InGame
         /// </summary>
         private void TeardownBoundVisualTree()
         {
+            if (_animationController == null)
+                _animationController = GetComponent<UIAnimationController>();
+            _animationController?.StopAllAnimations();
+            _targetVisibilityState = null;
+
             DetachMoveButton();
 
             if (_tabButtons != null && _tabButtonHandlers != null)

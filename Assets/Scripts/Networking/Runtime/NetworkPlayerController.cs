@@ -1,4 +1,5 @@
 using GameCore.Actors;
+using GameCore.EncounterMode;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -63,10 +64,23 @@ namespace GameCore.Networking
                 if (characterController != null)
                     characterController.enabled = false;
             }
+            else if (isOwner)
+            {
+                TrySnapOwnerToEncounterGrid();
+            }
 
             gameObject.name = isOwner
                 ? $"Player (Local, client {OwnerClientId})"
                 : $"Player (Remote, client {OwnerClientId})";
+        }
+
+        private void TrySnapOwnerToEncounterGrid()
+        {
+            var manager = EncounterSessionLocator.Manager;
+            if (manager == null || !manager.IsEncounterModeActive)
+                return;
+
+            manager.SnapTransformToGridGround(transform);
         }
     }
 }

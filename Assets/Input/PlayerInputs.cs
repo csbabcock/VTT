@@ -41,7 +41,6 @@ namespace GameCore
 		#endregion
 
 		private EncounterModeManager _encounterModeManager;
-		private bool? _lastLoggedShouldReadLookInput;
 
 #if ENABLE_INPUT_SYSTEM
 		#region Private Fields
@@ -421,9 +420,7 @@ namespace GameCore
 
 		private bool ShouldReadLookInput()
 		{
-			bool shouldRead = cursorInputForLook && !IsEncounterModeActive();
-			LogLookInputState(shouldRead);
-			return shouldRead;
+			return cursorInputForLook && !IsEncounterModeActive();
 		}
 
 		private bool IsEncounterModeActive()
@@ -434,18 +431,6 @@ namespace GameCore
 			}
 
 			return _encounterModeManager != null && _encounterModeManager.IsEncounterModeActive;
-		}
-
-		private void LogLookInputState(bool shouldRead)
-		{
-			if (_lastLoggedShouldReadLookInput.HasValue && _lastLoggedShouldReadLookInput.Value == shouldRead)
-				return;
-
-			_lastLoggedShouldReadLookInput = shouldRead;
-			Debug.Log(
-				$"[EncounterCameraDebug] PlayerInputs shouldReadLook={shouldRead}, " +
-				$"cursorInputForLook={cursorInputForLook}, encounterActive={IsEncounterModeActive()}, " +
-				$"look={look}, playerInputs={name}");
 		}
 
 		#region Cursor Management

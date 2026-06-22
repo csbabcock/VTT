@@ -11,13 +11,14 @@ namespace GameCore.Tests.EditMode
     {
         private VisualElement _root;
         private CharacterSheetCombatSectionView _view;
-        private UiToolkitTestHostWindow _hostWindow;
+        private UiToolkitTestHost _host;
 
         [SetUp]
         public void SetUp()
         {
             _root = BuildCombatSectionRoot();
-            _hostWindow = UiToolkitTestHostWindow.Open(_root);
+            _host = new UiToolkitTestHost();
+            _host.Attach(_root);
 
             _view = new CharacterSheetCombatSectionView();
             _view.Initialize(_root);
@@ -26,8 +27,8 @@ namespace GameCore.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
-            UiToolkitTestHostWindow.CloseIfOpen(_hostWindow);
-            _hostWindow = null;
+            _host?.Dispose();
+            _host = null;
         }
 
         [Test]
