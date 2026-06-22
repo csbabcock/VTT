@@ -89,6 +89,8 @@ namespace GameCore.UI.InGame
             int displayCurrent = Mathf.Clamp(data.currentHitPoints, 0, maxHp);
 
             SetLabelText(root, CharacterSheetUIMapper.GetHitPointsValueElementName(), $"{displayCurrent} / {maxHp}");
+            SetLabelText(root, CharacterSheetUIMapper.GetTempHitPointsValueElementName(),
+                data.temporaryHitPoints > 0 ? $"+{data.temporaryHitPoints}" : "0");
             SetLabelText(root, CharacterSheetUIMapper.GetArmorClassValueElementName(), ac.ToString());
             SetLabelText(root, CharacterSheetUIMapper.GetInitiativeValueElementName(),
                 FormatSignedModifier(data.dexterityModifier));

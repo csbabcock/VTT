@@ -145,6 +145,13 @@ namespace GameCore.UI.InGame
             _view.ClearLogClicked += OnClearLogClicked;
             _view.LogEntryDeleteClicked += OnLogEntryDeleteClicked;
             _view.MoveButtonClicked += OnMoveButtonClicked;
+            _view.CombatHitPointsAdjusted += OnCombatHitPointsAdjusted;
+            _view.CombatTemporaryHitPointsAdjusted += OnCombatTemporaryHitPointsAdjusted;
+            _view.CombatDeathSavesChanged += OnCombatDeathSavesChanged;
+            _view.CombatDeathSavesReset += OnCombatDeathSavesReset;
+            _view.CombatConditionToggled += OnCombatConditionToggled;
+            _view.CombatInspirationChanged += OnCombatInspirationChanged;
+            _view.CombatExhaustionAdjusted += OnCombatExhaustionAdjusted;
             _view.VisualTreeBound += OnViewVisualTreeBound;
             Model.StateChanged += OnModelStateChanged;
 
@@ -221,6 +228,13 @@ namespace GameCore.UI.InGame
                 _view.ClearLogClicked -= OnClearLogClicked;
                 _view.LogEntryDeleteClicked -= OnLogEntryDeleteClicked;
                 _view.MoveButtonClicked -= OnMoveButtonClicked;
+                _view.CombatHitPointsAdjusted -= OnCombatHitPointsAdjusted;
+                _view.CombatTemporaryHitPointsAdjusted -= OnCombatTemporaryHitPointsAdjusted;
+                _view.CombatDeathSavesChanged -= OnCombatDeathSavesChanged;
+                _view.CombatDeathSavesReset -= OnCombatDeathSavesReset;
+                _view.CombatConditionToggled -= OnCombatConditionToggled;
+                _view.CombatInspirationChanged -= OnCombatInspirationChanged;
+                _view.CombatExhaustionAdjusted -= OnCombatExhaustionAdjusted;
                 _view.VisualTreeBound -= OnViewVisualTreeBound;
             }
 
@@ -256,25 +270,15 @@ namespace GameCore.UI.InGame
                 return;
 
             var dmPanel = _view.DmPanel;
-            var dmInspector = _view.DmInspector;
             dmPanel.PlayerSelected += OnDmPlayerSelected;
             dmPanel.StartEncounterClicked += OnDmStartEncounterClicked;
             dmPanel.EndEncounterClicked += OnDmEndEncounterClicked;
             dmPanel.NextTurnClicked += OnDmNextTurnClicked;
 
-            dmInspector.HitPointsAdjusted += OnDmInspectorHitPointsAdjusted;
-            dmInspector.TemporaryHitPointsAdjusted += OnDmInspectorTemporaryHitPointsAdjusted;
-            dmInspector.DeathSavesChanged += OnDmInspectorDeathSavesChanged;
-            dmInspector.DeathSavesReset += OnDmInspectorDeathSavesReset;
-            dmInspector.ConditionToggled += OnDmInspectorConditionToggled;
-            dmInspector.InspirationChanged += OnDmInspectorInspirationChanged;
-            dmInspector.ExhaustionAdjusted += OnDmInspectorExhaustionAdjusted;
-
             ActorRegistry.ActorRegistered += OnActorRegistryChanged;
             ActorRegistry.ActorUnregistered += OnActorUnregistered;
             ActorRegistry.ActorUpdated += OnActorUpdated;
             dmPanel.SetVisible(true);
-            dmInspector.SetVisible(true);
             DmToolsBootstrap.EnsureForLocalSession();
             _dmToolsInitialized = true;
         }
@@ -286,12 +290,11 @@ namespace GameCore.UI.InGame
 
             Model.SetCharacterSheetOpen(false);
             _view.SetPlayerHudVisible(false);
+            _view.SetDmHudMode(true);
             ApplyDmCursorState();
 
             if (_playerInputs != null)
-            {
                 _playerInputs.SetInputEnabled(false);
-            }
         }
 
         private static void ApplyDmCursorState()
@@ -306,25 +309,16 @@ namespace GameCore.UI.InGame
                 return;
 
             var dmPanel = _view.DmPanel;
-            var dmInspector = _view.DmInspector;
             dmPanel.PlayerSelected -= OnDmPlayerSelected;
             dmPanel.StartEncounterClicked -= OnDmStartEncounterClicked;
             dmPanel.EndEncounterClicked -= OnDmEndEncounterClicked;
             dmPanel.NextTurnClicked -= OnDmNextTurnClicked;
 
-            dmInspector.HitPointsAdjusted -= OnDmInspectorHitPointsAdjusted;
-            dmInspector.TemporaryHitPointsAdjusted -= OnDmInspectorTemporaryHitPointsAdjusted;
-            dmInspector.DeathSavesChanged -= OnDmInspectorDeathSavesChanged;
-            dmInspector.DeathSavesReset -= OnDmInspectorDeathSavesReset;
-            dmInspector.ConditionToggled -= OnDmInspectorConditionToggled;
-            dmInspector.InspirationChanged -= OnDmInspectorInspirationChanged;
-            dmInspector.ExhaustionAdjusted -= OnDmInspectorExhaustionAdjusted;
-
             ActorRegistry.ActorRegistered -= OnActorRegistryChanged;
             ActorRegistry.ActorUnregistered -= OnActorUnregistered;
             ActorRegistry.ActorUpdated -= OnActorUpdated;
             dmPanel.SetVisible(false);
-            dmInspector.SetVisible(false);
+            _view.SetDmHudMode(false);
             _view.SetPlayerHudVisible(true);
             _dmToolsInitialized = false;
         }
@@ -338,7 +332,7 @@ namespace GameCore.UI.InGame
             if (_inspectedActor != null && _inspectedActor.OwnerId == actor.OwnerId)
             {
                 BindActiveDataService();
-                RefreshDmInspectorUi();
+                RefreshInspectedCharacterSheetUi();
             }
         }
 
@@ -351,85 +345,80 @@ namespace GameCore.UI.InGame
 
         private void OnDmPlayerSelected(int ownerId)
         {
-            SetInspectedActor(ActorRegistry.GetByOwner(ownerId));
+            if (_selectedOwnerId == ownerId)
+                SetInspectedActor(null);
+            else
+                SetInspectedActor(ActorRegistry.GetByOwner(ownerId));
         }
 
-        private void OnDmInspectorHitPointsAdjusted(int delta)
+        private void OnCombatHitPointsAdjusted(int delta)
         {
-            if (_inspectedActor == null)
-                return;
-
-            CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor)?.RequestAdjustCurrentHitPoints(delta);
-            RefreshDmInspectorUi();
-            RefreshDmPanelUi();
+            var actor = GetCombatTargetActor();
+            CharacterSheetAuthorityHelper.TryGetMutableAuthority(actor)?.RequestAdjustCurrentHitPoints(delta);
+            RefreshCharacterSheetAfterCombatEdit();
         }
 
-        private void OnDmInspectorTemporaryHitPointsAdjusted(int delta)
+        private void OnCombatTemporaryHitPointsAdjusted(int delta)
         {
-            if (_inspectedActor == null)
-                return;
-
-            var authority = CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor);
+            var actor = GetCombatTargetActor();
+            var authority = CharacterSheetAuthorityHelper.TryGetMutableAuthority(actor);
             if (authority == null)
                 return;
 
             authority.RequestSetTemporaryHitPoints(authority.TemporaryHitPoints + delta);
-            RefreshDmInspectorUi();
-            RefreshDmPanelUi();
+            RefreshCharacterSheetAfterCombatEdit();
         }
 
-        private void OnDmInspectorDeathSavesChanged(int successes, int failures)
+        private void OnCombatDeathSavesChanged(int successes, int failures)
         {
-            if (_inspectedActor == null)
-                return;
-
-            CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor)?.RequestSetDeathSaves(successes, failures);
-            RefreshDmInspectorUi();
-            RefreshDmPanelUi();
+            CharacterSheetAuthorityHelper.TryGetMutableAuthority(GetCombatTargetActor())
+                ?.RequestSetDeathSaves(successes, failures);
+            RefreshCharacterSheetAfterCombatEdit();
         }
 
-        private void OnDmInspectorDeathSavesReset()
+        private void OnCombatDeathSavesReset()
         {
-            if (_inspectedActor == null)
-                return;
-
-            CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor)?.RequestResetDeathSaves();
-            RefreshDmInspectorUi();
-            RefreshDmPanelUi();
+            CharacterSheetAuthorityHelper.TryGetMutableAuthority(GetCombatTargetActor())?.RequestResetDeathSaves();
+            RefreshCharacterSheetAfterCombatEdit();
         }
 
-        private void OnDmInspectorConditionToggled(string conditionId)
+        private void OnCombatConditionToggled(string conditionId)
         {
-            if (_inspectedActor == null)
-                return;
-
-            CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor)?.RequestToggleCondition(conditionId);
-            RefreshDmInspectorUi();
-            RefreshDmPanelUi();
+            CharacterSheetAuthorityHelper.TryGetMutableAuthority(GetCombatTargetActor())
+                ?.RequestToggleCondition(conditionId);
+            RefreshCharacterSheetAfterCombatEdit();
         }
 
-        private void OnDmInspectorInspirationChanged(bool hasInspiration)
+        private void OnCombatInspirationChanged(bool hasInspiration)
         {
-            if (_inspectedActor == null)
-                return;
-
-            CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor)?.RequestSetInspiration(hasInspiration);
-            RefreshDmInspectorUi();
-            RefreshDmPanelUi();
+            CharacterSheetAuthorityHelper.TryGetMutableAuthority(GetCombatTargetActor())
+                ?.RequestSetInspiration(hasInspiration);
+            RefreshCharacterSheetAfterCombatEdit();
         }
 
-        private void OnDmInspectorExhaustionAdjusted(int delta)
+        private void OnCombatExhaustionAdjusted(int delta)
         {
-            if (_inspectedActor == null)
-                return;
-
-            var authority = CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor);
+            var authority = CharacterSheetAuthorityHelper.TryGetMutableAuthority(GetCombatTargetActor());
             if (authority == null)
                 return;
 
             authority.RequestSetExhaustionLevel(authority.ExhaustionLevel + delta);
-            RefreshDmInspectorUi();
-            RefreshDmPanelUi();
+            RefreshCharacterSheetAfterCombatEdit();
+        }
+
+        private IActor GetCombatTargetActor()
+        {
+            if (IsLocalPlayerDungeonMaster)
+                return _inspectedActor;
+
+            return ActorRegistry.LocalActor;
+        }
+
+        private void RefreshCharacterSheetAfterCombatEdit()
+        {
+            RefreshInspectedCharacterSheetUi();
+            if (IsLocalPlayerDungeonMaster)
+                RefreshDmPanelUi();
         }
 
         private void OnDmStartEncounterClicked()
@@ -521,7 +510,25 @@ namespace GameCore.UI.InGame
             _selectedOwnerId = actor?.OwnerId ?? -1;
             BindActiveDataService();
             RefreshDmPanelUi();
-            RefreshDmInspectorUi();
+
+            if (actor != null)
+            {
+                RefreshInspectedCharacterSheetUi();
+                Model.SetCharacterSheetOpen(true);
+                _view.SetMoveButtonVisible(false);
+            }
+            else
+            {
+                Model.SetCharacterSheetOpen(false);
+            }
+        }
+
+        private void RefreshInspectedCharacterSheetUi()
+        {
+            if (!IsLocalPlayerDungeonMaster || _inspectedActor == null)
+                return;
+
+            UpdateCharacterSheetUI(GetActiveSheet());
         }
 
         private void RefreshDmPanelUi()
@@ -533,7 +540,6 @@ namespace GameCore.UI.InGame
                 SetupDmToolsIfNeeded();
 
             _view.DmPanel.SetVisible(true);
-            _view.DmInspector.SetVisible(true);
             _view.DmPanel.RefreshPlayerList(BuildDmPlayerRows());
         }
 
@@ -547,17 +553,10 @@ namespace GameCore.UI.InGame
                 if (actor == null)
                     continue;
 
-                var combat = CharacterSheetAuthorityHelper.GetCombatState(actor);
                 rows.Add(new DmPlayerRowState
                 {
                     OwnerId = actor.OwnerId,
                     DisplayName = actor.DisplayName,
-                    CurrentHitPoints = combat.CurrentHitPoints,
-                    MaxHitPoints = CharacterSheetAuthorityHelper.GetMaxHitPoints(actor),
-                    TemporaryHitPoints = combat.TemporaryHitPoints,
-                    ConditionFlags = combat.ConditionFlags,
-                    DeathSaveSuccesses = combat.DeathSaveSuccesses,
-                    DeathSaveFailures = combat.DeathSaveFailures,
                     IsSelected = actor.OwnerId == _selectedOwnerId,
                 });
             }
@@ -565,28 +564,23 @@ namespace GameCore.UI.InGame
             return rows;
         }
 
-        private void RefreshDmInspectorUi()
+        private void OnApplicationFocus(bool hasFocus)
         {
-            if (!IsLocalPlayerDungeonMaster || _view == null || !_dmToolsInitialized)
+            if (!IsLocalPlayerDungeonMaster || !hasFocus)
                 return;
 
-            if (_inspectedActor == null)
-            {
-                _view.DmInspector.Bind("No player selected", 0, 0, 0, 0, 0, 0, false, 0);
-                return;
-            }
+            ApplyDmCursorState();
+            EnsureDmHudInteractive();
+        }
 
-            var combat = CharacterSheetAuthorityHelper.GetCombatState(_inspectedActor);
-            _view.DmInspector.Bind(
-                _inspectedActor.DisplayName,
-                combat.CurrentHitPoints,
-                CharacterSheetAuthorityHelper.GetMaxHitPoints(_inspectedActor),
-                combat.TemporaryHitPoints,
-                combat.DeathSaveSuccesses,
-                combat.DeathSaveFailures,
-                combat.ConditionFlags,
-                combat.HasInspiration,
-                combat.ExhaustionLevel);
+        private void EnsureDmHudInteractive()
+        {
+            if (_view == null)
+                return;
+
+            _view.Show();
+            _view.SetDmHudMode(true);
+            _view.DmPanel.SetVisible(true);
         }
 
         private IPlayerDataService GetActiveDataService()
@@ -631,7 +625,13 @@ namespace GameCore.UI.InGame
             BindEncounterAuthorityIfNeeded();
 
             if (IsLocalPlayerDungeonMaster)
+            {
+                ApplyDmCursorState();
+#if ENABLE_INPUT_SYSTEM
+                HandleDmKeyboardInput();
+#endif
                 return;
+            }
 
             UpdateLookInputState();
 
@@ -672,6 +672,20 @@ namespace GameCore.UI.InGame
         }
 
 #if ENABLE_INPUT_SYSTEM
+        private void HandleDmKeyboardInput()
+        {
+            var keyboard = Keyboard.current;
+            if (keyboard == null || _inspectedActor == null)
+                return;
+
+            if (keyboard.tabKey.wasPressedThisFrame)
+            {
+                Model.ToggleCharacterSheet();
+                if (!Model.IsCharacterSheetOpen && _keyboardNavigationService != null)
+                    _keyboardNavigationService.Reset();
+            }
+        }
+
         /// <summary>
         /// Handles mouse movement to clear keyboard selection when mouse is used.
         /// Delegates to KeyboardNavigationService to follow Single Responsibility Principle.
@@ -791,7 +805,11 @@ namespace GameCore.UI.InGame
         {
             if (IsLocalPlayerDungeonMaster)
             {
+                _view.UpdateView(state);
+                if (state.IsCharacterSheetOpen)
+                    StartCoroutine(RefreshUIAfterDelay(0.1f));
                 ApplyDmCursorState();
+                UpdateCursorState(state.IsCharacterSheetOpen);
                 return;
             }
 
@@ -835,6 +853,12 @@ namespace GameCore.UI.InGame
         /// </summary>
         private void UpdateCursorState(bool isCharacterSheetOpen)
         {
+            if (IsLocalPlayerDungeonMaster)
+            {
+                ApplyDmCursorState();
+                return;
+            }
+
             if (isCharacterSheetOpen || IsEncounterModeActive())
             {
                 // Encounter mode keeps the cursor available for UI/tactical interaction.
@@ -904,7 +928,8 @@ namespace GameCore.UI.InGame
         {
             if (IsLocalPlayerDungeonMaster)
             {
-                RefreshDmInspectorUi();
+                if (_inspectedActor != null)
+                    UpdateCharacterSheetUI(sheet);
                 RefreshDmPanelUi();
                 return;
             }
@@ -917,9 +942,6 @@ namespace GameCore.UI.InGame
         /// </summary>
         private void UpdateCharacterSheetUI(ICharacterSheet sheet)
         {
-            if (IsLocalPlayerDungeonMaster)
-                return;
-
             if (_view == null || sheet == null)
             {
                 Debug.LogWarning("InGameUIPresenter: Cannot update UI - view or sheet is null");
@@ -933,14 +955,17 @@ namespace GameCore.UI.InGame
                 return;
             }
 
-            Debug.Log($"InGameUIPresenter: Updating character sheet UI for {sheet.CharacterName}");
-
-            // Ruleset-agnostic updater; the sheet reports its own ruleset.
             CharacterSheetUIUpdater.UpdateCharacterSheet(root, sheet, sheet.RulesetId);
 
-            // The sheet header binds the shared "speed-value" label to the character's static
-            // base speed. While in an encounter on our own sheet, that would overwrite the live
-            // remaining-movement display, so re-apply the encounter budget after the re-render.
+            var targetActor = IsLocalPlayerDungeonMaster ? _inspectedActor : ActorRegistry.LocalActor;
+            if (targetActor != null)
+            {
+                var combat = CharacterSheetAuthorityHelper.GetCombatState(targetActor);
+                _view.BindCombatSection(combat, CharacterSheetAuthorityHelper.GetMaxHitPoints(targetActor));
+            }
+
+            _view.SetMoveButtonVisible(!IsLocalPlayerDungeonMaster);
+
             if (_inspectedActor == null
                 && _encounterModeManager != null
                 && _encounterModeManager.IsEncounterModeActive)
@@ -954,15 +979,8 @@ namespace GameCore.UI.InGame
         #region View Event Handlers
         private void OnTabClicked(int tabIndex)
         {
-            if (IsLocalPlayerDungeonMaster)
-                return;
-
             Model.SetTab(tabIndex);
-            
-            // Refresh UI when switching tabs to ensure all data is up to date
-            // This is especially important if buttons are in different tabs
-            var sheet = GetActiveSheet();
-            UpdateCharacterSheetUI(sheet);
+            UpdateCharacterSheetUI(GetActiveSheet());
         }
 
         private void OnAbilityScoreClicked(string abilityName) => _actionLog.RollAbilityCheck(abilityName);

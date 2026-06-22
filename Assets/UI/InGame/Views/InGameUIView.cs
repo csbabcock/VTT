@@ -1,6 +1,7 @@
 using GameCore.UI;
 using GameCore.UI.InGame.Services;
 using GameCore.UI.InGame.Models;
+using GameCore.PlayerData;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections;
@@ -61,35 +62,46 @@ namespace GameCore.UI.InGame
         private Button _moveButton;
         private System.Action _moveButtonClickedHandler;
         private DmPanelView _dmPanelView = new DmPanelView();
-        private DmCharacterInspectorView _dmInspectorView = new DmCharacterInspectorView();
+        private CharacterSheetCombatSectionView _combatSectionView = new CharacterSheetCombatSectionView();
+        private VisualElement _dmHudColumn;
         private VisualElement _controlsCheatsheetPanel;
+        private VisualElement _dmControlsCheatsheetPanel;
         private bool _playerHudVisible = true;
+        private bool _dmHudMode;
         #endregion
 
         #region Public Properties
 
         public VisualElement Root => _root;
 
-        /// <summary>DM-only player list and HP controls.</summary>
+        /// <summary>DM-only player list and encounter controls.</summary>
         public DmPanelView DmPanel => _dmPanelView;
 
-        /// <summary>DM-only character inspector for editing player combat state.</summary>
-        public DmCharacterInspectorView DmInspector => _dmInspectorView;
+        /// <summary>Shared character sheet combat controls.</summary>
+        public CharacterSheetCombatSectionView CombatSection => _combatSectionView;
 
         /// <summary>
-        /// Shows or hides player-only HUD (controls cheatsheet, character sheet, game log).
-        /// DM clients use the dm-panel and dm-inspector instead.
+        /// Shows or hides player-only HUD (controls cheatsheet).
+        /// Character sheet visibility is driven by model state.
         /// </summary>
         public void SetPlayerHudVisible(bool visible)
         {
             _playerHudVisible = visible;
-            SetControlsCheatsheetVisible(visible);
-
             if (!visible)
-            {
-                SetCharacterSheetVisible(false);
-                _gameLogView?.SetVisible(false, PANEL_OFFSCREEN_RIGHT, PANEL_ONSCREEN_RIGHT);
-            }
+                SetControlsCheatsheetVisible(false);
+            else
+                SetControlsCheatsheetVisible(true);
+        }
+
+        /// <summary>
+        /// Enables DM HUD: dm-panel, dm controls cheatsheet; hides player cheatsheet.
+        /// </summary>
+        public void SetDmHudMode(bool enabled)
+        {
+            _dmHudMode = enabled;
+            SetControlsCheatsheetVisible(!enabled);
+            SetDmControlsCheatsheetVisible(enabled);
+            SetDmHudColumnVisible(enabled);
         }
 
         /// <summary>
@@ -272,6 +284,14 @@ namespace GameCore.UI.InGame
 
         /// <summary>Fired after the UXML visual tree is bound (including deferred PanelRenderer loads).</summary>
         public event System.Action VisualTreeBound;
+
+        public event System.Action<int> CombatHitPointsAdjusted;
+        public event System.Action<int> CombatTemporaryHitPointsAdjusted;
+        public event System.Action<int, int> CombatDeathSavesChanged;
+        public event System.Action CombatDeathSavesReset;
+        public event System.Action<string> CombatConditionToggled;
+        public event System.Action<bool> CombatInspirationChanged;
+        public event System.Action<int> CombatExhaustionAdjusted;
         #endregion
 
         #region Unity Lifecycle
@@ -393,7 +413,11 @@ namespace GameCore.UI.InGame
             _tabButtons = null;
             _tabButtonHandlers = null;
             _controlsCheatsheetPanel = null;
+            _dmHudColumn = null;
+            _dmControlsCheatsheetPanel = null;
             _targetVisibilityState = null;
+            _combatSectionView.Reset();
+            _dmPanelView.Reset();
             _visualTreeBound = false;
         }
 
@@ -550,10 +574,18 @@ namespace GameCore.UI.InGame
             }
 
             _dmPanelView.Initialize(_root);
-            _dmInspectorView.Initialize(_root);
+            _combatSectionView.Initialize(_root);
+            WireCombatSectionEvents();
 
+            _dmHudColumn = _root.Q<VisualElement>("dm-hud-column");
             _controlsCheatsheetPanel = _root.Q<VisualElement>("controls-cheatsheet-panel");
-            if (!_playerHudVisible)
+            _dmControlsCheatsheetPanel = _root.Q<VisualElement>("dm-controls-cheatsheet-panel");
+            if (_dmHudMode)
+            {
+                SetControlsCheatsheetVisible(false);
+                SetDmControlsCheatsheetVisible(true);
+            }
+            else if (!_playerHudVisible)
             {
                 SetControlsCheatsheetVisible(false);
             }
@@ -835,7 +867,7 @@ namespace GameCore.UI.InGame
                 return;
             }
 
-            if (!_playerHudVisible)
+            if (!_playerHudVisible && !_dmHudMode)
                 return;
 
             // If we're already animating to the target state, don't re-trigger
@@ -1339,6 +1371,50 @@ namespace GameCore.UI.InGame
         #endregion
 
         #region Screen Bounds Helpers
+
+        public void SetMoveButtonVisible(bool visible)
+        {
+            if (_moveButton != null)
+                _moveButton.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        public void BindCombatSection(CharacterCombatState combat, int maxHp)
+        {
+            if (!EnsureVisualTreeReadyForUpdate())
+                return;
+
+            _combatSectionView.Bind(combat, maxHp);
+        }
+
+        private void WireCombatSectionEvents()
+        {
+            _combatSectionView.HitPointsAdjusted += delta => CombatHitPointsAdjusted?.Invoke(delta);
+            _combatSectionView.TemporaryHitPointsAdjusted += delta => CombatTemporaryHitPointsAdjusted?.Invoke(delta);
+            _combatSectionView.DeathSavesChanged += (s, f) => CombatDeathSavesChanged?.Invoke(s, f);
+            _combatSectionView.DeathSavesReset += () => CombatDeathSavesReset?.Invoke();
+            _combatSectionView.ConditionToggled += id => CombatConditionToggled?.Invoke(id);
+            _combatSectionView.InspirationChanged += value => CombatInspirationChanged?.Invoke(value);
+            _combatSectionView.ExhaustionAdjusted += delta => CombatExhaustionAdjusted?.Invoke(delta);
+        }
+
+        private void SetDmHudColumnVisible(bool visible)
+        {
+            if (_dmHudColumn == null)
+                return;
+
+            _dmHudColumn.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            _dmHudColumn.pickingMode = visible ? PickingMode.Position : PickingMode.Ignore;
+        }
+
+        private void SetDmControlsCheatsheetVisible(bool visible)
+        {
+            if (_dmControlsCheatsheetPanel == null)
+                return;
+
+            _dmControlsCheatsheetPanel.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            _dmControlsCheatsheetPanel.SetEnabled(visible);
+            _dmControlsCheatsheetPanel.pickingMode = visible ? PickingMode.Position : PickingMode.Ignore;
+        }
 
         private void SetControlsCheatsheetVisible(bool visible)
         {

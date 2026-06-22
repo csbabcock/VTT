@@ -46,6 +46,8 @@ namespace GameCore.Networking
 
         public bool HasInspiration => CombatState.HasInspiration;
 
+        public string ReplicatedDisplayName => _displayName.Value.ToString();
+
         public override void OnNetworkSpawn()
         {
             if (_playerActor == null)
@@ -116,7 +118,7 @@ namespace GameCore.Networking
 
         private void RequestCombatMutation(System.Func<CharacterCombatState, CharacterCombatState> mutate)
         {
-            if (!SessionRoleLocator.IsDungeonMaster)
+            if (!SessionRoleLocator.IsDungeonMaster && !IsOwner)
                 return;
 
             var state = CombatState;
@@ -131,7 +133,16 @@ namespace GameCore.Networking
                 return;
             }
 
-            ApplyCombatStateServerRpc(CharacterCombatStateNetwork.FromCore(state));
+            if (IsServer)
+            {
+                ApplyCombatStateAuthoritative(state);
+                return;
+            }
+
+            if (SessionRoleLocator.IsDungeonMaster)
+                ApplyCombatStateServerRpc(CharacterCombatStateNetwork.FromCore(state));
+            else
+                RequestOwnerCombatStateServerRpc(CharacterCombatStateNetwork.FromCore(state));
         }
 
         private void SubmitLocalCharacter()
@@ -161,6 +172,9 @@ namespace GameCore.Networking
 
             _displayName.Value = new FixedString128Bytes(Truncate(resolvedName, 60));
 
+            if (_playerActor != null)
+                _playerActor.SetDisplayName(resolvedName);
+
             if (data != null)
                 ApplyCombatStateAuthoritative(CharacterCombatState.FromSheet(data));
 
@@ -174,6 +188,12 @@ namespace GameCore.Networking
             if (rpcParams.Receive.SenderClientId != NetworkManager.ServerClientId)
                 return;
 
+            ApplyCombatStateAuthoritative(newState.ToCore());
+        }
+
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
+        private void RequestOwnerCombatStateServerRpc(CharacterCombatStateNetwork newState)
+        {
             ApplyCombatStateAuthoritative(newState.ToCore());
         }
 

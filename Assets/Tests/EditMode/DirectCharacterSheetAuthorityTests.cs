@@ -13,7 +13,11 @@ namespace GameCore.Tests.EditMode
         public void SetUp() => _previousRole = SessionRoleLocator.LocalRole;
 
         [TearDown]
-        public void TearDown() => SessionRoleLocator.LocalRole = _previousRole;
+        public void TearDown()
+        {
+            SessionRoleLocator.LocalRole = _previousRole;
+            ActorRegistry.Clear();
+        }
 
         [Test]
         public void RequestAdjustCurrentHitPoints_MutatesSheet_WhenDungeonMaster()
@@ -51,7 +55,7 @@ namespace GameCore.Tests.EditMode
         }
 
         [Test]
-        public void RequestAdjustCurrentHitPoints_IsIgnored_WhenNotDungeonMaster()
+        public void RequestAdjustCurrentHitPoints_IsIgnored_WhenNotDungeonMasterOrOwner()
         {
             SessionRoleLocator.LocalRole = SessionRole.Player;
             var data = new DnD5eCharacterData
@@ -67,6 +71,46 @@ namespace GameCore.Tests.EditMode
             authority.RequestAdjustCurrentHitPoints(-5);
 
             Assert.AreEqual(20, data.currentHitPoints);
+        }
+
+        [Test]
+        public void RequestAdjustCurrentHitPoints_MutatesSheet_WhenLocalOwner()
+        {
+            SessionRoleLocator.LocalRole = SessionRole.Player;
+            ActorRegistry.Clear();
+
+            var data = new DnD5eCharacterData
+            {
+                characterClass = "Fighter",
+                level = 3,
+                constitution = 14,
+                currentHitPoints = 20,
+            };
+            var service = new InMemoryPlayerDataService(data);
+            var actor = new FakeActor(1, service);
+            ActorRegistry.Register(actor);
+
+            var authority = new DirectCharacterSheetAuthority(data, service, actor);
+            authority.RequestAdjustCurrentHitPoints(-5);
+
+            Assert.AreEqual(15, data.currentHitPoints);
+            ActorRegistry.Clear();
+        }
+
+        private sealed class FakeActor : IActor
+        {
+            public FakeActor(int ownerId, IPlayerDataService dataService)
+            {
+                OwnerId = ownerId;
+                DataService = dataService;
+            }
+
+            public int OwnerId { get; }
+            public bool IsLocalPlayer => true;
+            public string DisplayName => "Test";
+            public ICharacterSheet Sheet => DataService?.GetCharacterSheet();
+            public IPlayerDataService DataService { get; }
+            public UnityEngine.Transform Transform => null;
         }
 
         [Test]

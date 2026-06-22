@@ -47,7 +47,8 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- DM panel - host/DM only at runtime -->
+        <!-- DM HUD column: players/encounter panel stacked above DM controls cheatsheet -->
+        <ui:VisualElement name="dm-hud-column" class="dm-hud-column">
         <ui:VisualElement name="dm-panel" class="dm-panel diegetic-panel">
             <ui:VisualElement name="dm-panel-header" class="diegetic-panel-header">
                 <ui:Label text="Players" class="diegetic-panel-title" />
@@ -65,60 +66,50 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- DM character inspector - host/DM only at runtime -->
-        <ui:VisualElement name="dm-inspector" class="dm-inspector diegetic-panel">
-            <ui:VisualElement class="diegetic-panel-header">
-                <ui:Label name="dm-inspector-header" text="No player selected" class="diegetic-panel-title" />
+        <!-- DM controls cheat sheet - host/DM only at runtime -->
+        <ui:VisualElement name="dm-controls-cheatsheet-panel" class="dm-controls-cheatsheet-panel diegetic-panel">
+            <ui:VisualElement name="dm-controls-cheatsheet-header" class="diegetic-panel-header">
+                <ui:Label text="DM Controls" class="diegetic-panel-title" />
             </ui:VisualElement>
-            <ui:ScrollView class="dm-inspector-content">
-            <ui:VisualElement class="dm-inspector-sections">
-            <ui:VisualElement class="dm-inspector-section">
-                <ui:Label text="Hit Points" class="dm-inspector-section-title" />
-                <ui:Label name="dm-inspector-hp-value" text="—" class="dm-inspector-value dm-inspector-hp-value" />
-                <ui:VisualElement class="dm-inspector-controls">
-                    <ui:Button name="dm-inspector-hp-minus-five" text="-5" class="dm-hp-button diegetic-button diegetic-button-compact" />
-                    <ui:Button name="dm-inspector-hp-minus-one" text="-1" class="dm-hp-button diegetic-button diegetic-button-compact" />
-                    <ui:Button name="dm-inspector-hp-plus-one" text="+1" class="dm-hp-button diegetic-button diegetic-button-compact" />
-                    <ui:Button name="dm-inspector-hp-plus-five" text="+5" class="dm-hp-button diegetic-button diegetic-button-compact" />
+            <ui:VisualElement name="dm-controls-cheatsheet-content" class="controls-cheatsheet-content">
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Pan" class="controls-cheatsheet-action" />
+                    <ui:Label text="Middle Mouse" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Orbit" class="controls-cheatsheet-action" />
+                    <ui:Label text="Alt + LMB" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Zoom" class="controls-cheatsheet-action" />
+                    <ui:Label text="Scroll / Alt+RMB" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Fly" class="controls-cheatsheet-action" />
+                    <ui:Label text="RMB + WASD" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Up / Down" class="controls-cheatsheet-action" />
+                    <ui:Label text="Q / E" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Walk" class="controls-cheatsheet-action" />
+                    <ui:Label text="Arrow Keys" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Fast" class="controls-cheatsheet-action" />
+                    <ui:Label text="Shift" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Player Sheet" class="controls-cheatsheet-action" />
+                    <ui:Label text="Select Player / Tab" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Encounter" class="controls-cheatsheet-action" />
+                    <ui:Label text="DM Panel Buttons" class="controls-cheatsheet-binding" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement class="dm-inspector-section">
-                <ui:Label text="Temporary HP" class="dm-inspector-section-title" />
-                <ui:Label name="dm-inspector-temp-hp-value" text="0" class="dm-inspector-value" />
-                <ui:VisualElement class="dm-inspector-controls">
-                    <ui:Button name="dm-inspector-temp-minus-one" text="-1" class="dm-hp-button diegetic-button diegetic-button-compact" />
-                    <ui:Button name="dm-inspector-temp-plus-one" text="+1" class="dm-hp-button diegetic-button diegetic-button-compact" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:VisualElement class="dm-inspector-section">
-                <ui:Label text="Death Saves" class="dm-inspector-section-title" />
-                <ui:VisualElement class="dm-death-save-row">
-                    <ui:Label text="S" class="dm-death-save-label" />
-                    <ui:VisualElement name="dm-inspector-death-successes" class="dm-death-save-pips" />
-                </ui:VisualElement>
-                <ui:VisualElement class="dm-death-save-row">
-                    <ui:Label text="F" class="dm-death-save-label" />
-                    <ui:VisualElement name="dm-inspector-death-failures" class="dm-death-save-pips" />
-                </ui:VisualElement>
-                <ui:Button name="dm-inspector-death-reset" text="Reset" class="dm-inspector-reset-button diegetic-button diegetic-button-compact" />
-            </ui:VisualElement>
-            <ui:VisualElement class="dm-inspector-section">
-                <ui:Label text="Conditions" class="dm-inspector-section-title" />
-                <ui:VisualElement name="dm-inspector-condition-grid" class="dm-inspector-condition-grid" />
-            </ui:VisualElement>
-            <ui:VisualElement class="dm-inspector-section dm-inspector-status-row">
-                <ui:Toggle name="dm-inspector-inspiration-toggle" label="Inspiration" class="dm-inspector-toggle" />
-                <ui:VisualElement class="dm-inspector-exhaustion">
-                    <ui:Label text="Exhaustion" class="dm-inspector-section-title" />
-                    <ui:VisualElement class="dm-inspector-controls">
-                        <ui:Button name="dm-inspector-exhaustion-minus" text="-" class="dm-hp-button diegetic-button diegetic-button-compact" />
-                        <ui:Label name="dm-inspector-exhaustion-value" text="0" class="dm-inspector-value" />
-                        <ui:Button name="dm-inspector-exhaustion-plus" text="+" class="dm-hp-button diegetic-button diegetic-button-compact" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-            </ui:VisualElement>
-            </ui:VisualElement>
-            </ui:ScrollView>
+        </ui:VisualElement>
         </ui:VisualElement>
 
         <!-- Turn indicator - visible during networked encounters -->
@@ -141,9 +132,23 @@
 
                 <!-- Center: Combat Stats -->
                 <ui:VisualElement name="header-center" class="header-center">
-                    <ui:VisualElement name="hp-container" class="stat-container">
+                    <ui:VisualElement name="hp-container" class="stat-container charsheet-hp-container">
                         <ui:Label text="HP" class="stat-label" />
                         <ui:Label name="hp-value" text="— / —" class="stat-value hp-value" />
+                        <ui:VisualElement class="charsheet-combat-controls">
+                            <ui:Button name="hp-minus-five" text="-5" class="charsheet-combat-button diegetic-button diegetic-button-compact" />
+                            <ui:Button name="hp-minus-one" text="-1" class="charsheet-combat-button diegetic-button diegetic-button-compact" />
+                            <ui:Button name="hp-plus-one" text="+1" class="charsheet-combat-button diegetic-button diegetic-button-compact" />
+                            <ui:Button name="hp-plus-five" text="+5" class="charsheet-combat-button diegetic-button diegetic-button-compact" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="temp-hp-container" class="stat-container charsheet-temp-hp-container">
+                        <ui:Label text="Temp HP" class="stat-label" />
+                        <ui:Label name="temp-hp-value" text="0" class="stat-value" />
+                        <ui:VisualElement class="charsheet-combat-controls">
+                            <ui:Button name="temp-hp-minus-one" text="-1" class="charsheet-combat-button diegetic-button diegetic-button-compact" />
+                            <ui:Button name="temp-hp-plus-one" text="+1" class="charsheet-combat-button diegetic-button diegetic-button-compact" />
+                        </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement name="ac-container" class="stat-container">
                         <ui:Label text="AC" class="stat-label" />
@@ -182,6 +187,38 @@
             <ui:ScrollView name="charsheet-tab-content" class="charsheet-tab-content">
                 <!-- TAB 0: Overview - All Content Combined -->
                 <ui:VisualElement name="tab-overview-content" class="charsheet-tab-panel active">
+                    <!-- Combat Status -->
+                    <ui:Label text="Combat Status" class="section-title" />
+                    <ui:VisualElement name="charsheet-combat-status" class="charsheet-combat-status">
+                        <ui:VisualElement class="charsheet-combat-section">
+                            <ui:Label text="Death Saves" class="charsheet-combat-section-title" />
+                            <ui:VisualElement class="charsheet-death-save-row">
+                                <ui:Label text="S" class="charsheet-death-save-label" />
+                                <ui:VisualElement name="charsheet-death-successes" class="charsheet-death-save-pips" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="charsheet-death-save-row">
+                                <ui:Label text="F" class="charsheet-death-save-label" />
+                                <ui:VisualElement name="charsheet-death-failures" class="charsheet-death-save-pips" />
+                            </ui:VisualElement>
+                            <ui:Button name="charsheet-death-reset" text="Reset Death Saves" class="charsheet-combat-reset-button diegetic-button diegetic-button-compact" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="charsheet-combat-section">
+                            <ui:Label text="Conditions" class="charsheet-combat-section-title" />
+                            <ui:VisualElement name="charsheet-condition-grid" class="charsheet-condition-grid" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="charsheet-combat-section charsheet-combat-status-row">
+                            <ui:Toggle name="charsheet-inspiration-toggle" label="Inspiration" class="charsheet-inspiration-toggle" />
+                            <ui:VisualElement class="charsheet-exhaustion">
+                                <ui:Label text="Exhaustion" class="charsheet-combat-section-title" />
+                                <ui:VisualElement class="charsheet-combat-controls">
+                                    <ui:Button name="charsheet-exhaustion-minus" text="-" class="charsheet-combat-button diegetic-button diegetic-button-compact" />
+                                    <ui:Label name="charsheet-exhaustion-value" text="0" class="charsheet-exhaustion-value" />
+                                    <ui:Button name="charsheet-exhaustion-plus" text="+" class="charsheet-combat-button diegetic-button diegetic-button-compact" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
                     <!-- Ability Scores -->
                     <ui:Label text="Ability Scores" class="section-title" />
                     <ui:VisualElement name="ability-grid" class="ability-grid">

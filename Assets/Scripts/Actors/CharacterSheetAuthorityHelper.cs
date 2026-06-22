@@ -24,9 +24,24 @@ namespace GameCore.Actors
 
             var data = actor.DataService?.GetCharacterSheet() as DnD5eCharacterData;
             if (data != null && actor.DataService != null)
-                return new DirectCharacterSheetAuthority(data, actor.DataService);
+                return new DirectCharacterSheetAuthority(data, actor.DataService, actor);
 
             return null;
+        }
+
+        /// <summary>
+        /// Returns authority when the local client is allowed to mutate combat state on the actor.
+        /// </summary>
+        public static ICharacterSheetAuthority TryGetMutableAuthority(IActor actor)
+        {
+            if (actor == null)
+                return null;
+
+            bool isDm = Networking.SessionRoleLocator.IsDungeonMaster;
+            if (!CharacterCombatMutationPolicy.CanMutate(isDm, CharacterCombatMutationPolicy.IsLocalOwner(actor)))
+                return null;
+
+            return GetAuthority(actor);
         }
 
         public static CharacterCombatState GetCombatState(IActor actor)

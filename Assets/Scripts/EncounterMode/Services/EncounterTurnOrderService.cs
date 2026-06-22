@@ -69,6 +69,16 @@ namespace GameCore.EncounterMode.Services
             return _order[_index];
         }
 
+        /// <summary>Appends a late-joining owner to the end of the order when missing.</summary>
+        public bool TryAddOwner(int ownerId)
+        {
+            if (ownerId == NoTurnOwner || _order.Contains(ownerId))
+                return false;
+
+            _order.Add(ownerId);
+            return true;
+        }
+
         /// <summary>Clears the turn order.</summary>
         public void Clear()
         {

@@ -11,11 +11,13 @@ namespace GameCore.Actors
     {
         private readonly DnD5eCharacterData _data;
         private readonly IPlayerDataService _service;
+        private readonly IActor _actor;
 
-        public DirectCharacterSheetAuthority(DnD5eCharacterData data, IPlayerDataService service)
+        public DirectCharacterSheetAuthority(DnD5eCharacterData data, IPlayerDataService service, IActor actor = null)
         {
             _data = data;
             _service = service;
+            _actor = actor;
         }
 
         public CharacterCombatState CombatState => CharacterCombatState.FromSheet(_data);
@@ -80,7 +82,12 @@ namespace GameCore.Actors
 
         private void ApplyMutated(System.Func<CharacterCombatState, CharacterCombatState> mutate)
         {
-            if (!SessionRoleLocator.IsDungeonMaster || _data == null)
+            if (_data == null)
+                return;
+
+            bool isDm = Networking.SessionRoleLocator.IsDungeonMaster;
+            bool isOwner = _actor != null && CharacterCombatMutationPolicy.IsLocalOwner(_actor);
+            if (!CharacterCombatMutationPolicy.CanMutate(isDm, isOwner))
                 return;
 
             var state = CharacterCombatState.FromSheet(_data);

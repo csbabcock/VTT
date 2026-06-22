@@ -78,6 +78,8 @@ namespace GameCore.UI.InGame
 
         public static string GetHitPointsValueElementName() => "hp-value";
 
+        public static string GetTempHitPointsValueElementName() => "temp-hp-value";
+
         public static string GetArmorClassValueElementName() => "ac-value";
 
         public static string GetInitiativeValueElementName() => "initiative-value";

@@ -981,12 +981,21 @@
     font-size: 14px;
 }
 
-/* DM player management panel - left side; inspector sits on the right */
-.dm-panel {
+/* DM HUD column stacks the player list and DM controls cheatsheet vertically */
+.dm-hud-column {
     position: absolute;
     left: 48px;
     top: 5px;
     width: 260px;
+    flex-direction: column;
+}
+
+/* DM player management panel - left side; inspector sits on the right */
+.dm-panel {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
     max-height: 520px;
     border-radius: var(--vtt-radius-large);
     border-width: 1px;
@@ -1066,6 +1075,143 @@
 .dm-player-row-status {
     color: var(--vtt-accent-primary);
     font-size: 11px;
+}
+
+.dm-controls-cheatsheet-panel {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    margin-top: 12px;
+    border-radius: var(--vtt-radius-large);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: rgba(12, 12, 16, 0.85);
+    padding: 0;
+    flex-direction: column;
+    overflow: hidden;
+    display: none;
+}
+
+.charsheet-combat-controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.charsheet-combat-button {
+    margin-right: 4px;
+    margin-bottom: 4px;
+    min-width: 0;
+    padding: 2px 6px;
+    font-size: 11px;
+}
+
+.charsheet-hp-container,
+.charsheet-temp-hp-container {
+    min-width: 80px;
+}
+
+.charsheet-combat-status {
+    flex-direction: column;
+    margin-bottom: var(--vtt-spacing-large);
+}
+
+.charsheet-combat-section {
+    flex-direction: column;
+    margin-bottom: var(--vtt-spacing-medium);
+    padding-bottom: var(--vtt-spacing-medium);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--vtt-border-color);
+}
+
+.charsheet-combat-section-title {
+    color: var(--vtt-text-muted);
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.charsheet-combat-reset-button {
+    align-self: flex-start;
+    margin-top: var(--vtt-spacing-small);
+}
+
+.charsheet-condition-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.charsheet-condition-chip {
+    margin-right: var(--vtt-spacing-small);
+    margin-bottom: var(--vtt-spacing-small);
+    font-size: 11px;
+    padding: 4px var(--vtt-spacing-small);
+    min-width: 0;
+}
+
+.charsheet-condition-chip-active {
+    background-color: rgba(248, 213, 138, 0.15);
+    border-color: var(--vtt-accent-primary);
+    border-width: 2px;
+    -unity-font-style: bold;
+}
+
+.charsheet-death-save-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+.charsheet-death-save-label {
+    width: 16px;
+    color: var(--vtt-text-muted);
+    font-size: 12px;
+}
+
+.charsheet-death-save-pips {
+    flex-direction: row;
+}
+
+.charsheet-death-save-pip {
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    margin-right: 6px;
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.charsheet-death-save-pip-success {
+    background-color: rgba(74, 222, 128, 0.85);
+    border-color: rgba(74, 222, 128, 1);
+}
+
+.charsheet-death-save-pip-failure {
+    background-color: rgba(239, 68, 68, 0.85);
+    border-color: rgba(239, 68, 68, 1);
+}
+
+.charsheet-combat-status-row {
+    flex-direction: column;
+}
+
+.charsheet-inspiration-toggle {
+    margin-bottom: var(--vtt-spacing-small);
+    color: var(--vtt-text-main);
+}
+
+.charsheet-exhaustion {
+    flex-direction: column;
+}
+
+.charsheet-exhaustion-value {
+    color: var(--vtt-text-main);
+    font-size: 16px;
+    -unity-font-style: bold;
+    margin-left: var(--vtt-spacing-small);
+    margin-right: var(--vtt-spacing-small);
 }
 
 .dm-inspector {

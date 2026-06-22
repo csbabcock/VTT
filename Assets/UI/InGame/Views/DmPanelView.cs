@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using GameCore.PlayerData;
 using GameCore.UI.InGame.Models;
 using UnityEngine.UIElements;
 
@@ -8,7 +7,6 @@ namespace GameCore.UI.InGame
 {
     /// <summary>
     /// DM-only panel listing connected players and exposing encounter controls.
-    /// Character editing lives in <see cref="DmCharacterInspectorView"/>.
     /// </summary>
     public class DmPanelView
     {
@@ -21,6 +19,13 @@ namespace GameCore.UI.InGame
         public event Action EndEncounterClicked;
         public event Action NextTurnClicked;
 
+        public void Reset()
+        {
+            _panel = null;
+            _playerList = null;
+            _playerButtons.Clear();
+        }
+
         public void Initialize(VisualElement root)
         {
             if (root == null)
@@ -28,6 +33,13 @@ namespace GameCore.UI.InGame
 
             _panel = root.Q<VisualElement>("dm-panel");
             _playerList = root.Q<VisualElement>("dm-player-list");
+
+            if (_playerList != null)
+                _playerList.pickingMode = PickingMode.Position;
+
+            var playerListScroll = root.Q<ScrollView>("dm-player-list-scroll");
+            if (playerListScroll != null)
+                playerListScroll.pickingMode = PickingMode.Position;
 
             if (_panel == null)
             {
@@ -81,59 +93,16 @@ namespace GameCore.UI.InGame
         private Button BuildPlayerRow(DmPlayerRowState row)
         {
             int ownerId = row.OwnerId;
-            var button = new Button { name = $"dm-player-{ownerId}" };
+            var button = new Button { name = $"dm-player-{ownerId}", text = row.DisplayName };
             button.AddToClassList("dm-player-button");
             button.AddToClassList("diegetic-button");
+            button.pickingMode = PickingMode.Position;
+            button.focusable = true;
             if (row.IsSelected)
                 button.AddToClassList("diegetic-button-selected");
 
-            var container = new VisualElement();
-            container.AddToClassList("dm-player-row");
-
-            var nameLabel = new Label(row.DisplayName);
-            nameLabel.AddToClassList("dm-player-row-name");
-            container.Add(nameLabel);
-
-            string hpText = row.MaxHitPoints > 0
-                ? $"{row.CurrentHitPoints}/{row.MaxHitPoints}"
-                : "—";
-            if (row.TemporaryHitPoints > 0)
-                hpText += $" (+{row.TemporaryHitPoints})";
-
-            var hpLabel = new Label(hpText);
-            hpLabel.AddToClassList("dm-player-row-hp");
-            container.Add(hpLabel);
-
-            string status = BuildStatusSummary(row);
-            if (!string.IsNullOrEmpty(status))
-            {
-                var statusLabel = new Label(status);
-                statusLabel.AddToClassList("dm-player-row-status");
-                container.Add(statusLabel);
-            }
-
-            button.Add(container);
             button.clicked += () => PlayerSelected?.Invoke(ownerId);
             return button;
-        }
-
-        private static string BuildStatusSummary(DmPlayerRowState row)
-        {
-            int conditionCount = DnD5eConditions.Count(row.ConditionFlags);
-            bool hasDeathSaves = row.CurrentHitPoints <= 0
-                                 && (row.DeathSaveSuccesses > 0 || row.DeathSaveFailures > 0);
-
-            if (conditionCount == 0 && !hasDeathSaves)
-                return string.Empty;
-
-            var parts = new List<string>();
-            if (conditionCount > 0)
-                parts.Add($"{conditionCount} cond");
-
-            if (hasDeathSaves)
-                parts.Add($"DS {row.DeathSaveSuccesses}/{row.DeathSaveFailures}");
-
-            return string.Join(" · ", parts);
         }
 
         private void ClearPlayerButtons()

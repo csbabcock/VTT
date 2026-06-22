@@ -52,6 +52,7 @@ namespace GameCore.Networking
 
             _isEncounterActive.OnValueChanged += HandleEncounterActiveChanged;
             _currentTurnOwnerId.OnValueChanged += HandleTurnOwnerChanged;
+            ActorRegistry.ActorRegistered += HandleActorRegistered;
 
             ApplyEncounterActive(_isEncounterActive.Value);
             EncounterActiveChanged?.Invoke(_isEncounterActive.Value);
@@ -62,6 +63,7 @@ namespace GameCore.Networking
         {
             _isEncounterActive.OnValueChanged -= HandleEncounterActiveChanged;
             _currentTurnOwnerId.OnValueChanged -= HandleTurnOwnerChanged;
+            ActorRegistry.ActorRegistered -= HandleActorRegistered;
 
             if (ReferenceEquals(EncounterSessionLocator.Authority, this))
                 EncounterSessionLocator.Authority = null;
@@ -154,6 +156,21 @@ namespace GameCore.Networking
         private void HandleTurnOwnerChanged(int previous, int current)
         {
             TurnOwnerChanged?.Invoke(current);
+        }
+
+        private void HandleActorRegistered(IActor actor)
+        {
+            if (!IsServer || actor == null || !_isEncounterActive.Value)
+                return;
+
+            if (!_turnOrderService.TryAddOwner(actor.OwnerId))
+                return;
+
+            if (!_turnOrderService.HasTurns)
+            {
+                _currentTurnOwnerId.Value = actor.OwnerId;
+                ResetMovementForTurnOwner(actor.OwnerId);
+            }
         }
 
         private void ApplyEncounterActive(bool isActive)
