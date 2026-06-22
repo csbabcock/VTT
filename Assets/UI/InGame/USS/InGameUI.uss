@@ -1014,12 +1014,12 @@
     font-size: 14px;
 }
 
-/* DM player management panel - top right, left of the character sheet */
+/* DM player management panel - left side; inspector sits on the right */
 .dm-panel {
     position: absolute;
-    right: 580px;
+    left: 5px;
     top: 5px;
-    width: 260px;
+    width: 240px;
     max-height: 520px;
     border-radius: var(--vtt-radius-large);
     border-width: 1px;
@@ -1098,6 +1098,149 @@
     min-width: 44px;
     margin-right: var(--vtt-spacing-small);
     margin-bottom: var(--vtt-spacing-small);
+}
+
+.dm-player-row {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.dm-player-row-name {
+    color: var(--vtt-text-main);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.dm-player-row-hp {
+    color: var(--vtt-text-muted);
+    font-size: 12px;
+}
+
+.dm-player-row-status {
+    color: rgba(255, 180, 120, 0.95);
+    font-size: 11px;
+}
+
+.dm-inspector {
+    position: absolute;
+    right: 48px;
+    top: 5px;
+    width: 320px;
+    max-height: 90%;
+    border-radius: var(--vtt-radius-large);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: rgba(12, 12, 16, 0.9);
+    padding: var(--vtt-spacing-medium);
+    flex-direction: column;
+    overflow: hidden;
+    display: none;
+}
+
+.dm-inspector-header {
+    color: var(--vtt-text-main);
+    font-size: 20px;
+    -unity-font-style: bold;
+    margin-bottom: var(--vtt-spacing-medium);
+}
+
+.dm-inspector-section {
+    flex-direction: column;
+    margin-bottom: var(--vtt-spacing-medium);
+    padding-bottom: var(--vtt-spacing-small);
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.dm-inspector-section-title {
+    color: var(--vtt-text-muted);
+    font-size: 12px;
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+.dm-inspector-value {
+    color: var(--vtt-text-main);
+    font-size: 16px;
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+.dm-inspector-controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.dm-inspector-reset-button {
+    align-self: flex-start;
+    margin-top: var(--vtt-spacing-small);
+}
+
+.dm-inspector-condition-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.dm-condition-chip {
+    margin-right: var(--vtt-spacing-small);
+    margin-bottom: var(--vtt-spacing-small);
+    font-size: 11px;
+    color: var(--vtt-text-main);
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: var(--vtt-border-color);
+}
+
+.dm-condition-chip-active {
+    background-color: rgba(255, 120, 80, 0.35);
+    border-color: rgba(255, 120, 80, 0.8);
+}
+
+.dm-death-save-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+.dm-death-save-label {
+    width: 16px;
+    color: var(--vtt-text-muted);
+    font-size: 12px;
+}
+
+.dm-death-save-pips {
+    flex-direction: row;
+}
+
+.dm-death-save-pip {
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    margin-right: 6px;
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dm-death-save-pip-success {
+    background-color: rgba(74, 222, 128, 0.85);
+    border-color: rgba(74, 222, 128, 1);
+}
+
+.dm-death-save-pip-failure {
+    background-color: rgba(239, 68, 68, 0.85);
+    border-color: rgba(239, 68, 68, 1);
+}
+
+.dm-inspector-status-row {
+    flex-direction: column;
+}
+
+.dm-inspector-toggle {
+    margin-bottom: var(--vtt-spacing-small);
+}
+
+.dm-inspector-exhaustion {
+    flex-direction: column;
 }
 
 .dm-view-self-button {

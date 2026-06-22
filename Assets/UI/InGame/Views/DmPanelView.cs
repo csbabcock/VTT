@@ -1,26 +1,22 @@
 using System;
 using System.Collections.Generic;
-using GameCore.Actors;
+using GameCore.PlayerData;
+using GameCore.UI.InGame.Models;
 using UnityEngine.UIElements;
 
 namespace GameCore.UI.InGame
 {
     /// <summary>
-    /// DM-only panel listing connected players and exposing HP adjustment controls for the
-    /// currently selected actor. Pure UI binding — the presenter supplies data and handles events.
+    /// DM-only panel listing connected players and exposing encounter controls.
+    /// Character editing lives in <see cref="DmCharacterInspectorView"/>.
     /// </summary>
     public class DmPanelView
     {
         private VisualElement _panel;
         private VisualElement _playerList;
-        private Label _selectedLabel;
-        private Label _hpValueLabel;
-        private Button _viewSelfButton;
         private readonly List<Button> _playerButtons = new List<Button>();
 
         public event Action<int> PlayerSelected;
-        public event Action ViewSelfClicked;
-        public event Action<int> HitPointsAdjusted;
         public event Action StartEncounterClicked;
         public event Action EndEncounterClicked;
         public event Action NextTurnClicked;
@@ -32,9 +28,6 @@ namespace GameCore.UI.InGame
 
             _panel = root.Q<VisualElement>("dm-panel");
             _playerList = root.Q<VisualElement>("dm-player-list");
-            _selectedLabel = root.Q<Label>("dm-selected-label");
-            _hpValueLabel = root.Q<Label>("dm-hp-value");
-            _viewSelfButton = root.Q<Button>("dm-view-self-button");
 
             if (_panel == null)
             {
@@ -44,16 +37,9 @@ namespace GameCore.UI.InGame
 
             _panel.pickingMode = PickingMode.Position;
 
-            WireButton(root, "dm-hp-minus-five", () => HitPointsAdjusted?.Invoke(-5));
-            WireButton(root, "dm-hp-minus-one", () => HitPointsAdjusted?.Invoke(-1));
-            WireButton(root, "dm-hp-plus-one", () => HitPointsAdjusted?.Invoke(1));
-            WireButton(root, "dm-hp-plus-five", () => HitPointsAdjusted?.Invoke(5));
             WireButton(root, "dm-start-encounter-button", () => StartEncounterClicked?.Invoke());
             WireButton(root, "dm-end-encounter-button", () => EndEncounterClicked?.Invoke());
             WireButton(root, "dm-next-turn-button", () => NextTurnClicked?.Invoke());
-
-            if (_viewSelfButton != null)
-                _viewSelfButton.clicked += () => ViewSelfClicked?.Invoke();
 
             SetVisible(false);
         }
@@ -67,7 +53,7 @@ namespace GameCore.UI.InGame
             _panel.SetEnabled(visible);
         }
 
-        public void RefreshPlayerList(IReadOnlyList<IActor> actors, int selectedOwnerId)
+        public void RefreshPlayerList(IReadOnlyList<DmPlayerRowState> rows)
         {
             if (_playerList == null)
                 return;
@@ -75,66 +61,76 @@ namespace GameCore.UI.InGame
             ClearPlayerButtons();
             _playerList.Clear();
 
-            if (actors == null || actors.Count == 0)
+            if (rows == null || rows.Count == 0)
             {
                 _playerList.Add(new Label("No players registered yet."));
-                UpdateSelectionDetails(null, selectedOwnerId);
                 return;
             }
 
-            foreach (var actor in actors)
+            for (int i = 0; i < rows.Count; i++)
             {
-                if (actor == null)
-                    continue;
-
-                int ownerId = actor.OwnerId;
-                var row = new Button
-                {
-                    text = actor.DisplayName,
-                    name = $"dm-player-{ownerId}",
-                };
-                row.AddToClassList("dm-player-button");
-                if (ownerId == selectedOwnerId)
-                    row.AddToClassList("dm-player-button-selected");
-
-                row.clicked += () => PlayerSelected?.Invoke(ownerId);
-                _playerList.Add(row);
-                _playerButtons.Add(row);
+                var row = rows[i];
+                var button = BuildPlayerRow(row);
+                _playerList.Add(button);
+                _playerButtons.Add(button);
             }
-
-            IActor selected = null;
-            for (int i = 0; i < actors.Count; i++)
-            {
-                if (actors[i] != null && actors[i].OwnerId == selectedOwnerId)
-                {
-                    selected = actors[i];
-                    break;
-                }
-            }
-
-            UpdateSelectionDetails(selected, selectedOwnerId);
         }
 
-        public void UpdateSelectionDetails(IActor selected, int currentHp, int maxHp)
+        private Button BuildPlayerRow(DmPlayerRowState row)
         {
-            if (_selectedLabel != null)
-                _selectedLabel.text = selected != null ? $"Inspecting: {selected.DisplayName}" : "Inspecting: (none)";
+            int ownerId = row.OwnerId;
+            var button = new Button { name = $"dm-player-{ownerId}" };
+            button.AddToClassList("dm-player-button");
+            if (row.IsSelected)
+                button.AddToClassList("dm-player-button-selected");
 
-            if (_hpValueLabel != null)
-                _hpValueLabel.text = selected != null ? $"HP: {currentHp} / {maxHp}" : "HP: —";
-        }
+            var container = new VisualElement();
+            container.AddToClassList("dm-player-row");
 
-        private void UpdateSelectionDetails(IActor selected, int selectedOwnerId)
-        {
-            if (_selectedLabel != null)
+            var nameLabel = new Label(row.DisplayName);
+            nameLabel.AddToClassList("dm-player-row-name");
+            container.Add(nameLabel);
+
+            string hpText = row.MaxHitPoints > 0
+                ? $"{row.CurrentHitPoints}/{row.MaxHitPoints}"
+                : "—";
+            if (row.TemporaryHitPoints > 0)
+                hpText += $" (+{row.TemporaryHitPoints})";
+
+            var hpLabel = new Label(hpText);
+            hpLabel.AddToClassList("dm-player-row-hp");
+            container.Add(hpLabel);
+
+            string status = BuildStatusSummary(row);
+            if (!string.IsNullOrEmpty(status))
             {
-                _selectedLabel.text = selected != null
-                    ? $"Inspecting: {selected.DisplayName}"
-                    : selectedOwnerId >= 0 ? $"Selected client {selectedOwnerId}" : "Inspecting: (none)";
+                var statusLabel = new Label(status);
+                statusLabel.AddToClassList("dm-player-row-status");
+                container.Add(statusLabel);
             }
 
-            if (_hpValueLabel != null)
-                _hpValueLabel.text = "HP: —";
+            button.Add(container);
+            button.clicked += () => PlayerSelected?.Invoke(ownerId);
+            return button;
+        }
+
+        private static string BuildStatusSummary(DmPlayerRowState row)
+        {
+            int conditionCount = DnD5eConditions.Count(row.ConditionFlags);
+            bool hasDeathSaves = row.CurrentHitPoints <= 0
+                                 && (row.DeathSaveSuccesses > 0 || row.DeathSaveFailures > 0);
+
+            if (conditionCount == 0 && !hasDeathSaves)
+                return string.Empty;
+
+            var parts = new List<string>();
+            if (conditionCount > 0)
+                parts.Add($"{conditionCount} cond");
+
+            if (hasDeathSaves)
+                parts.Add($"DS {row.DeathSaveSuccesses}/{row.DeathSaveFailures}");
+
+            return string.Join(" · ", parts);
         }
 
         private void ClearPlayerButtons()

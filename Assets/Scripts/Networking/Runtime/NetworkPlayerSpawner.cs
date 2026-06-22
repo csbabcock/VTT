@@ -165,6 +165,9 @@ namespace GameCore.Networking
             if (_networkManager == null || !_networkManager.IsServer)
                 return;
 
+            if (!NetworkPlayerSpawnPolicy.ShouldSpawnPlayerObject(clientId, NetworkManager.ServerClientId))
+                return;
+
             if (_playerPrefab == null)
             {
                 Debug.LogError("NetworkPlayerSpawner: No player prefab assigned (and none found on the " +

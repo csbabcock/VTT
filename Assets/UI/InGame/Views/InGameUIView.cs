@@ -61,6 +61,9 @@ namespace GameCore.UI.InGame
         private Button _moveButton;
         private System.Action _moveButtonClickedHandler;
         private DmPanelView _dmPanelView = new DmPanelView();
+        private DmCharacterInspectorView _dmInspectorView = new DmCharacterInspectorView();
+        private VisualElement _controlsCheatsheetPanel;
+        private bool _playerHudVisible = true;
         #endregion
 
         #region Public Properties
@@ -69,6 +72,25 @@ namespace GameCore.UI.InGame
 
         /// <summary>DM-only player list and HP controls.</summary>
         public DmPanelView DmPanel => _dmPanelView;
+
+        /// <summary>DM-only character inspector for editing player combat state.</summary>
+        public DmCharacterInspectorView DmInspector => _dmInspectorView;
+
+        /// <summary>
+        /// Shows or hides player-only HUD (controls cheatsheet, character sheet, game log).
+        /// DM clients use the dm-panel and dm-inspector instead.
+        /// </summary>
+        public void SetPlayerHudVisible(bool visible)
+        {
+            _playerHudVisible = visible;
+            SetControlsCheatsheetVisible(visible);
+
+            if (!visible)
+            {
+                SetCharacterSheetVisible(false);
+                _gameLogView?.SetVisible(false, PANEL_OFFSCREEN_RIGHT, PANEL_ONSCREEN_RIGHT);
+            }
+        }
 
         /// <summary>
         /// Checks if the character sheet is currently open/visible.
@@ -370,6 +392,7 @@ namespace GameCore.UI.InGame
             _characterSheetTabs = null;
             _tabButtons = null;
             _tabButtonHandlers = null;
+            _controlsCheatsheetPanel = null;
             _targetVisibilityState = null;
             _visualTreeBound = false;
         }
@@ -527,6 +550,13 @@ namespace GameCore.UI.InGame
             }
 
             _dmPanelView.Initialize(_root);
+            _dmInspectorView.Initialize(_root);
+
+            _controlsCheatsheetPanel = _root.Q<VisualElement>("controls-cheatsheet-panel");
+            if (!_playerHudVisible)
+            {
+                SetControlsCheatsheetVisible(false);
+            }
 
             _characterSheetPanel = _root.Q<VisualElement>("character-sheet-panel");
 
@@ -804,6 +834,9 @@ namespace GameCore.UI.InGame
             {
                 return;
             }
+
+            if (!_playerHudVisible)
+                return;
 
             // If we're already animating to the target state, don't re-trigger
             // This prevents closing during opening animation
@@ -1307,6 +1340,15 @@ namespace GameCore.UI.InGame
 
         #region Screen Bounds Helpers
 
+        private void SetControlsCheatsheetVisible(bool visible)
+        {
+            if (_controlsCheatsheetPanel == null)
+                return;
+
+            _controlsCheatsheetPanel.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            _controlsCheatsheetPanel.SetEnabled(visible);
+            _controlsCheatsheetPanel.pickingMode = visible ? PickingMode.Position : PickingMode.Ignore;
+        }
 
         /// <summary>
         /// Ensures the character sheet panel doesn't go off-screen vertically.

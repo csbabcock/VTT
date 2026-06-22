@@ -1,3 +1,4 @@
+using GameCore.DmTools;
 using GameCore.Actors;
 using GameCore.UI;
 using GameCore;
@@ -149,21 +150,24 @@ namespace GameCore.UI.InGame
 
             // Push initial state to the view so it starts in sync with the model.
             // This will also configure input properly (UI starts closed, so input should be enabled)
-            _view.UpdateView(Model.State);
+            if (!IsLocalPlayerDungeonMaster)
+            {
+                _view.UpdateView(Model.State);
+            }
 
             // PanelRenderer may attach the visual tree one frame after Initialize() when the reload callback fires.
             var initialSheet = GetActiveSheet();
-            if (_view.Root != null)
+            if (_view.Root != null && !IsLocalPlayerDungeonMaster)
             {
                 UpdateCharacterSheetUI(initialSheet);
             }
-            else
+            else if (_view.Root == null && !IsLocalPlayerDungeonMaster)
             {
                 StartCoroutine(CoApplyInitialCharacterSheetWhenRootReady(initialSheet));
             }
             
             // Explicitly ensure input is enabled on startup (character sheet starts closed)
-            if (_playerInputs != null)
+            if (_playerInputs != null && !IsLocalPlayerDungeonMaster)
             {
                 _playerInputs.SetInputEnabled(true);
             }
@@ -171,6 +175,10 @@ namespace GameCore.UI.InGame
             Debug.Log($"InGameUIPresenter: Local role = {(IsLocalPlayerDungeonMaster ? "Dungeon Master" : "Player")}.");
 
             SetupDmToolsIfNeeded();
+            if (IsLocalPlayerDungeonMaster)
+            {
+                ApplyDmUiMode();
+            }
             BindEncounterAuthorityIfNeeded();
             RefreshDmPanelUi();
             RefreshEncounterTurnUi();
@@ -234,6 +242,10 @@ namespace GameCore.UI.InGame
         private void OnViewVisualTreeBound()
         {
             SetupDmToolsIfNeeded();
+            if (IsLocalPlayerDungeonMaster)
+            {
+                ApplyDmUiMode();
+            }
             RefreshDmPanelUi();
             RefreshEncounterTurnUi();
         }
@@ -244,17 +256,48 @@ namespace GameCore.UI.InGame
                 return;
 
             var dmPanel = _view.DmPanel;
+            var dmInspector = _view.DmInspector;
             dmPanel.PlayerSelected += OnDmPlayerSelected;
-            dmPanel.ViewSelfClicked += OnDmViewSelfClicked;
-            dmPanel.HitPointsAdjusted += OnDmHitPointsAdjusted;
             dmPanel.StartEncounterClicked += OnDmStartEncounterClicked;
             dmPanel.EndEncounterClicked += OnDmEndEncounterClicked;
             dmPanel.NextTurnClicked += OnDmNextTurnClicked;
+
+            dmInspector.HitPointsAdjusted += OnDmInspectorHitPointsAdjusted;
+            dmInspector.TemporaryHitPointsAdjusted += OnDmInspectorTemporaryHitPointsAdjusted;
+            dmInspector.DeathSavesChanged += OnDmInspectorDeathSavesChanged;
+            dmInspector.DeathSavesReset += OnDmInspectorDeathSavesReset;
+            dmInspector.ConditionToggled += OnDmInspectorConditionToggled;
+            dmInspector.InspirationChanged += OnDmInspectorInspirationChanged;
+            dmInspector.ExhaustionAdjusted += OnDmInspectorExhaustionAdjusted;
+
             ActorRegistry.ActorRegistered += OnActorRegistryChanged;
             ActorRegistry.ActorUnregistered += OnActorUnregistered;
             ActorRegistry.ActorUpdated += OnActorUpdated;
             dmPanel.SetVisible(true);
+            dmInspector.SetVisible(true);
+            DmToolsBootstrap.EnsureForLocalSession();
             _dmToolsInitialized = true;
+        }
+
+        private void ApplyDmUiMode()
+        {
+            if (_view == null)
+                return;
+
+            Model.SetCharacterSheetOpen(false);
+            _view.SetPlayerHudVisible(false);
+            ApplyDmCursorState();
+
+            if (_playerInputs != null)
+            {
+                _playerInputs.SetInputEnabled(false);
+            }
+        }
+
+        private static void ApplyDmCursorState()
+        {
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
+            UnityEngine.Cursor.visible = true;
         }
 
         private void TeardownDmTools()
@@ -263,16 +306,26 @@ namespace GameCore.UI.InGame
                 return;
 
             var dmPanel = _view.DmPanel;
+            var dmInspector = _view.DmInspector;
             dmPanel.PlayerSelected -= OnDmPlayerSelected;
-            dmPanel.ViewSelfClicked -= OnDmViewSelfClicked;
-            dmPanel.HitPointsAdjusted -= OnDmHitPointsAdjusted;
             dmPanel.StartEncounterClicked -= OnDmStartEncounterClicked;
             dmPanel.EndEncounterClicked -= OnDmEndEncounterClicked;
             dmPanel.NextTurnClicked -= OnDmNextTurnClicked;
+
+            dmInspector.HitPointsAdjusted -= OnDmInspectorHitPointsAdjusted;
+            dmInspector.TemporaryHitPointsAdjusted -= OnDmInspectorTemporaryHitPointsAdjusted;
+            dmInspector.DeathSavesChanged -= OnDmInspectorDeathSavesChanged;
+            dmInspector.DeathSavesReset -= OnDmInspectorDeathSavesReset;
+            dmInspector.ConditionToggled -= OnDmInspectorConditionToggled;
+            dmInspector.InspirationChanged -= OnDmInspectorInspirationChanged;
+            dmInspector.ExhaustionAdjusted -= OnDmInspectorExhaustionAdjusted;
+
             ActorRegistry.ActorRegistered -= OnActorRegistryChanged;
             ActorRegistry.ActorUnregistered -= OnActorUnregistered;
             ActorRegistry.ActorUpdated -= OnActorUpdated;
             dmPanel.SetVisible(false);
+            dmInspector.SetVisible(false);
+            _view.SetPlayerHudVisible(true);
             _dmToolsInitialized = false;
         }
 
@@ -285,7 +338,7 @@ namespace GameCore.UI.InGame
             if (_inspectedActor != null && _inspectedActor.OwnerId == actor.OwnerId)
             {
                 BindActiveDataService();
-                RefreshInspectedSheet();
+                RefreshDmInspectorUi();
             }
         }
 
@@ -299,24 +352,84 @@ namespace GameCore.UI.InGame
         private void OnDmPlayerSelected(int ownerId)
         {
             SetInspectedActor(ActorRegistry.GetByOwner(ownerId));
-            if (_inspectedActor != null && !Model.IsCharacterSheetOpen)
-                Model.SetCharacterSheetOpen(true);
         }
 
-        private void OnDmViewSelfClicked()
-        {
-            SetInspectedActor(null);
-            if (!Model.IsCharacterSheetOpen)
-                Model.SetCharacterSheetOpen(true);
-        }
-
-        private void OnDmHitPointsAdjusted(int delta)
+        private void OnDmInspectorHitPointsAdjusted(int delta)
         {
             if (_inspectedActor == null)
                 return;
 
-            GetHitPointsAuthority(_inspectedActor)?.RequestAdjustCurrentHitPoints(delta);
-            RefreshDmSelectionHp();
+            CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor)?.RequestAdjustCurrentHitPoints(delta);
+            RefreshDmInspectorUi();
+            RefreshDmPanelUi();
+        }
+
+        private void OnDmInspectorTemporaryHitPointsAdjusted(int delta)
+        {
+            if (_inspectedActor == null)
+                return;
+
+            var authority = CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor);
+            if (authority == null)
+                return;
+
+            authority.RequestSetTemporaryHitPoints(authority.TemporaryHitPoints + delta);
+            RefreshDmInspectorUi();
+            RefreshDmPanelUi();
+        }
+
+        private void OnDmInspectorDeathSavesChanged(int successes, int failures)
+        {
+            if (_inspectedActor == null)
+                return;
+
+            CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor)?.RequestSetDeathSaves(successes, failures);
+            RefreshDmInspectorUi();
+            RefreshDmPanelUi();
+        }
+
+        private void OnDmInspectorDeathSavesReset()
+        {
+            if (_inspectedActor == null)
+                return;
+
+            CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor)?.RequestResetDeathSaves();
+            RefreshDmInspectorUi();
+            RefreshDmPanelUi();
+        }
+
+        private void OnDmInspectorConditionToggled(string conditionId)
+        {
+            if (_inspectedActor == null)
+                return;
+
+            CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor)?.RequestToggleCondition(conditionId);
+            RefreshDmInspectorUi();
+            RefreshDmPanelUi();
+        }
+
+        private void OnDmInspectorInspirationChanged(bool hasInspiration)
+        {
+            if (_inspectedActor == null)
+                return;
+
+            CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor)?.RequestSetInspiration(hasInspiration);
+            RefreshDmInspectorUi();
+            RefreshDmPanelUi();
+        }
+
+        private void OnDmInspectorExhaustionAdjusted(int delta)
+        {
+            if (_inspectedActor == null)
+                return;
+
+            var authority = CharacterSheetAuthorityHelper.GetAuthority(_inspectedActor);
+            if (authority == null)
+                return;
+
+            authority.RequestSetExhaustionLevel(authority.ExhaustionLevel + delta);
+            RefreshDmInspectorUi();
+            RefreshDmPanelUi();
         }
 
         private void OnDmStartEncounterClicked()
@@ -407,8 +520,8 @@ namespace GameCore.UI.InGame
             _inspectedActor = actor;
             _selectedOwnerId = actor?.OwnerId ?? -1;
             BindActiveDataService();
-            RefreshInspectedSheet();
             RefreshDmPanelUi();
+            RefreshDmInspectorUi();
         }
 
         private void RefreshDmPanelUi()
@@ -420,22 +533,60 @@ namespace GameCore.UI.InGame
                 SetupDmToolsIfNeeded();
 
             _view.DmPanel.SetVisible(true);
-            _view.DmPanel.RefreshPlayerList(ActorRegistry.Actors, _selectedOwnerId);
-            RefreshDmSelectionHp();
+            _view.DmInspector.SetVisible(true);
+            _view.DmPanel.RefreshPlayerList(BuildDmPlayerRows());
         }
 
-        private void RefreshDmSelectionHp()
+        private List<DmPlayerRowState> BuildDmPlayerRows()
         {
-            if (!_dmToolsInitialized || _view == null || _inspectedActor == null)
+            var rows = new List<DmPlayerRowState>();
+            var actors = ActorRegistry.Actors;
+            for (int i = 0; i < actors.Count; i++)
+            {
+                var actor = actors[i];
+                if (actor == null)
+                    continue;
+
+                var combat = CharacterSheetAuthorityHelper.GetCombatState(actor);
+                rows.Add(new DmPlayerRowState
+                {
+                    OwnerId = actor.OwnerId,
+                    DisplayName = actor.DisplayName,
+                    CurrentHitPoints = combat.CurrentHitPoints,
+                    MaxHitPoints = CharacterSheetAuthorityHelper.GetMaxHitPoints(actor),
+                    TemporaryHitPoints = combat.TemporaryHitPoints,
+                    ConditionFlags = combat.ConditionFlags,
+                    DeathSaveSuccesses = combat.DeathSaveSuccesses,
+                    DeathSaveFailures = combat.DeathSaveFailures,
+                    IsSelected = actor.OwnerId == _selectedOwnerId,
+                });
+            }
+
+            return rows;
+        }
+
+        private void RefreshDmInspectorUi()
+        {
+            if (!IsLocalPlayerDungeonMaster || _view == null || !_dmToolsInitialized)
                 return;
 
-            GetDisplayHitPoints(_inspectedActor, out int current, out int max);
-            _view.DmPanel.UpdateSelectionDetails(_inspectedActor, current, max);
-        }
+            if (_inspectedActor == null)
+            {
+                _view.DmInspector.Bind("No player selected", 0, 0, 0, 0, 0, 0, false, 0);
+                return;
+            }
 
-        private void RefreshInspectedSheet()
-        {
-            UpdateCharacterSheetUI(GetActiveSheet());
+            var combat = CharacterSheetAuthorityHelper.GetCombatState(_inspectedActor);
+            _view.DmInspector.Bind(
+                _inspectedActor.DisplayName,
+                combat.CurrentHitPoints,
+                CharacterSheetAuthorityHelper.GetMaxHitPoints(_inspectedActor),
+                combat.TemporaryHitPoints,
+                combat.DeathSaveSuccesses,
+                combat.DeathSaveFailures,
+                combat.ConditionFlags,
+                combat.HasInspiration,
+                combat.ExhaustionLevel);
         }
 
         private IPlayerDataService GetActiveDataService()
@@ -469,41 +620,6 @@ namespace GameCore.UI.InGame
             _boundDataService = null;
         }
 
-        private static ICharacterHitPointsAuthority GetHitPointsAuthority(IActor actor)
-        {
-            if (actor?.Transform == null)
-                return null;
-
-            foreach (var component in actor.Transform.GetComponents<MonoBehaviour>())
-            {
-                if (component is ICharacterHitPointsAuthority authority)
-                    return authority;
-            }
-
-            return null;
-        }
-
-        private static void GetDisplayHitPoints(IActor actor, out int current, out int max)
-        {
-            var authority = GetHitPointsAuthority(actor);
-            if (authority != null)
-            {
-                current = authority.CurrentHitPoints;
-                max = authority.MaxHitPoints;
-                return;
-            }
-
-            if (actor?.Sheet is DnD5eCharacterData data)
-            {
-                max = CharacterHitPoints.GetDisplayMaxHp(data);
-                current = CharacterHitPoints.ClampCurrent(data.currentHitPoints, max);
-                return;
-            }
-
-            current = 0;
-            max = 0;
-        }
-
         #endregion
 
         #region Input Handling
@@ -513,6 +629,10 @@ namespace GameCore.UI.InGame
                 return;
 
             BindEncounterAuthorityIfNeeded();
+
+            if (IsLocalPlayerDungeonMaster)
+                return;
+
             UpdateLookInputState();
 
 #if ENABLE_INPUT_SYSTEM
@@ -669,6 +789,12 @@ namespace GameCore.UI.InGame
         #region Model Event Handlers
         private void OnModelStateChanged(InGameUIState state)
         {
+            if (IsLocalPlayerDungeonMaster)
+            {
+                ApplyDmCursorState();
+                return;
+            }
+
             _view.UpdateView(state);
             
             // Refresh UI data when character sheet opens
@@ -776,9 +902,14 @@ namespace GameCore.UI.InGame
         /// </summary>
         private void OnCharacterSheetChanged(ICharacterSheet sheet)
         {
+            if (IsLocalPlayerDungeonMaster)
+            {
+                RefreshDmInspectorUi();
+                RefreshDmPanelUi();
+                return;
+            }
+
             UpdateCharacterSheetUI(sheet);
-            RefreshDmSelectionHp();
-            RefreshDmPanelUi();
         }
 
         /// <summary>
@@ -786,6 +917,9 @@ namespace GameCore.UI.InGame
         /// </summary>
         private void UpdateCharacterSheetUI(ICharacterSheet sheet)
         {
+            if (IsLocalPlayerDungeonMaster)
+                return;
+
             if (_view == null || sheet == null)
             {
                 Debug.LogWarning("InGameUIPresenter: Cannot update UI - view or sheet is null");
@@ -820,6 +954,9 @@ namespace GameCore.UI.InGame
         #region View Event Handlers
         private void OnTabClicked(int tabIndex)
         {
+            if (IsLocalPlayerDungeonMaster)
+                return;
+
             Model.SetTab(tabIndex);
             
             // Refresh UI when switching tabs to ensure all data is up to date

@@ -55,23 +55,62 @@
             <ui:ScrollView name="dm-player-list-scroll" class="dm-player-list-scroll">
                 <ui:VisualElement name="dm-player-list" class="dm-player-list" />
             </ui:ScrollView>
-            <ui:VisualElement name="dm-selection-details" class="dm-selection-details">
-                <ui:Label name="dm-selected-label" text="Inspecting: (none)" class="dm-selected-label" />
-                <ui:Label name="dm-hp-value" text="HP: —" class="dm-hp-value" />
-                <ui:VisualElement class="dm-hp-controls">
-                    <ui:Button name="dm-hp-minus-five" text="-5" class="dm-hp-button" />
-                    <ui:Button name="dm-hp-minus-one" text="-1" class="dm-hp-button" />
-                    <ui:Button name="dm-hp-plus-one" text="+1" class="dm-hp-button" />
-                    <ui:Button name="dm-hp-plus-five" text="+5" class="dm-hp-button" />
-                </ui:VisualElement>
-                <ui:Button name="dm-view-self-button" text="View Self" class="dm-view-self-button" />
-            </ui:VisualElement>
             <ui:VisualElement name="dm-encounter-controls" class="dm-encounter-controls">
                 <ui:Label text="Encounter" class="dm-encounter-title" />
                 <ui:VisualElement class="dm-encounter-buttons">
                     <ui:Button name="dm-start-encounter-button" text="Start" class="dm-encounter-button" />
                     <ui:Button name="dm-end-encounter-button" text="End" class="dm-encounter-button" />
                     <ui:Button name="dm-next-turn-button" text="Next Turn" class="dm-encounter-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- DM character inspector - host/DM only at runtime -->
+        <ui:VisualElement name="dm-inspector" class="dm-inspector diegetic-panel">
+            <ui:Label name="dm-inspector-header" text="No player selected" class="dm-inspector-header" />
+            <ui:VisualElement class="dm-inspector-section">
+                <ui:Label text="Hit Points" class="dm-inspector-section-title" />
+                <ui:Label name="dm-inspector-hp-value" text="—" class="dm-inspector-value" />
+                <ui:VisualElement class="dm-inspector-controls">
+                    <ui:Button name="dm-inspector-hp-minus-five" text="-5" class="dm-hp-button" />
+                    <ui:Button name="dm-inspector-hp-minus-one" text="-1" class="dm-hp-button" />
+                    <ui:Button name="dm-inspector-hp-plus-one" text="+1" class="dm-hp-button" />
+                    <ui:Button name="dm-inspector-hp-plus-five" text="+5" class="dm-hp-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="dm-inspector-section">
+                <ui:Label text="Temporary HP" class="dm-inspector-section-title" />
+                <ui:Label name="dm-inspector-temp-hp-value" text="0" class="dm-inspector-value" />
+                <ui:VisualElement class="dm-inspector-controls">
+                    <ui:Button name="dm-inspector-temp-minus-one" text="-1" class="dm-hp-button" />
+                    <ui:Button name="dm-inspector-temp-plus-one" text="+1" class="dm-hp-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="dm-inspector-section">
+                <ui:Label text="Death Saves" class="dm-inspector-section-title" />
+                <ui:VisualElement class="dm-death-save-row">
+                    <ui:Label text="S" class="dm-death-save-label" />
+                    <ui:VisualElement name="dm-inspector-death-successes" class="dm-death-save-pips" />
+                </ui:VisualElement>
+                <ui:VisualElement class="dm-death-save-row">
+                    <ui:Label text="F" class="dm-death-save-label" />
+                    <ui:VisualElement name="dm-inspector-death-failures" class="dm-death-save-pips" />
+                </ui:VisualElement>
+                <ui:Button name="dm-inspector-death-reset" text="Reset" class="dm-inspector-reset-button" />
+            </ui:VisualElement>
+            <ui:VisualElement class="dm-inspector-section">
+                <ui:Label text="Conditions" class="dm-inspector-section-title" />
+                <ui:VisualElement name="dm-inspector-condition-grid" class="dm-inspector-condition-grid" />
+            </ui:VisualElement>
+            <ui:VisualElement class="dm-inspector-section dm-inspector-status-row">
+                <ui:Toggle name="dm-inspector-inspiration-toggle" label="Inspiration" class="dm-inspector-toggle" />
+                <ui:VisualElement class="dm-inspector-exhaustion">
+                    <ui:Label text="Exhaustion" class="dm-inspector-section-title" />
+                    <ui:VisualElement class="dm-inspector-controls">
+                        <ui:Button name="dm-inspector-exhaustion-minus" text="-" class="dm-hp-button" />
+                        <ui:Label name="dm-inspector-exhaustion-value" text="0" class="dm-inspector-value" />
+                        <ui:Button name="dm-inspector-exhaustion-plus" text="+" class="dm-hp-button" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

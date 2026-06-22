@@ -8,24 +8,10 @@ namespace GameCore.Networking
 {
     /// <summary>
     /// Transmits the owning client's selected character to the server on spawn and
-    /// replicates the player's display name and current hit points to everyone.
-    ///
-    /// Add to the player prefab alongside <see cref="PlayerActor"/>,
-    /// <see cref="NetworkPlayerController"/>, and a NetworkObject. Flow:
-    /// <list type="bullet">
-    /// <item>The owning client serializes its local <see cref="DnD5eCharacterData"/> and
-    /// sends it via a ServerRpc.</item>
-    /// <item>The server deserializes it, injects an <see cref="InMemoryPlayerDataService"/>
-    /// into this object's <see cref="PlayerActor"/> (so DM tools can read the sheet), and
-    /// writes the display name into a server-authoritative NetworkVariable.</item>
-    /// <item>Every client applies the replicated name to its copy of the actor so remote
-    /// players are labeled correctly even though only the server holds the full sheet.</item>
-    /// <item>Current HP is replicated via a server-authoritative NetworkVariable; only the
-    /// host (DM) may change it through <see cref="ICharacterHitPointsAuthority"/>.</item>
-    /// </list>
+    /// replicates combat-tracking sheet fields to every client.
     /// </summary>
     [RequireComponent(typeof(NetworkObject))]
-    public class NetworkCharacterIdentity : NetworkBehaviour, ICharacterHitPointsAuthority
+    public class NetworkCharacterIdentity : NetworkBehaviour, ICharacterSheetAuthority
     {
         [SerializeField] private PlayerActor _playerActor;
 
@@ -35,16 +21,30 @@ namespace GameCore.Networking
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Server);
 
-        private readonly NetworkVariable<int> _currentHitPoints =
-            new NetworkVariable<int>(
-                0,
+        private readonly NetworkVariable<CharacterCombatStateNetwork> _combatState =
+            new NetworkVariable<CharacterCombatStateNetwork>(
+                default,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Server);
 
-        public int CurrentHitPoints =>
-            IsSpawned ? _currentHitPoints.Value : ReadCurrentFromSheet();
+        public CharacterCombatState CombatState =>
+            IsSpawned ? _combatState.Value.ToCore() : CharacterCombatState.FromSheet(GetSheetData());
+
+        public int CurrentHitPoints => CombatState.CurrentHitPoints;
 
         public int MaxHitPoints => CharacterHitPoints.GetDisplayMaxHp(GetSheetData());
+
+        public int TemporaryHitPoints => CombatState.TemporaryHitPoints;
+
+        public int DeathSaveSuccesses => CombatState.DeathSaveSuccesses;
+
+        public int DeathSaveFailures => CombatState.DeathSaveFailures;
+
+        public uint ConditionFlags => CombatState.ConditionFlags;
+
+        public int ExhaustionLevel => CombatState.ExhaustionLevel;
+
+        public bool HasInspiration => CombatState.HasInspiration;
 
         public override void OnNetworkSpawn()
         {
@@ -52,9 +52,9 @@ namespace GameCore.Networking
                 _playerActor = GetComponent<PlayerActor>();
 
             _displayName.OnValueChanged += HandleDisplayNameChanged;
-            _currentHitPoints.OnValueChanged += HandleHitPointsChanged;
+            _combatState.OnValueChanged += HandleCombatStateChanged;
             ApplyDisplayName(_displayName.Value);
-            ApplyHitPointsToLocalServices(_currentHitPoints.Value);
+            ApplyCombatStateToLocalServices(_combatState.Value.ToCore());
 
             if (IsOwner)
                 SubmitLocalCharacter();
@@ -63,26 +63,75 @@ namespace GameCore.Networking
         public override void OnNetworkDespawn()
         {
             _displayName.OnValueChanged -= HandleDisplayNameChanged;
-            _currentHitPoints.OnValueChanged -= HandleHitPointsChanged;
+            _combatState.OnValueChanged -= HandleCombatStateChanged;
         }
 
-        public void RequestSetCurrentHitPoints(int value)
+        public void RequestSetCurrentHitPoints(int value) =>
+            RequestCombatMutation(state =>
+            {
+                state.CurrentHitPoints = value;
+                return state;
+            });
+
+        public void RequestAdjustCurrentHitPoints(int delta) =>
+            RequestSetCurrentHitPoints(CurrentHitPoints + delta);
+
+        public void RequestSetTemporaryHitPoints(int value) =>
+            RequestCombatMutation(state =>
+            {
+                state.TemporaryHitPoints = CharacterCombatStateRules.ClampTemporaryHitPoints(value);
+                return state;
+            });
+
+        public void RequestSetDeathSaves(int successes, int failures) =>
+            RequestCombatMutation(state =>
+            {
+                state.DeathSaveSuccesses = CharacterCombatStateRules.ClampDeathSaveCount(successes);
+                state.DeathSaveFailures = CharacterCombatStateRules.ClampDeathSaveCount(failures);
+                return state;
+            });
+
+        public void RequestResetDeathSaves() => RequestSetDeathSaves(0, 0);
+
+        public void RequestToggleCondition(string conditionId) =>
+            RequestCombatMutation(state =>
+            {
+                state.ConditionFlags = DnD5eConditions.Toggle(state.ConditionFlags, conditionId);
+                return state;
+            });
+
+        public void RequestSetExhaustionLevel(int level) =>
+            RequestCombatMutation(state =>
+            {
+                state.ExhaustionLevel = CharacterCombatStateRules.ClampExhaustion(level);
+                return state;
+            });
+
+        public void RequestSetInspiration(bool hasInspiration) =>
+            RequestCombatMutation(state =>
+            {
+                state.HasInspiration = hasInspiration;
+                return state;
+            });
+
+        private void RequestCombatMutation(System.Func<CharacterCombatState, CharacterCombatState> mutate)
         {
             if (!SessionRoleLocator.IsDungeonMaster)
                 return;
 
+            var state = CombatState;
+            state = mutate(state);
+
+            int maxHp = CharacterHitPoints.GetDisplayMaxHp(GetSheetData());
+            state.CurrentHitPoints = CharacterHitPoints.ClampCurrent(state.CurrentHitPoints, maxHp);
+
             if (!IsNetworkActive())
             {
-                ApplyHitPointsLocal(value);
+                ApplyCombatStateLocal(state);
                 return;
             }
 
-            SetCurrentHitPointsServerRpc(value);
-        }
-
-        public void RequestAdjustCurrentHitPoints(int delta)
-        {
-            RequestSetCurrentHitPoints(CurrentHitPoints + delta);
+            ApplyCombatStateServerRpc(CharacterCombatStateNetwork.FromCore(state));
         }
 
         private void SubmitLocalCharacter()
@@ -104,10 +153,7 @@ namespace GameCore.Networking
                 _playerActor = GetComponent<PlayerActor>();
 
             if (data != null && _playerActor != null)
-            {
-                // Inject the real sheet into the server-side actor so DM tools can read it.
                 _playerActor.SetDataService(new InMemoryPlayerDataService(data));
-            }
 
             string resolvedName = data != null && !string.IsNullOrEmpty(data.characterName)
                 ? data.characterName
@@ -116,25 +162,19 @@ namespace GameCore.Networking
             _displayName.Value = new FixedString128Bytes(Truncate(resolvedName, 60));
 
             if (data != null)
-            {
-                int maxHp = CharacterHitPoints.GetDisplayMaxHp(data);
-                int current = CharacterHitPoints.ClampCurrent(data.currentHitPoints, maxHp);
-                data.currentHitPoints = current;
-                _currentHitPoints.Value = current;
-            }
+                ApplyCombatStateAuthoritative(CharacterCombatState.FromSheet(data));
 
             if (_playerActor != null)
                 ActorRegistry.NotifyActorUpdated(_playerActor);
         }
 
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-        private void SetCurrentHitPointsServerRpc(int newValue, RpcParams rpcParams = default)
+        private void ApplyCombatStateServerRpc(CharacterCombatStateNetwork newState, RpcParams rpcParams = default)
         {
-            // Host-as-DM model: only the server client (client id 0) may adjust HP.
             if (rpcParams.Receive.SenderClientId != NetworkManager.ServerClientId)
                 return;
 
-            ApplyHitPointsAuthoritative(newValue);
+            ApplyCombatStateAuthoritative(newState.ToCore());
         }
 
         private void HandleDisplayNameChanged(FixedString128Bytes previous, FixedString128Bytes current)
@@ -142,9 +182,9 @@ namespace GameCore.Networking
             ApplyDisplayName(current);
         }
 
-        private void HandleHitPointsChanged(int previous, int current)
+        private void HandleCombatStateChanged(CharacterCombatStateNetwork previous, CharacterCombatStateNetwork current)
         {
-            ApplyHitPointsToLocalServices(current);
+            ApplyCombatStateToLocalServices(current.ToCore());
         }
 
         private void ApplyDisplayName(FixedString128Bytes value)
@@ -157,48 +197,49 @@ namespace GameCore.Networking
                 _playerActor?.SetDisplayName(name);
         }
 
-        private void ApplyHitPointsAuthoritative(int newValue)
+        private void ApplyCombatStateAuthoritative(CharacterCombatState state)
         {
             var data = GetSheetData();
             if (data == null)
                 return;
 
-            int clamped = CharacterHitPoints.ClampCurrent(newValue, CharacterHitPoints.GetDisplayMaxHp(data));
-            data.currentHitPoints = clamped;
-            _currentHitPoints.Value = clamped;
+            int maxHp = CharacterHitPoints.GetDisplayMaxHp(data);
+            state.CurrentHitPoints = CharacterHitPoints.ClampCurrent(state.CurrentHitPoints, maxHp);
+            state.ApplyToSheet(data);
+            _combatState.Value = CharacterCombatStateNetwork.FromCore(CharacterCombatState.FromSheet(data));
             NotifyActorServiceChanged();
         }
 
-        private void ApplyHitPointsLocal(int newValue)
+        private void ApplyCombatStateLocal(CharacterCombatState state)
         {
             var data = GetSheetData();
             if (data == null)
                 return;
 
-            int clamped = CharacterHitPoints.ClampCurrent(newValue, CharacterHitPoints.GetDisplayMaxHp(data));
-            data.currentHitPoints = clamped;
+            int maxHp = CharacterHitPoints.GetDisplayMaxHp(data);
+            state.CurrentHitPoints = CharacterHitPoints.ClampCurrent(state.CurrentHitPoints, maxHp);
+            state.ApplyToSheet(data);
 
             if (IsServer)
-                _currentHitPoints.Value = clamped;
+                _combatState.Value = CharacterCombatStateNetwork.FromCore(CharacterCombatState.FromSheet(data));
 
-            ApplyHitPointsToLocalServices(clamped);
+            ApplyCombatStateToLocalServices(CharacterCombatState.FromSheet(data));
         }
 
-        private void ApplyHitPointsToLocalServices(int current)
+        private void ApplyCombatStateToLocalServices(CharacterCombatState state)
         {
             var data = GetSheetData();
             if (data != null)
-                data.currentHitPoints = current;
+                state.ApplyToSheet(data);
 
             NotifyActorServiceChanged();
 
-            // Keep the owning client's menu-selected sheet in sync when they are the target.
             if (_playerActor != null && _playerActor.IsLocalPlayer)
             {
                 var localSheet = PlayerDataServiceLocator.Service?.GetCharacterSheet() as DnD5eCharacterData;
                 if (localSheet != null && !ReferenceEquals(localSheet, data))
                 {
-                    localSheet.currentHitPoints = current;
+                    state.ApplyToSheet(localSheet);
                     NotifyServiceChanged(PlayerDataServiceLocator.Service);
                 }
             }
@@ -234,12 +275,6 @@ namespace GameCore.Networking
                    ?? (_playerActor != null && _playerActor.IsLocalPlayer
                        ? PlayerDataServiceLocator.Service?.GetCharacterSheet() as DnD5eCharacterData
                        : null);
-        }
-
-        private int ReadCurrentFromSheet()
-        {
-            var data = GetSheetData();
-            return data?.currentHitPoints ?? 0;
         }
 
         private static bool IsNetworkActive()
