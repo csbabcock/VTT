@@ -15,6 +15,7 @@ namespace GameCore.DmTools
                 return;
 
             EnsureFlyCamera();
+            DmPlayerSpectateGateway.EnsureForLocalSession();
             DisableOfflinePlayerAvatars();
         }
 

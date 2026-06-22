@@ -56,6 +56,7 @@ namespace GameCore.UI.InGame
         private IActor _inspectedActor;
         private int _selectedOwnerId = -1;
         private bool _dmToolsInitialized;
+        private bool _wasCharacterSheetOpenBeforeSpectate;
         private IEncounterSessionAuthority _encounterAuthority;
         private KeyboardNavigationService _keyboardNavigationService;
         private EncounterModeManager _encounterModeManager;
@@ -286,6 +287,7 @@ namespace GameCore.UI.InGame
 
             var dmPanel = _view.DmPanel;
             dmPanel.PlayerSelected += OnDmPlayerSelected;
+            dmPanel.SpectateToggled += OnDmSpectateToggled;
             dmPanel.StartEncounterClicked += OnDmStartEncounterClicked;
             dmPanel.EndEncounterClicked += OnDmEndEncounterClicked;
             dmPanel.NextTurnClicked += OnDmNextTurnClicked;
@@ -327,6 +329,7 @@ namespace GameCore.UI.InGame
 
             var dmPanel = _view.DmPanel;
             dmPanel.PlayerSelected -= OnDmPlayerSelected;
+            dmPanel.SpectateToggled -= OnDmSpectateToggled;
             dmPanel.StartEncounterClicked -= OnDmStartEncounterClicked;
             dmPanel.EndEncounterClicked -= OnDmEndEncounterClicked;
             dmPanel.NextTurnClicked -= OnDmNextTurnClicked;
@@ -342,7 +345,47 @@ namespace GameCore.UI.InGame
                 CursorPolicyLocator.Clear();
 
             _dmToolsInitialized = false;
+            ExitPlayerSpectate();
         }
+
+        private void OnDmSpectateToggled()
+        {
+            if (DmPlayerSpectateLocator.IsSpectating)
+            {
+                ExitPlayerSpectate();
+                return;
+            }
+
+            if (_selectedOwnerId < 0 || !CanSpectateOwner(_selectedOwnerId))
+                return;
+
+            EnterPlayerSpectate(_selectedOwnerId);
+        }
+
+        private void EnterPlayerSpectate(int ownerId)
+        {
+            _wasCharacterSheetOpenBeforeSpectate = Model != null && Model.IsCharacterSheetOpen;
+            DmPlayerSpectateLocator.SetSpectating(ownerId);
+            Model.SetCharacterSheetOpen(false);
+            RefreshDmPanelUi();
+        }
+
+        private void ExitPlayerSpectate()
+        {
+            if (!DmPlayerSpectateLocator.IsSpectating)
+                return;
+
+            DmPlayerSpectateGateway.ExitSpectate();
+
+            if (_wasCharacterSheetOpenBeforeSpectate && _inspectedActor != null)
+                Model.SetCharacterSheetOpen(true);
+
+            _wasCharacterSheetOpenBeforeSpectate = false;
+            RefreshDmPanelUi();
+        }
+
+        private static bool CanSpectateOwner(int ownerId) =>
+            DmPlayerSpectateGateway.CanSpectateOwner(ownerId);
 
         private void OnActorRegistryChanged(IActor actor) => RefreshDmPanelUi();
 
@@ -359,6 +402,9 @@ namespace GameCore.UI.InGame
 
         private void OnActorUnregistered(IActor actor)
         {
+            if (DmPlayerSpectateLocator.IsSpectating && actor.OwnerId == DmPlayerSpectateLocator.SpectatedOwnerId)
+                ExitPlayerSpectate();
+
             if (ReferenceEquals(_inspectedActor, actor))
                 SetInspectedActor(null);
             RefreshDmPanelUi();
@@ -538,8 +584,20 @@ namespace GameCore.UI.InGame
 
         private void SetInspectedActor(IActor actor)
         {
+            if (actor == null && DmPlayerSpectateLocator.IsSpectating)
+                ExitPlayerSpectate();
+
             _inspectedActor = actor;
             _selectedOwnerId = actor?.OwnerId ?? -1;
+
+            if (actor != null && DmPlayerSpectateLocator.IsSpectating)
+            {
+                if (CanSpectateOwner(actor.OwnerId))
+                    DmPlayerSpectateLocator.SetSpectating(actor.OwnerId);
+                else
+                    ExitPlayerSpectate();
+            }
+
             BindActiveDataService();
             RefreshDmPanelUi();
 
@@ -574,6 +632,20 @@ namespace GameCore.UI.InGame
             _view.DmPanel.SetVisible(true);
             _view.DmPanel.RefreshPlayerList(BuildDmPlayerRows());
             RefreshEncounterControls();
+            RefreshSpectateControls();
+        }
+
+        private void RefreshSpectateControls()
+        {
+            if (!IsLocalPlayerDungeonMaster || _view == null)
+                return;
+
+            bool hasSelection = _selectedOwnerId >= 0;
+            bool isSpectating = DmPlayerSpectateLocator.IsSpectating;
+            _view.DmPanel.SetSpectateControl(
+                hasSelection,
+                isSpectating,
+                hasSelection && CanSpectateOwner(_selectedOwnerId));
         }
 
         private void RefreshEncounterControls()
@@ -774,7 +846,22 @@ namespace GameCore.UI.InGame
         private void HandleDmKeyboardInput()
         {
             var keyboard = Keyboard.current;
-            if (keyboard == null || _inspectedActor == null)
+            if (keyboard == null)
+                return;
+
+            if (keyboard.escapeKey.wasPressedThisFrame && DmPlayerSpectateLocator.IsSpectating)
+            {
+                ExitPlayerSpectate();
+                return;
+            }
+
+            if (keyboard.vKey.wasPressedThisFrame && _selectedOwnerId >= 0)
+            {
+                OnDmSpectateToggled();
+                return;
+            }
+
+            if (_inspectedActor == null)
                 return;
 
             if (keyboard.tabKey.wasPressedThisFrame)

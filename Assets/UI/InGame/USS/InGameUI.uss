@@ -1382,6 +1382,11 @@
     flex-grow: 1;
 }
 
+.dm-spectate-button {
+    margin: 0 var(--vtt-spacing-large) var(--vtt-spacing-medium);
+    align-self: stretch;
+}
+
 .dm-empty-label {
     color: var(--vtt-text-muted);
     font-size: 14px;

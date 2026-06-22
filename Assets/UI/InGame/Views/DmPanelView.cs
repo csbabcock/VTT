@@ -15,9 +15,11 @@ namespace GameCore.UI.InGame
         private Button _startEncounterButton;
         private Button _endEncounterButton;
         private Button _nextTurnButton;
+        private Button _spectateButton;
         private readonly List<Button> _playerButtons = new List<Button>();
 
         public event Action<int> PlayerSelected;
+        public event Action SpectateToggled;
         public event Action StartEncounterClicked;
         public event Action EndEncounterClicked;
         public event Action NextTurnClicked;
@@ -29,6 +31,7 @@ namespace GameCore.UI.InGame
             _startEncounterButton = null;
             _endEncounterButton = null;
             _nextTurnButton = null;
+            _spectateButton = null;
             _playerButtons.Clear();
         }
 
@@ -58,6 +61,7 @@ namespace GameCore.UI.InGame
             _startEncounterButton = WireButton(root, "dm-start-encounter-button", () => StartEncounterClicked?.Invoke());
             _endEncounterButton = WireButton(root, "dm-end-encounter-button", () => EndEncounterClicked?.Invoke());
             _nextTurnButton = WireButton(root, "dm-next-turn-button", () => NextTurnClicked?.Invoke());
+            _spectateButton = WireButton(root, "dm-spectate-button", () => SpectateToggled?.Invoke());
 
             SetVisible(false);
         }
@@ -81,6 +85,16 @@ namespace GameCore.UI.InGame
 
             if (_nextTurnButton != null)
                 _nextTurnButton.SetEnabled(isEncounterActive && hasTurnOrder);
+        }
+
+        public void SetSpectateControl(bool visible, bool isSpectating, bool canSpectate)
+        {
+            if (_spectateButton == null)
+                return;
+
+            _spectateButton.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            _spectateButton.text = isSpectating ? "Exit Player View" : "Player View";
+            _spectateButton.SetEnabled(isSpectating || canSpectate);
         }
 
         public void RefreshPlayerList(IReadOnlyList<DmPlayerRowState> rows)

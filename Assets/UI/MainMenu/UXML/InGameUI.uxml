@@ -64,6 +64,7 @@
                     <ui:Button name="dm-next-turn-button" text="Next Turn" class="dm-encounter-button diegetic-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
+            <ui:Button name="dm-spectate-button" text="Player View" class="dm-spectate-button diegetic-button" />
         </ui:VisualElement>
 
         <!-- DM controls cheat sheet - host/DM only at runtime -->
@@ -103,6 +104,10 @@
                 <ui:VisualElement class="controls-cheatsheet-row">
                     <ui:Label text="Player Sheet" class="controls-cheatsheet-action" />
                     <ui:Label text="Select Player / Tab" class="controls-cheatsheet-binding" />
+                </ui:VisualElement>
+                <ui:VisualElement class="controls-cheatsheet-row">
+                    <ui:Label text="Player View" class="controls-cheatsheet-action" />
+                    <ui:Label text="V / DM Panel Button" class="controls-cheatsheet-binding" />
                 </ui:VisualElement>
                 <ui:VisualElement class="controls-cheatsheet-row">
                     <ui:Label text="Encounter" class="controls-cheatsheet-action" />

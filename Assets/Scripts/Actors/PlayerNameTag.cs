@@ -178,7 +178,7 @@ namespace GameCore.Actors
             _labelText.color = _textColor;
             _labelText.alignment = TextAlignmentOptions.Center;
             _labelText.overflowMode = TextOverflowModes.Overflow;
-            _labelText.enableWordWrapping = false;
+            _labelText.textWrappingMode = TextWrappingModes.NoWrap;
             _labelText.raycastTarget = false;
             _labelText.outlineWidth = _outlineWidth;
             _labelText.outlineColor = new Color32(0, 0, 0, 200);

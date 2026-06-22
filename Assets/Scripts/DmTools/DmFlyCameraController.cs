@@ -55,7 +55,9 @@ namespace GameCore.DmTools
 
         private void Update()
         {
-            if (!SessionRoleLocator.IsDungeonMaster || UIInputGateLocator.ShouldBlockInput())
+            if (!SessionRoleLocator.IsDungeonMaster
+                || DmPlayerSpectateLocator.IsSpectating
+                || UIInputGateLocator.ShouldBlockInput())
                 return;
 
 #if ENABLE_INPUT_SYSTEM
