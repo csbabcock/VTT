@@ -2,8 +2,6 @@ using System.Collections;
 using GameCore.PlayerData;
 using GameCore.UI.InGame;
 using NUnit.Framework;
-using UnityEditor;
-using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 
@@ -13,15 +11,13 @@ namespace GameCore.Tests.EditMode
     {
         private VisualElement _root;
         private CharacterSheetCombatSectionView _view;
-        private TestHostWindow _hostWindow;
+        private UiToolkitTestHostWindow _hostWindow;
 
         [SetUp]
         public void SetUp()
         {
             _root = BuildCombatSectionRoot();
-            _hostWindow = ScriptableObject.CreateInstance<TestHostWindow>();
-            _hostWindow.rootVisualElement.Add(_root);
-            _hostWindow.ShowUtility();
+            _hostWindow = UiToolkitTestHostWindow.Open(_root);
 
             _view = new CharacterSheetCombatSectionView();
             _view.Initialize(_root);
@@ -30,11 +26,7 @@ namespace GameCore.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
-            if (_hostWindow == null)
-                return;
-
-            _hostWindow.Close();
-            Object.DestroyImmediate(_hostWindow);
+            UiToolkitTestHostWindow.CloseIfOpen(_hostWindow);
             _hostWindow = null;
         }
 
@@ -138,8 +130,5 @@ namespace GameCore.Tests.EditMode
             return root;
         }
 
-        private sealed class TestHostWindow : EditorWindow
-        {
-        }
     }
 }

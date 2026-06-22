@@ -1,3 +1,4 @@
+using System.Collections;
 using GameCore.Actors;
 using GameCore.PlayerData;
 using Unity.Collections;
@@ -59,7 +60,7 @@ namespace GameCore.Networking
             ApplyCombatStateToLocalServices(_combatState.Value.ToCore());
 
             if (IsOwner)
-                SubmitLocalCharacter();
+                StartCoroutine(SubmitLocalCharacterWhenReady());
         }
 
         public override void OnNetworkDespawn()
@@ -143,6 +144,25 @@ namespace GameCore.Networking
                 ApplyCombatStateServerRpc(CharacterCombatStateNetwork.FromCore(state));
             else
                 RequestOwnerCombatStateServerRpc(CharacterCombatStateNetwork.FromCore(state));
+        }
+
+        private IEnumerator SubmitLocalCharacterWhenReady()
+        {
+            const int maxFrames = 120;
+
+            for (int frame = 0; frame < maxFrames; frame++)
+            {
+                var sheet = PlayerDataServiceLocator.Service?.GetCharacterSheet() as DnD5eCharacterData;
+                if (sheet != null && !string.IsNullOrEmpty(sheet.characterName))
+                {
+                    SubmitLocalCharacter();
+                    yield break;
+                }
+
+                yield return null;
+            }
+
+            SubmitLocalCharacter();
         }
 
         private void SubmitLocalCharacter()

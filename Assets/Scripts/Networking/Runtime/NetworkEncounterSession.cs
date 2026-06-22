@@ -166,6 +166,9 @@ namespace GameCore.Networking
             if (!_turnOrderService.TryAddOwner(actor.OwnerId))
                 return;
 
+            var participant = actor.Transform?.GetComponent<NetworkEncounterParticipant>();
+            participant?.ResetTurnMovementServer();
+
             if (!_turnOrderService.HasTurns)
             {
                 _currentTurnOwnerId.Value = actor.OwnerId;

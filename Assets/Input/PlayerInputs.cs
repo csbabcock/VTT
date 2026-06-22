@@ -1,5 +1,6 @@
 using UnityEngine;
 using GameCore.EncounterMode;
+using GameCore.EncounterMode.Services;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using PlayerInputComponent = UnityEngine.InputSystem.PlayerInput;
@@ -76,7 +77,7 @@ namespace GameCore
 		private void Start()
 		{
 			EnableInputSystem();
-			SetCursorState(cursorLocked);
+			ApplyCursorPolicy();
 			cursorInputForLook = true;
 		}
 
@@ -106,7 +107,7 @@ namespace GameCore
 
 		private void OnApplicationFocus(bool hasFocus)
 		{
-			SetCursorState(cursorLocked);
+			ApplyCursorPolicy();
 		}
 		#endregion
 
@@ -448,6 +449,18 @@ namespace GameCore
 		}
 
 		#region Cursor Management
+		private void ApplyCursorPolicy()
+		{
+			if (CursorPolicyLocator.ShouldKeepCursorUnlocked)
+			{
+				Cursor.lockState = CursorLockMode.None;
+				Cursor.visible = true;
+				return;
+			}
+
+			SetCursorState(cursorLocked);
+		}
+
 		/// <summary>
 		/// Sets the cursor lock state.
 		/// </summary>

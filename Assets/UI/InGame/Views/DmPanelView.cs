@@ -12,6 +12,9 @@ namespace GameCore.UI.InGame
     {
         private VisualElement _panel;
         private VisualElement _playerList;
+        private Button _startEncounterButton;
+        private Button _endEncounterButton;
+        private Button _nextTurnButton;
         private readonly List<Button> _playerButtons = new List<Button>();
 
         public event Action<int> PlayerSelected;
@@ -23,6 +26,9 @@ namespace GameCore.UI.InGame
         {
             _panel = null;
             _playerList = null;
+            _startEncounterButton = null;
+            _endEncounterButton = null;
+            _nextTurnButton = null;
             _playerButtons.Clear();
         }
 
@@ -49,9 +55,9 @@ namespace GameCore.UI.InGame
 
             _panel.pickingMode = PickingMode.Position;
 
-            WireButton(root, "dm-start-encounter-button", () => StartEncounterClicked?.Invoke());
-            WireButton(root, "dm-end-encounter-button", () => EndEncounterClicked?.Invoke());
-            WireButton(root, "dm-next-turn-button", () => NextTurnClicked?.Invoke());
+            _startEncounterButton = WireButton(root, "dm-start-encounter-button", () => StartEncounterClicked?.Invoke());
+            _endEncounterButton = WireButton(root, "dm-end-encounter-button", () => EndEncounterClicked?.Invoke());
+            _nextTurnButton = WireButton(root, "dm-next-turn-button", () => NextTurnClicked?.Invoke());
 
             SetVisible(false);
         }
@@ -63,6 +69,18 @@ namespace GameCore.UI.InGame
 
             _panel.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             _panel.SetEnabled(visible);
+        }
+
+        public void SetEncounterControls(bool isEncounterActive, bool hasTurnOrder)
+        {
+            if (_startEncounterButton != null)
+                _startEncounterButton.SetEnabled(!isEncounterActive);
+
+            if (_endEncounterButton != null)
+                _endEncounterButton.SetEnabled(isEncounterActive);
+
+            if (_nextTurnButton != null)
+                _nextTurnButton.SetEnabled(isEncounterActive && hasTurnOrder);
         }
 
         public void RefreshPlayerList(IReadOnlyList<DmPlayerRowState> rows)
@@ -93,7 +111,7 @@ namespace GameCore.UI.InGame
         private Button BuildPlayerRow(DmPlayerRowState row)
         {
             int ownerId = row.OwnerId;
-            var button = new Button { name = $"dm-player-{ownerId}", text = row.DisplayName };
+            var button = new Button { name = $"dm-player-{ownerId}" };
             button.AddToClassList("dm-player-button");
             button.AddToClassList("diegetic-button");
             button.pickingMode = PickingMode.Position;
@@ -101,6 +119,45 @@ namespace GameCore.UI.InGame
             if (row.IsSelected)
                 button.AddToClassList("diegetic-button-selected");
 
+            var rowContainer = new VisualElement();
+            rowContainer.AddToClassList("dm-player-row");
+            rowContainer.pickingMode = PickingMode.Ignore;
+
+            var nameRow = new VisualElement();
+            nameRow.style.flexDirection = FlexDirection.Row;
+            nameRow.style.justifyContent = Justify.SpaceBetween;
+            nameRow.style.width = Length.Percent(100);
+            nameRow.pickingMode = PickingMode.Ignore;
+
+            var nameLabel = new Label(row.DisplayName);
+            nameLabel.AddToClassList("dm-player-row-name");
+            nameLabel.pickingMode = PickingMode.Ignore;
+            nameRow.Add(nameLabel);
+
+            if (row.IsCurrentTurn)
+            {
+                var turnLabel = new Label("Turn");
+                turnLabel.AddToClassList("dm-player-row-status");
+                turnLabel.pickingMode = PickingMode.Ignore;
+                nameRow.Add(turnLabel);
+            }
+
+            rowContainer.Add(nameRow);
+
+            var hpLabel = new Label($"{row.CurrentHp}/{row.MaxHp} HP");
+            hpLabel.AddToClassList("dm-player-row-hp");
+            hpLabel.pickingMode = PickingMode.Ignore;
+            rowContainer.Add(hpLabel);
+
+            if (!string.IsNullOrEmpty(row.StatusSummary))
+            {
+                var statusLabel = new Label(row.StatusSummary);
+                statusLabel.AddToClassList("dm-player-row-status");
+                statusLabel.pickingMode = PickingMode.Ignore;
+                rowContainer.Add(statusLabel);
+            }
+
+            button.Add(rowContainer);
             button.clicked += () => PlayerSelected?.Invoke(ownerId);
             return button;
         }
@@ -110,11 +167,13 @@ namespace GameCore.UI.InGame
             _playerButtons.Clear();
         }
 
-        private static void WireButton(VisualElement root, string name, Action onClick)
+        private static Button WireButton(VisualElement root, string name, Action onClick)
         {
             var button = root.Q<Button>(name);
             if (button != null)
                 button.clicked += onClick;
+
+            return button;
         }
     }
 }

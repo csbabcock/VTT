@@ -1378,6 +1378,12 @@ namespace GameCore.UI.InGame
                 _moveButton.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
+        /// <summary>
+        /// Ensures the visual tree is bound and safe to update. Returns false when the
+        /// sheet is mid-reload and callers should defer UI writes.
+        /// </summary>
+        public bool EnsureReadyForSheetUpdate() => EnsureVisualTreeReadyForUpdate();
+
         public void BindCombatSection(CharacterCombatState combat, int maxHp)
         {
             if (!EnsureVisualTreeReadyForUpdate())

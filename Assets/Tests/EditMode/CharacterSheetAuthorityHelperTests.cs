@@ -72,10 +72,29 @@ namespace GameCore.Tests.EditMode
             Assert.AreEqual(8, authority.CurrentHitPoints);
         }
 
-        private static IActor CreateActor(int ownerId, bool isLocal)
+        [Test]
+        public void GetDisplayName_PrefersSheetNameOverPlayerFallback()
+        {
+            var actor = CreateActor(ownerId: 2, isLocal: false, characterName: "Apateon");
+            actor.SetDisplayNameOverride("Player 2");
+
+            Assert.AreEqual("Apateon", CharacterSheetAuthorityHelper.GetDisplayName(actor));
+        }
+
+        [Test]
+        public void GetDisplayName_FallsBackToActorDisplayNameWithoutSheetName()
+        {
+            var actor = CreateActor(ownerId: 3, isLocal: false, characterName: null);
+            actor.SetDisplayNameOverride("ReplicatedName");
+
+            Assert.AreEqual("ReplicatedName", CharacterSheetAuthorityHelper.GetDisplayName(actor));
+        }
+
+        private static FakeActor CreateActor(int ownerId, bool isLocal, string characterName = "Test")
         {
             var data = new DnD5eCharacterData
             {
+                characterName = characterName,
                 characterClass = "Fighter",
                 level = 1,
                 constitution = 10,
@@ -87,6 +106,8 @@ namespace GameCore.Tests.EditMode
 
         private sealed class FakeActor : IActor
         {
+            private string _displayNameOverride;
+
             public FakeActor(int ownerId, bool isLocal, IPlayerDataService dataService)
             {
                 OwnerId = ownerId;
@@ -96,10 +117,12 @@ namespace GameCore.Tests.EditMode
 
             public int OwnerId { get; }
             public bool IsLocalPlayer { get; }
-            public string DisplayName => "Test";
+            public string DisplayName => _displayNameOverride ?? Sheet?.CharacterName ?? "Test";
             public ICharacterSheet Sheet => DataService?.GetCharacterSheet();
             public IPlayerDataService DataService { get; }
             public UnityEngine.Transform Transform => null;
+
+            public void SetDisplayNameOverride(string displayName) => _displayNameOverride = displayName;
         }
     }
 }

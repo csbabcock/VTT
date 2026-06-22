@@ -37,6 +37,16 @@ namespace GameCore.Tests.EditMode
             ActorRegistry.Clear();
         }
 
+        [Test]
+        public void IsLocalOwner_ReturnsTrue_ForLocalPlayerBeforeRegistryAssignment()
+        {
+            ActorRegistry.Clear();
+            var local = new FakeActor(1, isLocal: true);
+
+            Assert.IsTrue(CharacterCombatMutationPolicy.IsLocalOwner(local));
+            ActorRegistry.Clear();
+        }
+
         private sealed class FakeActor : IActor
         {
             public FakeActor(int ownerId, bool isLocal)

@@ -44,6 +44,23 @@ namespace GameCore.Actors
             return GetAuthority(actor);
         }
 
+        /// <summary>
+        /// Resolves the best display name for UI. Prefers the sheet character name when
+        /// server-injected data is available (e.g. after <c>SubmitCharacterServerRpc</c>),
+        /// then falls back to <see cref="IActor.DisplayName"/>.
+        /// </summary>
+        public static string GetDisplayName(IActor actor)
+        {
+            if (actor == null)
+                return string.Empty;
+
+            string sheetName = actor.Sheet?.CharacterName;
+            if (!string.IsNullOrEmpty(sheetName))
+                return sheetName;
+
+            return actor.DisplayName;
+        }
+
         public static CharacterCombatState GetCombatState(IActor actor)
         {
             var authority = GetAuthority(actor);

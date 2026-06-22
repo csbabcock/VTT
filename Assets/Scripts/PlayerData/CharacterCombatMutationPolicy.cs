@@ -18,6 +18,9 @@ namespace GameCore.PlayerData
             if (actor == null)
                 return false;
 
+            if (actor.IsLocalPlayer)
+                return true;
+
             var local = ActorRegistry.LocalActor;
             return local != null && local.OwnerId == actor.OwnerId;
         }

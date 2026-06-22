@@ -95,5 +95,26 @@ namespace GameCore.Tests.EditMode
 
             Assert.IsFalse(service.HasTurns);
         }
+
+        [Test]
+        public void TryAddOwner_AppendsMissingOwner()
+        {
+            var service = new EncounterTurnOrderService();
+            service.RollInitiative(Participants((10, 0), (20, 0)), new QueueRoller(5, 15));
+
+            Assert.IsTrue(service.TryAddOwner(30));
+            CollectionAssert.AreEqual(new[] { 20, 10, 30 }, service.Order);
+        }
+
+        [Test]
+        public void TryAddOwner_ReturnsFalseForDuplicateOrInvalid()
+        {
+            var service = new EncounterTurnOrderService();
+            service.RollInitiative(Participants((10, 0)), new QueueRoller(5));
+
+            Assert.IsFalse(service.TryAddOwner(10));
+            Assert.IsFalse(service.TryAddOwner(EncounterTurnOrderService.NoTurnOwner));
+            CollectionAssert.AreEqual(new[] { 10 }, service.Order);
+        }
     }
 }

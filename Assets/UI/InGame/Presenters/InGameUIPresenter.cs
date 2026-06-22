@@ -59,7 +59,13 @@ namespace GameCore.UI.InGame
         private IEncounterSessionAuthority _encounterAuthority;
         private KeyboardNavigationService _keyboardNavigationService;
         private EncounterModeManager _encounterModeManager;
+        private static readonly DmCursorPolicy DmCursorPolicyInstance = new DmCursorPolicy();
         #endregion
+
+        private sealed class DmCursorPolicy : ICursorPolicy
+        {
+            public bool ShouldKeepCursorUnlocked => true;
+        }
 
         #region Unity Lifecycle
 
@@ -186,6 +192,11 @@ namespace GameCore.UI.InGame
             {
                 ApplyDmUiMode();
             }
+            else
+            {
+                BindLocalPlayerActorEvents();
+            }
+
             BindEncounterAuthorityIfNeeded();
             RefreshDmPanelUi();
             RefreshEncounterTurnUi();
@@ -244,6 +255,7 @@ namespace GameCore.UI.InGame
             }
 
             TeardownDmTools();
+            UnbindLocalPlayerActorEvents();
             UnbindEncounterAuthority();
             UnbindActiveDataService();
 
@@ -260,6 +272,11 @@ namespace GameCore.UI.InGame
             {
                 ApplyDmUiMode();
             }
+            else
+            {
+                SyncLocalPlayerActorBinding();
+            }
+
             RefreshDmPanelUi();
             RefreshEncounterTurnUi();
         }
@@ -293,6 +310,8 @@ namespace GameCore.UI.InGame
             _view.SetDmHudMode(true);
             ApplyDmCursorState();
 
+            CursorPolicyLocator.Policy = DmCursorPolicyInstance;
+
             if (_playerInputs != null)
                 _playerInputs.SetInputEnabled(false);
         }
@@ -320,6 +339,10 @@ namespace GameCore.UI.InGame
             dmPanel.SetVisible(false);
             _view.SetDmHudMode(false);
             _view.SetPlayerHudVisible(true);
+
+            if (ReferenceEquals(CursorPolicyLocator.Policy, DmCursorPolicyInstance))
+                CursorPolicyLocator.Clear();
+
             _dmToolsInitialized = false;
         }
 
@@ -416,9 +439,15 @@ namespace GameCore.UI.InGame
 
         private void RefreshCharacterSheetAfterCombatEdit()
         {
-            RefreshInspectedCharacterSheetUi();
             if (IsLocalPlayerDungeonMaster)
+            {
+                RefreshInspectedCharacterSheetUi();
                 RefreshDmPanelUi();
+                return;
+            }
+
+            if (Model != null && Model.IsCharacterSheetOpen)
+                UpdateCharacterSheetUI(GetActiveSheet());
         }
 
         private void OnDmStartEncounterClicked()
@@ -455,6 +484,7 @@ namespace GameCore.UI.InGame
             _encounterAuthority.EncounterActiveChanged += OnEncounterActiveChanged;
             _encounterAuthority.TurnOwnerChanged += OnTurnOwnerChanged;
             RefreshEncounterTurnUi();
+            RefreshEncounterControls();
         }
 
         private void UnbindEncounterAuthority()
@@ -470,11 +500,13 @@ namespace GameCore.UI.InGame
         private void OnEncounterActiveChanged(bool isActive)
         {
             RefreshEncounterTurnUi();
+            RefreshDmPanelUi();
         }
 
         private void OnTurnOwnerChanged(int ownerId)
         {
             RefreshEncounterTurnUi();
+            RefreshDmPanelUi();
             if (_encounterModeManager != null && !_encounterModeManager.IsLocalTurnActive)
                 _encounterModeManager.DisableMovementMode();
         }
@@ -498,7 +530,9 @@ namespace GameCore.UI.InGame
             }
 
             var actor = ActorRegistry.GetByOwner(authority.CurrentTurnOwnerId);
-            string turnName = actor != null ? actor.DisplayName : $"Player {authority.CurrentTurnOwnerId}";
+            string turnName = actor != null
+                ? CharacterSheetAuthorityHelper.GetDisplayName(actor)
+                : $"Player {authority.CurrentTurnOwnerId}";
             bool isLocalTurn = _encounterModeManager != null && _encounterModeManager.IsLocalTurnActive;
             string suffix = isLocalTurn ? " (your turn)" : string.Empty;
             _view.UpdateEncounterTurnIndicator($"{turnName}'s turn{suffix}", true);
@@ -541,23 +575,47 @@ namespace GameCore.UI.InGame
 
             _view.DmPanel.SetVisible(true);
             _view.DmPanel.RefreshPlayerList(BuildDmPlayerRows());
+            RefreshEncounterControls();
+        }
+
+        private void RefreshEncounterControls()
+        {
+            if (!IsLocalPlayerDungeonMaster || _view == null)
+                return;
+
+            var authority = EncounterSessionLocator.Authority;
+            bool isActive = authority != null && authority.IsEncounterActive;
+            bool hasTurnOrder = authority != null && authority.HasActiveTurnOrder;
+            _view.DmPanel.SetEncounterControls(isActive, hasTurnOrder);
         }
 
         private List<DmPlayerRowState> BuildDmPlayerRows()
         {
             var rows = new List<DmPlayerRowState>();
             var actors = ActorRegistry.Actors;
+            var authority = EncounterSessionLocator.Authority;
+            int currentTurnOwnerId = authority != null && authority.HasActiveTurnOrder
+                ? authority.CurrentTurnOwnerId
+                : -1;
+
             for (int i = 0; i < actors.Count; i++)
             {
                 var actor = actors[i];
                 if (actor == null)
                     continue;
 
+                var combat = CharacterSheetAuthorityHelper.GetCombatState(actor);
+                int maxHp = CharacterSheetAuthorityHelper.GetMaxHitPoints(actor);
+
                 rows.Add(new DmPlayerRowState
                 {
                     OwnerId = actor.OwnerId,
-                    DisplayName = actor.DisplayName,
+                    DisplayName = CharacterSheetAuthorityHelper.GetDisplayName(actor),
+                    CurrentHp = combat.CurrentHitPoints,
+                    MaxHp = maxHp,
+                    StatusSummary = CharacterCombatStatusFormatter.FormatSummary(combat, maxHp),
                     IsSelected = actor.OwnerId == _selectedOwnerId,
+                    IsCurrentTurn = actor.OwnerId == currentTurnOwnerId,
                 });
             }
 
@@ -616,6 +674,50 @@ namespace GameCore.UI.InGame
 
         #endregion
 
+        #region Local Player Actor Binding
+
+        private void BindLocalPlayerActorEvents()
+        {
+            if (IsLocalPlayerDungeonMaster)
+                return;
+
+            ActorRegistry.ActorRegistered += OnLocalPlayerActorLifecycleChanged;
+            ActorRegistry.ActorUpdated += OnLocalPlayerActorLifecycleChanged;
+            SyncLocalPlayerActorBinding();
+        }
+
+        private void UnbindLocalPlayerActorEvents()
+        {
+            ActorRegistry.ActorRegistered -= OnLocalPlayerActorLifecycleChanged;
+            ActorRegistry.ActorUpdated -= OnLocalPlayerActorLifecycleChanged;
+        }
+
+        private void OnLocalPlayerActorLifecycleChanged(IActor actor)
+        {
+            if (IsLocalPlayerDungeonMaster || actor == null || !actor.IsLocalPlayer)
+                return;
+
+            SyncLocalPlayerActorBinding();
+        }
+
+        private void SyncLocalPlayerActorBinding()
+        {
+            var localActor = ActorRegistry.LocalActor;
+            if (localActor == null)
+                return;
+
+            _localDataService = localActor.DataService ?? PlayerDataServiceLocator.Service;
+            BindActiveDataService();
+
+            if (_playerInputs == null)
+                _playerInputs = ResolvePlayerInputs();
+
+            if (_view != null && _initialized)
+                UpdateCharacterSheetUI(GetActiveSheet());
+        }
+
+        #endregion
+
         #region Input Handling
         private void Update()
         {
@@ -626,7 +728,6 @@ namespace GameCore.UI.InGame
 
             if (IsLocalPlayerDungeonMaster)
             {
-                ApplyDmCursorState();
 #if ENABLE_INPUT_SYSTEM
                 HandleDmKeyboardInput();
 #endif
@@ -947,6 +1048,9 @@ namespace GameCore.UI.InGame
                 Debug.LogWarning("InGameUIPresenter: Cannot update UI - view or sheet is null");
                 return;
             }
+
+            if (!_view.EnsureReadyForSheetUpdate())
+                return;
 
             var root = _view.Root;
             if (root == null)
