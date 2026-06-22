@@ -2,7 +2,9 @@
     "name": "GameCore",
     "rootNamespace": "GameCore",
     "references": [
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
