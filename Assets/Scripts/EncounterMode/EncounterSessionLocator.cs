@@ -8,5 +8,12 @@ namespace GameCore.EncounterMode
     {
         public static IEncounterSessionAuthority Authority { get; set; }
         public static EncounterModeManager Manager { get; set; }
+
+        /// <summary>Clears both references. Call on session teardown to avoid stale statics.</summary>
+        public static void Clear()
+        {
+            Authority = null;
+            Manager = null;
+        }
     }
 }

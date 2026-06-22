@@ -96,6 +96,12 @@ namespace GameCore.UI.MainMenu
         public event Action CreateCharacterClicked;
         public event Action JoinSessionClicked;
 
+        /// <summary>
+        /// Supplies display strings for a character file name. Injected by the presenter so the
+        /// view stays free of file/IO service dependencies.
+        /// </summary>
+        public Func<string, CharacterCardDisplay> CharacterDisplayProvider { get; set; }
+
         public VisualElement Root => _root;
 
         private void Awake()
@@ -832,34 +838,37 @@ namespace GameCore.UI.MainMenu
             if (characterFileNames == null || characterFileNames.Length == 0)
                 return;
 
-            // Load character data for display
             foreach (string fileName in characterFileNames)
             {
-                var fileInfo = GameCore.PlayerData.CharacterFileService.GetCharacterFile(fileName);
-                if (fileInfo != null)
-                {
-                    VisualElement characterCard = CreateCharacterCard(fileInfo);
-                    _characterGridContainer.Add(characterCard);
-                }
+                VisualElement characterCard = CreateCharacterCard(fileName);
+                _characterGridContainer.Add(characterCard);
             }
         }
 
-        private VisualElement CreateCharacterCard(GameCore.PlayerData.CharacterFileService.CharacterFileInfo fileInfo)
+        private VisualElement CreateCharacterCard(string fileName)
         {
             VisualElement characterCard = new VisualElement();
             characterCard.AddToClassList("menu-scene-card");
-            characterCard.name = $"character-card-{fileInfo.FileName}";
-            
-            string title = GameCore.PlayerData.CharacterFileService.GetCharacterDisplayName(fileInfo);
-            string subtitle = GameCore.PlayerData.CharacterFileService.GetCharacterCardSubtitle(fileInfo);
-            
-            characterCard.Add(CreateSceneCardLabel(title, "menu-scene-card-title", _robotoSemiBold));
-            characterCard.Add(CreateSceneCardLabel(subtitle, "menu-scene-card-subtitle", _robotoRegular));
+            characterCard.name = $"character-card-{fileName}";
 
-            characterCard.RegisterCallback<ClickEvent>(evt => OnCharacterCardClicked(fileInfo.FileName));
+            CharacterCardDisplay display = ResolveCharacterDisplay(fileName);
+
+            characterCard.Add(CreateSceneCardLabel(display.Title, "menu-scene-card-title", _robotoSemiBold));
+            characterCard.Add(CreateSceneCardLabel(display.Subtitle, "menu-scene-card-subtitle", _robotoRegular));
+
+            characterCard.RegisterCallback<ClickEvent>(evt => OnCharacterCardClicked(fileName));
             characterCard.RegisterCallback<MouseEnterEvent>(OnButtonHover);
             
             return characterCard;
+        }
+
+        private CharacterCardDisplay ResolveCharacterDisplay(string fileName)
+        {
+            if (CharacterDisplayProvider != null)
+                return CharacterDisplayProvider(fileName);
+
+            // No provider wired: fall back to the raw file name so the menu still renders.
+            return new CharacterCardDisplay(fileName, string.Empty);
         }
 
         private void UpdateCharacterCardSelection(string[] characterFileNames, string selectedCharacterFileName)
@@ -907,16 +916,9 @@ namespace GameCore.UI.MainMenu
                 return;
             }
 
-            var fileInfo = GameCore.PlayerData.CharacterFileService.GetCharacterFile(selectedCharacterFileName);
-            if (fileInfo != null)
-            {
-                string displayName = GameCore.PlayerData.CharacterFileService.GetCharacterDisplayName(fileInfo);
-                _selectedCharacterNameLabel.text = displayName.ToUpper();
-            }
-            else
-            {
-                _selectedCharacterNameLabel.text = "Unknown character";
-            }
+            CharacterCardDisplay display = ResolveCharacterDisplay(selectedCharacterFileName);
+            string displayName = string.IsNullOrEmpty(display.Title) ? selectedCharacterFileName : display.Title;
+            _selectedCharacterNameLabel.text = displayName.ToUpper();
         }
 
     }

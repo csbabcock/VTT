@@ -10,8 +10,6 @@ namespace GameCore.EncounterMode.Services
     /// </summary>
     public static class ReachableCellsCalculator
     {
-        private const int FEET_PER_CELL = 5;
-
         /// <summary>
         /// Calculates all cells reachable from the starting cell with the given remaining movement.
         /// </summary>
@@ -25,7 +23,7 @@ namespace GameCore.EncounterMode.Services
             if (gridGenerator == null || startCell == null || remainingMovementFeet <= 0)
                 return reachableCells;
 
-            int maxCells = Mathf.FloorToInt(remainingMovementFeet / FEET_PER_CELL);
+            int maxCells = GridDistanceRules.FeetToCells(remainingMovementFeet);
             GridCell[,] grid = gridGenerator.Grid;
 
             if (grid == null)
@@ -42,9 +40,8 @@ namespace GameCore.EncounterMode.Services
                     if (cell == null || !cell.IsWalkable)
                         continue;
 
-                    int deltaX = Mathf.Abs(cell.X - startCell.X);
-                    int deltaZ = Mathf.Abs(cell.Z - startCell.Z);
-                    int cellsAway = Mathf.Max(deltaX, deltaZ); // Manhattan distance
+                    int cellsAway = GridDistanceRules.CellsBetween(
+                        startCell.X, startCell.Z, cell.X, cell.Z);
 
                     if (cellsAway <= maxCells)
                     {

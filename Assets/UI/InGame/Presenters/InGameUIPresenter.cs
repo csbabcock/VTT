@@ -49,6 +49,7 @@ namespace GameCore.UI.InGame
         private bool _initialized;
         private DiceRollService _diceRollService;
         private GameLogService _gameLogService;
+        private InGameActionLogController _actionLog;
         private IPlayerDataService _localDataService;
         private IPlayerDataService _boundDataService;
         private IActor _inspectedActor;
@@ -86,6 +87,7 @@ namespace GameCore.UI.InGame
             // are stateless services with no external dependencies.
             _diceRollService = new DiceRollService();
             _gameLogService = new GameLogService();
+            _actionLog = new InGameActionLogController(_diceRollService, _gameLogService, _view, GetActiveSheet);
             // Bind to the local player's actor when one exists so this UI follows a
             // specific participant (the foundation for per-client sheets in multiplayer).
             // Falls back to the global locator until a PlayerActor is present in the scene.
@@ -94,10 +96,10 @@ namespace GameCore.UI.InGame
 
             BindActiveDataService();
             
-            // Initialize UI interaction service (centralized UI blocking logic)
+            // Register the UI input gate (centralized UI blocking logic) for world-input consumers.
             if (_view != null)
             {
-                UIInteractionService.Instance.Initialize(_view);
+                UIInputGateLocator.Gate = new UIInteractionService(_view);
             }
         }
 
@@ -532,7 +534,7 @@ namespace GameCore.UI.InGame
 
             if (Model != null && Model.IsCharacterSheetOpen)
             {
-                _playerInputs.cursorInputForLook = !UIInteractionService.Instance.ShouldBlockCameraInput();
+                _playerInputs.cursorInputForLook = !UIInputGateLocator.ShouldBlockInput();
                 return;
             }
 
@@ -801,6 +803,16 @@ namespace GameCore.UI.InGame
 
             // Ruleset-agnostic updater; the sheet reports its own ruleset.
             CharacterSheetUIUpdater.UpdateCharacterSheet(root, sheet, sheet.RulesetId);
+
+            // The sheet header binds the shared "speed-value" label to the character's static
+            // base speed. While in an encounter on our own sheet, that would overwrite the live
+            // remaining-movement display, so re-apply the encounter budget after the re-render.
+            if (_inspectedActor == null
+                && _encounterModeManager != null
+                && _encounterModeManager.IsEncounterModeActive)
+            {
+                _encounterModeManager.RefreshMovementDisplay();
+            }
         }
 
         #endregion
@@ -816,72 +828,13 @@ namespace GameCore.UI.InGame
             UpdateCharacterSheetUI(sheet);
         }
 
-        private void OnAbilityScoreClicked(string abilityName)
-        {
-            var sheet = GetActiveSheet();
-            int modifier = sheet.GetAbilityModifier(abilityName);
-            var rollResult = _diceRollService.RollD20Check(
-                sheet.CharacterName,
-                $"{abilityName} Check",
-                modifier,
-                new List<ModifierBreakdown>
-                {
-                    new ModifierBreakdown { Source = abilityName, Value = modifier }
-                }
-            );
+        private void OnAbilityScoreClicked(string abilityName) => _actionLog.RollAbilityCheck(abilityName);
 
-            var formatted = _gameLogService.FormatRollResult(rollResult);
-            _view.AddLogEntry(formatted);
-        }
-
-        private void OnSkillClicked(string skillName)
-        {
-            var sheet = GetActiveSheet();
-            string abilityName = sheet.GetSkillAbility(skillName);
-            int abilityModifier = sheet.GetAbilityModifier(abilityName);
-            int modifier = sheet.GetSkillModifier(skillName);
-            bool hasExpertise = sheet.HasExpertiseInSkill(skillName);
-            bool isProficient = sheet.IsProficientInSkill(skillName);
-
-            var breakdowns = new List<ModifierBreakdown>
-            {
-                new ModifierBreakdown { Source = abilityName, Value = abilityModifier }
-            };
-
-            if (hasExpertise)
-            {
-                breakdowns.Add(new ModifierBreakdown
-                {
-                    Source = "Expertise",
-                    Value = sheet.ProficiencyBonus * 2
-                });
-            }
-            else if (isProficient)
-            {
-                breakdowns.Add(new ModifierBreakdown 
-                { 
-                    Source = "Proficiency", 
-                    Value = sheet.ProficiencyBonus 
-                });
-            }
-
-            var rollResult = _diceRollService.RollD20Check(
-                sheet.CharacterName,
-                skillName,
-                modifier,
-                breakdowns
-            );
-
-            var formatted = _gameLogService.FormatRollResult(rollResult);
-            _view.AddLogEntry(formatted);
-        }
+        private void OnSkillClicked(string skillName) => _actionLog.RollSkillCheck(skillName);
 
         private void OnActionClicked(string actionName)
         {
-            var sheet = GetActiveSheet();
-            // Log the action (non-dice actions)
-            var formatted = _gameLogService.FormatAction(sheet.CharacterName, actionName);
-            _view.AddLogEntry(formatted);
+            _actionLog.LogAction(actionName);
 
             // Handle Dash action - double movement speed
             if (actionName == "Dash" && _encounterModeManager != null)
@@ -893,57 +846,16 @@ namespace GameCore.UI.InGame
             }
         }
 
-        private void OnAttackClicked(string weaponName)
-        {
-            // Resolve a ruleset-agnostic sheet; both data services provide one, so no
-            // service-type downcasts or hand-rolled fallbacks are needed here.
-            ICharacterSheet sheet = GetActiveSheet();
-            string characterName = sheet?.CharacterName ?? "Unknown";
+        private void OnAttackClicked(string weaponName) => _actionLog.RollAttack(weaponName);
 
-            // The adapter consumes the ruleset domain object behind ICharacterSheet
-            // and encapsulates all ruleset-specific weapon math.
-            var calculator = RulesetCalculatorFactory.GetDefaultCalculator();
-            var adapter = RulesetAdapterFactory.GetDefaultAdapter();
-            WeaponData weaponData = adapter.GetWeaponData(weaponName, sheet, calculator);
+        private void OnFeatureClicked(string featureName) => _actionLog.LogFeature(featureName);
 
-            var (attackRoll, damageRoll) = _diceRollService.RollAttack(
-                characterName,
-                weaponData.WeaponName,
-                weaponData.AttackBonus,
-                weaponData.DamageDice,
-                weaponData.DamageDieType,
-                weaponData.DamageModifier
-            );
+        private void OnRestClicked(string restType) => _actionLog.LogRest(restType);
 
-            var formatted = _gameLogService.FormatAttackRoll(attackRoll, damageRoll);
-            _view.AddLogEntry(formatted);
-        }
-
-        private void OnFeatureClicked(string featureName)
-        {
-            var sheet = GetActiveSheet();
-            // Log feature usage (non-dice actions for now)
-            var formatted = _gameLogService.FormatAction(sheet.CharacterName, $"Used: {featureName}");
-            _view.AddLogEntry(formatted);
-        }
-
-        private void OnRestClicked(string restType)
-        {
-            var sheet = GetActiveSheet();
-            // Log rest action
-            var formatted = _gameLogService.FormatAction(sheet.CharacterName, restType);
-            _view.AddLogEntry(formatted);
-        }
-
-        private void OnClearLogClicked()
-        {
-            _view.ClearLog();
-        }
+        private void OnClearLogClicked() => _actionLog.ClearLog();
 
         private void OnLogEntryDeleteClicked(UnityEngine.UIElements.VisualElement entryCard)
-        {
-            _view.RemoveLogEntry(entryCard);
-        }
+            => _actionLog.DeleteLogEntry(entryCard);
 
         private void OnMoveButtonClicked()
         {

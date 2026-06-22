@@ -20,16 +20,6 @@ namespace GameCore.EncounterMode.Grid
             Z = z;
             WorldPosition = worldPosition;
         }
-
-        /// <summary>
-        /// Gets the world position at the specified elevation level.
-        /// </summary>
-        public Vector3 GetPositionAtElevation(float cellSize, int elevationLevel)
-        {
-            Vector3 pos = WorldPosition;
-            pos.y += elevationLevel * cellSize;
-            return pos;
-        }
     }
 }
 

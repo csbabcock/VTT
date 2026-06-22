@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using GameCore.Actors;
 using GameCore.EncounterMode;
+using GameCore.EncounterMode.Services;
 using GameCore.PlayerData;
 using Unity.Netcode;
 using UnityEngine;
@@ -31,8 +32,8 @@ namespace GameCore.Networking
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Server);
 
-        private readonly List<int> _turnOrder = new List<int>();
-        private int _turnIndex;
+        private readonly EncounterTurnOrderService _turnOrderService = new EncounterTurnOrderService();
+        private readonly IInitiativeRoller _initiativeRoller = new SystemInitiativeRoller();
 
         public bool IsEncounterActive => _isEncounterActive.Value;
         public int CurrentTurnOwnerId => _currentTurnOwnerId.Value;
@@ -120,7 +121,7 @@ namespace GameCore.Networking
             _isEncounterActive.Value = next;
             if (!next)
             {
-                _turnOrder.Clear();
+                _turnOrderService.Clear();
                 _currentTurnOwnerId.Value = NoTurnOwner;
             }
         }
@@ -173,7 +174,7 @@ namespace GameCore.Networking
             EncounterActiveChanged?.Invoke(next);
             if (!next)
             {
-                _turnOrder.Clear();
+                _turnOrderService.Clear();
                 TurnOwnerChanged?.Invoke(NoTurnOwner);
             }
         }
@@ -187,11 +188,10 @@ namespace GameCore.Networking
 
         private void AdvanceTurnLocal()
         {
-            if (_turnOrder.Count == 0)
+            if (!_turnOrderService.HasTurns)
                 return;
 
-            _turnIndex = (_turnIndex + 1) % _turnOrder.Count;
-            int nextOwner = _turnOrder[_turnIndex];
+            int nextOwner = _turnOrderService.Advance();
             ResetMovementForTurnOwner(nextOwner);
             TurnOwnerChanged?.Invoke(nextOwner);
         }
@@ -199,16 +199,18 @@ namespace GameCore.Networking
         private void RollInitiativeAndStartTurn()
         {
             RollInitiativeAndStartTurnLocal();
-            int owner = _turnOrder.Count > 0 ? _turnOrder[_turnIndex] : NoTurnOwner;
+            int owner = _turnOrderService.CurrentOwnerId;
             _currentTurnOwnerId.Value = owner;
             ResetMovementForTurnOwner(owner);
         }
 
         private void RollInitiativeAndStartTurnLocal()
         {
-            _turnOrder.Clear();
-            var scores = new List<(int ownerId, int initiative)>();
+            _turnOrderService.RollInitiative(BuildInitiativeParticipants(), _initiativeRoller);
+        }
 
+        private IEnumerable<(int ownerId, int initiativeModifier)> BuildInitiativeParticipants()
+        {
             foreach (var actor in ActorRegistry.Actors)
             {
                 if (actor == null)
@@ -220,24 +222,16 @@ namespace GameCore.Networking
                 else if (actor.DataService?.GetCharacterSheet() is DnD5eCharacterData sheet)
                     mod = sheet.initiativeModifier;
 
-                int roll = UnityEngine.Random.Range(1, 21) + mod;
-                scores.Add((actor.OwnerId, roll));
+                yield return (actor.OwnerId, mod);
             }
-
-            scores.Sort((a, b) => b.initiative.CompareTo(a.initiative));
-            foreach (var entry in scores)
-                _turnOrder.Add(entry.ownerId);
-
-            _turnIndex = 0;
         }
 
         private void AdvanceTurnServer()
         {
-            if (_turnOrder.Count == 0)
+            if (!_turnOrderService.HasTurns)
                 return;
 
-            _turnIndex = (_turnIndex + 1) % _turnOrder.Count;
-            int nextOwner = _turnOrder[_turnIndex];
+            int nextOwner = _turnOrderService.Advance();
             _currentTurnOwnerId.Value = nextOwner;
             ResetMovementForTurnOwner(nextOwner);
         }

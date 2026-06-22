@@ -20,8 +20,7 @@ namespace GameCore.EncounterMode
         /// Should be called every frame when in encounter mode.
         /// </summary>
         /// <param name="isGrounded">Whether the character is currently grounded</param>
-        /// <param name="verticalVelocity">Current vertical velocity from jump/gravity system</param>
-        void ProcessMovement(bool isGrounded, float verticalVelocity);
+        void ProcessMovement(bool isGrounded);
 
         /// <summary>
         /// Cancels the current movement and stops the character.

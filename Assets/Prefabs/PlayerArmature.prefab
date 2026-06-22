@@ -1131,7 +1131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CurrentPerspective: 0
   CurrentMovementMode: 0
-  FirstPersonForwardOffset: 0.05
+  FirstPersonForwardOffset: 0.15
   FirstPersonCameraRadius: 0.3
   FirstPersonCameraCollisionLayers:
     serializedVersion: 2

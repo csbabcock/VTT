@@ -1,79 +1,40 @@
-using UnityEngine;
 using GameCore.UI.InGame;
 
 namespace GameCore.EncounterMode.Services
 {
     /// <summary>
-    /// Service for checking UI interaction state.
-    /// Centralizes UI blocking logic to prevent code duplication (DRY principle).
+    /// Default <see cref="IUIInputGate"/> backed by the in-game UI view. Centralizes UI
+    /// blocking logic (DRY). Registered with <see cref="UIInputGateLocator"/> by the
+    /// in-game UI presenter instead of being accessed as a global singleton.
     /// </summary>
-    public class UIInteractionService
+    public class UIInteractionService : IUIInputGate
     {
-        private static UIInteractionService _instance;
         private InGameUIView _inGameUIView;
 
-        /// <summary>
-        /// Singleton instance for easy access throughout the codebase.
-        /// </summary>
-        public static UIInteractionService Instance
+        public UIInteractionService(InGameUIView uiView = null)
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new UIInteractionService();
-                }
-                return _instance;
-            }
+            _inGameUIView = uiView;
         }
 
-        /// <summary>
-        /// Initializes the service with the UI view reference.
-        /// Should be called during initialization.
-        /// </summary>
+        /// <summary>Sets or updates the UI view reference.</summary>
         public void Initialize(InGameUIView uiView)
         {
             _inGameUIView = uiView;
         }
 
-        /// <summary>
-        /// Checks if the mouse is currently over the character sheet UI.
-        /// Returns false if UI view is not initialized or character sheet is not open.
-        /// </summary>
         public bool IsMouseOverCharacterSheet()
         {
-            if (_inGameUIView == null)
-                return false;
-
-            return _inGameUIView.IsMouseOverCharacterSheet();
+            return _inGameUIView != null && _inGameUIView.IsMouseOverCharacterSheet();
         }
 
-        /// <summary>
-        /// Checks if the character sheet is currently open.
-        /// </summary>
         public bool IsCharacterSheetOpen()
         {
-            if (_inGameUIView == null)
-                return false;
-
-            return _inGameUIView.IsCharacterSheetOpen();
+            return _inGameUIView != null && _inGameUIView.IsCharacterSheetOpen();
         }
 
-        /// <summary>
-        /// Checks if grid input should be blocked (mouse over UI).
-        /// </summary>
-        public bool ShouldBlockGridInput()
-        {
-            return IsMouseOverCharacterSheet();
-        }
-
-        /// <summary>
-        /// Checks if camera input should be blocked (mouse over UI).
-        /// </summary>
-        public bool ShouldBlockCameraInput()
+        public bool ShouldBlockInput()
         {
             return IsMouseOverCharacterSheet();
         }
     }
 }
-

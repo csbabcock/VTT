@@ -81,6 +81,8 @@ namespace GameCore.UI.MainMenu
 
             _view.Initialize();
 
+            _view.CharacterDisplayProvider = BuildCharacterCardDisplay;
+
             _view.SceneSelected += HandleSceneSelected;
             _view.LoadSceneClicked += HandleLoadSceneClicked;
             _view.NavigationChanged += HandleNavigationChanged;
@@ -227,6 +229,19 @@ namespace GameCore.UI.MainMenu
                 Debug.LogError($"MainMenuPresenter: Error loading characters: {ex.Message}");
                 Model.SetAvailableCharacters(new string[0]);
             }
+        }
+
+        private CharacterCardDisplay BuildCharacterCardDisplay(string fileName)
+        {
+            var fileInfo = CharacterFileService.GetCharacterFile(fileName);
+            if (fileInfo == null)
+            {
+                return new CharacterCardDisplay(fileName, string.Empty);
+            }
+
+            return new CharacterCardDisplay(
+                CharacterFileService.GetCharacterDisplayName(fileInfo),
+                CharacterFileService.GetCharacterCardSubtitle(fileInfo));
         }
 
         private void HandleCharacterSelected(string characterFileName)

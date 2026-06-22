@@ -12,7 +12,7 @@ namespace GameCore
 #if ENABLE_INPUT_SYSTEM 
     [RequireComponent(typeof(PlayerInputComponent))]
 #endif
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : MonoBehaviour, IEncounterLocomotion
     {
         [Header("Perspective")]
         [Tooltip("Current perspective mode")]
@@ -129,8 +129,6 @@ namespace GameCore
         private ThirdPersonCameraController _thirdPersonCameraController;
 
         private const float _threshold = 0.01f;
-        private bool? _lastLoggedCameraLock;
-        private MovementMode? _lastLoggedMovementMode;
 
         private bool IsCurrentDeviceMouse
         {
@@ -146,15 +144,22 @@ namespace GameCore
 
         private void Awake()
         {
+            ResolveMainCamera();
+        }
+
+        private void ResolveMainCamera()
+        {
+            if (_mainCamera != null && _mainCameraComponent != null)
+                return;
+
             _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             if (_mainCamera != null)
-            {
                 _mainCameraComponent = _mainCamera.GetComponent<Camera>();
-            }
         }
 
         private void Start()
         {
+            ResolveMainCamera();
             InitializeComponents();
             InitializeHandlers();
             SubscribeToEvents();
@@ -247,12 +252,12 @@ namespace GameCore
                 FootstepAudioVolume
             );
 
-            // Initialize perspective manager
+            // Initialize perspective manager. The CinemachineBrain lives on the runtime main
+            // camera, so resolve it lazily (it may not exist yet during Start).
             _perspectiveManager = new PerspectiveManager(
                 transform,
                 CinemachineCameraTarget,
-                CinemachineVirtualCamera,
-                _mainCameraComponent,
+                ResolveCinemachineBrain,
                 CurrentPerspective
             );
             _perspectiveManager.Initialize();
@@ -302,23 +307,29 @@ namespace GameCore
             }
         }
 
+        /// <summary>
+        /// Resolves the CinemachineBrain on the main camera (via reflection so GameCore keeps no
+        /// hard Cinemachine dependency). Returned to <see cref="PerspectiveManager"/> so it can gate
+        /// Cinemachine control when switching between first- and third-person.
+        /// </summary>
+        private Behaviour ResolveCinemachineBrain()
+        {
+            if (_mainCamera == null)
+                return null;
+
+            return _mainCamera.GetComponent("CinemachineBrain") as Behaviour;
+        }
+
         private void SubscribeToEvents()
         {
             if (_input != null)
             {
 #if ENABLE_INPUT_SYSTEM
-                _input.OnTogglePerspective += OnTogglePerspective;
+                // Must NOT be named OnTogglePerspective — PlayerInput uses SendMessages and would
+                // invoke that method a second time, toggling twice per key press.
+                _input.OnTogglePerspective += HandlePerspectiveToggle;
                 _input.OnToggleEncounterMode += HandleToggleEncounterMode;
 #endif
-            }
-
-            // Subscribe to grid selection events
-            if (_encounterModeManager != null && _encounterModeManager is EncounterModeManager manager)
-            {
-                if (manager.GridSelector != null)
-                {
-                    manager.GridSelector.OnCellSelected += OnGridCellSelected;
-                }
             }
         }
 
@@ -327,18 +338,9 @@ namespace GameCore
             if (_input != null)
             {
 #if ENABLE_INPUT_SYSTEM
-                _input.OnTogglePerspective -= OnTogglePerspective;
+                _input.OnTogglePerspective -= HandlePerspectiveToggle;
                 _input.OnToggleEncounterMode -= HandleToggleEncounterMode;
 #endif
-            }
-
-            // Unsubscribe from grid selection events
-            if (_encounterModeManager != null && _encounterModeManager is EncounterModeManager manager)
-            {
-                if (manager.GridSelector != null)
-                {
-                    manager.GridSelector.OnCellSelected -= OnGridCellSelected;
-                }
             }
         }
 
@@ -385,10 +387,9 @@ namespace GameCore
             // Process movement based on mode
             if (CurrentMovementMode == MovementMode.Encounter && _encounterMovementHandler != null)
             {
-                // Encounter mode: use grid-based movement
-                // The encounter handler manages its own vertical velocity, so we pass 0 for verticalVelocity
-                // but it will calculate its own
-                _encounterMovementHandler.ProcessMovement(Grounded, 0f);
+                // Encounter mode: use grid-based movement.
+                // The encounter handler manages its own vertical velocity internally.
+                _encounterMovementHandler.ProcessMovement(Grounded);
 
                 // Update animations using encounter movement handler
                 // In encounter mode, use only encounter movement handler states (not jump handler)
@@ -411,35 +412,16 @@ namespace GameCore
                 {
                     // Only use movement input if character sheet is not open
                     // When character sheet is open, WASD is used for UI navigation
-                    if (!UIInteractionService.Instance.IsCharacterSheetOpen())
+                    if (!UIInputGateLocator.IsCharacterSheetOpen())
                     {
                         moveInput = _input.move;
                     }
                     // If character sheet is open, moveInput remains Vector2.zero
                 }
-                if (CurrentPerspective == PerspectiveMode.FirstPerson && moveInput.y > 0.0f)
+                // Prevent forward movement in first-person when a wall is directly in front of the head/camera.
+                if (CurrentPerspective == PerspectiveMode.FirstPerson && moveInput.y > 0.0f && IsFirstPersonWallBlockingForward())
                 {
-                    // Prevent forward movement in first-person when a wall is directly in front of the head/camera.
-                    Vector3 anchorPosition;
-                    if (FirstPersonHeadBone != null)
-                    {
-                        anchorPosition = FirstPersonHeadBone.position;
-                    }
-                    else
-                    {
-                        float headHeight = _controller != null ? _controller.height * 0.9f : 1.6f;
-                        anchorPosition = transform.position + Vector3.up * headHeight;
-                    }
-
-                    float checkDistance = FirstPersonWallStopDistance + FirstPersonForwardOffset + 0.01f;
-                    if (checkDistance > 0.0f && FirstPersonCameraCollisionLayers != 0)
-                    {
-                        if (Physics.Raycast(anchorPosition, transform.forward, checkDistance, FirstPersonCameraCollisionLayers, QueryTriggerInteraction.Ignore))
-                        {
-                            // Block forward component of movement when very near a wall.
-                            moveInput.y = 0.0f;
-                        }
-                    }
+                    moveInput.y = 0.0f;
                 }
 
                 _movementHandler.ProcessMovement(moveInput, _input.sprint, _input.analogMovement);
@@ -474,7 +456,6 @@ namespace GameCore
             }
 
             bool shouldLockCamera = ShouldLockCameraInput();
-            LogCameraLockState(shouldLockCamera);
 
             // Process camera rotation
             _cameraController.ProcessRotation(_input.look, shouldLockCamera);
@@ -504,7 +485,7 @@ namespace GameCore
             if (IsEncounterModeActive())
                 return true;
 
-            return UIInteractionService.Instance.ShouldBlockCameraInput();
+            return UIInputGateLocator.ShouldBlockInput();
         }
 
         private bool IsEncounterModeActive()
@@ -536,45 +517,46 @@ namespace GameCore
 
             CurrentMovementMode = desiredMode;
             _encounterMovementHandler?.CancelMovement();
-            LogMovementModeState();
         }
 
-        private void LogCameraLockState(bool shouldLockCamera)
+        /// <summary>
+        /// True when a wall is directly in front of the first-person head/camera, used to
+        /// block forward movement and prevent clipping into geometry.
+        /// </summary>
+        private bool IsFirstPersonWallBlockingForward()
         {
-            if (_lastLoggedCameraLock.HasValue && _lastLoggedCameraLock.Value == shouldLockCamera)
-                return;
+            Vector3 anchorPosition;
+            if (FirstPersonHeadBone != null)
+            {
+                anchorPosition = FirstPersonHeadBone.position;
+            }
+            else
+            {
+                float headHeight = _controller != null ? _controller.height * 0.9f : 1.6f;
+                anchorPosition = transform.position + Vector3.up * headHeight;
+            }
 
-            _lastLoggedCameraLock = shouldLockCamera;
-            Debug.Log(
-                $"[EncounterCameraDebug] PlayerController cameraLock={shouldLockCamera}, " +
-                $"movementMode={CurrentMovementMode}, encounterActive={IsEncounterModeActive()}, " +
-                $"look={(_input != null ? _input.look : Vector2.zero)}, cameraController={_cameraController?.GetType().Name}, " +
-                $"player={name}");
+            float checkDistance = FirstPersonWallStopDistance + FirstPersonForwardOffset + 0.01f;
+            if (checkDistance <= 0.0f || FirstPersonCameraCollisionLayers == 0)
+                return false;
+
+            return Physics.Raycast(anchorPosition, transform.forward, checkDistance,
+                FirstPersonCameraCollisionLayers, QueryTriggerInteraction.Ignore);
         }
 
-        private void LogMovementModeState()
+        private void HandlePerspectiveToggle()
         {
-            if (_lastLoggedMovementMode.HasValue && _lastLoggedMovementMode.Value == CurrentMovementMode)
-                return;
+            ResolveMainCamera();
 
-            _lastLoggedMovementMode = CurrentMovementMode;
-            Debug.Log(
-                $"[EncounterCameraDebug] PlayerController movementMode={CurrentMovementMode}, " +
-                $"encounterActive={IsEncounterModeActive()}, player={name}");
-        }
-
-        // Removed - camera controller switching is now handled in OnTogglePerspective
-
-        private void OnTogglePerspective()
-        {
             _perspectiveManager.TogglePerspective();
             CurrentPerspective = _perspectiveManager.CurrentPerspective;
-            
-            // Immediately switch camera controller
+
             SwitchCameraController();
-            
-            // Update movement handler perspective mode
             UpdateMovementHandlerPerspective();
+
+            // Snap the camera immediately so the perspective change is visible same frame.
+            if (_cameraController != null)
+                _cameraController.UpdateCamera();
         }
 
         private void SwitchCameraController()
@@ -661,27 +643,16 @@ namespace GameCore
         }
 
         /// <summary>
-        /// Called after the server approves an encounter grid move.
+        /// Applies an encounter grid move approved by the encounter coordinator
+        /// (after local or server-side validation). Part of <see cref="IEncounterLocomotion"/>.
         /// </summary>
-        public void ApplyApprovedEncounterMove(GameCore.EncounterMode.Grid.GridCell cell, int elevation)
+        public void ApplyMove(GameCore.EncounterMode.Grid.GridCell cell, int elevation)
         {
             if (CurrentMovementMode != MovementMode.Encounter || _encounterMovementHandler == null || cell == null)
                 return;
 
             _encounterMovementHandler.SetTargetCell(cell, elevation);
         }
-
-        private void OnGridCellSelected(GameCore.EncounterMode.Grid.GridCell cell, int elevation)
-        {
-            if (CurrentMovementMode != MovementMode.Encounter || _encounterMovementHandler == null)
-                return;
-
-            if (_encounterModeManager is EncounterModeManager manager && manager.UsesNetworkEncounter)
-                return;
-
-            _encounterMovementHandler.SetTargetCell(cell, elevation);
-        }
-
 
         private void OnDrawGizmosSelected()
         {

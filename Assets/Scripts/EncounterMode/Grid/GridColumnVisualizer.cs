@@ -69,7 +69,7 @@ namespace GameCore.EncounterMode.Grid
         {
             // Check if mouse is over character sheet UI - if so, clear the column
             // But allow column visualization when character sheet is open but mouse is not over it
-            if (UIInteractionService.Instance.ShouldBlockGridInput())
+            if (UIInputGateLocator.ShouldBlockInput())
             {
                 // Clear column when mouse is over UI to prevent it from showing
                 if (_lastHoveredCell != null || _selectedElevationIndicator != null)

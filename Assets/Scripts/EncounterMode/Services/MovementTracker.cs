@@ -47,13 +47,7 @@ namespace GameCore.EncounterMode.Services
         /// </summary>
         public int CalculateDistanceFeet(GridCell fromCell, GridCell toCell)
         {
-            if (fromCell == null || toCell == null)
-                return 0;
-
-            int deltaX = Mathf.Abs(toCell.X - fromCell.X);
-            int deltaZ = Mathf.Abs(toCell.Z - fromCell.Z);
-            int cellsMoved = Mathf.Max(deltaX, deltaZ); // Diagonal = 1 cell
-            return cellsMoved * 5; // Each cell is 5 feet
+            return GridDistanceRules.DistanceFeet(fromCell, toCell);
         }
 
         /// <summary>
@@ -97,6 +91,18 @@ namespace GameCore.EncounterMode.Services
         /// </summary>
         public void SetRemainingMovementFeet(int remainingFeet)
         {
+            _remainingMovementFeet = Mathf.Max(0, remainingFeet);
+        }
+
+        /// <summary>
+        /// Applies server-authoritative movement state verbatim: the dash flag and the remaining
+        /// feet are taken as-is, with NO local recalculation. Use this for replicated state — the
+        /// server has already computed the correct remaining budget (e.g. Dash adds one base move
+        /// to the current remaining), so recomputing here would double-apply it.
+        /// </summary>
+        public void ApplyAuthoritativeState(int remainingFeet, bool dashActive)
+        {
+            _isDashActive = dashActive;
             _remainingMovementFeet = Mathf.Max(0, remainingFeet);
         }
 

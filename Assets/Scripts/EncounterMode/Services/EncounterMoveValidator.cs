@@ -41,10 +41,7 @@ namespace GameCore.EncounterMode.Services
 
         public static int CalculateDistanceFeet(int fromX, int fromZ, int toX, int toZ)
         {
-            int deltaX = UnityEngine.Mathf.Abs(toX - fromX);
-            int deltaZ = UnityEngine.Mathf.Abs(toZ - fromZ);
-            int cellsMoved = UnityEngine.Mathf.Max(deltaX, deltaZ);
-            return cellsMoved * 5;
+            return GridDistanceRules.DistanceFeet(fromX, fromZ, toX, toZ);
         }
 
         public static MoveResult Validate(MoveRequest request)

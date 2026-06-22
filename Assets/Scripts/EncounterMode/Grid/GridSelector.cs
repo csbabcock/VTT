@@ -25,9 +25,24 @@ namespace GameCore.EncounterMode.Grid
         public int MaxElevation = 6; // Default: 30 feet (6 cells * 5 feet)
 
         private IGridGenerator _gridGenerator;
+        private EncounterModeManager _encounterModeManager;
         private GridCell _selectedCell;
         private GridCell _hoveredCell;
         private int _selectedElevation = 0; // Current selected elevation level (0 = ground)
+
+        /// <summary>
+        /// Cached encounter manager, resolved lazily once so reachability checks don't run a
+        /// scene-wide search every frame.
+        /// </summary>
+        private EncounterModeManager EncounterManager
+        {
+            get
+            {
+                if (_encounterModeManager == null)
+                    _encounterModeManager = FindAnyObjectByType<EncounterModeManager>();
+                return _encounterModeManager;
+            }
+        }
 #if ENABLE_INPUT_SYSTEM
         private UnityEngine.InputSystem.Mouse _mouse; // Cached mouse reference
 #endif
@@ -100,7 +115,7 @@ namespace GameCore.EncounterMode.Grid
         private void ProcessClickIfNotOverUI()
         {
             // Check if mouse is over UI - if so, don't process clicks
-            if (UIInteractionService.Instance.ShouldBlockGridInput())
+            if (UIInputGateLocator.ShouldBlockInput())
                 return;
 
             bool mouseClicked = false;
@@ -108,7 +123,7 @@ namespace GameCore.EncounterMode.Grid
             if (_mouse != null && _mouse.leftButton.wasPressedThisFrame)
             {
                 // Final check right before processing - UI might have captured the click
-                if (!UIInteractionService.Instance.ShouldBlockGridInput())
+                if (!UIInputGateLocator.ShouldBlockInput())
                 {
                     mouseClicked = true;
                 }
@@ -117,7 +132,7 @@ namespace GameCore.EncounterMode.Grid
             if (Input.GetMouseButtonDown(0))
             {
                 // Final check right before processing - UI might have captured the click
-                if (!UIInteractionService.Instance.ShouldBlockGridInput())
+                if (!UIInputGateLocator.ShouldBlockInput())
                 {
                     mouseClicked = true;
                 }
@@ -141,7 +156,7 @@ namespace GameCore.EncounterMode.Grid
 
             // Check if mouse is over character sheet UI - if so, don't process grid input
             // But allow grid selection when character sheet is open but mouse is not over it
-            if (UIInteractionService.Instance.ShouldBlockGridInput())
+            if (UIInputGateLocator.ShouldBlockInput())
             {
                 // Clear hovered cell when mouse is over UI to prevent column visualizer from showing
                 _hoveredCell = null;
@@ -197,7 +212,7 @@ namespace GameCore.EncounterMode.Grid
             if (groundCell != null)
             {
                 // Check if cell is reachable (if EncounterModeManager is available and movement mode is active)
-                EncounterModeManager encounterManager = FindAnyObjectByType<EncounterModeManager>();
+                EncounterModeManager encounterManager = EncounterManager;
                 if (encounterManager != null && encounterManager.IsMovementModeActive)
                 {
                     if (encounterManager.IsCellReachable(groundCell))
@@ -235,7 +250,7 @@ namespace GameCore.EncounterMode.Grid
         public void SelectHoveredCell()
         {
             // Final safety check - don't allow selection if mouse is over UI
-            if (UIInteractionService.Instance.ShouldBlockGridInput())
+            if (UIInputGateLocator.ShouldBlockInput())
             {
                 return;
             }
@@ -243,7 +258,7 @@ namespace GameCore.EncounterMode.Grid
             if (_hoveredCell != null)
             {
                 // Check if cell is reachable (if EncounterModeManager is available)
-                EncounterModeManager encounterManager = FindAnyObjectByType<EncounterModeManager>();
+                EncounterModeManager encounterManager = EncounterManager;
                 if (encounterManager != null && encounterManager.IsMovementModeActive)
                 {
                     if (!encounterManager.IsCellReachable(_hoveredCell))

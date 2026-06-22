@@ -1,5 +1,6 @@
 using UnityEngine;
 using GameCore.EncounterMode.Grid;
+using GameCore.EncounterMode.Services;
 
 namespace GameCore.EncounterMode
 {
@@ -30,10 +31,8 @@ namespace GameCore.EncounterMode
         private Vector3 _lastPositionWhenTargetSet;
 
         // Cached vectors to avoid allocations
-        private Vector3 _tempVector3 = Vector3.zero;
         private Vector3 _tempDirection = Vector3.zero;
         private Vector3 _tempMovement = Vector3.zero;
-        private Vector3 _tempDirection3D = Vector3.zero; // Full 3D direction for diagonal movement
 
         public bool IsMoving => _hasTarget;
         public float CurrentSpeed => _speed;
@@ -64,10 +63,10 @@ namespace GameCore.EncounterMode
                 return;
             }
 
-            Vector3 newTargetPos = CalculateTargetPosition(targetCell, elevation);
+            Vector3 newTargetPos = EncounterPathPlanner.CalculateTargetPosition(targetCell, elevation, _gridGenerator.CellSize);
             Vector3 currentPos = _transform.position;
-            
-            if (IsAlreadyAtTarget(currentPos, newTargetPos, elevation))
+
+            if (EncounterPathPlanner.IsWithinArrivalThreshold(currentPos, newTargetPos, elevation, _gridGenerator.CellSize))
             {
                 return; // Already at target, don't set new target
             }
@@ -80,7 +79,7 @@ namespace GameCore.EncounterMode
             _targetPosition = newTargetPos;
         }
 
-        public void ProcessMovement(bool isGrounded, float verticalVelocity)
+        public void ProcessMovement(bool isGrounded)
         {
             if (!_hasTarget || _targetCell == null)
             {
@@ -89,25 +88,26 @@ namespace GameCore.EncounterMode
             }
 
             Vector3 currentPos = _transform.position;
-            float horizontalDistance = CalculateHorizontalDistance(currentPos);
+            float horizontalDistance = EncounterPathPlanner.HorizontalDistance(currentPos, _targetPosition);
             float verticalDistance = _targetPosition.y - currentPos.y;
-            
+
             bool wasJustSet = _justSetTarget;
             if (_justSetTarget)
             {
                 _justSetTarget = false;
             }
-            
-            bool hasMovedSinceTargetSet = HasMovedTowardTarget(currentPos);
-            
-            if (CheckArrival(horizontalDistance, verticalDistance, wasJustSet, hasMovedSinceTargetSet))
+
+            bool hasMovedSinceTargetSet =
+                EncounterPathPlanner.HasMovedTowardTarget(currentPos, _lastPositionWhenTargetSet, _targetPosition);
+
+            if (CheckArrival(wasJustSet, hasMovedSinceTargetSet))
             {
                 HandleArrival();
                 return;
             }
 
             // Calculate 3D diagonal direction for proportional movement
-            Vector3 diagonalDirection = CalculateDiagonalDirection(currentPos);
+            Vector3 diagonalDirection = EncounterPathPlanner.CalculateDiagonalDirection(currentPos, _targetPosition);
             Vector3 horizontalMovement = CalculateHorizontalMovementFromDiagonal(horizontalDistance, diagonalDirection);
             CalculateVerticalVelocityFromDiagonal(verticalDistance, currentPos, isGrounded, diagonalDirection);
             UpdateAnimationStates(verticalDistance);
@@ -130,92 +130,11 @@ namespace GameCore.EncounterMode
 
         #region Private Helper Methods
 
-        private Vector3 CalculateTargetPosition(GridCell targetCell, int elevation)
+        private bool CheckArrival(bool wasJustSet, bool hasMovedSinceTargetSet)
         {
-            float cellSize = _gridGenerator.CellSize;
-            float groundLevelY = targetCell.WorldPosition.y;
-            float elevationHeight = elevation * cellSize;
-            
-            return new Vector3(
-                targetCell.WorldPosition.x,
-                elevation == 0 ? groundLevelY : groundLevelY + elevationHeight,
-                targetCell.WorldPosition.z
-            );
-        }
-
-        private bool IsAlreadyAtTarget(Vector3 currentPos, Vector3 targetPos, int elevation)
-        {
-            Vector3 horizontalDiff = new Vector3(
-                targetPos.x - currentPos.x,
-                0f,
-                targetPos.z - currentPos.z
-            );
-            float horizontalDistance = horizontalDiff.magnitude;
-            float verticalDistance = targetPos.y - currentPos.y;
-            
-            float cellSize = _gridGenerator.CellSize;
-            float horizontalThreshold = Mathf.Max(
-                cellSize * EncounterMovementConstants.HORIZONTAL_THRESHOLD_MULTIPLIER,
-                EncounterMovementConstants.MIN_HORIZONTAL_THRESHOLD
-            );
-            float verticalThreshold = elevation == 0
-                ? EncounterMovementConstants.GROUND_LEVEL_VERTICAL_THRESHOLD
-                : EncounterMovementConstants.ELEVATED_VERTICAL_THRESHOLD;
-            
-            if (elevation == 0)
-            {
-                return horizontalDistance < horizontalThreshold &&
-                       (verticalDistance >= 0 && verticalDistance <= verticalThreshold);
-            }
-            else
-            {
-                return horizontalDistance < horizontalThreshold &&
-                       Mathf.Abs(verticalDistance) < verticalThreshold;
-            }
-        }
-
-        private float CalculateHorizontalDistance(Vector3 currentPos)
-        {
-            _tempVector3.Set(
-                _targetPosition.x - currentPos.x,
-                0f,
-                _targetPosition.z - currentPos.z
-            );
-            return _tempVector3.magnitude;
-        }
-
-        private bool HasMovedTowardTarget(Vector3 currentPos)
-        {
-            float distanceMoved = Vector3.Distance(currentPos, _lastPositionWhenTargetSet);
-            float initialDistToTarget = Vector3.Distance(_lastPositionWhenTargetSet, _targetPosition);
-            float currentDistToTarget = Vector3.Distance(currentPos, _targetPosition);
-            
-            return distanceMoved > EncounterMovementConstants.MIN_MOVEMENT_DISTANCE &&
-                   currentDistToTarget <= initialDistToTarget + EncounterMovementConstants.MOVEMENT_TOLERANCE;
-        }
-
-        private bool CheckArrival(float horizontalDistance, float verticalDistance, bool wasJustSet, bool hasMovedSinceTargetSet)
-        {
-            float cellSize = _gridGenerator.CellSize;
-            float horizontalThreshold = Mathf.Max(
-                cellSize * EncounterMovementConstants.HORIZONTAL_THRESHOLD_MULTIPLIER,
-                EncounterMovementConstants.MIN_HORIZONTAL_THRESHOLD
-            );
-            
-            if (_targetElevation == 0)
-            {
-                float verticalThreshold = EncounterMovementConstants.GROUND_LEVEL_VERTICAL_THRESHOLD;
-                return _hasTarget && !wasJustSet && hasMovedSinceTargetSet &&
-                       horizontalDistance < horizontalThreshold &&
-                       (verticalDistance >= 0 && verticalDistance <= verticalThreshold);
-            }
-            else
-            {
-                float verticalThreshold = EncounterMovementConstants.ELEVATED_VERTICAL_THRESHOLD;
-                return _hasTarget && !wasJustSet && hasMovedSinceTargetSet &&
-                       horizontalDistance < horizontalThreshold &&
-                       Mathf.Abs(verticalDistance) < verticalThreshold;
-            }
+            return _hasTarget && !wasJustSet && hasMovedSinceTargetSet &&
+                   EncounterPathPlanner.IsWithinArrivalThreshold(
+                       _transform.position, _targetPosition, _targetElevation, _gridGenerator.CellSize);
         }
 
         private void HandleArrival()
@@ -241,31 +160,6 @@ namespace GameCore.EncounterMode
             _verticalVelocity = 0f;
             _isJumping = false;
             _isFalling = false;
-        }
-
-        /// <summary>
-        /// Calculates the full 3D direction vector from current position to target.
-        /// This enables diagonal movement by maintaining proportional horizontal and vertical components.
-        /// </summary>
-        private Vector3 CalculateDiagonalDirection(Vector3 currentPos)
-        {
-            _tempDirection3D.Set(
-                _targetPosition.x - currentPos.x,
-                _targetPosition.y - currentPos.y,
-                _targetPosition.z - currentPos.z
-            );
-            
-            float magnitude = _tempDirection3D.magnitude;
-            if (magnitude > 0.0001f)
-            {
-                _tempDirection3D /= magnitude; // Normalize
-            }
-            else
-            {
-                _tempDirection3D = Vector3.zero;
-            }
-            
-            return _tempDirection3D;
         }
 
         /// <summary>
@@ -308,17 +202,6 @@ namespace GameCore.EncounterMode
                 _animationBlend = 0f;
                 return Vector3.zero;
             }
-        }
-
-        /// <summary>
-        /// Legacy method kept for backward compatibility. 
-        /// Now redirects to diagonal-based calculation.
-        /// </summary>
-        private Vector3 CalculateHorizontalMovement(float horizontalDistance)
-        {
-            Vector3 currentPos = _transform.position;
-            Vector3 diagonalDirection = CalculateDiagonalDirection(currentPos);
-            return CalculateHorizontalMovementFromDiagonal(horizontalDistance, diagonalDirection);
         }
 
         private void RotateTowardDirection()
@@ -398,17 +281,6 @@ namespace GameCore.EncounterMode
                 float forceDescentSpeed = _sprintSpeed * EncounterMovementConstants.FORCE_DESCENT_SPEED_MULTIPLIER;
                 _verticalVelocity = -forceDescentSpeed;
             }
-        }
-
-        /// <summary>
-        /// Legacy method kept for backward compatibility.
-        /// Now redirects to diagonal-based calculation.
-        /// </summary>
-        private void CalculateVerticalVelocity(float verticalDistance, Vector3 currentPos, bool isGrounded)
-        {
-            Vector3 currentPosition = _transform.position;
-            Vector3 diagonalDirection = CalculateDiagonalDirection(currentPosition);
-            CalculateVerticalVelocityFromDiagonal(verticalDistance, currentPos, isGrounded, diagonalDirection);
         }
 
         private void CalculateVerticalVelocityForMovement(float verticalDistance, float cellSize)

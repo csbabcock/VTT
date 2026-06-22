@@ -155,7 +155,6 @@ namespace GameCore.Networking
                 return;
 
             manager?.ApplyApprovedNetworkMove(cell, elevation, remainingFeet, _dashActive.Value);
-            GetComponent<PlayerController>()?.ApplyApprovedEncounterMove(cell, elevation);
         }
 
         [Rpc(SendTo.Owner)]

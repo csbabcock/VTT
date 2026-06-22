@@ -3,13 +3,14 @@ using GameCore.Actors;
 using GameCore.EncounterMode.Grid;
 using GameCore.EncounterMode.Services;
 using GameCore.UI.InGame;
-using System.Collections.Generic;
 
 namespace GameCore.EncounterMode
 {
     /// <summary>
-    /// Manages the encounter mode state and coordinates grid-based combat systems.
-    /// Follows SOLID principles with interface-based design.
+    /// Thin MonoBehaviour wiring layer for encounter mode. Owns the encounter on/off state
+    /// machine and turn-gating, and delegates movement, grid presentation, and UI updates
+    /// to focused services (<see cref="EncounterMovementCoordinator"/>,
+    /// <see cref="EncounterGridPresentation"/>, <see cref="EncounterUIAdapter"/>).
     /// </summary>
     public class EncounterModeManager : MonoBehaviour, IEncounterModeManager
     {
@@ -62,10 +63,8 @@ namespace GameCore.EncounterMode
         [Tooltip("Player's movement speed in feet (for calculating max elevation). Default: 30 feet = 6 cells")]
         public int PlayerMovementSpeedFeet = 30;
 
-        /// <summary>
-        /// Whether movement mode is currently active (grid selection enabled).
-        /// </summary>
-        public bool IsMovementModeActive => _isMovementModeActive;
+        /// <summary>Whether movement mode is currently active (grid selection enabled).</summary>
+        public bool IsMovementModeActive => _coordinator != null && _coordinator.IsMovementModeActive;
 
         /// <summary>
         /// True when the local player may take encounter actions (move, dash). When no turn
@@ -84,34 +83,50 @@ namespace GameCore.EncounterMode
             }
         }
 
-        /// <summary>
-        /// True when a networked encounter session is driving state (server-validated moves).
-        /// </summary>
+        /// <summary>True when a networked encounter session is driving state (server-validated moves).</summary>
         public bool UsesNetworkEncounter =>
             EncounterSessionLocator.Authority != null && IsEncounterModeActive;
 
         private IGridGenerator _gridGenerator;
         private IGridRenderer _gridRenderer;
-        private IGridSelector _gridSelector;
-        
-        // Services
-        private MovementTracker _movementTracker;
-        private bool _isMovementModeActive = false;
-        private HashSet<GridCell> _reachableCells = new HashSet<GridCell>();
 
-        #region Events
-        /// <summary>
-        /// Raised when encounter mode is toggled on or off.
-        /// </summary>
+        private MovementTracker _movementTracker;
+        private EncounterGridPresentation _presentation;
+        private EncounterUIAdapter _ui;
+        private EncounterMovementCoordinator _coordinator;
+
+        /// <summary>Raised when encounter mode is toggled on or off.</summary>
         public System.Action<bool> OnEncounterModeToggled;
-        #endregion
 
         private void Awake()
         {
-            // Auto-find components if not assigned
+            ResolveComponents();
+
+            _gridGenerator = GridGenerator;
+            _gridRenderer = GridRenderer;
+
+            _movementTracker = new MovementTracker(PlayerMovementSpeedFeet);
+            _presentation = new EncounterGridPresentation(
+                _gridRenderer, GridSelector, GridSelectionVisualizer,
+                GridColumnVisualizer, GridReachableCellsVisualizer);
+            _ui = new EncounterUIAdapter(InGameUIPresenter);
+            _coordinator = new EncounterMovementCoordinator(
+                _movementTracker,
+                _gridGenerator,
+                _presentation,
+                _ui,
+                GetPlayerCurrentCell,
+                GetLocalLocomotion,
+                GetLocalParticipant,
+                () => UsesNetworkEncounter,
+                () => IsLocalTurnActive);
+        }
+
+        private void ResolveComponents()
+        {
             if (GridGenerator == null)
                 GridGenerator = GetComponent<GridGenerator>();
-            
+
             if (GridRenderer == null)
                 GridRenderer = GetComponent<GridRenderer>();
 
@@ -138,60 +153,26 @@ namespace GameCore.EncounterMode
 
             if (InGameUIPresenter == null)
                 InGameUIPresenter = FindAnyObjectByType<InGameUIPresenter>();
-
-            // Set interface references
-            _gridGenerator = GridGenerator;
-            _gridRenderer = GridRenderer;
-            _gridSelector = GridSelector;
-
-            // Initialize services
-            _movementTracker = new MovementTracker(PlayerMovementSpeedFeet);
         }
 
         private void Start()
         {
-            // Initialize grid generator
             if (_gridGenerator != null && GridGenerator != null)
-            {
                 GridGenerator.GenerateGrid(GridOriginPosition, GridWidth, GridHeight, GridCellSize, GroundLayerMask);
-            }
 
-            // Subscribe to grid selection events for movement tracking
             if (GridSelector != null)
-            {
-                GridSelector.OnCellSelected += OnCellSelected;
-            }
+                GridSelector.OnCellSelected += HandleCellSelected;
 
-            // Initially hide grid and disable grid selection
-            _gridRenderer?.SetVisible(false);
-            if (GridSelector != null)
-                GridSelector.enabled = false;
-            if (GridSelectionVisualizer != null)
-                GridSelectionVisualizer.enabled = false;
-
-            Initialize();
+            _presentation.InitializeHidden();
         }
 
         private void OnDestroy()
         {
             if (GridSelector != null)
-            {
-                GridSelector.OnCellSelected -= OnCellSelected;
-            }
+                GridSelector.OnCellSelected -= HandleCellSelected;
         }
 
-        /// <summary>
-        /// Initializes the encounter mode system.
-        /// Called after grid generation in Start().
-        /// </summary>
-        public void Initialize()
-        {
-            // Initialization handled in Start()
-        }
-
-        /// <summary>
-        /// Toggles encounter mode on or off. When a networked authority is present, delegates to it.
-        /// </summary>
+        /// <summary>Toggles encounter mode. When a networked authority is present, delegates to it.</summary>
         public void ToggleEncounterMode()
         {
             var authority = EncounterSessionLocator.Authority;
@@ -204,16 +185,13 @@ namespace GameCore.EncounterMode
             ApplyEncounterActive(!IsEncounterModeActive);
         }
 
-        /// <summary>
-        /// Applies encounter active state from the local toggle or replicated authority.
-        /// </summary>
+        /// <summary>Applies encounter active state from the local toggle or replicated authority.</summary>
         public void ApplyEncounterActive(bool isActive)
         {
             if (IsEncounterModeActive == isActive)
                 return;
 
             IsEncounterModeActive = isActive;
-            Debug.Log($"[EncounterCameraDebug] EncounterModeManager encounterActive={IsEncounterModeActive}, manager={name}");
 
             if (IsEncounterModeActive)
                 EnableEncounterMode();
@@ -225,244 +203,58 @@ namespace GameCore.EncounterMode
 
         private void EnableEncounterMode()
         {
-            // Show grid
-            if (_gridRenderer != null)
-            {
-                _gridRenderer.SetVisible(true);
-            }
+            _presentation.SetGridVisible(true);
 
-            // Do NOT enable grid selection by default - only enable after movement button is selected
-            // Grid selection will be enabled via EnableGridSelection() when movement action is clicked
+            // Grid selection is enabled later via EnableGridSelection() when the move action is chosen.
+            _coordinator.ResetForEncounterStart();
 
-            // Reset movement tracking (but don't enable grid selection yet)
-            _movementTracker.ResetDash();
-            _movementTracker.ResetMovement();
-            _movementTracker.SetStartingCell(null);
-            _isMovementModeActive = false;
-            _reachableCells.Clear();
-            
-            UpdateMovementDisplay();
-            UpdateMovementButtonState();
-
-            // Show character sheet by default when entering encounter mode
-            InGameUIPresenter?.Model?.SetCharacterSheetOpen(true);
+            // Show character sheet by default when entering encounter mode.
+            _ui.SetCharacterSheetOpen(true);
         }
 
-        /// <summary>
-        /// Enables grid selection and visualizers. Called when a movement action is selected from the character sheet.
-        /// Resets movement tracking to full speed (doubled if Dash is active).
-        /// </summary>
+        private void DisableEncounterMode()
+        {
+            _presentation.SetGridVisible(false);
+            _coordinator.TearDownVisuals();
+            _ui.SetCharacterSheetOpen(false);
+        }
+
+        /// <summary>Enables grid selection. Called when a movement action is chosen from the character sheet.</summary>
         public void EnableGridSelection()
         {
-            if (!IsEncounterModeActive || !IsLocalTurnActive)
+            if (!IsEncounterModeActive)
                 return;
 
-            // Reset movement tracking
-            _movementTracker.ResetMovement();
-            _isMovementModeActive = true;
-
-            // Get current player position and set as starting cell
-            GridCell startCell = GetPlayerCurrentCell();
-            _movementTracker.SetStartingCell(startCell);
-
-            if (UsesNetworkEncounter)
-            {
-                GetLocalParticipant()?.RequestBeginMovePhase();
-                SyncMovementFromParticipant();
-            }
-
-            // Enable grid components
-            EnableGridComponents();
-
-            // Update UI and visualization
-            UpdateMovementDisplay();
-            UpdateMovementButtonState();
-            RefreshReachableCells();
+            _coordinator.EnableGridSelection();
         }
 
-        /// <summary>
-        /// Disables movement mode, clearing grid selection and visualizers.
-        /// </summary>
-        public void DisableMovementMode()
-        {
-            _isMovementModeActive = false;
-            DisableGridComponents();
-            ClearReachableCells();
-            UpdateMovementButtonState();
-        }
+        public void DisableMovementMode() => _coordinator.DisableMovementMode();
 
-        /// <summary>
-        /// Sets Dash as active, doubling movement speed for the next movement action.
-        /// If movement is exhausted (0 remaining) and Dash is activated, it adds back the full base movement speed.
-        /// </summary>
-        public void SetDashActive(bool isActive)
-        {
-            if (!IsLocalTurnActive)
-                return;
+        public void SetDashActive(bool isActive) => _coordinator.SetDashActive(isActive);
 
-            if (UsesNetworkEncounter && isActive)
-            {
-                GetLocalParticipant()?.RequestDash();
-                return;
-            }
-
-            _movementTracker.SetDashActive(isActive, _isMovementModeActive);
-            
-            // If we're in movement mode and now have movement remaining, re-enable grid selection
-            if (_isMovementModeActive && !_movementTracker.IsMovementExhausted)
-            {
-                EnableGridComponents();
-                RefreshReachableCells();
-            }
-            else if (_isMovementModeActive && GridSelector != null)
-            {
-                // Update max elevation even if no movement
-                int maxElevation = Mathf.FloorToInt(_movementTracker.EffectiveMaxSpeed / 5f);
-                GridSelector.SetMaxElevation(maxElevation);
-            }
-            
-            UpdateMovementDisplay();
-            
-            if (_isMovementModeActive)
-            {
-                RefreshReachableCells();
-                UpdateMovementButtonState();
-            }
-        }
-
-        /// <summary>
-        /// Handles cell selection and tracks movement distance.
-        /// </summary>
-        private void OnCellSelected(GridCell cell, int elevation)
-        {
-            if (cell == null || _gridGenerator == null || !IsLocalTurnActive)
-                return;
-
-            if (UsesNetworkEncounter)
-            {
-                GetLocalParticipant()?.RequestMoveTo(cell, elevation);
-                return;
-            }
-
-            if (_movementTracker.IsMovementExhausted)
-                return;
-
-            // Get starting cell for distance calculation
-            GridCell startCell = _movementTracker.LastSelectedCell ?? GetPlayerCurrentCell();
-            if (startCell == null)
-                return;
-
-            // Calculate and deduct movement
-            int distanceFeet = _movementTracker.CalculateDistanceFeet(startCell, cell);
-            if (!_movementTracker.TryDeductMovement(distanceFeet, cell))
-                return;
-
-            ApplyLocalMoveResult(cell);
-        }
-
-        /// <summary>
-        /// Applies server-approved movement state on the owning client after validation.
-        /// </summary>
+        /// <summary>Applies server-approved movement state on the owning client after validation.</summary>
         public void ApplyApprovedNetworkMove(GridCell cell, int elevation, int remainingFeet, bool dashActive)
+            => _coordinator.ApplyApprovedNetworkMove(cell, elevation, remainingFeet, dashActive);
+
+        public bool IsCellReachable(GridCell cell) => _coordinator != null && _coordinator.IsCellReachable(cell);
+
+        public void RefreshMovementDisplay() => _coordinator?.RefreshMovementDisplay();
+
+        private void HandleCellSelected(GridCell cell, int elevation)
+            => _coordinator.HandleCellSelected(cell, elevation);
+
+        /// <summary>Resolves the locomotion target for the local player's avatar.</summary>
+        private IEncounterLocomotion GetLocalLocomotion()
         {
-            _movementTracker.SetRemainingMovementFeet(remainingFeet);
-            _movementTracker.SetDashActive(dashActive, _isMovementModeActive);
-
-            if (cell != null)
-                _movementTracker.SetStartingCell(cell);
-
-            ApplyLocalMoveResult(cell);
-        }
-
-        private void ApplyLocalMoveResult(GridCell cell)
-        {
-            UpdateMovementDisplay();
-            RefreshReachableCells();
-
-            if (_movementTracker.IsMovementExhausted)
+            var localActor = ActorRegistry.LocalActor;
+            if (localActor?.Transform != null)
             {
-                DisableGridComponents();
-                ClearReachableCells();
-            }
-        }
-
-        /// <summary>
-        /// Updates the movement display in the UI.
-        /// </summary>
-        private void UpdateMovementDisplay()
-        {
-            if (InGameUIPresenter?.View != null)
-            {
-                InGameUIPresenter.View.UpdateSpeedDisplay(
-                    _movementTracker.RemainingMovementFeet, 
-                    _movementTracker.EffectiveMaxSpeed);
-            }
-        }
-
-        /// <summary>
-        /// Updates the movement button state (Move/Cancel) and visual indicator.
-        /// </summary>
-        private void UpdateMovementButtonState()
-        {
-            InGameUIPresenter?.View?.UpdateMovementButtonState(_isMovementModeActive);
-        }
-
-        /// <summary>
-        /// Refreshes reachable cells calculation and visualization.
-        /// </summary>
-        private void RefreshReachableCells()
-        {
-            if (_movementTracker.IsMovementExhausted || _gridGenerator == null)
-            {
-                ClearReachableCells();
-                return;
+                var locomotion = localActor.Transform.GetComponent<IEncounterLocomotion>();
+                if (locomotion != null)
+                    return locomotion;
             }
 
-            GridCell startCell = _movementTracker.LastSelectedCell ?? GetPlayerCurrentCell();
-            if (startCell == null)
-                return;
-
-            _reachableCells = ReachableCellsCalculator.CalculateReachableCells(
-                _gridGenerator,
-                startCell,
-                _movementTracker.RemainingMovementFeet);
-
-            if (GridReachableCellsVisualizer != null && GridReachableCellsVisualizer.enabled)
-            {
-                GridReachableCellsVisualizer.UpdateReachableCells(_reachableCells);
-            }
-        }
-
-        /// <summary>
-        /// Clears reachable cells visualization.
-        /// </summary>
-        private void ClearReachableCells()
-        {
-            _reachableCells.Clear();
-            if (GridReachableCellsVisualizer != null)
-            {
-                GridReachableCellsVisualizer.ClearReachableCells();
-            }
-        }
-
-        /// <summary>
-        /// Checks if a cell is reachable with current remaining movement.
-        /// </summary>
-        public bool IsCellReachable(GridCell cell)
-        {
-            return cell != null && _reachableCells.Contains(cell);
-        }
-
-        #region Helper Methods
-
-        private void SyncMovementFromParticipant()
-        {
-            var participant = GetLocalParticipant();
-            if (participant == null)
-                return;
-
-            _movementTracker.SetRemainingMovementFeet(participant.RemainingMovementFeet);
-            _movementTracker.SetDashActive(participant.IsDashActive, _isMovementModeActive);
+            return PlayerController;
         }
 
         private static IEncounterMovementClient GetLocalParticipant()
@@ -481,88 +273,18 @@ namespace GameCore.EncounterMode
             return null;
         }
 
-        /// <summary>
-        /// Gets the player's current grid cell position.
-        /// </summary>
+        /// <summary>Gets the player's current grid cell position.</summary>
         private GridCell GetPlayerCurrentCell()
         {
             if (GridGenerator == null)
                 return null;
 
-            // Prefer the registered local actor's position; fall back to the directly
-            // referenced PlayerController so this keeps working before actors are wired up.
-            Transform playerTransform = GameCore.Actors.ActorRegistry.LocalActor?.Transform
+            Transform playerTransform = ActorRegistry.LocalActor?.Transform
                 ?? (PlayerController != null ? PlayerController.transform : null);
             if (playerTransform == null)
                 return null;
 
             return GridGenerator.GetCellAtWorldPosition(playerTransform.position);
         }
-
-        /// <summary>
-        /// Enables all grid selection components.
-        /// </summary>
-        private void EnableGridComponents()
-        {
-            int maxElevation = Mathf.FloorToInt(_movementTracker.EffectiveMaxSpeed / 5f);
-
-            if (GridSelector != null)
-            {
-                GridSelector.SetMaxElevation(maxElevation);
-                GridSelector.enabled = true;
-            }
-
-            if (GridSelectionVisualizer != null)
-                GridSelectionVisualizer.enabled = true;
-
-            if (GridColumnVisualizer != null)
-                GridColumnVisualizer.enabled = true;
-
-            if (GridReachableCellsVisualizer != null)
-                GridReachableCellsVisualizer.enabled = true;
-        }
-
-        /// <summary>
-        /// Disables all grid selection components.
-        /// </summary>
-        private void DisableGridComponents()
-        {
-            if (GridSelector != null)
-            {
-                GridSelector.ClearSelection();
-                GridSelector.enabled = false;
-            }
-
-            if (GridSelectionVisualizer != null)
-            {
-                GridSelectionVisualizer.HideAllIndicators();
-                GridSelectionVisualizer.enabled = false;
-            }
-
-            if (GridColumnVisualizer != null)
-                GridColumnVisualizer.enabled = false;
-
-            if (GridReachableCellsVisualizer != null)
-            {
-                GridReachableCellsVisualizer.ClearReachableCells();
-                GridReachableCellsVisualizer.enabled = false;
-            }
-        }
-
-        #endregion
-
-        private void DisableEncounterMode()
-        {
-            // Hide grid
-            _gridRenderer?.SetVisible(false);
-
-            // Disable grid selection and clear state
-            DisableGridComponents();
-            ClearReachableCells();
-
-            // Close character sheet by default when exiting encounter mode
-            InGameUIPresenter?.Model?.SetCharacterSheetOpen(false);
-        }
     }
 }
-
