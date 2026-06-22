@@ -68,7 +68,17 @@ namespace GameCore.EncounterMode
 
             if (EncounterPathPlanner.IsWithinArrivalThreshold(currentPos, newTargetPos, elevation, _gridGenerator.CellSize))
             {
-                return; // Already at target, don't set new target
+                SnapToExactPosition(newTargetPos);
+                _targetCell = targetCell;
+                _targetElevation = elevation;
+                _hasTarget = false;
+                _justSetTarget = false;
+                _speed = 0f;
+                _animationBlend = 0f;
+                _verticalVelocity = 0f;
+                _isJumping = false;
+                _isFalling = false;
+                return;
             }
             
             _targetCell = targetCell;
@@ -141,7 +151,10 @@ namespace GameCore.EncounterMode
         {
             // Store elevation before clearing target (needed for ShouldBeGrounded)
             int arrivedElevation = _targetElevation;
-            
+            Vector3 arrivalPosition = _targetPosition;
+
+            SnapToExactPosition(arrivalPosition);
+
             // Clear all movement and animation states
             _hasTarget = false;
             _targetCell = null;
@@ -151,6 +164,13 @@ namespace GameCore.EncounterMode
             _verticalVelocity = 0f;
             _isJumping = false;
             _isFalling = false;
+        }
+
+        private void SnapToExactPosition(Vector3 worldPosition)
+        {
+            _controller.enabled = false;
+            _transform.position = worldPosition;
+            _controller.enabled = true;
         }
 
         private void ClearMovementState()

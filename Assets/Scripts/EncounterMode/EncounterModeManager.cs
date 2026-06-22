@@ -213,8 +213,17 @@ namespace GameCore.EncounterMode
                 GridWidth / 2,
                 GridHeight / 2);
 
-            if (snapped.HasValue)
-                target.position = snapped.Value;
+            if (!snapped.HasValue)
+                return;
+
+            var characterController = target.GetComponent<CharacterController>();
+            if (characterController != null)
+                characterController.enabled = false;
+
+            target.position = snapped.Value;
+
+            if (characterController != null)
+                characterController.enabled = true;
         }
 
         private void OnDestroy()
