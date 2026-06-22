@@ -288,6 +288,8 @@
 }
 
 .menu-scene-card {
+    width: 100%;
+    min-width: 0;
     min-height: 120px;
     background-color: var(--color-bg-secondary);
     border-radius: var(--radius-md);
@@ -297,6 +299,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
     
     transition-duration: var(--transition-fast);
     transition-property: background-color, border-color, scale;
@@ -317,20 +320,32 @@
 }
 
 .menu-scene-card-title {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    flex-shrink: 1;
     color: var(--color-text-primary);
     font-size: 16px;
     -unity-font-style: bold;
     margin-bottom: var(--spacing-xs);
     letter-spacing: -0.64px;
     -unity-text-align: middle-center;
+    white-space: normal;
+    overflow: hidden;
 }
 
 .menu-scene-card-subtitle {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    flex-shrink: 1;
     color: var(--color-text-n3);
     font-size: 12px;
     letter-spacing: -0.48px;
     opacity: 0.7;
     -unity-text-align: middle-center;
+    white-space: normal;
+    overflow: hidden;
 }
 
 /* ============================================

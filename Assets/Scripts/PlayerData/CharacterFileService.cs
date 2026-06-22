@@ -117,7 +117,7 @@ namespace GameCore.PlayerData
 
         /// <summary>
         /// Gets the display name for a character (for UI purposes).
-        /// Shows: "CharacterName - Level X Class - Race"
+        /// Returns the character's name, or the filename if unavailable.
         /// </summary>
         public static string GetCharacterDisplayName(CharacterFileInfo fileInfo)
         {
@@ -126,25 +126,12 @@ namespace GameCore.PlayerData
                 return Path.GetFileNameWithoutExtension(fileInfo?.FileName ?? "Unknown");
             }
 
-            var data = fileInfo.CharacterData;
-            string displayName = data.characterName;
-
-            if (data.level > 0)
+            if (!string.IsNullOrEmpty(fileInfo.CharacterData.characterName))
             {
-                displayName += $" - Level {data.level}";
+                return fileInfo.CharacterData.characterName;
             }
 
-            if (!string.IsNullOrEmpty(data.characterClass))
-            {
-                displayName += $" {data.characterClass}";
-            }
-
-            if (!string.IsNullOrEmpty(data.race))
-            {
-                displayName += $" - {data.race}";
-            }
-
-            return displayName;
+            return Path.GetFileNameWithoutExtension(fileInfo.FileName);
         }
 
         /// <summary>

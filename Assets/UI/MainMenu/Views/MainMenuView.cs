@@ -787,6 +787,9 @@ namespace GameCore.UI.MainMenu
             label.text = text;
             label.AddToClassList(className);
             label.style.unityTextAlign = TextAnchor.MiddleCenter;
+            label.style.width = Length.Percent(100);
+            label.style.whiteSpace = WhiteSpace.Normal;
+            label.style.overflow = Overflow.Hidden;
             
             if (font != null)
             {
