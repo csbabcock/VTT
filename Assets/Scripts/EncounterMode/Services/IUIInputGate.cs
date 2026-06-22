@@ -13,7 +13,7 @@ namespace GameCore.EncounterMode.Services
         /// <summary>Whether the mouse is currently over the character sheet UI.</summary>
         bool IsMouseOverCharacterSheet();
 
-        /// <summary>Whether world input should be blocked because the pointer is over UI.</summary>
+        /// <summary>Whether world input should be blocked because the pointer is over HUD UI.</summary>
         bool ShouldBlockInput();
     }
 }

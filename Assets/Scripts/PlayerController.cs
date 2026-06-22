@@ -484,12 +484,6 @@ namespace GameCore
             if (LockCameraPosition)
                 return true;
 
-            if (CurrentMovementMode == MovementMode.Encounter)
-                return true;
-
-            if (IsEncounterModeActive())
-                return true;
-
             return UIInputGateLocator.ShouldBlockInput();
         }
 

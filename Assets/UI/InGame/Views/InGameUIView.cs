@@ -66,6 +66,8 @@ namespace GameCore.UI.InGame
         private VisualElement _dmHudColumn;
         private VisualElement _controlsCheatsheetPanel;
         private VisualElement _dmControlsCheatsheetPanel;
+        private VisualElement _gameLogPanel;
+        private Label _encounterTurnLabel;
         private bool _playerHudVisible = true;
         private bool _dmHudMode;
         #endregion
@@ -113,6 +115,36 @@ namespace GameCore.UI.InGame
                 return false;
 
             return _characterSheetPanel.style.display == DisplayStyle.Flex;
+        }
+
+        /// <summary>
+        /// Checks if the mouse is currently over any visible HUD panel (character sheet, game log,
+        /// controls cheatsheet, turn banner, DM panels, etc.).
+        /// </summary>
+        public bool IsMouseOverUI()
+        {
+            if (_root == null)
+                return false;
+
+            Vector2? screenPosition = GetMouseScreenPosition();
+            if (!screenPosition.HasValue)
+                return false;
+
+            var panel = _root.panel;
+            if (panel == null)
+                return false;
+
+            var pickedElement = panel.Pick(screenPosition.Value);
+            if (pickedElement == null)
+                return false;
+
+            for (VisualElement current = pickedElement; current != null && current != _root; current = current.parent)
+            {
+                if (IsBlockingHudPanelRoot(current))
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -226,6 +258,37 @@ namespace GameCore.UI.InGame
                     return true;
                 }
             }
+
+            return false;
+        }
+
+        private bool IsBlockingHudPanelRoot(VisualElement element)
+        {
+            if (element == null
+                || element.pickingMode == PickingMode.Ignore
+                || !element.enabledInHierarchy
+                || element.resolvedStyle.display != DisplayStyle.Flex)
+            {
+                return false;
+            }
+
+            if (_characterSheetPanel != null && element == _characterSheetPanel)
+                return IsCharacterSheetOpen();
+
+            if (_gameLogPanel != null && element == _gameLogPanel)
+                return true;
+
+            if (_controlsCheatsheetPanel != null && element == _controlsCheatsheetPanel)
+                return true;
+
+            if (_dmHudColumn != null && element == _dmHudColumn)
+                return true;
+
+            if (_dmControlsCheatsheetPanel != null && element == _dmControlsCheatsheetPanel)
+                return true;
+
+            if (_encounterTurnLabel != null && element == _encounterTurnLabel)
+                return true;
 
             return false;
         }
@@ -420,6 +483,8 @@ namespace GameCore.UI.InGame
             _controlsCheatsheetPanel = null;
             _dmHudColumn = null;
             _dmControlsCheatsheetPanel = null;
+            _gameLogPanel = null;
+            _encounterTurnLabel = null;
             _targetVisibilityState = null;
             _combatSectionView.Reset();
             _dmPanelView.Reset();
@@ -585,6 +650,8 @@ namespace GameCore.UI.InGame
             _dmHudColumn = _root.Q<VisualElement>("dm-hud-column");
             _controlsCheatsheetPanel = _root.Q<VisualElement>("controls-cheatsheet-panel");
             _dmControlsCheatsheetPanel = _root.Q<VisualElement>("dm-controls-cheatsheet-panel");
+            _gameLogPanel = _root.Q<VisualElement>("game-log-panel");
+            _encounterTurnLabel = _root.Q<Label>("encounter-turn-label");
             if (_dmHudMode)
             {
                 SetControlsCheatsheetVisible(false);

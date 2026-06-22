@@ -34,7 +34,7 @@ namespace GameCore.EncounterMode.Services
 
         public bool ShouldBlockInput()
         {
-            return IsMouseOverCharacterSheet();
+            return _inGameUIView != null && _inGameUIView.IsMouseOverUI();
         }
     }
 }

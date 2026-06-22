@@ -817,19 +817,12 @@ namespace GameCore.UI.InGame
             if (_playerInputs == null)
                 return;
 
-            if (IsEncounterModeActive())
-            {
-                _playerInputs.cursorInputForLook = false;
-                return;
-            }
+            bool pointerGatesLook = IsEncounterModeActive()
+                || (Model != null && Model.IsCharacterSheetOpen);
 
-            if (Model != null && Model.IsCharacterSheetOpen)
-            {
-                _playerInputs.cursorInputForLook = !UIInputGateLocator.ShouldBlockInput();
-                return;
-            }
-
-            _playerInputs.cursorInputForLook = true;
+            _playerInputs.cursorInputForLook = pointerGatesLook
+                ? !UIInputGateLocator.ShouldBlockInput()
+                : true;
         }
 
         private bool IsEncounterModeActive()
@@ -1061,7 +1054,8 @@ namespace GameCore.UI.InGame
 
         /// <summary>
         /// Updates player input enabled state based on UI visibility.
-        /// Look input is filtered separately so encounter mode can keep UI input without camera control.
+        /// Look input is filtered per-frame so encounter mode and the character sheet can share
+        /// the cursor with HUD panels while still allowing camera control over the world.
         /// Movement input is handled by PlayerController which checks if character sheet is open.
         /// </summary>
         private void UpdatePlayerInput(bool isUIOpen)

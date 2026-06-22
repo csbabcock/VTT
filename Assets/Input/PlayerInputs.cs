@@ -1,5 +1,4 @@
 using UnityEngine;
-using GameCore.EncounterMode;
 using GameCore.EncounterMode.Services;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -39,8 +38,6 @@ namespace GameCore
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
 		#endregion
-
-		private EncounterModeManager _encounterModeManager;
 
 #if ENABLE_INPUT_SYSTEM
 		#region Private Fields
@@ -420,17 +417,7 @@ namespace GameCore
 
 		private bool ShouldReadLookInput()
 		{
-			return cursorInputForLook && !IsEncounterModeActive();
-		}
-
-		private bool IsEncounterModeActive()
-		{
-			if (_encounterModeManager == null)
-			{
-				_encounterModeManager = FindAnyObjectByType<EncounterModeManager>();
-			}
-
-			return _encounterModeManager != null && _encounterModeManager.IsEncounterModeActive;
+			return cursorInputForLook;
 		}
 
 		#region Cursor Management
