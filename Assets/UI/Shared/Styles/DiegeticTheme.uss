@@ -73,6 +73,75 @@
     font-size: var(--vtt-font-size-body);
 }
 
+/* Shared in-game panel chrome (character sheet, game log, DM tools, etc.) */
+.diegetic-panel-header {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--vtt-spacing-medium) var(--vtt-spacing-large);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--vtt-border-color);
+    background-color: rgba(0, 0, 0, 0.4);
+    flex-shrink: 0;
+}
+
+.diegetic-panel-title {
+    color: var(--vtt-text-main);
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.diegetic-section-label {
+    color: var(--vtt-text-muted);
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.diegetic-value {
+    color: var(--vtt-text-main);
+    font-size: 16px;
+    -unity-font-style: bold;
+}
+
+/* Standard diegetic button used across player and DM in-game UI */
+.diegetic-button {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: var(--vtt-radius-medium);
+    border-width: 1px;
+    border-color: var(--vtt-border-color);
+    color: var(--vtt-text-main);
+    font-size: 14px;
+    padding: var(--vtt-spacing-small) var(--vtt-spacing-medium);
+    justify-content: center;
+    -unity-text-align: middle-center;
+    transition-duration: 0.2s;
+    transition-property: scale, background-color, border-color;
+}
+
+.diegetic-button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--vtt-accent-primary);
+    scale: 1.05;
+}
+
+.diegetic-button-compact {
+    min-width: 44px;
+    padding-left: var(--vtt-spacing-small);
+    padding-right: var(--vtt-spacing-small);
+    font-size: 13px;
+}
+
+.diegetic-button-selected {
+    background-color: rgba(248, 213, 138, 0.15);
+    border-color: var(--vtt-accent-primary);
+    border-width: 2px;
+    -unity-font-style: bold;
+}
+
+.diegetic-button-selected:hover {
+    background-color: rgba(248, 213, 138, 0.22);
+    border-color: var(--vtt-accent-primary);
+}
+
 /* Inventory-style grid helpers (shared by any UXML that wants that “floating inventory” look). */
 .inventory-panel {
     border-radius: var(--vtt-radius-large);

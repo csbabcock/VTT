@@ -4,8 +4,8 @@
     <ui:VisualElement name="root" class="hud-root">
         <!-- Controls cheat sheet - anchored top-left -->
         <ui:VisualElement name="controls-cheatsheet-panel" class="controls-cheatsheet-panel diegetic-panel">
-            <ui:VisualElement name="controls-cheatsheet-header" class="controls-cheatsheet-header">
-                <ui:Label text="Controls" class="controls-cheatsheet-title" />
+            <ui:VisualElement name="controls-cheatsheet-header" class="diegetic-panel-header">
+                <ui:Label text="Controls" class="diegetic-panel-title" />
             </ui:VisualElement>
             <ui:VisualElement name="controls-cheatsheet-content" class="controls-cheatsheet-content">
                 <ui:VisualElement class="controls-cheatsheet-row">
@@ -49,8 +49,8 @@
 
         <!-- DM panel - host/DM only at runtime -->
         <ui:VisualElement name="dm-panel" class="dm-panel diegetic-panel">
-            <ui:VisualElement name="dm-panel-header" class="dm-panel-header">
-                <ui:Label text="Players" class="dm-panel-title" />
+            <ui:VisualElement name="dm-panel-header" class="diegetic-panel-header">
+                <ui:Label text="Players" class="diegetic-panel-title" />
             </ui:VisualElement>
             <ui:ScrollView name="dm-player-list-scroll" class="dm-player-list-scroll">
                 <ui:VisualElement name="dm-player-list" class="dm-player-list" />
@@ -58,32 +58,36 @@
             <ui:VisualElement name="dm-encounter-controls" class="dm-encounter-controls">
                 <ui:Label text="Encounter" class="dm-encounter-title" />
                 <ui:VisualElement class="dm-encounter-buttons">
-                    <ui:Button name="dm-start-encounter-button" text="Start" class="dm-encounter-button" />
-                    <ui:Button name="dm-end-encounter-button" text="End" class="dm-encounter-button" />
-                    <ui:Button name="dm-next-turn-button" text="Next Turn" class="dm-encounter-button" />
+                    <ui:Button name="dm-start-encounter-button" text="Start" class="dm-encounter-button diegetic-button" />
+                    <ui:Button name="dm-end-encounter-button" text="End" class="dm-encounter-button diegetic-button" />
+                    <ui:Button name="dm-next-turn-button" text="Next Turn" class="dm-encounter-button diegetic-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
 
         <!-- DM character inspector - host/DM only at runtime -->
         <ui:VisualElement name="dm-inspector" class="dm-inspector diegetic-panel">
-            <ui:Label name="dm-inspector-header" text="No player selected" class="dm-inspector-header" />
+            <ui:VisualElement class="diegetic-panel-header">
+                <ui:Label name="dm-inspector-header" text="No player selected" class="diegetic-panel-title" />
+            </ui:VisualElement>
+            <ui:ScrollView class="dm-inspector-content">
+            <ui:VisualElement class="dm-inspector-sections">
             <ui:VisualElement class="dm-inspector-section">
                 <ui:Label text="Hit Points" class="dm-inspector-section-title" />
-                <ui:Label name="dm-inspector-hp-value" text="—" class="dm-inspector-value" />
+                <ui:Label name="dm-inspector-hp-value" text="—" class="dm-inspector-value dm-inspector-hp-value" />
                 <ui:VisualElement class="dm-inspector-controls">
-                    <ui:Button name="dm-inspector-hp-minus-five" text="-5" class="dm-hp-button" />
-                    <ui:Button name="dm-inspector-hp-minus-one" text="-1" class="dm-hp-button" />
-                    <ui:Button name="dm-inspector-hp-plus-one" text="+1" class="dm-hp-button" />
-                    <ui:Button name="dm-inspector-hp-plus-five" text="+5" class="dm-hp-button" />
+                    <ui:Button name="dm-inspector-hp-minus-five" text="-5" class="dm-hp-button diegetic-button diegetic-button-compact" />
+                    <ui:Button name="dm-inspector-hp-minus-one" text="-1" class="dm-hp-button diegetic-button diegetic-button-compact" />
+                    <ui:Button name="dm-inspector-hp-plus-one" text="+1" class="dm-hp-button diegetic-button diegetic-button-compact" />
+                    <ui:Button name="dm-inspector-hp-plus-five" text="+5" class="dm-hp-button diegetic-button diegetic-button-compact" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="dm-inspector-section">
                 <ui:Label text="Temporary HP" class="dm-inspector-section-title" />
                 <ui:Label name="dm-inspector-temp-hp-value" text="0" class="dm-inspector-value" />
                 <ui:VisualElement class="dm-inspector-controls">
-                    <ui:Button name="dm-inspector-temp-minus-one" text="-1" class="dm-hp-button" />
-                    <ui:Button name="dm-inspector-temp-plus-one" text="+1" class="dm-hp-button" />
+                    <ui:Button name="dm-inspector-temp-minus-one" text="-1" class="dm-hp-button diegetic-button diegetic-button-compact" />
+                    <ui:Button name="dm-inspector-temp-plus-one" text="+1" class="dm-hp-button diegetic-button diegetic-button-compact" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="dm-inspector-section">
@@ -96,7 +100,7 @@
                     <ui:Label text="F" class="dm-death-save-label" />
                     <ui:VisualElement name="dm-inspector-death-failures" class="dm-death-save-pips" />
                 </ui:VisualElement>
-                <ui:Button name="dm-inspector-death-reset" text="Reset" class="dm-inspector-reset-button" />
+                <ui:Button name="dm-inspector-death-reset" text="Reset" class="dm-inspector-reset-button diegetic-button diegetic-button-compact" />
             </ui:VisualElement>
             <ui:VisualElement class="dm-inspector-section">
                 <ui:Label text="Conditions" class="dm-inspector-section-title" />
@@ -107,12 +111,14 @@
                 <ui:VisualElement class="dm-inspector-exhaustion">
                     <ui:Label text="Exhaustion" class="dm-inspector-section-title" />
                     <ui:VisualElement class="dm-inspector-controls">
-                        <ui:Button name="dm-inspector-exhaustion-minus" text="-" class="dm-hp-button" />
+                        <ui:Button name="dm-inspector-exhaustion-minus" text="-" class="dm-hp-button diegetic-button diegetic-button-compact" />
                         <ui:Label name="dm-inspector-exhaustion-value" text="0" class="dm-inspector-value" />
-                        <ui:Button name="dm-inspector-exhaustion-plus" text="+" class="dm-hp-button" />
+                        <ui:Button name="dm-inspector-exhaustion-plus" text="+" class="dm-hp-button diegetic-button diegetic-button-compact" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
+            </ui:VisualElement>
+            </ui:ScrollView>
         </ui:VisualElement>
 
         <!-- Turn indicator - visible during networked encounters -->
@@ -121,7 +127,7 @@
         <!-- Character sheet panel; initially hidden by InGameUIView -->
         <ui:VisualElement name="character-sheet-panel" class="charsheet-panel diegetic-panel">
             <!-- Persistent Header Bar -->
-            <ui:VisualElement name="charsheet-header" class="charsheet-header">
+            <ui:VisualElement name="charsheet-header" class="charsheet-header diegetic-panel-header">
                 <!-- Left: Portrait and Basic Info -->
                 <ui:VisualElement name="header-left" class="header-left">
                     <ui:Button name="portrait-button" class="portrait-button">
@@ -587,8 +593,8 @@
         <!-- Game log panel; positioned underneath character sheet -->
         <ui:VisualElement name="game-log-panel" class="game-log-panel diegetic-panel">
             <!-- Header -->
-            <ui:VisualElement name="game-log-header" class="game-log-header">
-                <ui:Label text="Game Log" class="game-log-title" />
+            <ui:VisualElement name="game-log-header" class="diegetic-panel-header game-log-header">
+                <ui:Label text="Game Log" class="diegetic-panel-title" />
                 <ui:Button name="game-log-clear-button" class="game-log-clear-button" text="Clear" />
             </ui:VisualElement>
 

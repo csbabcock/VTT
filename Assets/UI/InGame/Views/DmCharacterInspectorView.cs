@@ -127,6 +127,8 @@ namespace GameCore.UI.InGame
                 string id = ids[i];
                 var button = new Button { text = id, name = $"dm-condition-{id.ToLowerInvariant()}" };
                 button.AddToClassList("dm-condition-chip");
+                button.AddToClassList("diegetic-button");
+                button.AddToClassList("diegetic-button-compact");
                 button.clicked += () => ConditionToggled?.Invoke(id);
                 _conditionGrid.Add(button);
                 _conditionButtons.Add(button);

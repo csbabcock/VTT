@@ -63,7 +63,9 @@ namespace GameCore.UI.InGame
 
             if (rows == null || rows.Count == 0)
             {
-                _playerList.Add(new Label("No players registered yet."));
+                var emptyLabel = new Label("No players registered yet.");
+                emptyLabel.AddToClassList("dm-empty-label");
+                _playerList.Add(emptyLabel);
                 return;
             }
 
@@ -81,8 +83,9 @@ namespace GameCore.UI.InGame
             int ownerId = row.OwnerId;
             var button = new Button { name = $"dm-player-{ownerId}" };
             button.AddToClassList("dm-player-button");
+            button.AddToClassList("diegetic-button");
             if (row.IsSelected)
-                button.AddToClassList("dm-player-button-selected");
+                button.AddToClassList("diegetic-button-selected");
 
             var container = new VisualElement();
             container.AddToClassList("dm-player-row");

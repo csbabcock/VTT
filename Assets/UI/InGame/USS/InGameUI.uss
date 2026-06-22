@@ -21,21 +21,6 @@
     overflow: hidden;
 }
 
-.controls-cheatsheet-header {
-    flex-direction: row;
-    align-items: center;
-    padding: var(--vtt-spacing-medium) var(--vtt-spacing-large);
-    border-bottom-width: 1px;
-    border-bottom-color: var(--vtt-border-color);
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-.controls-cheatsheet-title {
-    color: var(--vtt-text-main);
-    font-size: 18px;
-    -unity-font-style: bold;
-}
-
 .controls-cheatsheet-content {
     flex-direction: column;
     padding: var(--vtt-spacing-medium) var(--vtt-spacing-large);
@@ -126,13 +111,7 @@
 
 /* Persistent Header Bar */
 .charsheet-header {
-    flex-direction: row;
-    align-items: center;
     justify-content: space-between;
-    padding: var(--vtt-spacing-medium) var(--vtt-spacing-large);
-    border-bottom-width: 1px;
-    border-bottom-color: var(--vtt-border-color);
-    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .header-left {
@@ -720,19 +699,7 @@
 }
 
 .game-log-header {
-    flex-direction: row;
-    align-items: center;
     justify-content: space-between;
-    padding: var(--vtt-spacing-medium) var(--vtt-spacing-large);
-    border-bottom-width: 1px;
-    border-bottom-color: var(--vtt-border-color);
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-.game-log-title {
-    color: var(--vtt-text-main);
-    font-size: 18px;
-    -unity-font-style: bold;
 }
 
 .game-log-clear-button {
@@ -1017,9 +984,9 @@
 /* DM player management panel - left side; inspector sits on the right */
 .dm-panel {
     position: absolute;
-    left: 5px;
+    left: 48px;
     top: 5px;
-    width: 240px;
+    width: 260px;
     max-height: 520px;
     border-radius: var(--vtt-radius-large);
     border-width: 1px;
@@ -1029,21 +996,6 @@
     flex-direction: column;
     overflow: hidden;
     display: none;
-}
-
-.dm-panel-header {
-    flex-direction: row;
-    align-items: center;
-    padding: var(--vtt-spacing-medium) var(--vtt-spacing-large);
-    border-bottom-width: 1px;
-    border-bottom-color: var(--vtt-border-color);
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-.dm-panel-title {
-    color: var(--vtt-text-main);
-    font-size: 18px;
-    -unity-font-style: bold;
 }
 
 .dm-player-list-scroll {
@@ -1057,16 +1009,11 @@
 }
 
 .dm-player-button {
+    width: 100%;
     margin-bottom: var(--vtt-spacing-small);
     justify-content: flex-start;
-    color: var(--vtt-text-main);
-    background-color: rgba(255, 255, 255, 0.06);
-    border-color: var(--vtt-border-color);
-}
-
-.dm-player-button-selected {
-    background-color: rgba(120, 160, 255, 0.25);
-    border-color: rgba(120, 160, 255, 0.6);
+    align-items: flex-start;
+    padding: var(--vtt-spacing-small) var(--vtt-spacing-medium);
 }
 
 .dm-selection-details {
@@ -1095,7 +1042,6 @@
 }
 
 .dm-hp-button {
-    min-width: 44px;
     margin-right: var(--vtt-spacing-small);
     margin-bottom: var(--vtt-spacing-small);
 }
@@ -1118,7 +1064,7 @@
 }
 
 .dm-player-row-status {
-    color: rgba(255, 180, 120, 0.95);
+    color: var(--vtt-accent-primary);
     font-size: 11px;
 }
 
@@ -1131,38 +1077,47 @@
     border-radius: var(--vtt-radius-large);
     border-width: 1px;
     border-color: var(--vtt-border-color);
-    background-color: rgba(12, 12, 16, 0.9);
-    padding: var(--vtt-spacing-medium);
+    background-color: rgba(12, 12, 16, 0.85);
+    padding: 0;
     flex-direction: column;
     overflow: hidden;
     display: none;
 }
 
-.dm-inspector-header {
-    color: var(--vtt-text-main);
-    font-size: 20px;
-    -unity-font-style: bold;
-    margin-bottom: var(--vtt-spacing-medium);
+.dm-inspector-content {
+    flex-grow: 1;
+    overflow: scroll;
+    min-height: 0;
+}
+
+.dm-inspector-sections {
+    padding: var(--vtt-spacing-large);
+    flex-direction: column;
 }
 
 .dm-inspector-section {
     flex-direction: column;
     margin-bottom: var(--vtt-spacing-medium);
-    padding-bottom: var(--vtt-spacing-small);
+    padding-bottom: var(--vtt-spacing-medium);
     border-bottom-width: 1px;
-    border-bottom-color: rgba(255, 255, 255, 0.08);
+    border-bottom-color: var(--vtt-border-color);
 }
 
 .dm-inspector-section-title {
     color: var(--vtt-text-muted);
-    font-size: 12px;
-    margin-bottom: var(--vtt-spacing-small);
+    font-size: 13px;
+    margin-bottom: 4px;
 }
 
 .dm-inspector-value {
     color: var(--vtt-text-main);
     font-size: 16px;
+    -unity-font-style: bold;
     margin-bottom: var(--vtt-spacing-small);
+}
+
+.dm-inspector-hp-value {
+    color: #4ade80;
 }
 
 .dm-inspector-controls {
@@ -1174,6 +1129,7 @@
 .dm-inspector-reset-button {
     align-self: flex-start;
     margin-top: var(--vtt-spacing-small);
+    font-size: 13px;
 }
 
 .dm-inspector-condition-grid {
@@ -1185,14 +1141,15 @@
     margin-right: var(--vtt-spacing-small);
     margin-bottom: var(--vtt-spacing-small);
     font-size: 11px;
-    color: var(--vtt-text-main);
-    background-color: rgba(255, 255, 255, 0.06);
-    border-color: var(--vtt-border-color);
+    padding: 4px var(--vtt-spacing-small);
+    min-width: 0;
 }
 
 .dm-condition-chip-active {
-    background-color: rgba(255, 120, 80, 0.35);
-    border-color: rgba(255, 120, 80, 0.8);
+    background-color: rgba(248, 213, 138, 0.15);
+    border-color: var(--vtt-accent-primary);
+    border-width: 2px;
+    -unity-font-style: bold;
 }
 
 .dm-death-save-row {
@@ -1237,6 +1194,12 @@
 
 .dm-inspector-toggle {
     margin-bottom: var(--vtt-spacing-small);
+    color: var(--vtt-text-main);
+}
+
+.dm-inspector-toggle > .unity-toggle__label {
+    color: var(--vtt-text-main);
+    font-size: 14px;
 }
 
 .dm-inspector-exhaustion {
@@ -1270,6 +1233,14 @@
     min-width: 72px;
     margin-right: var(--vtt-spacing-small);
     margin-bottom: var(--vtt-spacing-small);
+    flex-grow: 1;
+}
+
+.dm-empty-label {
+    color: var(--vtt-text-muted);
+    font-size: 14px;
+    padding: var(--vtt-spacing-small);
+    -unity-text-align: middle-center;
 }
 
 .encounter-turn-label {
