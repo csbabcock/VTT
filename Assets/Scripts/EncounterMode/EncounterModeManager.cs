@@ -305,6 +305,31 @@ namespace GameCore.EncounterMode
 
         public void RefreshMovementDisplay() => _coordinator?.RefreshMovementDisplay();
 
+        public bool TryApproachMeleeRange(Transform targetTransform)
+        {
+            if (!IsEncounterModeActive || GridGenerator == null || targetTransform == null)
+                return false;
+
+            GridCell targetCell = GridGenerator.GetCellAtWorldPosition(targetTransform.position);
+            if (targetCell == null)
+                return false;
+
+            return _coordinator != null && _coordinator.TryApproachMeleeRange(targetCell);
+        }
+
+        public bool IsWithinMeleeRange(Transform attacker, Transform target)
+        {
+            if (attacker == null || target == null || GridGenerator == null)
+                return false;
+
+            GridCell fromCell = GridGenerator.GetCellAtWorldPosition(attacker.position);
+            GridCell toCell = GridGenerator.GetCellAtWorldPosition(target.position);
+            if (fromCell == null || toCell == null)
+                return false;
+
+            return GridDistanceRules.DistanceFeet(fromCell, toCell) <= GridDistanceRules.FeetPerCell;
+        }
+
         private void HandleCellSelected(GridCell cell, int elevation)
             => _coordinator.HandleCellSelected(cell, elevation);
 

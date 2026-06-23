@@ -33,5 +33,16 @@ namespace GameCore.PlayerData
             maxHp = Mathf.Max(1, maxHp);
             return Mathf.Clamp(current, 0, maxHp);
         }
+
+        /// <summary>Sets current HP to the ruleset-derived maximum for the character's level and class.</summary>
+        public static void EnsureFullHealth(DnD5eCharacterData data)
+        {
+            if (data == null)
+                return;
+
+            int maxHp = GetDisplayMaxHp(data);
+            data.maxHitPoints = maxHp;
+            data.currentHitPoints = maxHp;
+        }
     }
 }

@@ -267,30 +267,40 @@ namespace GameCore.UI.InGame
         /// </summary>
         private static string FormatDamage(WeaponData weaponData, IRulesetCalculator calculator)
         {
+            var properties = calculator.GetWeaponProperties(weaponData.WeaponName);
+
+            if (weaponData.DamageDice == 0
+                && properties.HasValue
+                && properties.Value.FlatBaseDamage > 0)
+            {
+                string baseText = properties.Value.FlatBaseDamage.ToString();
+                string modifierText = weaponData.DamageModifier != 0
+                    ? weaponData.DamageModifier >= 0
+                        ? $"+{weaponData.DamageModifier}"
+                        : weaponData.DamageModifier.ToString()
+                    : string.Empty;
+
+                string damageType = properties.Value.DamageType?.ToLower() ?? "damage";
+                return $"{baseText}{modifierText} {damageType}";
+            }
+
             if (weaponData.DamageDice == 0)
             {
                 return "0 damage";
             }
 
             string diceText = $"{weaponData.DamageDice}d{weaponData.DamageDieType}";
-            string modifierText = "";
-
-            if (weaponData.DamageModifier != 0)
-            {
-                modifierText = weaponData.DamageModifier >= 0
+            string diceModifierText = weaponData.DamageModifier != 0
+                ? weaponData.DamageModifier >= 0
                     ? $"+{weaponData.DamageModifier}"
-                    : weaponData.DamageModifier.ToString();
-            }
+                    : weaponData.DamageModifier.ToString()
+                : string.Empty;
 
-            // Get damage type from weapon properties
-            string damageType = "damage";
-            var properties = calculator.GetWeaponProperties(weaponData.WeaponName);
-            if (properties.HasValue)
-            {
-                damageType = properties.Value.DamageType?.ToLower() ?? "damage";
-            }
+            string diceDamageType = properties.HasValue
+                ? properties.Value.DamageType?.ToLower() ?? "damage"
+                : "damage";
 
-            return $"{diceText}{modifierText} {damageType}";
+            return $"{diceText}{diceModifierText} {diceDamageType}";
         }
     }
 }

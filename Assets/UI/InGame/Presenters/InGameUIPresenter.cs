@@ -2,10 +2,14 @@ using GameCore.DmTools;
 using GameCore.Actors;
 using GameCore.UI;
 using GameCore;
+using GameCore.Combat;
+using GameCore.Combat.Models;
+using GameCore.Combat.Targeting;
 using GameCore.UI.InGame.Services;
 using GameCore.UI.InGame.Models;
 using GameCore.EncounterMode.Services;
 using GameCore.EncounterMode;
+using GameCore.EncounterMode.Grid;
 using GameCore.PlayerData;
 using GameCore.PlayerData.Rulesets;
 using GameCore.Networking;
@@ -51,6 +55,8 @@ namespace GameCore.UI.InGame
         private DiceRollService _diceRollService;
         private GameLogService _gameLogService;
         private InGameActionLogController _actionLog;
+        private InGameCombatController _combatController;
+        private CombatMeleeApproachService _combatApproachService;
         private IPlayerDataService _localDataService;
         private IPlayerDataService _boundDataService;
         private IActor _inspectedActor;
@@ -96,6 +102,19 @@ namespace GameCore.UI.InGame
             _diceRollService = new DiceRollService();
             _gameLogService = new GameLogService();
             _actionLog = new InGameActionLogController(_diceRollService, _gameLogService, _view, GetActiveSheet);
+            _combatController = new InGameCombatController(
+                _gameLogService,
+                _view,
+                () => ActorRegistry.LocalActor,
+                BuildEncounterContext,
+                GetGameplayCamera,
+                GetEncounterGridGenerator,
+                GetFeetPerWorldUnit,
+                GetEncounterModeManager);
+            _combatApproachService = new CombatMeleeApproachService(
+                GetEncounterModeManager,
+                GetEncounterGridGenerator,
+                GetFeetPerWorldUnit);
             // Bind to the local player's actor when one exists so this UI follows a
             // specific participant (the foundation for per-client sheets in multiplayer).
             // Falls back to the global locator until a PlayerActor is present in the scene.
@@ -545,12 +564,19 @@ namespace GameCore.UI.InGame
         {
             RefreshEncounterTurnUi();
             RefreshDmPanelUi();
+            if (!isActive)
+            {
+                _combatController?.ResetActionEconomyForNewTurn();
+                _combatController?.CancelTargeting();
+            }
         }
 
         private void OnTurnOwnerChanged(int ownerId)
         {
             RefreshEncounterTurnUi();
             RefreshDmPanelUi();
+            _combatController?.ResetActionEconomyForNewTurn();
+            _combatController?.CancelTargeting();
             if (_encounterModeManager != null && !_encounterModeManager.IsLocalTurnActive)
                 _encounterModeManager.DisableMovementMode();
         }
@@ -809,7 +835,16 @@ namespace GameCore.UI.InGame
 #if ENABLE_INPUT_SYSTEM
             HandleMouseMovement();
             HandleKeyboardInput();
+            HandleCombatTargetingInput();
 #endif
+        }
+
+        private void LateUpdate()
+        {
+            if (!_initialized || IsLocalPlayerDungeonMaster || _combatController == null)
+                return;
+
+            ProcessCombatTargetClick();
         }
 
         private void UpdateLookInputState()
@@ -1172,6 +1207,12 @@ namespace GameCore.UI.InGame
 
         private void OnActionClicked(string actionName)
         {
+            if (actionName == "Attack")
+            {
+                BeginUnarmedStrikeTargeting();
+                return;
+            }
+
             _actionLog.LogAction(actionName);
 
             // Handle Dash action - double movement speed
@@ -1182,6 +1223,44 @@ namespace GameCore.UI.InGame
 
                 _encounterModeManager.SetDashActive(true);
             }
+        }
+
+        private void BeginUnarmedStrikeTargeting()
+        {
+            if (_combatController == null)
+                return;
+
+            if (_encounterModeManager != null
+                && _encounterModeManager.IsEncounterModeActive
+                && !_encounterModeManager.IsLocalTurnActive)
+            {
+                var sheet = GetActiveSheet();
+                string name = sheet?.CharacterName ?? "You";
+                _view.AddLogEntry(_gameLogService.FormatAction(name, "Attack (not your turn)"));
+                return;
+            }
+
+            if (!_combatController.CanBeginEncounterAttack())
+            {
+                var sheet = GetActiveSheet();
+                string name = sheet?.CharacterName ?? "You";
+                _view.AddLogEntry(_gameLogService.FormatCombatActionResult(
+                    CombatActionResult.Failed(
+                        CombatFailureReason.ActionAlreadyUsed,
+                        name,
+                        string.Empty,
+                        "Unarmed Strike")));
+                return;
+            }
+
+            if (_encounterModeManager != null && _encounterModeManager.IsMovementModeActive)
+                _encounterModeManager.DisableMovementMode();
+
+            _combatController.BeginUnarmedStrikeTargeting();
+
+            var attackerSheet = GetActiveSheet();
+            string attackerName = attackerSheet?.CharacterName ?? "You";
+            _view.AddLogEntry(_gameLogService.FormatAction(attackerName, "Choose an attack target"));
         }
 
         private void OnAttackClicked(string weaponName) => _actionLog.RollAttack(weaponName);
@@ -1203,6 +1282,8 @@ namespace GameCore.UI.InGame
             if (!_encounterModeManager.IsLocalTurnActive)
                 return;
 
+            _combatController?.CancelTargeting();
+
             // Toggle movement mode: if active, disable it; if not active, enable it
             if (_encounterModeManager.IsMovementModeActive)
             {
@@ -1213,6 +1294,115 @@ namespace GameCore.UI.InGame
                 _encounterModeManager.EnableGridSelection();
             }
         }
+        #endregion
+
+        #region Combat Targeting
+
+        private EncounterContext BuildEncounterContext()
+        {
+            bool isEncounterActive = _encounterModeManager != null && _encounterModeManager.IsEncounterModeActive;
+            bool isLocalTurnActive = _encounterModeManager == null || _encounterModeManager.IsLocalTurnActive;
+            return new EncounterContext(isEncounterActive, isLocalTurnActive);
+        }
+
+        private Camera GetGameplayCamera() => Camera.main;
+
+        private IGridGenerator GetEncounterGridGenerator()
+        {
+            if (_encounterModeManager == null)
+                _encounterModeManager = FindAnyObjectByType<EncounterModeManager>();
+
+            return _encounterModeManager != null ? _encounterModeManager.GridGenerator : null;
+        }
+
+        private float GetFeetPerWorldUnit()
+        {
+            if (_encounterModeManager == null)
+                _encounterModeManager = FindAnyObjectByType<EncounterModeManager>();
+
+            return _encounterModeManager != null ? _encounterModeManager.GridCellSize : 1.524f;
+        }
+
+#if ENABLE_INPUT_SYSTEM
+        private void HandleCombatTargetingInput()
+        {
+            if (_combatController == null || !_combatController.IsTargeting)
+                return;
+
+            var keyboard = Keyboard.current;
+            if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
+            {
+                _combatController.CancelTargeting();
+                return;
+            }
+
+            var mouse = Mouse.current;
+            if (mouse != null && mouse.rightButton.wasPressedThisFrame)
+                _combatController.CancelTargeting();
+        }
+
+        private void ProcessCombatTargetClick()
+        {
+            if (_combatController == null || !_combatController.IsTargeting)
+                return;
+
+            if (UIInputGateLocator.ShouldBlockInput())
+                return;
+
+            var mouse = Mouse.current;
+            if (mouse == null || !mouse.leftButton.wasPressedThisFrame)
+                return;
+
+            if (UIInputGateLocator.ShouldBlockInput())
+                return;
+
+            if (!_combatController.TryResolveTargetClick(mouse.position.ReadValue(), out IActor targetActor))
+                return;
+
+            StartCoroutine(CoCompleteAttackWithApproach(targetActor));
+        }
+
+        private IEnumerator CoCompleteAttackWithApproach(IActor targetActor)
+        {
+            IActor localActor = ActorRegistry.LocalActor;
+            if (localActor == null)
+            {
+                _combatController.CancelTargeting();
+                yield break;
+            }
+
+            if (!_combatController.IsWithinMeleeReach(localActor, targetActor))
+            {
+                bool approached = _combatApproachService.TryApproach(localActor, targetActor);
+                if (!approached)
+                {
+                    var sheet = GetActiveSheet();
+                    string attackerName = sheet?.CharacterName ?? "You";
+                    string targetName = CharacterSheetAuthorityHelper.GetDisplayName(targetActor);
+                    _view.AddLogEntry(_gameLogService.FormatCombatActionResult(
+                        CombatActionResult.Failed(
+                            CombatFailureReason.OutOfRange,
+                            attackerName,
+                            targetName,
+                            "Unarmed Strike")));
+                    _combatController.CancelTargeting();
+                    yield break;
+                }
+
+                yield return _combatApproachService.WaitForApproachComplete(localActor);
+            }
+
+            _combatController.CompleteAttackAgainstTarget(targetActor);
+        }
+
+        private IEncounterModeManager GetEncounterModeManager()
+        {
+            if (_encounterModeManager == null)
+                _encounterModeManager = FindAnyObjectByType<EncounterModeManager>();
+
+            return _encounterModeManager;
+        }
+#endif
         #endregion
     }
 }

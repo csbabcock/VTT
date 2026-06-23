@@ -1,4 +1,5 @@
 using GameCore.UI.InGame.Models;
+using GameCore.Combat.Models;
 using System.Collections.Generic;
 using System.Text;
 
@@ -208,6 +209,98 @@ namespace GameCore.UI.InGame.Services
                 Result = null,
                 CssClass = cssClass,
                 FullMessage = $"[{characterName}] {actionName}"
+            };
+        }
+
+        /// <summary>Formats a resolved combat action (attack vs target with damage).</summary>
+        public FormattedLogEntry FormatCombatActionResult(CombatActionResult result)
+            => FormatCombatAttackRoll(result);
+
+        public FormattedLogEntry FormatCombatAttackRoll(CombatActionResult result)
+        {
+            if (!result.Succeeded)
+                return FormatCombatFailure(result);
+
+            AttackOutcome outcome = result.AttackOutcome;
+            var sb = new StringBuilder();
+            sb.Append($"[{result.AttackerName}] {result.AttackDisplayName} vs [{result.TargetName}] — ");
+            sb.Append($"To Hit: d20 ({outcome.AttackRollNatural}) → {outcome.AttackRollTotal} vs AC {outcome.TargetArmorClass}");
+
+            string cssClass = "log-attack";
+            if (outcome.IsCritical)
+            {
+                cssClass = "log-attack-critical";
+                sb.Append(" → CRITICAL HIT");
+            }
+            else if (outcome.AttackRollNatural == 1)
+            {
+                cssClass = "log-attack-miss";
+                sb.Append(" → MISS");
+            }
+            else if (outcome.DidHit)
+            {
+                sb.Append(" → HIT");
+            }
+            else
+            {
+                cssClass = "log-attack-miss";
+                sb.Append(" → MISS");
+            }
+
+            return new FormattedLogEntry
+            {
+                CharacterName = result.AttackerName,
+                ActionType = result.AttackDisplayName.ToUpper(),
+                SubActionType = "TO HIT",
+                DiceFormula = "1d20",
+                DiceBreakdown = outcome.AttackRollNatural.ToString(),
+                Result = outcome.AttackRollTotal,
+                CssClass = cssClass,
+                FullMessage = sb.ToString()
+            };
+        }
+
+        public FormattedLogEntry FormatCombatFlatDamage(string targetName, int damageAmount, string damageType)
+        {
+            string type = string.IsNullOrEmpty(damageType) ? "damage" : damageType.ToLower();
+            return new FormattedLogEntry
+            {
+                CharacterName = targetName,
+                ActionType = "DAMAGE",
+                SubActionType = "DAMAGE",
+                DiceFormula = string.Empty,
+                DiceBreakdown = string.Empty,
+                Result = damageAmount,
+                CssClass = "log-damage",
+                FullMessage = $"[{targetName}] takes {damageAmount} {type} damage (flat; no damage roll)"
+            };
+        }
+
+        private static FormattedLogEntry FormatCombatFailure(CombatActionResult result)
+        {
+            string reason = result.FailureReason switch
+            {
+                CombatFailureReason.NotYourTurn => "Not your turn",
+                CombatFailureReason.ActionAlreadyUsed => "Action already used",
+                CombatFailureReason.OutOfRange => "Target out of melee range",
+                CombatFailureReason.SelfTarget => "Cannot target yourself",
+                CombatFailureReason.InvalidTarget => "Invalid target",
+                CombatFailureReason.TargetDestroyed => "Target is destroyed",
+                CombatFailureReason.NoPermissionToApplyDamage => "No permission to apply damage",
+                _ => "Attack failed"
+            };
+
+            string message = $"[{result.AttackerName}] {result.AttackDisplayName}: {reason}";
+            if (!string.IsNullOrEmpty(result.TargetName))
+                message = $"[{result.AttackerName}] {result.AttackDisplayName} vs [{result.TargetName}]: {reason}";
+
+            return new FormattedLogEntry
+            {
+                CharacterName = result.AttackerName,
+                ActionType = result.AttackDisplayName.ToUpper(),
+                SubActionType = "ACTION",
+                CssClass = "log-combat-action",
+                FullMessage = message
             };
         }
     }

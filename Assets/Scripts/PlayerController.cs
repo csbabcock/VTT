@@ -74,6 +74,10 @@ namespace GameCore
         [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
         public bool Grounded = true;
 
+        /// <summary>True while the encounter grid movement handler is moving this avatar.</summary>
+        public bool IsEncounterGridMoving =>
+            _encounterMovementHandler != null && _encounterMovementHandler.IsMoving;
+
         [Tooltip("Useful for rough ground")]
         public float GroundedOffset = -0.14f;
 

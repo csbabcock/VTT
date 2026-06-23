@@ -19,5 +19,7 @@ namespace GameCore.EncounterMode
         void SetDashActive(bool isActive);
         bool IsCellReachable(GridCell cell);
         void RefreshMovementDisplay();
+        bool TryApproachMeleeRange(UnityEngine.Transform targetTransform);
+        bool IsWithinMeleeRange(UnityEngine.Transform attacker, UnityEngine.Transform target);
     }
 }

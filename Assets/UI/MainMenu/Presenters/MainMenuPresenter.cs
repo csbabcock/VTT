@@ -286,6 +286,9 @@ namespace GameCore.UI.MainMenu
             // Use the relative path format that JsonPlayerDataService expects
             string relativePath = $"Characters/{fileInfo.FileName}";
             var playerDataService = new JsonPlayerDataService(relativePath);
+            if (playerDataService.GetCharacterSheet() is DnD5eCharacterData sheet)
+                CharacterHitPoints.EnsureFullHealth(sheet);
+
             PlayerDataServiceLocator.Service = playerDataService;
 
             Debug.Log($"MainMenuPresenter: Loaded character {fileInfo.CharacterData?.characterName ?? selectedCharacter} for join session");

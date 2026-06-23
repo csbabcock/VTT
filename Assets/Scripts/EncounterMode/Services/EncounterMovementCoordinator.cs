@@ -51,6 +51,8 @@ namespace GameCore.EncounterMode.Services
             _isLocalTurnActive = isLocalTurnActive;
         }
 
+        public int RemainingMovementFeet => _movementTracker.RemainingMovementFeet;
+
         public bool IsMovementModeActive => _isMovementModeActive;
 
         public bool IsCellReachable(GridCell cell) => cell != null && _reachableCells.Contains(cell);
@@ -105,6 +107,52 @@ namespace GameCore.EncounterMode.Services
             _presentation.DisableSelection();
             ClearReachableCells();
             UpdateMovementButtonState();
+        }
+
+        /// <summary>
+        /// Moves toward a target cell until within melee range when movement remains this turn.
+        /// Does not require movement selection mode to be active.
+        /// </summary>
+        public bool TryApproachMeleeRange(GridCell targetCell)
+        {
+            if (!_isLocalTurnActive() || targetCell == null || _gridGenerator == null)
+                return false;
+
+            if (_usesNetworkEncounter())
+                SyncMovementFromParticipant();
+
+            GridCell startCell = _movementTracker.LastSelectedCell ?? _getPlayerCurrentCell();
+            if (startCell == null)
+                return false;
+
+            if (!AttackApproachPlanner.TryFindMeleeApproachCell(
+                    _gridGenerator,
+                    startCell,
+                    targetCell,
+                    _movementTracker.RemainingMovementFeet,
+                    out GridCell approachCell))
+            {
+                return false;
+            }
+
+            if (approachCell == startCell)
+                return true;
+
+            if (_usesNetworkEncounter())
+            {
+                _getParticipant()?.RequestMoveTo(approachCell, 0);
+                return true;
+            }
+
+            if (_movementTracker.IsMovementExhausted)
+                return false;
+
+            int distanceFeet = _movementTracker.CalculateDistanceFeet(startCell, approachCell);
+            if (!_movementTracker.TryDeductMovement(distanceFeet, approachCell))
+                return false;
+
+            ApplyMoveResult(approachCell, 0);
+            return true;
         }
 
         public void SetDashActive(bool isActive)

@@ -108,6 +108,7 @@ namespace GameCore.PlayerData.Rulesets
                 Name = p.name,
                 DamageDice = p.damageDice,
                 DamageDieType = p.damageDieType,
+                FlatBaseDamage = p.flatBaseDamage,
                 DamageType = p.damageType,
                 IsFinesse = p.isFinesse,
                 IsRanged = p.isRanged,
@@ -130,7 +131,7 @@ namespace GameCore.PlayerData.Rulesets
             if (proficientWeapons.Contains(weaponName))
                 return true;
 
-            // Check category (e.g., "Simple", "Martial")
+            // Check category (e.g., "Simple", "Martial", "Unarmed")
             if (proficientWeapons.Contains(props.Category))
                 return true;
 

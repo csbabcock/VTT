@@ -121,6 +121,8 @@ namespace GameCore.PlayerData.Rulesets
         public string Name;
         public int DamageDice;
         public int DamageDieType;
+        /// <summary>Flat damage before ability modifier (e.g. 1 for unarmed strike). Zero when damage is dice-only.</summary>
+        public int FlatBaseDamage;
         public string DamageType;
         public bool IsFinesse;
         public bool IsRanged;

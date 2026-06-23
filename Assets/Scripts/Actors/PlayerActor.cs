@@ -128,6 +128,34 @@ namespace GameCore.Actors
                 return;
 
             SetOwner(_ownerId, _isLocalPlayer);
+            TryEnsureSpawnFullHealth();
+        }
+
+        private void TryEnsureSpawnFullHealth()
+        {
+            var sheet = DataService?.GetCharacterSheet() as DnD5eCharacterData;
+            if (sheet == null)
+                return;
+
+            CharacterHitPoints.EnsureFullHealth(sheet);
+            NotifyDataServiceChanged();
+            ActorRegistry.NotifyActorUpdated(this);
+        }
+
+        private void NotifyDataServiceChanged()
+        {
+            switch (DataService)
+            {
+                case InMemoryPlayerDataService inMemory:
+                    inMemory.NotifyChanged();
+                    break;
+                case JsonPlayerDataService json:
+                    json.NotifyChanged();
+                    break;
+                case LocalPlayerDataService local:
+                    local.NotifyChanged();
+                    break;
+            }
         }
 
         private void OnDisable()

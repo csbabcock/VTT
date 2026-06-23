@@ -12,7 +12,7 @@ namespace GameCore.Networking
     /// replicates combat-tracking sheet fields to every client.
     /// </summary>
     [RequireComponent(typeof(NetworkObject))]
-    public class NetworkCharacterIdentity : NetworkBehaviour, ICharacterSheetAuthority
+    public class NetworkCharacterIdentity : NetworkBehaviour, ICharacterSheetAuthority, ICombatDamageReceiver
     {
         [SerializeField] private PlayerActor _playerActor;
 
@@ -78,6 +78,37 @@ namespace GameCore.Networking
 
         public void RequestAdjustCurrentHitPoints(int delta) =>
             RequestSetCurrentHitPoints(CurrentHitPoints + delta);
+
+        public void RequestDamageFromAttacker(int amount, int attackerOwnerId)
+        {
+            if (amount <= 0)
+                return;
+
+            if (!IsNetworkActive())
+            {
+                RequestAdjustCurrentHitPoints(-amount);
+                return;
+            }
+
+            if (IsServer)
+            {
+                ApplyCombatDamage(amount);
+                return;
+            }
+
+            ApplyCombatDamageServerRpc(amount, attackerOwnerId);
+        }
+
+        [Rpc(SendTo.Server)]
+        private void ApplyCombatDamageServerRpc(int amount, int attackerOwnerId, RpcParams rpcParams = default)
+        {
+            ApplyCombatDamage(amount);
+        }
+
+        private void ApplyCombatDamage(int amount)
+        {
+            RequestAdjustCurrentHitPoints(-amount);
+        }
 
         public void RequestSetTemporaryHitPoints(int value) =>
             RequestCombatMutation(state =>
@@ -196,7 +227,10 @@ namespace GameCore.Networking
                 _playerActor.SetDisplayName(resolvedName);
 
             if (data != null)
+            {
+                CharacterHitPoints.EnsureFullHealth(data);
                 ApplyCombatStateAuthoritative(CharacterCombatState.FromSheet(data));
+            }
 
             if (_playerActor != null)
                 ActorRegistry.NotifyActorUpdated(_playerActor);

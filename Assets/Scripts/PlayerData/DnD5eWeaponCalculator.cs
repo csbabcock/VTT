@@ -48,7 +48,8 @@ namespace GameCore.PlayerData
             "Hand Crossbow",
             "Heavy Crossbow",
             "Longbow",
-            "Net"
+            "Net",
+            "Unarmed Strike"
         };
 
         /// <summary>
@@ -59,6 +60,7 @@ namespace GameCore.PlayerData
             public string name;
             public int damageDice;
             public int damageDieType;
+            public int flatBaseDamage;
             public string damageType; // "Slashing", "Piercing", "Bludgeoning"
             public string abilityModifier; // "STR" or "DEX" - which ability to use
             public bool isFinesse; // Can use STR or DEX
@@ -509,6 +511,18 @@ namespace GameCore.PlayerData
                     isFinesse = false,
                     isRanged = true,
                     weaponCategory = "Martial"
+                },
+                "Unarmed Strike" => new WeaponProperties
+                {
+                    name = "Unarmed Strike",
+                    damageDice = 0,
+                    damageDieType = 0,
+                    flatBaseDamage = 1,
+                    damageType = "Bludgeoning",
+                    abilityModifier = "STR",
+                    isFinesse = false,
+                    isRanged = false,
+                    weaponCategory = "Unarmed"
                 },
 
                 _ => null
