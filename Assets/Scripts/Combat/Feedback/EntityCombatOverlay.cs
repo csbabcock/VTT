@@ -83,15 +83,11 @@ namespace GameCore.Combat.Feedback
             SkinnedMeshRenderer[] skinnedRenderers =
                 GetComponentsInChildren<SkinnedMeshRenderer>(includeInactive: true);
             for (int i = 0; i < skinnedRenderers.Length; i++)
-            {
                 TryAddSkinnedOverlay(skinnedRenderers[i]);
-            }
 
             MeshRenderer[] meshRenderers = GetComponentsInChildren<MeshRenderer>(includeInactive: true);
             for (int i = 0; i < meshRenderers.Length; i++)
-            {
                 TryAddMeshOverlay(meshRenderers[i]);
-            }
 
             _isBuilt = _layers.Count > 0;
             ApplyOverlayState();
@@ -110,7 +106,8 @@ namespace GameCore.Combat.Feedback
             overlayRenderer.bones = source.bones;
             overlayRenderer.rootBone = source.rootBone;
             overlayRenderer.localBounds = source.localBounds;
-            overlayRenderer.sharedMaterials = CreateMaterialArray(source.sharedMaterials.Length);
+            Material[] materials = CreateMaterialArray(source.sharedMaterials.Length);
+            overlayRenderer.materials = materials;
             overlayRenderer.shadowCastingMode = ShadowCastingMode.Off;
             overlayRenderer.receiveShadows = false;
             overlayRenderer.updateWhenOffscreen = true;
@@ -119,7 +116,7 @@ namespace GameCore.Combat.Feedback
             _layers.Add(new OverlayLayer
             {
                 Overlay = overlayRenderer,
-                Materials = overlayRenderer.sharedMaterials,
+                Materials = materials,
             });
         }
 
@@ -139,7 +136,8 @@ namespace GameCore.Combat.Feedback
             meshFilter.sharedMesh = filter.sharedMesh;
 
             var overlayRenderer = overlayObject.AddComponent<MeshRenderer>();
-            overlayRenderer.sharedMaterials = CreateMaterialArray(source.sharedMaterials.Length);
+            Material[] materials = CreateMaterialArray(source.sharedMaterials.Length);
+            overlayRenderer.materials = materials;
             overlayRenderer.shadowCastingMode = ShadowCastingMode.Off;
             overlayRenderer.receiveShadows = false;
             overlayObject.SetActive(false);
@@ -147,7 +145,7 @@ namespace GameCore.Combat.Feedback
             _layers.Add(new OverlayLayer
             {
                 Overlay = overlayRenderer,
-                Materials = overlayRenderer.sharedMaterials,
+                Materials = materials,
             });
         }
 
@@ -164,7 +162,9 @@ namespace GameCore.Combat.Feedback
         private static Material CreateSilhouetteMaterialInstance()
         {
             Material template = GetSilhouetteTemplate();
-            return new Material(template);
+            var instance = new Material(template);
+            instance.renderQueue = (int)RenderQueue.Transparent + 200;
+            return instance;
         }
 
         private void ApplyOverlayState()
@@ -174,7 +174,8 @@ namespace GameCore.Combat.Feedback
 
             if (_outlineVisible)
             {
-                SetAllLayerColors(GetSilhouetteColor(), GetSilhouetteColor().a);
+                Color silhouetteColor = GetSilhouetteColor();
+                SetAllLayerColors(silhouetteColor, silhouetteColor.a);
                 SetOverlaysEnabled(true);
                 return;
             }
@@ -197,9 +198,7 @@ namespace GameCore.Combat.Feedback
                     if (material == null)
                         continue;
 
-                    material.color = color;
-                    if (material.HasProperty("_BaseColor"))
-                        material.SetColor("_BaseColor", color);
+                    material.SetColor(ShaderPropertyIds.BaseColor, color);
                 }
             }
         }
@@ -232,9 +231,7 @@ namespace GameCore.Combat.Feedback
 
         private static void ConfigureTransparentMaterial(Material material, Color color)
         {
-            material.color = color;
-            if (material.HasProperty("_BaseColor"))
-                material.SetColor("_BaseColor", color);
+            material.SetColor(ShaderPropertyIds.BaseColor, color);
 
             if (material.HasProperty("_Surface"))
                 material.SetFloat("_Surface", 1f);
@@ -251,7 +248,7 @@ namespace GameCore.Combat.Feedback
             if (material.HasProperty("_ZWrite"))
                 material.SetFloat("_ZWrite", 0f);
 
-            material.renderQueue = (int)RenderQueue.Transparent + 100;
+            material.renderQueue = (int)RenderQueue.Transparent + 200;
         }
 
         private static bool IsOverlayRenderer(Renderer renderer) =>
@@ -267,6 +264,11 @@ namespace GameCore.Combat.Feedback
 
             _outlineVisible = false;
             SetOverlaysEnabled(false);
+        }
+
+        private static class ShaderPropertyIds
+        {
+            public static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
         }
     }
 }

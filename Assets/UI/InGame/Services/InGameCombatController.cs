@@ -208,7 +208,7 @@ namespace GameCore.UI.InGame
                     result.AttackOutcome.DamageAmount,
                     damageType));
 
-                if (targetActor.Transform != null)
+                if (targetActor.Transform != null && !HasCombatDamageReceiver(targetActor))
                     DamageFlashIndicator.Flash(targetActor.Transform);
             }
 
@@ -231,6 +231,21 @@ namespace GameCore.UI.InGame
         {
             var props = RulesetCalculatorFactory.GetDefaultCalculator().GetWeaponProperties(weaponName);
             return props.HasValue ? props.Value.DamageType : string.Empty;
+        }
+
+        private static bool HasCombatDamageReceiver(IActor actor)
+        {
+            if (actor?.Transform == null)
+                return false;
+
+            var components = actor.Transform.GetComponents<Component>();
+            for (int i = 0; i < components.Length; i++)
+            {
+                if (components[i] is ICombatDamageReceiver)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

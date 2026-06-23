@@ -1,5 +1,6 @@
 using System.Collections;
 using GameCore.Actors;
+using GameCore.Combat.Feedback;
 using GameCore.PlayerData;
 using Unity.Collections;
 using Unity.Netcode;
@@ -27,6 +28,8 @@ namespace GameCore.Networking
                 default,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Server);
+
+        private bool _hasCombatStateBaseline;
 
         public CharacterCombatState CombatState =>
             IsSpawned ? _combatState.Value.ToCore() : CharacterCombatState.FromSheet(GetSheetData());
@@ -58,6 +61,7 @@ namespace GameCore.Networking
             _combatState.OnValueChanged += HandleCombatStateChanged;
             ApplyDisplayName(_displayName.Value);
             ApplyCombatStateToLocalServices(_combatState.Value.ToCore());
+            _hasCombatStateBaseline = true;
 
             if (IsOwner)
                 StartCoroutine(SubmitLocalCharacterWhenReady());
@@ -258,6 +262,16 @@ namespace GameCore.Networking
 
         private void HandleCombatStateChanged(CharacterCombatStateNetwork previous, CharacterCombatStateNetwork current)
         {
+            int previousHitPoints = previous.ToCore().CurrentHitPoints;
+            int currentHitPoints = current.ToCore().CurrentHitPoints;
+            if (_hasCombatStateBaseline
+                && currentHitPoints < previousHitPoints
+                && _playerActor?.Transform != null)
+            {
+                DamageFlashIndicator.Flash(_playerActor.Transform);
+            }
+
+            _hasCombatStateBaseline = true;
             ApplyCombatStateToLocalServices(current.ToCore());
         }
 

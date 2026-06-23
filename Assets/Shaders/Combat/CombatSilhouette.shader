@@ -16,9 +16,13 @@ Shader "GameCore/Combat/Silhouette"
 
         Pass
         {
+            Name "Silhouette"
+            Tags { "LightMode" = "UniversalForward" }
+
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
-            Cull Back
+            ZTest LEqual
+            Cull Off
 
             HLSLPROGRAM
             #pragma vertex vert
@@ -59,4 +63,6 @@ Shader "GameCore/Combat/Silhouette"
             ENDHLSL
         }
     }
+
+    FallBack Off
 }
