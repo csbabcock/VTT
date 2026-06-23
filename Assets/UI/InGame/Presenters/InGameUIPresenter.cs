@@ -844,6 +844,15 @@ namespace GameCore.UI.InGame
             if (!_initialized || IsLocalPlayerDungeonMaster || _combatController == null)
                 return;
 
+#if ENABLE_INPUT_SYSTEM
+            if (_combatController.IsTargeting)
+            {
+                var mouse = Mouse.current;
+                if (mouse != null)
+                    _combatController.UpdateTargetingHover(mouse.position.ReadValue());
+            }
+#endif
+
             ProcessCombatTargetClick();
         }
 
@@ -1390,6 +1399,28 @@ namespace GameCore.UI.InGame
                 }
 
                 yield return _combatApproachService.WaitForApproachComplete(localActor);
+                yield return _combatApproachService.CoWaitUntilInMeleeRange(
+                    localActor,
+                    targetActor,
+                    () => _combatController.IsWithinMeleeReach(localActor, targetActor));
+
+                _combatApproachService.FinalizeMeleeRange(localActor, targetActor);
+                yield return null;
+
+                if (!_combatController.IsWithinMeleeReach(localActor, targetActor))
+                {
+                    var sheet = GetActiveSheet();
+                    string attackerName = sheet?.CharacterName ?? "You";
+                    string targetName = CharacterSheetAuthorityHelper.GetDisplayName(targetActor);
+                    _view.AddLogEntry(_gameLogService.FormatCombatActionResult(
+                        CombatActionResult.Failed(
+                            CombatFailureReason.OutOfRange,
+                            attackerName,
+                            targetName,
+                            "Unarmed Strike")));
+                    _combatController.CancelTargeting();
+                    yield break;
+                }
             }
 
             _combatController.CompleteAttackAgainstTarget(targetActor);

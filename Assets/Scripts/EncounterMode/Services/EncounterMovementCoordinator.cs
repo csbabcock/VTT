@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using GameCore.Combat.Targeting;
 using GameCore.EncounterMode.Grid;
+using UnityEngine;
 
 namespace GameCore.EncounterMode.Services
 {
@@ -113,9 +115,9 @@ namespace GameCore.EncounterMode.Services
         /// Moves toward a target cell until within melee range when movement remains this turn.
         /// Does not require movement selection mode to be active.
         /// </summary>
-        public bool TryApproachMeleeRange(GridCell targetCell)
+        public bool TryApproachMeleeRange(GridCell targetCell, Transform targetTransform)
         {
-            if (!_isLocalTurnActive() || targetCell == null || _gridGenerator == null)
+            if (!_isLocalTurnActive() || targetCell == null || targetTransform == null || _gridGenerator == null)
                 return false;
 
             if (_usesNetworkEncounter())
@@ -135,8 +137,25 @@ namespace GameCore.EncounterMode.Services
                 return false;
             }
 
+            Transform attackerTransform = (_getLocomotion() as Component)?.transform;
+            if (attackerTransform == null)
+                return false;
+
+            float standoff = MeleeStandoff.ComputeApproachStandoff(
+                attackerTransform,
+                targetTransform,
+                _gridGenerator.CellSize);
+            Vector3 approachWorld = MeleeApproachPositions.ResolveGridMeleeApproachPosition(
+                attackerTransform.position,
+                targetTransform.position,
+                approachCell,
+                standoff);
+
             if (approachCell == startCell)
+            {
+                ApplyMoveResult(approachCell, 0, approachWorld);
                 return true;
+            }
 
             if (_usesNetworkEncounter())
             {
@@ -151,7 +170,7 @@ namespace GameCore.EncounterMode.Services
             if (!_movementTracker.TryDeductMovement(distanceFeet, approachCell))
                 return false;
 
-            ApplyMoveResult(approachCell, 0);
+            ApplyMoveResult(approachCell, 0, approachWorld);
             return true;
         }
 
@@ -227,12 +246,15 @@ namespace GameCore.EncounterMode.Services
             ApplyMoveResult(cell, elevation);
         }
 
-        private void ApplyMoveResult(GridCell cell, int elevation)
+        private void ApplyMoveResult(GridCell cell, int elevation, Vector3? worldPosition = null)
         {
-            // Single move pipeline: the coordinator is the only place that drives the
-            // local avatar after a validated (local) or approved (server) move.
             if (cell != null)
-                _getLocomotion()?.ApplyMove(cell, elevation);
+            {
+                if (worldPosition.HasValue && _getLocomotion() is GameCore.PlayerController playerController)
+                    playerController.BeginCombatApproachMove(cell, elevation, worldPosition.Value);
+                else
+                    _getLocomotion()?.ApplyMove(cell, elevation);
+            }
 
             UpdateMovementDisplay();
             RefreshReachableCells();

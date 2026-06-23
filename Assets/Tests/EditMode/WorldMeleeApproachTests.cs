@@ -15,7 +15,7 @@ namespace GameCore.Tests.EditMode
             target.position = new Vector3(5f, 0f, 0f);
 
             Assert.IsTrue(WorldMeleeApproach.TrySnapIntoRange(attacker, target, meleeRangeWorldUnits: 1.524f));
-            Assert.LessOrEqual(Vector3.Distance(attacker.position, target.position), 1.524f + 0.1f);
+            Assert.LessOrEqual(Vector3.Distance(attacker.position, target.position), 0.58f + 0.1f);
 
             Object.DestroyImmediate(attacker.gameObject);
             Object.DestroyImmediate(target.gameObject);

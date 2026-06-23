@@ -1,5 +1,6 @@
 using UnityEngine;
 using GameCore.Actors;
+using GameCore.Combat.Targeting;
 using GameCore.EncounterMode.Grid;
 using GameCore.EncounterMode.Services;
 using GameCore.UI.InGame;
@@ -314,20 +315,15 @@ namespace GameCore.EncounterMode
             if (targetCell == null)
                 return false;
 
-            return _coordinator != null && _coordinator.TryApproachMeleeRange(targetCell);
+            return _coordinator != null && _coordinator.TryApproachMeleeRange(targetCell, targetTransform);
         }
 
         public bool IsWithinMeleeRange(Transform attacker, Transform target)
         {
-            if (attacker == null || target == null || GridGenerator == null)
+            if (attacker == null || target == null)
                 return false;
 
-            GridCell fromCell = GridGenerator.GetCellAtWorldPosition(attacker.position);
-            GridCell toCell = GridGenerator.GetCellAtWorldPosition(target.position);
-            if (fromCell == null || toCell == null)
-                return false;
-
-            return GridDistanceRules.DistanceFeet(fromCell, toCell) <= GridDistanceRules.FeetPerCell;
+            return MeleeRangeQuery.IsWithinMeleeReach(attacker, target, GridGenerator, GridCellSize);
         }
 
         private void HandleCellSelected(GridCell cell, int elevation)

@@ -308,6 +308,9 @@ namespace GameCore.Networking
 
             NotifyActorServiceChanged();
 
+            if (_playerActor != null)
+                ActorRegistry.NotifyActorUpdated(_playerActor);
+
             if (_playerActor != null && _playerActor.IsLocalPlayer)
             {
                 var localSheet = PlayerDataServiceLocator.Service?.GetCharacterSheet() as DnD5eCharacterData;

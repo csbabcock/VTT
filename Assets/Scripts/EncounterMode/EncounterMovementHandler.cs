@@ -29,6 +29,7 @@ namespace GameCore.EncounterMode
         private float _verticalVelocity;
         private bool _justSetTarget;
         private Vector3 _lastPositionWhenTargetSet;
+        private float? _horizontalArrivalThresholdOverride;
 
         // Cached vectors to avoid allocations
         private Vector3 _tempDirection = Vector3.zero;
@@ -57,16 +58,29 @@ namespace GameCore.EncounterMode
 
         public void SetTargetCell(GridCell targetCell, int elevation)
         {
+            _horizontalArrivalThresholdOverride = null;
+            SetTargetPosition(targetCell, elevation, null);
+        }
+
+        public void SetTargetWorldPosition(GridCell targetCell, int elevation, Vector3 worldPosition)
+        {
+            _horizontalArrivalThresholdOverride = EncounterMovementConstants.PRECISE_HORIZONTAL_THRESHOLD;
+            SetTargetPosition(targetCell, elevation, worldPosition);
+        }
+
+        private void SetTargetPosition(GridCell targetCell, int elevation, Vector3? worldPosition)
+        {
             if (targetCell == null)
             {
                 CancelMovement();
                 return;
             }
 
-            Vector3 newTargetPos = EncounterPathPlanner.CalculateTargetPosition(targetCell, elevation, _gridGenerator.CellSize);
+            Vector3 newTargetPos = worldPosition
+                ?? EncounterPathPlanner.CalculateTargetPosition(targetCell, elevation, _gridGenerator.CellSize);
             Vector3 currentPos = _transform.position;
 
-            if (EncounterPathPlanner.IsWithinArrivalThreshold(currentPos, newTargetPos, elevation, _gridGenerator.CellSize))
+            if (IsWithinArrivalThreshold(currentPos, newTargetPos, elevation))
             {
                 SnapToExactPosition(newTargetPos);
                 _targetCell = targetCell;
@@ -78,9 +92,10 @@ namespace GameCore.EncounterMode
                 _verticalVelocity = 0f;
                 _isJumping = false;
                 _isFalling = false;
+                _horizontalArrivalThresholdOverride = null;
                 return;
             }
-            
+
             _targetCell = targetCell;
             _targetElevation = elevation;
             _hasTarget = true;
@@ -136,6 +151,7 @@ namespace GameCore.EncounterMode
             _isFalling = false;
             _justSetTarget = false;
             _lastPositionWhenTargetSet = Vector3.zero;
+            _horizontalArrivalThresholdOverride = null;
         }
 
         #region Private Helper Methods
@@ -143,8 +159,17 @@ namespace GameCore.EncounterMode
         private bool CheckArrival(bool wasJustSet, bool hasMovedSinceTargetSet)
         {
             return _hasTarget && !wasJustSet && hasMovedSinceTargetSet &&
-                   EncounterPathPlanner.IsWithinArrivalThreshold(
-                       _transform.position, _targetPosition, _targetElevation, _gridGenerator.CellSize);
+                   IsWithinArrivalThreshold(_transform.position, _targetPosition, _targetElevation);
+        }
+
+        private bool IsWithinArrivalThreshold(Vector3 currentPos, Vector3 targetPos, int elevation)
+        {
+            return EncounterPathPlanner.IsWithinArrivalThreshold(
+                currentPos,
+                targetPos,
+                elevation,
+                _gridGenerator.CellSize,
+                _horizontalArrivalThresholdOverride);
         }
 
         private void HandleArrival()
@@ -164,6 +189,7 @@ namespace GameCore.EncounterMode
             _verticalVelocity = 0f;
             _isJumping = false;
             _isFalling = false;
+            _horizontalArrivalThresholdOverride = null;
         }
 
         private void SnapToExactPosition(Vector3 worldPosition)

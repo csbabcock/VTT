@@ -74,9 +74,20 @@ namespace GameCore
         [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
         public bool Grounded = true;
 
+        private bool _isCombatApproachActive;
+
         /// <summary>True while the encounter grid movement handler is moving this avatar.</summary>
         public bool IsEncounterGridMoving =>
-            _encounterMovementHandler != null && _encounterMovementHandler.IsMoving;
+            _encounterMovementHandler != null
+            && _encounterMovementHandler.IsMoving
+            && (CurrentMovementMode == MovementMode.Encounter || _isCombatApproachActive);
+
+        /// <summary>Cancels in-progress encounter grid movement.</summary>
+        public void CancelEncounterGridMovement()
+        {
+            _isCombatApproachActive = false;
+            _encounterMovementHandler?.CancelMovement();
+        }
 
         [Tooltip("Useful for rough ground")]
         public float GroundedOffset = -0.14f;
@@ -368,7 +379,8 @@ namespace GameCore
             }
 
             // In encounter mode, override grounded state when handler says we should be grounded
-            if (CurrentMovementMode == MovementMode.Encounter && _encounterMovementHandler != null)
+            if ((CurrentMovementMode == MovementMode.Encounter || _isCombatApproachActive)
+                && _encounterMovementHandler != null)
             {
                 if (_encounterMovementHandler.ShouldBeGrounded)
                 {
@@ -391,27 +403,11 @@ namespace GameCore
             // Process movement based on mode
             if (CurrentMovementMode == MovementMode.Encounter && _encounterMovementHandler != null)
             {
-                _encounterMovementHandler.ProcessMovement(Grounded);
-
-                if (EncounterPlayerGroundingPolicy.ShouldApplyIdleGravity(
-                        isEncounterMovementMode: true,
-                        isMovingOnGrid: _encounterMovementHandler.IsMoving))
-                {
-                    _movementHandler.ApplyMovementWithVerticalVelocity(_jumpHandler.VerticalVelocity);
-                }
-
-                // Update animations using encounter movement handler
-                // In encounter mode, use only encounter movement handler states (not jump handler)
-                if (_hasAnimator && _animationHandler != null)
-                {
-                    _animationHandler.UpdateAnimations(
-                        _encounterMovementHandler.AnimationBlend,
-                        1f, // Motion speed is always 1.0 for encounter movement
-                        Grounded,
-                        _encounterMovementHandler.IsJumping,
-                        _encounterMovementHandler.IsFalling
-                    );
-                }
+                ProcessEncounterStyleMovement();
+            }
+            else if (_isCombatApproachActive && _encounterMovementHandler != null)
+            {
+                ProcessEncounterStyleMovement();
             }
             else
             {
@@ -676,6 +672,59 @@ namespace GameCore
                 return;
 
             _encounterMovementHandler.SetTargetCell(cell, elevation);
+        }
+
+        /// <summary>
+        /// Runs grid movement with encounter run animations for combat approach,
+        /// even when encounter movement mode is not otherwise active.
+        /// </summary>
+        public bool BeginCombatApproachMove(GameCore.EncounterMode.Grid.GridCell cell, int elevation)
+            => BeginCombatApproachMove(cell, elevation, null);
+
+        public bool BeginCombatApproachMove(
+            GameCore.EncounterMode.Grid.GridCell cell,
+            int elevation,
+            Vector3? worldPosition)
+        {
+            EnsureEncounterMovementHandler();
+            if (_encounterMovementHandler == null || cell == null)
+                return false;
+
+            _isCombatApproachActive = true;
+            if (worldPosition.HasValue)
+                _encounterMovementHandler.SetTargetWorldPosition(cell, elevation, worldPosition.Value);
+            else
+                _encounterMovementHandler.SetTargetCell(cell, elevation);
+
+            if (!_encounterMovementHandler.IsMoving)
+                _isCombatApproachActive = false;
+
+            return true;
+        }
+
+        private void ProcessEncounterStyleMovement()
+        {
+            _encounterMovementHandler.ProcessMovement(Grounded);
+
+            if (EncounterPlayerGroundingPolicy.ShouldApplyIdleGravity(
+                    isEncounterMovementMode: true,
+                    isMovingOnGrid: _encounterMovementHandler.IsMoving))
+            {
+                _movementHandler.ApplyMovementWithVerticalVelocity(_jumpHandler.VerticalVelocity);
+            }
+
+            if (_hasAnimator && _animationHandler != null)
+            {
+                _animationHandler.UpdateAnimations(
+                    _encounterMovementHandler.AnimationBlend,
+                    1f,
+                    Grounded,
+                    _encounterMovementHandler.IsJumping,
+                    _encounterMovementHandler.IsFalling);
+            }
+
+            if (!_encounterMovementHandler.IsMoving)
+                _isCombatApproachActive = false;
         }
 
         private void OnDrawGizmosSelected()

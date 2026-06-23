@@ -9,6 +9,7 @@ namespace GameCore.EncounterMode
         // Arrival thresholds
         public const float HORIZONTAL_THRESHOLD_MULTIPLIER = 0.5f;
         public const float MIN_HORIZONTAL_THRESHOLD = 0.5f;
+        public const float PRECISE_HORIZONTAL_THRESHOLD = 0.05f;
         public const float GROUND_LEVEL_VERTICAL_THRESHOLD = 0.02f;
         public const float ELEVATED_VERTICAL_THRESHOLD = 0.5f;
         

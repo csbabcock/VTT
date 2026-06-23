@@ -75,7 +75,18 @@ namespace GameCore.UI.InGame
         public void BeginUnarmedStrikeTargeting()
         {
             _targetingSession.Begin(UnarmedStrikeAttackDefinition.Instance);
-            _targetHighlighter.ShowAttackableTargets(_getLocalActor());
+        }
+
+        public void UpdateTargetingHover(Vector2 screenPosition)
+        {
+            if (!_targetingSession.IsActive)
+                return;
+
+            _targetHighlighter.UpdateHover(
+                _getLocalActor(),
+                _getCamera(),
+                screenPosition,
+                _targetResolver);
         }
 
         public void CancelTargeting()
@@ -209,20 +220,11 @@ namespace GameCore.UI.InGame
             if (attacker?.Transform == null || target?.Transform == null)
                 return false;
 
-            IGridGenerator grid = _getGridGenerator();
-            if (grid?.Grid != null)
-            {
-                GridCell fromCell = grid.GetCellAtWorldPosition(attacker.Transform.position);
-                GridCell toCell = grid.GetCellAtWorldPosition(target.Transform.position);
-                if (fromCell != null && toCell != null)
-                    return MeleeReachValidator.IsWithinMeleeReachCells(fromCell, toCell);
-            }
-
-            float feetPerWorldUnit = _getFeetPerWorldUnit();
-            return MeleeReachValidator.IsWithinMeleeReachWorld(
-                attacker.Transform.position,
-                target.Transform.position,
-                feetPerWorldUnit);
+            return MeleeRangeQuery.IsWithinMeleeReach(
+                attacker,
+                target,
+                _getGridGenerator(),
+                _getFeetPerWorldUnit());
         }
 
         private static string GetDamageType(string weaponName)

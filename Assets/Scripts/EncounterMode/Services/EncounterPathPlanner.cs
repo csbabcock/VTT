@@ -62,12 +62,17 @@ namespace GameCore.EncounterMode.Services
         /// arrival check. Ground targets require a small non-negative drop; elevated targets
         /// allow a symmetric tolerance.
         /// </summary>
-        public static bool IsWithinArrivalThreshold(Vector3 currentPos, Vector3 targetPos, int elevation, float cellSize)
+        public static bool IsWithinArrivalThreshold(
+            Vector3 currentPos,
+            Vector3 targetPos,
+            int elevation,
+            float cellSize,
+            float? horizontalThresholdOverride = null)
         {
             float horizontalDistance = HorizontalDistance(currentPos, targetPos);
             float verticalDistance = targetPos.y - currentPos.y;
 
-            float horizontalThreshold = Mathf.Max(
+            float horizontalThreshold = horizontalThresholdOverride ?? Mathf.Max(
                 cellSize * EncounterMovementConstants.HORIZONTAL_THRESHOLD_MULTIPLIER,
                 EncounterMovementConstants.MIN_HORIZONTAL_THRESHOLD);
 

@@ -1,4 +1,5 @@
 using GameCore.EncounterMode.Grid;
+using UnityEngine;
 
 namespace GameCore.EncounterMode
 {
@@ -14,6 +15,11 @@ namespace GameCore.EncounterMode
         /// <param name="targetCell">The target grid cell</param>
         /// <param name="elevation">The elevation level at the target (0 = ground)</param>
         void SetTargetCell(GridCell targetCell, int elevation);
+
+        /// <summary>
+        /// Moves toward a precise world position while keeping the grid cell as the movement anchor.
+        /// </summary>
+        void SetTargetWorldPosition(GridCell targetCell, int elevation, Vector3 worldPosition);
 
         /// <summary>
         /// Processes movement toward the target cell.

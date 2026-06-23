@@ -1,9 +1,9 @@
+using System;
 using System.Collections;
 using GameCore.Actors;
 using GameCore.EncounterMode;
 using GameCore.EncounterMode.Grid;
 using GameCore.EncounterMode.Services;
-using GameCore;
 using UnityEngine;
 
 namespace GameCore.Combat.Targeting
@@ -11,14 +11,14 @@ namespace GameCore.Combat.Targeting
     /// <summary>Moves the attacker into melee range before resolving an attack.</summary>
     public sealed class CombatMeleeApproachService
     {
-        private readonly System.Func<IEncounterModeManager> _getEncounterManager;
-        private readonly System.Func<IGridGenerator> _getGridGenerator;
-        private readonly System.Func<float> _getFeetPerWorldUnit;
+        private readonly Func<IEncounterModeManager> _getEncounterManager;
+        private readonly Func<IGridGenerator> _getGridGenerator;
+        private readonly Func<float> _getFeetPerWorldUnit;
 
         public CombatMeleeApproachService(
-            System.Func<IEncounterModeManager> getEncounterManager,
-            System.Func<IGridGenerator> getGridGenerator,
-            System.Func<float> getFeetPerWorldUnit)
+            Func<IEncounterModeManager> getEncounterManager,
+            Func<IGridGenerator> getGridGenerator,
+            Func<float> getFeetPerWorldUnit)
         {
             _getEncounterManager = getEncounterManager;
             _getGridGenerator = getGridGenerator;
@@ -30,11 +30,36 @@ namespace GameCore.Combat.Targeting
             if (attacker?.Transform == null || target?.Transform == null)
                 return false;
 
+            IGridGenerator grid = _getGridGenerator?.Invoke();
+            float feetPerWorldUnit = _getFeetPerWorldUnit();
+
+            if (MeleeRangeQuery.IsWithinMeleeReach(attacker, target, grid, feetPerWorldUnit))
+                return true;
+
             IEncounterModeManager encounter = _getEncounterManager?.Invoke();
             if (encounter != null && encounter.IsEncounterModeActive)
-                return encounter.TryApproachMeleeRange(target.Transform);
+            {
+                if (encounter.TryApproachMeleeRange(target.Transform))
+                    return true;
 
-            return TryApproachFree(attacker, target);
+                if (!encounter.UsesNetworkEncounter)
+                    return TryAnimatedApproach(attacker, target);
+
+                return false;
+            }
+
+            return TryAnimatedApproach(attacker, target);
+        }
+
+        public void FinalizeMeleeRange(IActor attacker, IActor target)
+        {
+            if (attacker?.Transform == null || target?.Transform == null)
+                return;
+
+            WorldMeleeApproach.TrySnapIntoRange(
+                attacker.Transform,
+                target.Transform,
+                _getFeetPerWorldUnit());
         }
 
         public IEnumerator WaitForApproachComplete(IActor attacker)
@@ -42,18 +67,14 @@ namespace GameCore.Combat.Targeting
             if (attacker?.Transform == null)
                 yield break;
 
-            IEncounterModeManager encounter = _getEncounterManager?.Invoke();
-            if (encounter == null || !encounter.IsEncounterModeActive)
-                yield break;
-
-            var controller = attacker.Transform.GetComponent<PlayerController>();
+            var controller = attacker.Transform.GetComponent<GameCore.PlayerController>();
             if (controller == null)
             {
                 yield return null;
                 yield break;
             }
 
-            const float timeoutSeconds = 3f;
+            const float timeoutSeconds = 6f;
             float elapsed = 0f;
             while (controller.IsEncounterGridMoving && elapsed < timeoutSeconds)
             {
@@ -62,11 +83,33 @@ namespace GameCore.Combat.Targeting
             }
         }
 
-        private bool TryApproachFree(IActor attacker, IActor target)
+        public IEnumerator CoWaitUntilInMeleeRange(
+            IActor attacker,
+            IActor target,
+            Func<bool> isInRange,
+            float timeoutSeconds = 6f)
+        {
+            if (attacker == null || target == null || isInRange == null)
+                yield break;
+
+            float elapsed = 0f;
+            while (!isInRange() && elapsed < timeoutSeconds)
+            {
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        private bool TryAnimatedApproach(IActor attacker, IActor target)
         {
             Transform attackerTransform = attacker.Transform;
             Transform targetTransform = target.Transform;
             float meleeRange = _getFeetPerWorldUnit();
+            float standoff = MeleeStandoff.ComputeApproachStandoff(
+                attackerTransform,
+                targetTransform,
+                meleeRange);
+            var playerController = attackerTransform.GetComponent<GameCore.PlayerController>();
 
             IGridGenerator grid = _getGridGenerator?.Invoke();
             if (grid?.Grid != null)
@@ -83,31 +126,36 @@ namespace GameCore.Combat.Targeting
                         out GridCell approachCell)
                     && approachCell != null)
                 {
-                    if (approachCell == fromCell)
-                        return true;
+                    Vector3 approachWorld = MeleeApproachPositions.ResolveGridMeleeApproachPosition(
+                        attackerTransform.position,
+                        targetTransform.position,
+                        approachCell,
+                        standoff);
 
-                    float cellSize = grid.CellSize;
-                    Vector3 destination = EncounterPathPlanner.CalculateTargetPosition(approachCell, 0, cellSize);
-                    SnapTransform(attackerTransform, destination);
+                    if (approachCell == fromCell)
+                        return WorldMeleeApproach.TrySnapToWorldPosition(attackerTransform, approachWorld);
+
+                    if (playerController != null)
+                        return playerController.BeginCombatApproachMove(approachCell, 0, approachWorld);
+
+                    WorldMeleeApproach.TrySnapToWorldPosition(attackerTransform, approachWorld);
                     return true;
                 }
             }
 
-            return WorldMeleeApproach.TrySnapIntoRange(attackerTransform, targetTransform, meleeRange);
-        }
+            Vector3 freeApproachWorld = MeleeApproachPositions.ResolveFreeMeleeApproachPosition(
+                attackerTransform.position,
+                targetTransform.position,
+                standoff);
 
-        private static void SnapTransform(Transform attacker, Vector3 destination)
-        {
-            var controller = attacker.GetComponent<CharacterController>();
-            if (controller != null)
+            if (playerController != null && grid?.Grid != null)
             {
-                controller.enabled = false;
-                attacker.position = destination;
-                controller.enabled = true;
-                return;
+                GridCell destinationCell = grid.GetCellAtWorldPosition(freeApproachWorld);
+                if (destinationCell != null)
+                    return playerController.BeginCombatApproachMove(destinationCell, 0, freeApproachWorld);
             }
 
-            attacker.position = destination;
+            return WorldMeleeApproach.TrySnapIntoRange(attackerTransform, targetTransform, meleeRange);
         }
     }
 }
