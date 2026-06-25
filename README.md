@@ -104,6 +104,8 @@ Current character creation features include:
 
 The goal is for character creation to feel closer to building a character in a game interface while still producing a tabletop character sheet that belongs in an RPG session.
 
+![Character creation with ability scores, class, race, and background selection](docs/media/character-creation.png)
+
 ### Multiplayer sessions
 
 Players can host or join sessions from the main menu.
@@ -138,6 +140,8 @@ Current encounter features include:
 
 Encounter mode is meant to handle the mechanical side of turn-based play while still leaving the DM free to narrate, adjudicate edge cases, and shape the encounter.
 
+![Tactical encounter grid with movement highlighting](docs/media/encounter-grid.png)
+
 ### Combat
 
 The combat system currently supports a foundational tabletop-style combat loop. In-game player attacks are wired for **unarmed strike** today; broader weapon, ranged, and spell combat is still expanding on top of the shared systems below.
@@ -158,12 +162,17 @@ Implemented combat features include:
 
 The goal is to reduce manual tracking without removing DM control.
 
+![Combat targeting and attack resolution demo](docs/media/combat-demo.gif)
+
 ### DM tools
 
 Current DM-focused tools include:
 
 * Fly camera for overhead control
 * Ability to spectate player perspectives
+
+![DM spectating a player's first-person perspective](docs/media/dm-spectate.png)
+
 * Ability to view player character sheets and adjust combat state (HP, conditions, death saves, and related tracking)
 * Encounter mode controls for turn-based play
 
@@ -207,7 +216,11 @@ Current UI work includes:
 ## Project structure
 
 ```text
-Assets/
+VTT/
+├── README.md
+├── docs/
+│   └── media/                 # Screenshots and demos for the README
+├── Assets/
 ├── GameData/
 │   └── Rulesets/
 │       └── DnD5e/             # Classes, races, backgrounds, spells, skills, and rules data
