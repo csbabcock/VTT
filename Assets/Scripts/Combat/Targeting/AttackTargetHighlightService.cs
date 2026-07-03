@@ -1,5 +1,7 @@
+using System;
+using System.Collections.Generic;
 using GameCore.Actors;
-using GameCore.Combat.Feedback;
+using GameCore.Visuals.Highlight;
 using UnityEngine;
 
 namespace GameCore.Combat.Targeting
@@ -7,7 +9,17 @@ namespace GameCore.Combat.Targeting
     /// <summary>Shows a hover-only target outline while the player is choosing an attack target.</summary>
     public sealed class AttackTargetHighlightService
     {
-        private IActor _hoveredActor;
+        private readonly HoverHighlightService _highlightService;
+        private readonly Func<IReadOnlyList<IActor>> _getCandidates;
+
+        public AttackTargetHighlightService(
+            IEntityHighlightPresenter presenter = null,
+            Func<IReadOnlyList<IActor>> getCandidates = null)
+        {
+            _highlightService = new HoverHighlightService(
+                presenter ?? new QuickOutlineHighlightPresenter());
+            _getCandidates = getCandidates ?? (() => ActorRegistry.Actors);
+        }
 
         public void UpdateHover(
             IActor attacker,
@@ -15,58 +27,24 @@ namespace GameCore.Combat.Targeting
             Vector2 screenPosition,
             IActorTargetResolver resolver)
         {
-            IActor hovered = null;
+            Transform hoveredRoot = null;
             if (attacker != null
                 && camera != null
                 && resolver != null
                 && resolver.TryResolveTarget(
                     camera,
                     screenPosition,
-                    ActorRegistry.Actors,
+                    _getCandidates(),
                     attacker,
                     out IActor candidate)
-                && IsAttackableCandidate(attacker, candidate))
+                && candidate?.Transform != null)
             {
-                hovered = candidate;
+                hoveredRoot = candidate.Transform;
             }
 
-            if (ReferenceEquals(_hoveredActor, hovered))
-                return;
-
-            Clear();
-            _hoveredActor = hovered;
-
-            if (_hoveredActor?.Transform != null)
-            {
-                EntityCombatOverlay overlay = EntityCombatOverlay.GetOrCreate(_hoveredActor.Transform);
-                overlay?.SetTargetOutline(true);
-            }
+            _highlightService.UpdateHover(hoveredRoot);
         }
 
-        public void Clear()
-        {
-            if (_hoveredActor?.Transform != null)
-            {
-                EntityCombatOverlay overlay = EntityCombatOverlay.GetOrCreate(_hoveredActor.Transform);
-                overlay?.SetTargetOutline(false);
-            }
-
-            _hoveredActor = null;
-        }
-
-        internal static bool IsAttackableCandidate(IActor attacker, IActor candidate)
-        {
-            if (candidate == null || attacker == null || ReferenceEquals(candidate, attacker))
-                return false;
-
-            if (candidate.Transform == null)
-                return false;
-
-            if (candidate.OwnerId == attacker.OwnerId && candidate.OwnerId != 0)
-                return false;
-
-            var authority = CharacterSheetAuthorityHelper.GetAuthority(candidate);
-            return authority != null && authority.CurrentHitPoints > 0;
-        }
+        public void Clear() => _highlightService.Clear();
     }
 }

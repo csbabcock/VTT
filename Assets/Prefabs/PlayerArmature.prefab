@@ -1047,6 +1047,7 @@ GameObject:
   - component: {fileID: 8765432109876543210}
   - component: {fileID: 5192837465019283746}
   - component: {fileID: 7283649501728394650}
+  - component: {fileID: 5126340031840100970}
   m_Layer: 8
   m_Name: PlayerArmature
   m_TagString: Player
@@ -1532,6 +1533,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: GameCore.Networking::GameCore.Networking.NetworkPlayerViewState
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &5126340031840100970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4416926081852918481}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GameCore::Outline
+  outlineMode: 1
+  outlineColor: {r: 1, g: 0, b: 0.009791493, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1 &4523139366846529165
 GameObject:
   m_ObjectHideFlags: 0

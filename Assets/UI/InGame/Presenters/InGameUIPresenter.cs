@@ -849,7 +849,12 @@ namespace GameCore.UI.InGame
             {
                 var mouse = Mouse.current;
                 if (mouse != null)
-                    _combatController.UpdateTargetingHover(mouse.position.ReadValue());
+                {
+                    if (UIInputGateLocator.ShouldBlockInput())
+                        _combatController.ClearTargetingHover();
+                    else
+                        _combatController.UpdateTargetingHover(mouse.position.ReadValue());
+                }
             }
 #endif
 

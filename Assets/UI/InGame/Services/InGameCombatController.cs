@@ -52,7 +52,7 @@ namespace GameCore.UI.InGame
             _getGridGenerator = getGridGenerator;
             _getFeetPerWorldUnit = getFeetPerWorldUnit;
             _getEncounterModeManager = getEncounterModeManager;
-            _targetResolver = targetResolver ?? new ProximityActorTargetResolver();
+            _targetResolver = targetResolver ?? new RendererScreenActorTargetResolver();
 
             var calculator = RulesetCalculatorFactory.GetDefaultCalculator();
             _executor = new CombatActionExecutor(
@@ -76,6 +76,8 @@ namespace GameCore.UI.InGame
         {
             _targetingSession.Begin(UnarmedStrikeAttackDefinition.Instance);
         }
+
+        public void ClearTargetingHover() => _targetHighlighter.Clear();
 
         public void UpdateTargetingHover(Vector2 screenPosition)
         {

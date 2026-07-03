@@ -16,6 +16,16 @@ using UnityEngine;
 public class Outline : MonoBehaviour {
   private static HashSet<Mesh> registeredMeshes = new HashSet<Mesh>();
 
+  private const string IgnoredRendererObjectName = "CombatVisualOverlay";
+
+  private static bool IsIgnoredRenderer(Renderer renderer) {
+    return renderer != null && renderer.gameObject.name == IgnoredRendererObjectName;
+  }
+
+  private static bool IsIgnoredObject(GameObject gameObject) {
+    return gameObject != null && gameObject.name == IgnoredRendererObjectName;
+  }
+
   public enum Mode {
     OutlineAll,
     OutlineVisible,
@@ -83,7 +93,7 @@ public class Outline : MonoBehaviour {
   void Awake() {
 
     // Cache renderers
-    renderers = GetComponentsInChildren<Renderer>();
+    renderers = GetComponentsInChildren<Renderer>().Where(renderer => !IsIgnoredRenderer(renderer)).ToArray();
 
     // Instantiate outline materials
     outlineMaskMaterial = Instantiate(Resources.Load<Material>(@"Materials/OutlineMask"));
@@ -164,6 +174,10 @@ public class Outline : MonoBehaviour {
 
     foreach (var meshFilter in GetComponentsInChildren<MeshFilter>()) {
 
+      if (IsIgnoredObject(meshFilter.gameObject)) {
+        continue;
+      }
+
       // Skip duplicates
       if (!bakedMeshes.Add(meshFilter.sharedMesh)) {
         continue;
@@ -181,6 +195,10 @@ public class Outline : MonoBehaviour {
 
     // Retrieve or generate smooth normals
     foreach (var meshFilter in GetComponentsInChildren<MeshFilter>()) {
+
+      if (IsIgnoredObject(meshFilter.gameObject)) {
+        continue;
+      }
 
       // Skip if smooth normals have already been adopted
       if (!registeredMeshes.Add(meshFilter.sharedMesh)) {
@@ -204,6 +222,10 @@ public class Outline : MonoBehaviour {
 
     // Clear UV3 on skinned mesh renderers
     foreach (var skinnedMeshRenderer in GetComponentsInChildren<SkinnedMeshRenderer>()) {
+
+      if (IsIgnoredRenderer(skinnedMeshRenderer)) {
+        continue;
+      }
 
       // Skip if UV3 has already been reset
       if (!registeredMeshes.Add(skinnedMeshRenderer.sharedMesh)) {

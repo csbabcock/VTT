@@ -1,3 +1,4 @@
+using GameCore.Visuals;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,18 +7,18 @@ using UnityEngine.Rendering;
 namespace GameCore.Combat.Feedback
 {
     /// <summary>
-    /// Skinned mesh overlay for combat target silhouettes and full-body damage flashes.
+    /// Skinned mesh overlay for full-body damage flashes.
     /// Works independently of the character's base URP Lit materials.
+    /// Target outlines are handled by <see cref="GameCore.Visuals.Highlight.EntityOutlineEffect"/>.
     /// </summary>
     public sealed class EntityCombatOverlay : MonoBehaviour
     {
-        private const string OverlayObjectName = "CombatVisualOverlay";
+        internal const string OverlayObjectName = VisualOverlayConstants.OverlayObjectName;
 
         private static Material _silhouetteTemplate;
 
         private readonly List<OverlayLayer> _layers = new List<OverlayLayer>();
         private bool _isBuilt;
-        private bool _outlineVisible;
         private Coroutine _flashRoutine;
 
         private struct OverlayLayer
@@ -36,13 +37,6 @@ namespace GameCore.Combat.Feedback
                 overlay = root.gameObject.AddComponent<EntityCombatOverlay>();
 
             return overlay;
-        }
-
-        public void SetTargetOutline(bool visible)
-        {
-            EnsureBuilt();
-            _outlineVisible = visible;
-            ApplyOverlayState();
         }
 
         public void PlayDamageFlash(Color color, float duration)
@@ -172,14 +166,6 @@ namespace GameCore.Combat.Feedback
             if (!_isBuilt || _flashRoutine != null)
                 return;
 
-            if (_outlineVisible)
-            {
-                Color silhouetteColor = GetSilhouetteColor();
-                SetAllLayerColors(silhouetteColor, silhouetteColor.a);
-                SetOverlaysEnabled(true);
-                return;
-            }
-
             SetOverlaysEnabled(false);
         }
 
@@ -262,7 +248,6 @@ namespace GameCore.Combat.Feedback
                 _flashRoutine = null;
             }
 
-            _outlineVisible = false;
             SetOverlaysEnabled(false);
         }
 
