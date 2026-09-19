@@ -7,7 +7,7 @@
         "Unity.Netcode.Components",
         "Unity.Networking.Transport",
         "Unity.Collections",
-        "Cinemachine"
+        "Unity.Cinemachine"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
