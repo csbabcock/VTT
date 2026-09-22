@@ -135,7 +135,7 @@ namespace GameCore.UI.MainMenu
             ScheduleDeferredBindIfNeeded();
         }
 
-        private void OnPanelUiReload(PanelRenderer _, VisualElement root)
+        private void OnPanelUiReload(PanelRenderer _, VisualElement root, int version)
         {
             ResetBoundVisualTreeReferences();
             _root = root;

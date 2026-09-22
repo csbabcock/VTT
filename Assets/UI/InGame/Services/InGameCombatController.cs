@@ -181,12 +181,15 @@ namespace GameCore.UI.InGame
 
             EncounterContext context = _getEncounterContext();
 
-            return _executor.TryExecute(
+            CombatActionResult result = _executor.TryExecute(
                 attack,
                 attacker,
                 target,
                 context,
                 context.IsEncounterActive ? _actionEconomy : null);
+
+            AttackAnimationFeedback.PlayIfCompleted(attackerActor.Transform, result);
+            return result;
         }
 
         public void CompleteAttackAgainstTarget(IActor targetActor)

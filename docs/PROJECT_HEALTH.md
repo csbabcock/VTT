@@ -119,3 +119,23 @@ Do not say tests pass unless they were actually run in the current session.
 3. Keep character creation MVP boundaries tight while adding validation and background selection.
 4. Delay assembly splitting until after the next feature stabilizes.
 5. When a new reusable module appears twice, extract it behind a small API and add tests.
+
+## Attack animation integration — 2026-09-21
+
+- Targeted attacks now request presentation after a completed combat result, including misses. Rejected actions do not animate.
+- The gameplay ThirdPerson controller has an Attack trigger and state using Standing Melee Attack Downward. It returns to Idle Walk Run Blend after one cycle; the locomotion default and existing test controller are preserved.
+- InGameCombatController routes the result through AttackAnimationFeedback and IAttackAnimationPlayer. The existing OwnerNetworkAnimator supplies synchronized trigger playback for the owner and direct Animator playback when unspawned.
+- Damage still resolves immediately. Impact-frame damage, facing adjustments, movement locks, and animation queues are outside this first integration.
+- Boundary rationale: the small presentation interface keeps Netcode out of GameCore and attack rules out of the animation adapter; no new ECS framework or assembly is introduced.
+- Manual check: start MainMenu, host a session, choose Attack, and click an in-range target. Check both hits and misses, return to locomotion, a second attack, rejected actions, and visibility from another client.
+- Automated validation: see the focused test result recorded below. Live host/client playback remains unverified.
+- Validation: Unity 6000.7.0a6 compiled the temporary project and passed all 16 focused EditMode tests (AttackAnimationFeedbackTests and CombatActionExecutorTests). Result: Temp/AttackAnimationValidation/results.xml. git diff --check passed. Visual playback and live network replication still require the manual check above.
+
+## Unity warning cleanup — 2026-09-21
+
+- MainMenuView, CharacterCreationView, and InGameUIView use the versioned PanelRenderer reload callback signature. Reload behavior is unchanged; version-based deduplication is not introduced.
+- Four render-pipeline assets have internal names matching their filenames, with GUIDs and references preserved.
+- Unity 6000.7.0a6 reserialized LiberationSans.ttf importer metadata from version 2 to 4, preserving its GUID.
+- Validation: a separate Library/CodexWarningValidation project compiled without the reported obsolete-callback warnings and verified all four imported asset names. No new tests were added for this API/metadata cleanup; interactive UI behavior was not exercised.
+- The Pipeline package's non-automated-mode warning is informational during normal interactive Editor use; package source and launch flags are unchanged.
+- User confirmed the integrated attack animation works in the Editor after warning cleanup. A separate host/client replication check has not been reported.

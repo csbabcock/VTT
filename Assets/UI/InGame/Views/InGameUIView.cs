@@ -398,7 +398,7 @@ namespace GameCore.UI.InGame
             Hide();
         }
 
-        private void OnPanelUiReload(PanelRenderer _, VisualElement root)
+        private void OnPanelUiReload(PanelRenderer _, VisualElement root, int version)
         {
             // PanelRenderer replaces the visual tree; cached elements become invalid but
             // TryBindVisualTree() no-ops while _visualTreeBound is true — tear down first.

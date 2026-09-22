@@ -205,3 +205,7 @@ After each meaningful session:
 - Add newly discovered risks to `docs/PROJECT_HEALTH.md`.
 - Add lasting product or architecture decisions to `DECISIONS.md`.
 - Do not rewrite the roadmap just because priorities shifted; add a dated note if the shift matters.
+
+### 2026-09-21 — First attack animation
+
+The existing targeted unarmed-strike flow now drives the imported attack clip through the gameplay Animator and existing owner-authoritative NetworkAnimator. Both hits and misses animate; rejected actions do not. Next: verify host/client playback in the gameplay scene before adjusting foot placement or impact timing.

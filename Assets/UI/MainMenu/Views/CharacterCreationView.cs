@@ -268,7 +268,7 @@ namespace GameCore.UI.MainMenu
             _root = null;
         }
 
-        private void OnPanelUiReload(PanelRenderer _, VisualElement root)
+        private void OnPanelUiReload(PanelRenderer _, VisualElement root, int version)
         {
             _visualTreeBound = false;
             _detailClassLevelControlsHooked = false;

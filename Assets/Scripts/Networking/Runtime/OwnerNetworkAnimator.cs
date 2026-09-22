@@ -1,3 +1,4 @@
+using GameCore.Combat.Feedback;
 using Unity.Netcode.Components;
 using UnityEngine;
 
@@ -14,8 +15,26 @@ namespace GameCore.Networking
     /// player's Animator to its Animator field.
     /// </summary>
     [DisallowMultipleComponent]
-    public class OwnerNetworkAnimator : NetworkAnimator
+    public class OwnerNetworkAnimator : NetworkAnimator, IAttackAnimationPlayer
     {
         protected override bool OnIsServerAuthoritative() => false;
+
+        public void PlayAttack()
+        {
+            if (Animator == null || !Animator.isActiveAndEnabled)
+                return;
+
+            if (IsSpawned)
+            {
+                // Triggers must go through Netcode to reach the other clients.
+                if (IsOwner)
+                    SetTrigger(AttackAnimationFeedback.TriggerName);
+            }
+            else
+            {
+                // Direct-scene/offline play has no spawned NetworkObject.
+                Animator.SetTrigger(AttackAnimationFeedback.TriggerName);
+            }
+        }
     }
 }
