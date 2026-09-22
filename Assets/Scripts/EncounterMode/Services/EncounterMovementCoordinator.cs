@@ -141,15 +141,8 @@ namespace GameCore.EncounterMode.Services
             if (attackerTransform == null)
                 return false;
 
-            float standoff = MeleeStandoff.ComputeApproachStandoff(
-                attackerTransform,
-                targetTransform,
-                _gridGenerator.CellSize);
-            Vector3 approachWorld = MeleeApproachPositions.ResolveGridMeleeApproachPosition(
-                attackerTransform.position,
-                targetTransform.position,
-                approachCell,
-                standoff);
+            // Locomotion ends at the cell center; attack presentation supplies contact.
+            Vector3 approachWorld = approachCell.WorldPosition;
 
             if (approachCell == startCell)
             {

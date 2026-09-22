@@ -28,7 +28,6 @@ namespace GameCore.EncounterMode
         private bool _isFalling;
         private float _verticalVelocity;
         private bool _justSetTarget;
-        private Vector3 _lastPositionWhenTargetSet;
         private float? _horizontalArrivalThresholdOverride;
 
         // Cached vectors to avoid allocations
@@ -100,7 +99,6 @@ namespace GameCore.EncounterMode
             _targetElevation = elevation;
             _hasTarget = true;
             _justSetTarget = true;
-            _lastPositionWhenTargetSet = currentPos;
             _targetPosition = newTargetPos;
         }
 
@@ -122,10 +120,7 @@ namespace GameCore.EncounterMode
                 _justSetTarget = false;
             }
 
-            bool hasMovedSinceTargetSet =
-                EncounterPathPlanner.HasMovedTowardTarget(currentPos, _lastPositionWhenTargetSet, _targetPosition);
-
-            if (CheckArrival(wasJustSet, hasMovedSinceTargetSet))
+            if (CheckArrival(wasJustSet))
             {
                 HandleArrival();
                 return;
@@ -150,15 +145,14 @@ namespace GameCore.EncounterMode
             _isJumping = false;
             _isFalling = false;
             _justSetTarget = false;
-            _lastPositionWhenTargetSet = Vector3.zero;
             _horizontalArrivalThresholdOverride = null;
         }
 
         #region Private Helper Methods
 
-        private bool CheckArrival(bool wasJustSet, bool hasMovedSinceTargetSet)
+        private bool CheckArrival(bool wasJustSet)
         {
-            return _hasTarget && !wasJustSet && hasMovedSinceTargetSet &&
+            return _hasTarget && !wasJustSet &&
                    IsWithinArrivalThreshold(_transform.position, _targetPosition, _targetElevation);
         }
 
@@ -232,7 +226,9 @@ namespace GameCore.EncounterMode
                     // means horizontal = (dir.x, 0, dir.z) * s * deltaTime
                     _speed = _sprintSpeed;
                     _animationBlend = _sprintSpeed;
-                    return new Vector3(diagonalDirection.x, 0f, diagonalDirection.z) * (_speed * Time.deltaTime);
+                    return Vector3.ClampMagnitude(
+                        new Vector3(diagonalDirection.x, 0f, diagonalDirection.z) * (_speed * Time.deltaTime),
+                        horizontalDistance);
                 }
                 else
                 {

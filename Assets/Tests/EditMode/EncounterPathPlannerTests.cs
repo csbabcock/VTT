@@ -9,6 +9,22 @@ namespace GameCore.Tests.EditMode
     {
         private const float CellSize = 2f;
 
+        [TestCase(0.4f, 2f)]
+        [TestCase(0.4f, 10f)]
+        public void Arrival_DoesNotScaleUpToHalfACell(float distance, float cellSize)
+        {
+            Assert.IsFalse(EncounterPathPlanner.IsWithinArrivalThreshold(
+                Vector3.zero, Vector3.right * distance, 0, cellSize));
+        }
+
+        [TestCase(-0.01f)]
+        [TestCase(0.01f)]
+        public void Arrival_AcceptsSmallGroundingOffsets(float heightOffset)
+        {
+            Assert.IsTrue(EncounterPathPlanner.IsWithinArrivalThreshold(
+                new Vector3(0f, heightOffset, 0f), Vector3.zero, 0, CellSize));
+        }
+
         [Test]
         public void CalculateTargetPosition_GroundLevel_UsesCellWorldHeight()
         {
@@ -86,7 +102,7 @@ namespace GameCore.Tests.EditMode
         public void IsWithinArrivalThreshold_GroundLevel_WithinTolerance_IsTrue()
         {
             bool arrived = EncounterPathPlanner.IsWithinArrivalThreshold(
-                Vector3.zero, new Vector3(0.5f, 0, 0), 0, CellSize);
+                Vector3.zero, new Vector3(0.02f, 0, 0), 0, CellSize);
 
             Assert.IsTrue(arrived);
         }
@@ -113,7 +129,7 @@ namespace GameCore.Tests.EditMode
         public void IsWithinArrivalThreshold_Elevated_WithinSymmetricTolerance_IsTrue()
         {
             bool arrived = EncounterPathPlanner.IsWithinArrivalThreshold(
-                Vector3.zero, new Vector3(0.5f, 0.3f, 0), 1, CellSize);
+                Vector3.zero, new Vector3(0.02f, 0.3f, 0), 1, CellSize);
 
             Assert.IsTrue(arrived);
         }

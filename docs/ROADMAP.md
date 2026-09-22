@@ -209,3 +209,11 @@ After each meaningful session:
 ### 2026-09-21 — First attack animation
 
 The existing targeted unarmed-strike flow now drives the imported attack clip through the gameplay Animator and existing owner-authoritative NetworkAnimator. Both hits and misses animate; rejected actions do not. Next: verify host/client playback in the gameplay scene before adjusting foot placement or impact timing.
+
+### 2026-09-21 — Smooth melee approach
+
+Removed attack-approach teleports, tightened grid arrival, and made attack finalization await locomotion. All 44 focused EditMode tests passed. Next: verify movement-to-attack transitions visually on host and client, including blocked movement and short final adjustments.
+
+### 2026-09-21 — Target-facing attack lunge
+
+Added a replicated visual skeleton lunge and facing adjustment while preserving the character's cell center. Local attack approaches now stop at cell centers as network approaches do. All 55 focused tests passed, including prefab animation sampling. Next: visually check swing contact and host/client playback before changing damage timing.

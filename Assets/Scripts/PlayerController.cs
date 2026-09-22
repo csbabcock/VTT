@@ -75,6 +75,7 @@ namespace GameCore
         public bool Grounded = true;
 
         private bool _isCombatApproachActive;
+        private GameCore.Combat.Feedback.AttackMotionPresentation _attackMotion;
 
         /// <summary>True while the encounter grid movement handler is moving this avatar.</summary>
         public bool IsEncounterGridMoving =>
@@ -184,6 +185,7 @@ namespace GameCore
         {
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
+            _attackMotion = GetComponent<GameCore.Combat.Feedback.AttackMotionPresentation>();
             _input = GetComponent<PlayerInputs>();
 
             if (_input == null)
@@ -362,6 +364,12 @@ namespace GameCore
         private void Update()
         {
             if (_input == null) return;
+
+            if (_attackMotion != null && _attackMotion.IsPlaying)
+            {
+                _animationHandler?.UpdateAnimations(0f, 1f, Grounded, false, false);
+                return;
+            }
 
             SyncMovementModeWithEncounterState();
 

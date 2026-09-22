@@ -51,15 +51,20 @@ namespace GameCore.Combat.Targeting
             return TryAnimatedApproach(attacker, target);
         }
 
-        public void FinalizeMeleeRange(IActor attacker, IActor target)
+        public IEnumerator FinalizeMeleeRange(IActor attacker, IActor target)
         {
             if (attacker?.Transform == null || target?.Transform == null)
-                return;
+                yield break;
 
-            WorldMeleeApproach.TrySnapIntoRange(
-                attacker.Transform,
-                target.Transform,
-                _getFeetPerWorldUnit());
+            // A network-approved move may start after the initial movement wait.
+            // Being in attack range does not mean that locomotion has finished.
+            yield return WaitForApproachComplete(attacker);
+
+            // Correct a remaining gap through locomotion, never by teleporting.
+            if (!MeleeRangeQuery.IsWithinMeleeReach(
+                    attacker, target, _getGridGenerator?.Invoke(), _getFeetPerWorldUnit())
+                && TryApproach(attacker, target))
+                yield return WaitForApproachComplete(attacker);
         }
 
         public IEnumerator WaitForApproachComplete(IActor attacker)
@@ -81,6 +86,9 @@ namespace GameCore.Combat.Targeting
                 elapsed += Time.deltaTime;
                 yield return null;
             }
+
+            if (controller.IsEncounterGridMoving)
+                controller.CancelEncounterGridMovement();
         }
 
         public IEnumerator CoWaitUntilInMeleeRange(
@@ -126,20 +134,10 @@ namespace GameCore.Combat.Targeting
                         out GridCell approachCell)
                     && approachCell != null)
                 {
-                    Vector3 approachWorld = MeleeApproachPositions.ResolveGridMeleeApproachPosition(
-                        attackerTransform.position,
-                        targetTransform.position,
-                        approachCell,
-                        standoff);
-
-                    if (approachCell == fromCell)
-                        return WorldMeleeApproach.TrySnapToWorldPosition(attackerTransform, approachWorld);
-
                     if (playerController != null)
-                        return playerController.BeginCombatApproachMove(approachCell, 0, approachWorld);
+                        return playerController.BeginCombatApproachMove(approachCell, 0);
 
-                    WorldMeleeApproach.TrySnapToWorldPosition(attackerTransform, approachWorld);
-                    return true;
+                    return false;
                 }
             }
 
@@ -152,10 +150,10 @@ namespace GameCore.Combat.Targeting
             {
                 GridCell destinationCell = grid.GetCellAtWorldPosition(freeApproachWorld);
                 if (destinationCell != null)
-                    return playerController.BeginCombatApproachMove(destinationCell, 0, freeApproachWorld);
+                    return playerController.BeginCombatApproachMove(destinationCell, 0);
             }
 
-            return WorldMeleeApproach.TrySnapIntoRange(attackerTransform, targetTransform, meleeRange);
+            return false;
         }
     }
 }

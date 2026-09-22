@@ -8,14 +8,14 @@ namespace GameCore.Combat.Feedback
     {
         public const string TriggerName = "Attack";
 
-        public static void PlayIfCompleted(Transform attacker, CombatActionResult result)
+        public static void PlayIfCompleted(Transform attacker, CombatActionResult result, Transform target = null)
         {
             // A completed miss still swings. Rejected actions do not.
             if (!result.Succeeded || attacker == null)
                 return;
 
             var player = attacker.GetComponent<IAttackAnimationPlayer>();
-            player?.PlayAttack();
+            player?.PlayAttack(target);
         }
     }
 }

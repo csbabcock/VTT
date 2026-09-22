@@ -188,7 +188,7 @@ namespace GameCore.UI.InGame
                 context,
                 context.IsEncounterActive ? _actionEconomy : null);
 
-            AttackAnimationFeedback.PlayIfCompleted(attackerActor.Transform, result);
+            AttackAnimationFeedback.PlayIfCompleted(attackerActor.Transform, result, targetActor.Transform);
             return result;
         }
 

@@ -1,8 +1,10 @@
+using UnityEngine;
+
 namespace GameCore.Combat.Feedback
 {
     /// <summary>Plays an attack visual without owning attack rules or damage.</summary>
     public interface IAttackAnimationPlayer
     {
-        void PlayAttack();
+        void PlayAttack(Transform target);
     }
 }

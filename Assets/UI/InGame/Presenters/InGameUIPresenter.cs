@@ -1409,7 +1409,7 @@ namespace GameCore.UI.InGame
                     targetActor,
                     () => _combatController.IsWithinMeleeReach(localActor, targetActor));
 
-                _combatApproachService.FinalizeMeleeRange(localActor, targetActor);
+                yield return _combatApproachService.FinalizeMeleeRange(localActor, targetActor);
                 yield return null;
 
                 if (!_combatController.IsWithinMeleeReach(localActor, targetActor))

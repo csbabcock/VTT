@@ -1,40 +1,49 @@
 using GameCore.Combat.Feedback;
+using GameCore.Combat.Targeting;
+using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
 
 namespace GameCore.Networking
 {
-    /// <summary>
-    /// Owner-authoritative <see cref="NetworkAnimator"/>. The default NetworkAnimator is
-    /// server-authoritative, so animation parameters driven locally by the owning client's
-    /// PlayerController would never replicate. This matches our owner-authoritative
-    /// NetworkTransform: the controlling client drives the Animator and changes are
-    /// replicated to the server and all other clients.
-    ///
-    /// Add this to the player prefab (instead of the stock NetworkAnimator) and assign the
-    /// player's Animator to its Animator field.
-    /// </summary>
+    /// <summary>Owner-driven attack animation and replicated visual melee motion.</summary>
     [DisallowMultipleComponent]
+    [RequireComponent(typeof(AttackMotionPresentation))]
     public class OwnerNetworkAnimator : NetworkAnimator, IAttackAnimationPlayer
     {
         protected override bool OnIsServerAuthoritative() => false;
 
-        public void PlayAttack()
+        public void PlayAttack(Transform target)
         {
-            if (Animator == null || !Animator.isActiveAndEnabled)
+            if (Animator == null || !Animator.isActiveAndEnabled || (IsSpawned && !IsOwner))
                 return;
 
+            if (target != null)
+            {
+                // Visual body contact; the gameplay colliders stay in their grid cells.
+                float contactDistance = MeleeStandoff.GetBodyRadius(transform)
+                    + MeleeStandoff.GetBodyRadius(target) + 0.02f;
+                GetComponent<AttackMotionPresentation>().Begin(target.position, contactDistance);
+                if (IsSpawned)
+                    PresentAttackMotionRpc(target.position, contactDistance);
+            }
+
             if (IsSpawned)
-            {
-                // Triggers must go through Netcode to reach the other clients.
-                if (IsOwner)
-                    SetTrigger(AttackAnimationFeedback.TriggerName);
-            }
+                SetTrigger(AttackAnimationFeedback.TriggerName);
             else
-            {
-                // Direct-scene/offline play has no spawned NetworkObject.
                 Animator.SetTrigger(AttackAnimationFeedback.TriggerName);
-            }
+        }
+
+        [Rpc(SendTo.NotOwner, InvokePermission = RpcInvokePermission.Owner)]
+        private void PresentAttackMotionRpc(Vector3 targetPosition, float contactDistance)
+        {
+            GetComponent<AttackMotionPresentation>().Begin(targetPosition, contactDistance);
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            GetComponent<AttackMotionPresentation>().Restore();
+            base.OnNetworkDespawn();
         }
     }
 }

@@ -139,3 +139,20 @@ Do not say tests pass unless they were actually run in the current session.
 - Validation: a separate Library/CodexWarningValidation project compiled without the reported obsolete-callback warnings and verified all four imported asset names. No new tests were added for this API/metadata cleanup; interactive UI behavior was not exercised.
 - The Pipeline package's non-automated-mode warning is informational during normal interactive Editor use; package source and launch flags are unchanged.
 - User confirmed the integrated attack animation works in the Editor after warning cleanup. A separate host/client replication check has not been reported.
+
+## Melee approach movement — 2026-09-21
+
+- Attack approach no longer uses WorldMeleeApproach teleport fallbacks or unconditional final repositioning. Same-cell adjustments use the existing animated locomotion; actors without usable locomotion fail the approach instead of teleporting.
+- Finalization waits for movement to finish, including approved network movement that starts after the first wait. Movement timeouts cancel locomotion instead of forcing the character into range; combat still validates reach before resolving.
+- Grid arrival now uses a 0.05-world-unit horizontal tolerance rather than half a cell. Horizontal steps cannot overshoot the destination, short final adjustments can complete, and small grounding offsets are tolerated in either direction.
+- Validation: Unity 6000.7.0a6 passed 44 focused EditMode tests in the isolated Library/CodexWarningValidation project. Results: Library/CodexWarningValidation/movement-final-results.xml. git diff --check passed.
+- Live visual and host/client verification remains outstanding: test long approaches, the final partial cell, short moves, and blocked movement; confirm attack playback begins after locomotion stops. Arrival still permits a tiny positional correction within its tolerance. Impact-frame damage timing is unchanged.
+
+## Target-facing attack lunge — 2026-09-21
+
+- Completed attacks pass the target to the presentation adapter. AttackMotionPresentation turns the Skeleton toward that target, moves it to body-contact spacing during the swing, then eases it back to its original pose. Timing follows the Attack state's normalized playback time; interruption, disable and despawn restore the pose.
+- The actor root and gameplay collider remain stationary. This supplies visual contact, not physics-based hit detection; combat damage timing is unchanged. Player locomotion is held during the presentation.
+- Grid attack approaches now end at cell centers in local and network play, replacing the former local contact-position destination. The lunge handles the temporary distance from that center to the target.
+- OwnerNetworkAnimator retains synchronized attack triggers and sends the visual target position/contact spacing through an owner-restricted RPC. GameCore presentation contains no Netcode dependency; pure AttackMotion geometry/timing is covered by EditMode tests.
+- Validation: Unity 6000.7.0a6 passed 55 focused EditMode tests, including actual prefab/Animator sampling to verify visible displacement, return, and unchanged actor position. Results: Library/CodexWarningValidation/lunge-final-results.xml. git diff --check passed.
+- Still requires live host/client visual checks for side/rear/diagonal targets, contact timing, repeat attacks, and interruption. The current lunge reaches contact at 30% of the clip, holds through 55%, and returns by the end; facing returns to the resting orientation afterward.

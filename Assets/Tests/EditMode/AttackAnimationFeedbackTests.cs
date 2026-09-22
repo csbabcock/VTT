@@ -22,9 +22,10 @@ namespace GameCore.Tests.EditMode
                     : AttackOutcome.Miss(1, 6, 10);
 
                 AttackAnimationFeedback.PlayIfCompleted(
-                    root.transform, CombatActionResult.Completed(outcome, "Attacker", "Target", "Unarmed"));
+                    root.transform, CombatActionResult.Completed(outcome, "Attacker", "Target", "Unarmed"), root.transform);
 
                 Assert.AreEqual(1, player.PlayCount);
+                Assert.AreSame(root.transform, player.LastTarget);
             }
             finally { Object.DestroyImmediate(root); }
         }
@@ -94,6 +95,11 @@ namespace GameCore.Tests.EditMode
     public sealed class RecordingAttackAnimationPlayer : MonoBehaviour, IAttackAnimationPlayer
     {
         public int PlayCount { get; private set; }
-        public void PlayAttack() => PlayCount++;
+        public Transform LastTarget { get; private set; }
+        public void PlayAttack(Transform target)
+        {
+            LastTarget = target;
+            PlayCount++;
+        }
     }
 }

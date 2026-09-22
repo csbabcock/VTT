@@ -59,7 +59,7 @@ namespace GameCore.EncounterMode.Services
 
         /// <summary>
         /// Geometric arrival test shared by the "already there" early-out and the in-flight
-        /// arrival check. Ground targets require a small non-negative drop; elevated targets
+        /// arrival check. Ground targets allow small grounding offsets; elevated targets
         /// allow a symmetric tolerance.
         /// </summary>
         public static bool IsWithinArrivalThreshold(
@@ -72,15 +72,14 @@ namespace GameCore.EncounterMode.Services
             float horizontalDistance = HorizontalDistance(currentPos, targetPos);
             float verticalDistance = targetPos.y - currentPos.y;
 
-            float horizontalThreshold = horizontalThresholdOverride ?? Mathf.Max(
-                cellSize * EncounterMovementConstants.HORIZONTAL_THRESHOLD_MULTIPLIER,
-                EncounterMovementConstants.MIN_HORIZONTAL_THRESHOLD);
+            float horizontalThreshold = horizontalThresholdOverride
+                ?? EncounterMovementConstants.PRECISE_HORIZONTAL_THRESHOLD;
 
             if (elevation == 0)
             {
                 float verticalThreshold = EncounterMovementConstants.GROUND_LEVEL_VERTICAL_THRESHOLD;
                 return horizontalDistance < horizontalThreshold &&
-                       verticalDistance >= 0 && verticalDistance <= verticalThreshold;
+                       Mathf.Abs(verticalDistance) <= verticalThreshold;
             }
 
             float elevatedThreshold = EncounterMovementConstants.ELEVATED_VERTICAL_THRESHOLD;
