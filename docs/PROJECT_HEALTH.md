@@ -156,3 +156,29 @@ Do not say tests pass unless they were actually run in the current session.
 - OwnerNetworkAnimator retains synchronized attack triggers and sends the visual target position/contact spacing through an owner-restricted RPC. GameCore presentation contains no Netcode dependency; pure AttackMotion geometry/timing is covered by EditMode tests.
 - Validation: Unity 6000.7.0a6 passed 55 focused EditMode tests, including actual prefab/Animator sampling to verify visible displacement, return, and unchanged actor position. Results: Library/CodexWarningValidation/lunge-final-results.xml. git diff --check passed.
 - Still requires live host/client visual checks for side/rear/diagonal targets, contact timing, repeat attacks, and interruption. The current lunge reaches contact at 30% of the clip, holds through 55%, and returns by the end; facing returns to the resting orientation afterward.
+
+## Attack presentation sequencing — 2026-09-25
+
+- Visual melee movement now approaches contact before triggering the attack, holds at contact until the Animator leaves the attack state (including its outgoing blend), then returns to the original pose.
+- The owner delays the replicated attack trigger until arrival; remote clients receive the approach RPC as before.
+- Updated EditMode regression coverage for delayed triggering, holding through clip completion, returning after state exit, and cancellation.
+- Validation: git diff --check passed. Focused Unity EditMode batch run exited during startup with code 1 and produced no test results; compilation, in-game playback, and multiplayer timing remain unverified.
+
+### Run presentation follow-up — 2026-09-25
+
+- Approach plays the existing forward run clip; return plays that same looping clip backward while facing the target, then restores locomotion at the starting position.
+- Attack state playback speed is now 2x. Completion still follows the actual Animator state, so the faster swing finishes before return begins.
+- Regression checks now cover forward/reverse playback, shared run clip wiring, restoration to locomotion, and attack speed. Runtime verification remains pending the Unity startup/test-run limitation noted above.
+
+### Normal attack travel speed — 2026-09-25
+
+- Replaced fixed 0.2-second approach and 0.15-second return durations with distance divided by the character's configured run speed (PlayerController.SprintSpeed), using constant travel speed in both directions.
+- Forward/reverse run clips remain at normal playback speed; only the attack state remains at 2x.
+- Updated regression cases to check configured run speeds of 3 and 6 units/second and equal outbound/return timing. Static diff checks passed; Unity playback tests remain unverified due to the previously observed startup failure.
+
+### Smooth attack sequence and retained facing — 2026-09-25
+
+- Removed forced idle switches between approach, attack, and return. Entry/return-to-idle now crossfade over 0.12 seconds; the attack state blends directly into reverse run after its full clip completes.
+- CombatMotion selects the return transition for targeted attacks and retains the idle exit for attacks without a movement sequence. Travel still uses normal run speed, with only attack playback at 2x.
+- On normal return completion, transfer target-facing rotation from the visual to the actor before restoring the skeleton pose, avoiding the old orientation snap. Cancellation still restores the visual pose.
+- Updated regressions for blend transitions, the full-clip exit gate, and a target to the right so facing preservation is exercised. Controller structure/transition checks and git diff --check pass. Unity execution remains unverified because the focused runner previously failed during startup.

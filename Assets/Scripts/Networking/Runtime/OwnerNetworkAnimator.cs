@@ -23,11 +23,19 @@ namespace GameCore.Networking
                 // Visual body contact; the gameplay colliders stay in their grid cells.
                 float contactDistance = MeleeStandoff.GetBodyRadius(transform)
                     + MeleeStandoff.GetBodyRadius(target) + 0.02f;
-                GetComponent<AttackMotionPresentation>().Begin(target.position, contactDistance);
-                if (IsSpawned)
-                    PresentAttackMotionRpc(target.position, contactDistance);
+                if (GetComponent<AttackMotionPresentation>().Begin(target.position, contactDistance, TriggerAttack))
+                {
+                    if (IsSpawned)
+                        PresentAttackMotionRpc(target.position, contactDistance);
+                    return;
+                }
             }
 
+            TriggerAttack();
+        }
+
+        private void TriggerAttack()
+        {
             if (IsSpawned)
                 SetTrigger(AttackAnimationFeedback.TriggerName);
             else

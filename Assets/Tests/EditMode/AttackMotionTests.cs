@@ -32,23 +32,6 @@ namespace GameCore.Tests.EditMode
             Assert.AreEqual(Vector3.zero, AttackMotion.CalculateOffset(Vector3.zero, Vector3.up, 0.5f));
         }
 
-        [TestCase(0f, 0f)]
-        [TestCase(0.3f, 1f)]
-        [TestCase(0.5f, 1f)]
-        [TestCase(1f, 0f)]
-        [TestCase(2f, 0f)]
-        public void LungeWeight_ReachesContactAndReturns(float time, float expected)
-        {
-            Assert.AreEqual(expected, AttackMotion.LungeWeight(time), 0.0001f);
-        }
-
-        [Test]
-        public void LungeWeight_ApproachAndReturnAreGradual()
-        {
-            Assert.That(AttackMotion.LungeWeight(0.15f), Is.InRange(0.4f, 0.6f));
-            Assert.That(AttackMotion.LungeWeight(0.775f), Is.InRange(0.4f, 0.6f));
-        }
-
         [Test]
         public void Facing_LooksAtTargetWithoutPitch()
         {
@@ -57,8 +40,16 @@ namespace GameCore.Tests.EditMode
             Assert.AreEqual(Quaternion.identity, AttackMotion.FacingRotation(Vector3.zero, Vector3.up, Quaternion.identity));
         }
 
-        [Test]
-        public void GameplayPrefab_LungesVisualOnly_AndRestoresOnCompletion()
+        private static void Tick(AttackMotionPresentation motion, float deltaTime)
+        {
+            typeof(AttackMotionPresentation).GetMethod("Tick",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .Invoke(motion, new object[] { deltaTime });
+        }
+
+        [TestCase(3f)]
+        [TestCase(6f)]
+        public void GameplayPrefab_RunsAtConfiguredSpeed_AndReturnsOnlyAfterAttackExits(float runSpeed)
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/PlayerArmature.prefab");
             var actor = Object.Instantiate(prefab);
@@ -72,23 +63,65 @@ namespace GameCore.Tests.EditMode
                 Quaternion restRotation = visual.localRotation;
                 Assert.NotNull(motion);
 
+                actor.GetComponent<GameCore.PlayerController>().SprintSpeed = runSpeed;
+                float travelDuration = 1.5f / runSpeed;
                 animator.Rebind();
-                motion.Begin(origin + Vector3.forward * 2f, 0.5f);
+                int triggerCount = 0;
+                Assert.IsTrue(motion.Begin(origin + Vector3.right * 2f, 0.5f, () =>
+                {
+                    Assert.AreEqual(1.5f, (visual.localPosition - rest).magnitude, 0.01f);
+                    triggerCount++;
+                }));
+                animator.Update(0.01f);
+                Assert.IsTrue(animator.IsInTransition(0));
+                Assert.IsTrue(animator.GetNextAnimatorStateInfo(0).IsName("Combat Approach"));
+                animator.Update(0.15f);
+                Assert.IsTrue(animator.GetCurrentAnimatorStateInfo(0).IsName("Combat Approach"));
+                Assert.Greater(animator.GetCurrentAnimatorStateInfo(0).normalizedTime, 0f);
+                Tick(motion, 0.1f);
+                Assert.AreEqual(0, triggerCount);
+                Assert.AreEqual(runSpeed * 0.1f, (visual.localPosition - rest).magnitude, 0.001f);
+                Tick(motion, travelDuration - 0.1f + 0.0001f);
+                Assert.AreEqual(1, triggerCount);
                 animator.Play("Attack", 0, 0.4f);
                 animator.Update(0f);
-                InvokeLifecycle(motion, "LateUpdate");
+                Tick(motion, 0.01f);
 
                 Assert.IsTrue(motion.IsPlaying);
                 Assert.AreEqual(origin, actor.transform.position);
                 Assert.AreEqual(1.5f, (visual.localPosition - rest).magnitude, 0.01f);
 
-                animator.Play("Attack", 0, 1f);
+                animator.Play("Attack", 0, 0.9f);
                 animator.Update(0f);
-                InvokeLifecycle(motion, "LateUpdate");
-                Assert.Less(Vector3.Distance(rest, visual.localPosition), 0.001f);
+                Tick(motion, 0.01f);
+                Assert.AreEqual(1.5f, (visual.localPosition - rest).magnitude, 0.01f);
+                Assert.IsTrue(motion.IsPlaying);
+                Assert.AreEqual(1, triggerCount);
 
-                motion.Restore();
+                animator.Play("Attack", 0, 1f);
+                animator.Update(0.01f);
+                Assert.IsTrue(animator.IsInTransition(0));
+                Assert.IsTrue(animator.GetNextAnimatorStateInfo(0).IsName("Combat Return"));
+                Tick(motion, 0.01f);
+                Assert.AreEqual(1.5f, (visual.localPosition - rest).magnitude, 0.01f);
+                animator.Update(0.15f);
+                Assert.IsTrue(animator.GetCurrentAnimatorStateInfo(0).IsName("Combat Return"));
+                float returnTime = animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+                animator.Update(0.05f);
+                Assert.Less(animator.GetCurrentAnimatorStateInfo(0).normalizedTime, returnTime);
+                Tick(motion, travelDuration / 2f);
+                Assert.Less(Quaternion.Angle(visual.rotation, Quaternion.LookRotation(Vector3.right)), 0.01f);
+                Assert.That((visual.localPosition - rest).magnitude, Is.InRange(0.7f, 0.8f));
+                Tick(motion, travelDuration / 2f);
                 Assert.IsFalse(motion.IsPlaying);
+                animator.Update(0.01f);
+                Assert.IsTrue(animator.IsInTransition(0));
+                Assert.IsTrue(animator.GetNextAnimatorStateInfo(0).IsName("Idle Walk Run Blend"));
+                animator.Update(0.15f);
+                Tick(motion, 0f);
+                Assert.IsTrue(animator.GetCurrentAnimatorStateInfo(0).IsName("Idle Walk Run Blend"));
+                Assert.Less(Quaternion.Angle(visual.rotation, Quaternion.LookRotation(Vector3.right)), 0.01f);
+                Assert.IsFalse(animator.GetBool("CombatMotion"));
                 Assert.AreEqual(rest, visual.localPosition);
                 Assert.AreEqual(restRotation, visual.localRotation);
                 Assert.AreEqual(origin, actor.transform.position);
@@ -108,12 +141,15 @@ namespace GameCore.Tests.EditMode
             try
             {
                 InvokeLifecycle(motion, "Awake");
-                motion.Begin(Vector3.forward * 2f, 0.5f);
+                int triggerCount = 0;
+                motion.Begin(Vector3.forward * 2f, 0.5f, () => triggerCount++);
                 skeleton.localPosition += Vector3.forward;
                 motion.Begin(Vector3.right * 2f, 0.5f);
                 Assert.AreEqual(Vector3.up, skeleton.localPosition);
                 skeleton.localPosition += Vector3.right;
                 InvokeLifecycle(motion, "OnDisable");
+                Tick(motion, 1f);
+                Assert.AreEqual(0, triggerCount);
                 Assert.IsFalse(motion.IsPlaying);
                 Assert.AreEqual(Vector3.up, skeleton.localPosition);
             }
