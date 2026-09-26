@@ -250,13 +250,12 @@ namespace GameCore.EncounterMode.Services
             }
 
             UpdateMovementDisplay();
-            RefreshReachableCells();
 
-            if (_movementTracker.IsMovementExhausted)
-            {
-                _presentation.DisableSelection();
-                ClearReachableCells();
-            }
+            // A destination selection completes this movement interaction. Clear the
+            // selection and reachable-cell visuals until the player explicitly enables
+            // grid selection again.
+            _presentation.DisableSelection();
+            ClearReachableCells();
         }
 
         private void SyncMovementFromParticipant()
