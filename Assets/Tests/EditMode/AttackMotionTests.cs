@@ -65,6 +65,7 @@ namespace GameCore.Tests.EditMode
 
                 actor.GetComponent<GameCore.PlayerController>().SprintSpeed = runSpeed;
                 float travelDuration = 1.5f / runSpeed;
+                animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                 animator.Rebind();
                 int triggerCount = 0;
                 Assert.IsTrue(motion.Begin(origin + Vector3.right * 2f, 0.5f, () =>
@@ -98,17 +99,20 @@ namespace GameCore.Tests.EditMode
                 Assert.IsTrue(motion.IsPlaying);
                 Assert.AreEqual(1, triggerCount);
 
-                animator.Play("Attack", 0, 1f);
-                animator.Update(0.01f);
+                // Advance across the exit threshold; seeking directly to 1 skips its crossing.
+                float attackLength = animator.GetCurrentAnimatorClipInfo(0)[0].clip.length;
+                animator.Update(attackLength * 0.12f);
                 Assert.IsTrue(animator.IsInTransition(0));
                 Assert.IsTrue(animator.GetNextAnimatorStateInfo(0).IsName("Combat Return"));
                 Tick(motion, 0.01f);
                 Assert.AreEqual(1.5f, (visual.localPosition - rest).magnitude, 0.01f);
                 animator.Update(0.15f);
                 Assert.IsTrue(animator.GetCurrentAnimatorStateInfo(0).IsName("Combat Return"));
-                float returnTime = animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+                Assert.AreEqual(-1f, animator.GetCurrentAnimatorStateInfo(0).speed);
+                Transform leg = animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg);
+                Quaternion returnPose = leg.localRotation;
                 animator.Update(0.05f);
-                Assert.Less(animator.GetCurrentAnimatorStateInfo(0).normalizedTime, returnTime);
+                Assert.Greater(Quaternion.Angle(returnPose, leg.localRotation), 0.01f);
                 Tick(motion, travelDuration / 2f);
                 Assert.Less(Quaternion.Angle(visual.rotation, Quaternion.LookRotation(Vector3.right)), 0.01f);
                 Assert.That((visual.localPosition - rest).magnitude, Is.InRange(0.7f, 0.8f));

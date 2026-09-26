@@ -28,6 +28,8 @@ namespace GameCore.Combat.Feedback
         private float _elapsed;
         private bool _approaching;
         private System.Action _onReachedTarget;
+        private System.Action _onImpact;
+        private const float ImpactNormalizedTime = 0.35f;
         private float _returnElapsed;
         private bool _enteredAttack;
         private bool _returning;
@@ -53,7 +55,7 @@ namespace GameCore.Combat.Feedback
             _capturedRest = true;
         }
 
-        public bool Begin(Vector3 targetPosition, float contactDistance, System.Action onReachedTarget = null)
+        public bool Begin(Vector3 targetPosition, float contactDistance, System.Action onReachedTarget = null, System.Action onImpact = null)
         {
             CaptureRestPose();
             if (!_capturedRest || _animator == null || !isActiveAndEnabled)
@@ -70,6 +72,7 @@ namespace GameCore.Combat.Feedback
             _elapsed = 0f;
             _approaching = true;
             _onReachedTarget = onReachedTarget;
+            _onImpact = onImpact;
             _enteredAttack = false;
             _returning = false;
             IsPlaying = true;
@@ -89,6 +92,16 @@ namespace GameCore.Combat.Feedback
             if (_visualRoot == null || _animator == null || !_animator.isActiveAndEnabled)
             {
                 Restore();
+                return;
+            }
+
+            // Let a hit interrupt presentation without blending over the reaction.
+            bool reacting = _animator.GetCurrentAnimatorStateInfo(0).IsName(HitAnimationFeedback.TriggerName)
+                || (_animator.IsInTransition(0)
+                    && _animator.GetNextAnimatorStateInfo(0).IsName(HitAnimationFeedback.TriggerName));
+            if (reacting)
+            {
+                Restore(false);
                 return;
             }
 
@@ -133,6 +146,7 @@ namespace GameCore.Combat.Feedback
                 blendingToReturn = next.IsName(ReturnState);
                 if (next.IsName(AttackAnimationFeedback.TriggerName))
                 {
+                    state = next;
                     inAttack = true;
                 }
             }
@@ -140,6 +154,12 @@ namespace GameCore.Combat.Feedback
             if (inAttack)
             {
                 _enteredAttack = true;
+                if (state.normalizedTime >= ImpactNormalizedTime)
+                {
+                    var onImpact = _onImpact;
+                    _onImpact = null;
+                    onImpact?.Invoke();
+                }
             }
 
             // Also recover from interruption, a missing trigger/state, or despawn/disable.
@@ -188,10 +208,10 @@ namespace GameCore.Combat.Feedback
             Restore();
         }
 
-        public void Restore()
+        public void Restore(bool blendToLocomotion = true)
         {
             SetCombatMotion(false);
-            if (IsPlaying)
+            if (IsPlaying && blendToLocomotion)
                 BlendToState(LocomotionState);
             if (_capturedRest && _visualRoot != null)
             {
@@ -202,6 +222,7 @@ namespace GameCore.Combat.Feedback
             _approaching = false;
             _onReachedTarget = null;
             _returning = false;
+            _onImpact = null;
         }
 
         private void OnDisable() => Restore();

@@ -182,3 +182,46 @@ Do not say tests pass unless they were actually run in the current session.
 - CombatMotion selects the return transition for targeted attacks and retains the idle exit for attacks without a movement sequence. Travel still uses normal run speed, with only attack playback at 2x.
 - On normal return completion, transfer target-facing rotation from the visual to the actor before restoring the skeleton pose, avoiding the old orientation snap. Cancellation still restores the visual pose.
 - Updated regressions for blend transitions, the full-clip exit gate, and a target to the right so facing preservation is exercised. Controller structure/transition checks and git diff --check pass. Unity execution remains unverified because the focused runner previously failed during startup.
+
+### Unarmed combat clip update — 2026-09-25
+
+- ThirdPerson controller uses Combat/Idle_Combat_Unarmed.fbx for its standing idle and Combat/Unarmed_Strike.fbx for Attack. Idle loops; strike is non-looping and retains the requested 2x attack speed.
+- Added a normal-speed Hit state using Combat/Hit_Unarmed.fbx, imported as humanoid, with a short entry blend and full-clip exit back to idle.
+- Positive offline combat damage dispatches target reaction feedback. Replicated HP loss triggers feedback on the target owner, whose NetworkAnimator distributes the reaction. Hits can interrupt attack presentation without the movement cleanup overriding the hit state.
+- Preserved the pre-existing idle/strike humanoid import edits; only changed strike looping. Movement remains at configured run speed.
+- Validation: isolated Unity project Library/CodexWarningValidation compiled and passed all 20 focused EditMode tests (combat-clips-playback-results.xml), covering controller clips/imports, damage feedback, hit playback and interruption, and attack movement. Corrected older tests to cross the non-looping exit threshold naturally and evaluate off-screen bones. Changed code/controller diff checks pass; pre-existing whitespace in the user's idle/strike importer changes remains.
+- Live multiplayer and visual timing in the gameplay scene were not exercised by the EditMode suite.
+
+- Follow-up: restored Unarmed_Strike attack playback to normal (1x) speed at the user's request; updated controller and exit-timing regression expectations. Static diff checks passed; Unity tests were not rerun for this speed-only adjustment.
+
+### Encounter-only combat idle — 2026-09-25
+
+- Replaced the previous unarmed combat idle with Combat/Idle.fbx. The locomotion state's idle branch now blends between Base/Stand--Idle.anim.fbx outside encounters and Combat/Idle.fbx during encounters.
+- PlayerController updates the EncounterIdle Animator parameter before movement/attack early returns; AnimationHandler blends it over 0.15 seconds. Owner NetworkAnimator replication carries it to remote characters. Walk/run, attack, and hit states retain their existing behavior.
+- Validation: all 21 focused Unity EditMode tests passed in Library/CodexWarningValidation/encounter-idle-results.xml, including actual clip weights on encounter entry/exit and preserved run selection. Changed-file diff checks passed. Live multiplayer playback was not exercised.
+
+### Confirmed target hit reaction — 2026-09-25
+
+- Successful attack results now pass `DidHit` into attack presentation. The target's Hit animation is triggered at the attack impact point (after approach, before return), rather than inferred from an HP update.
+- Networked targets route the cosmetic hit request to the target owner, where `NetworkAnimator` replicates the Hit trigger. Removed HP-change-driven reaction dispatch to avoid duplicate reactions; misses do not trigger Hit.
+- Focused isolated Unity validation passed all 20 attack/movement/hit/combat tests (`hit-confirmed-results.xml`).
+
+- Hit single-play verification: existing Hit_Unarmed import has loopTime disabled and the Hit state exits to locomotion after one full clip. Added actual Animator playback regression verifying one trigger produces one entry, stays idle across multiple clip durations, and a later trigger plays once again. All 15 focused hit/controller tests passed in Library/CodexWarningValidation/hit-once-results.xml. No runtime change was needed.
+
+### Duplicate network hit reaction fix — 2026-09-25
+
+- Investigated the installed owner-authoritative NetworkAnimator trigger path: server forwarding can include the target owner after it already fired locally. A trigger received during Hit can remain pending and replay after exiting.
+- OwnerNetworkAnimator now starts Hit with a direct fixed-time crossfade so standard state synchronization distributes playback without a separate Hit trigger message. Requests while entering, playing, or exiting Hit are ignored; a later hit after completion still plays.
+- Reproduced the queued second reaction against the old implementation in the isolated validation project (hit-echo-before-results.xml: 1 expected failure). With the fix, all 22 focused hit/attack/movement tests passed (hit-echo-fixed-results.xml). Diff checks passed. Live host/client transport was inspected in source but not exercised by the EditMode suite.
+
+### Floating miss feedback — 2026-09-25
+
+- Missed attacks create a camera-facing 3D TextMeshPro Miss label above the target at the attack impact point. The warm-colored outlined label rises 0.65 world units and fades over 1.2 seconds, then destroys itself and its owned material. Its Ignore Raycast layer avoids blocking targeting.
+- Attacker owner shows the local popup and sends one position-based RPC to non-owner replicas, where each popup faces that viewer's camera. Hits retain the hit reaction without a miss label. Offline/missing attack adapters have a local fallback.
+- All 25 focused Unity EditMode tests passed in Library/CodexWarningValidation/miss-popup-final-results.xml, including impact timing, one popup per miss, no popup on a hit, rise, billboard rotation, fade, and lifetime completion. Changed-file diff checks passed. Live multiplayer visual placement remains unverified.
+
+### Visible roll outcomes and floating damage — 2026-09-25
+
+- Attack roll cards now include MISS, HIT, or CRITICAL HIT in their visible TO HIT label; the numeric roll remains unchanged. Previously the outcome was only in FullMessage, which the structured roll card does not render.
+- Generalized MissTextPopup to CombatTextPopup, preserving its script GUID. Misses keep their warm Miss label; hits show red total damage text (including 0 damage) with the same camera-facing rise and fade. AttackOutcome.DamageAmount flows through the impact callback and a single outcome popup RPC, with no separate damage calculation.
+- All 32 focused Unity EditMode tests passed in Library/CodexWarningValidation/combat-outcomes-results.xml, covering normal/natural-one misses, hit/critical roll labels, rejected actions, exact damage delivery and impact popups. Changed-file diff checks passed. Live multiplayer visual playback was not exercised.

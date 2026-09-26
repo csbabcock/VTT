@@ -15,7 +15,13 @@ namespace GameCore.Combat.Feedback
                 return;
 
             var player = attacker.GetComponent<IAttackAnimationPlayer>();
-            player?.PlayAttack(target);
+            if (player != null)
+                player.PlayAttack(target, result.AttackOutcome.DidHit, result.AttackOutcome.DamageAmount);
+            else
+            {
+                HitAnimationFeedback.PlayIfHit(target, result.AttackOutcome.DidHit);
+                CombatTextPopup.ShowAbove(target, result.AttackOutcome.DidHit, result.AttackOutcome.DamageAmount);
+            }
         }
     }
 }

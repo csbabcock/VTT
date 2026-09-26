@@ -363,6 +363,9 @@ namespace GameCore
 
         private void Update()
         {
+            // Update even while attacks or UI input gates suppress normal movement.
+            // Remote actors receive this parameter through the owner NetworkAnimator.
+            _animationHandler?.UpdateEncounterMode(IsEncounterModeActive(), Time.deltaTime);
             if (_input == null) return;
 
             if (_attackMotion != null && _attackMotion.IsPlaying)

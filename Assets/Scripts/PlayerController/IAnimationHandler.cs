@@ -7,6 +7,7 @@ namespace GameCore
     {
         void UpdateAnimations(float speed, float motionSpeed, bool isGrounded, bool isJumping, bool isFalling);
         void Initialize();
+        void UpdateEncounterMode(bool isEncounterActive, float deltaTime);
     }
 }
 

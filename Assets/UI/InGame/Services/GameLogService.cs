@@ -251,7 +251,8 @@ namespace GameCore.UI.InGame.Services
             {
                 CharacterName = result.AttackerName,
                 ActionType = result.AttackDisplayName.ToUpper(),
-                SubActionType = "TO HIT",
+                SubActionType = !outcome.DidHit ? "TO HIT - MISS"
+                    : outcome.IsCritical ? "TO HIT - CRITICAL HIT" : "TO HIT - HIT",
                 DiceFormula = "1d20",
                 DiceBreakdown = outcome.AttackRollNatural.ToString(),
                 Result = outcome.AttackRollTotal,

@@ -49,9 +49,20 @@ namespace GameCore.Combat.Services
                 sheet.Level);
             int damageModifier = _calculator.CalculateWeaponDamageModifier(weaponName, abilityModifier);
 
+            // An unarmed strike always has an intrinsic 1 bludgeoning damage
+            // before the attacker's Strength modifier. Keep that rule intact
+            // even if a content provider omits the flat-base field.
+            int flatBaseDamage = props.FlatBaseDamage;
+            if (string.Equals(weaponName, "Unarmed Strike", StringComparison.OrdinalIgnoreCase)
+                && props.DamageDice == 0
+                && flatBaseDamage <= 0)
+            {
+                flatBaseDamage = 1;
+            }
+
             stats = new AttackStats(
                 attackBonus,
-                props.FlatBaseDamage,
+                flatBaseDamage,
                 props.DamageDice,
                 props.DamageDieType,
                 damageModifier,
